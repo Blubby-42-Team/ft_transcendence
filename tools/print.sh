@@ -11,13 +11,13 @@ Purple='\033[0;35m'       # Purple
 Cyan='\033[0;36m'         # Cyan
 White='\033[0;37m'  
 print_error () {
-	echo -e $Red $1 $Color_Off
+	echo -e $Red$1$Color_Off
 }
 
 print_warn() {
-	echo -e $Yellow $1 $Color_Off
+	echo -e $Yellow$1$Color_Off
 }
 
 print_info() {
-	echo -e $Blue $1 $Color_Off
+	echo -e $Blue$1$Color_Off
 }

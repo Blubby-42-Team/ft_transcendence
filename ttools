@@ -1,0 +1,62 @@
+#!/bin/bash
+
+source "$(dirname "$0")/tools/print.sh"
+
+config=("help" "check" "db" "dbstart" "dbstop" "dbstat" "node")
+
+err_msg_arg=${config[@]}
+err_msg="Usage: $0 [ ${err_msg_arg// / | } ]"
+
+[[ $1 ]] || {
+	./tools/setup.sh
+	echo $err_msg
+	exit 1
+}
+
+for arg in "$@"
+do
+	if [[ ${config[@]} =~ $arg ]]
+	then
+		[ $arg == "help" ] && {
+			echo "help    : show this message"
+			echo "check   : check if all the dependency is install"
+			echo "db      : show db usage"
+			echo "dbstart : start db"
+			echo "dbstop  : stop db, be carefull all data will be lost"
+			echo "dbstat  : show db status"
+			continue;
+		}
+		[ $arg == "check" ] && {
+			./tools/setup.sh
+			continue;
+		}
+
+		[ $arg == "db" ] && {
+			echo "Usage:"
+			echo "dbstart"
+			echo "dbstop"
+			continue;
+		}
+		[ $arg == "dbstart" ] && {
+			echo "Usage:"
+			docker compose -f docker/dev-db.yml up -d
+			continue;
+		}
+		[ $arg == "dbstop" ] && {
+			docker compose -f docker/dev-db.yml down
+			echo "Usage:"
+			continue;
+		}
+		[ $arg == "dbstat" ] && {
+			docker compose -f docker/dev-db.yml ps
+			echo "Usage:"
+			continue;
+		}
+		[ $arg == "node" ] && {
+			./tools/install_nvm.sh
+			continue;
+		}
+	fi
+	echo $err_msg
+	exit 1
+done

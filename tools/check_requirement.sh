@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "$(dirname "\$0")/print.sh"
+source "$(dirname "$0")/print.sh"
 
 g_user_shell=""
 
@@ -50,66 +50,38 @@ check_requirement () {
 
 	g_soft=node
 	check_program $g_soft || {
-		ask "Install $g_soft $g_require_node_v? y/n:" && {
-			source "$(dirname "$0")/install_nvm.sh"
-			nvm install $g_require_node_v
-			check_program $g_soft && {
-				print_info "Successfully install node $g_require_node_v"
-			} || {
-				print_error "Failed to install node $g_require_node_v with nvm!"
-				return 1;
-			}
-		} || {
-			print_error "You need to install manually nodejs $g_require_node_v"
+			print_error "You need to install nodejs $g_require_node_v"
+			print_warn "Run:"
+			print_warn "./tools/install_nvm.sh"
+			print_warn "nvm install $g_require_node_v"
 			return 1;
-		}
 	}
 	[[ $g_cversion == *"$g_require_node_v"* ]] && {
 			print_info "$g_soft version ok";
 		} || {
-			print_error "Wrong $g_soft version, please use $g_require_node_v";
-			ask "Change node to $g_require_node_v with nvm? y/n:" && {
-				nvm install $g_require_node_v
-			} || {
-				print_error "You need to install manually nodejs $g_require_node_v"
-			}
+				print_error "You need to install nodejs $g_require_node_v"
 			return 1;
 		}
-
 
 	# Check if npm is install
 	g_soft=npm
 	check_program $g_soft || {
 		print_warn "Ignoring, but you will maybe need $g_soft";
-		ask "Install $g_soft?" && {
-			print_warn "TODO install $g_soft"
-			##WIP
-		} || {
-			print_warn "You need to install $g_soft!"
-		}
 	}
 
 	# Check if nest is install
 	g_soft=nest
 	check_program $g_soft || {
 		print_warn "Ignoring, but you will maybe need $g_soft";
-		ask "Install $g_soft?" && {
-			print_warn "TODO install $g_soft"
-			##WIP
-		} || {
-			print_warn "You need to install $g_soft!"
-		}
+		print_warn "Run:"
+		print_warn "./ttools nest"
 	}
 
 	# Check if docker is install
 	g_soft=docker
 	check_program $g_soft || {
 		print_warn "Ignoring, but you will maybe need $g_soft";
-		ask "Install $g_soft?" && {
-			print_warn "TODO install $g_soft"
-			##WIP
-		} || {
-			print_warn "You need to install $g_soft!"
-		}
+		print_warn "Run:"
+		print_warn "./ttools docker"
 	}
 }
