@@ -1,8 +1,20 @@
 #!/bin/bash
 
-source "$(dirname "$0")/print.sh"
+source "$(dirname "\$0")/print.sh"
 
-g_user_shell=$SHELL
+g_user_shell=""
+
+# Check if getent is available
+if command -v getent &> /dev/null
+then
+    g_user_shell=$(getent passwd $(id -un) | awk -F : '{print $NF}')
+else
+    # macOS doesn't have getent, so we need to use an alternative method
+    g_user_shell=$(awk -F: -v user=$(whoami) '\$1 == user {print $NF}' /etc/passwd)
+fi
+
+print_info "Check done in $g_user_shell"
+
 
 g_require_node_v="v18"
 g_cversion=""
@@ -38,14 +50,17 @@ check_requirement () {
 
 	g_soft=node
 	check_program $g_soft || {
-
-		print_error "You need $g_soft $g_require_node_v!";
-
-		ask "Install $g_soft $g_require_node_v with nvm?" && {
-			print_warn "TODO install $g_soft"
-			##WIP
+		ask "Install $g_soft $g_require_node_v? y/n:" && {
+			source "$(dirname "$0")/install_nvm.sh"
+			nvm install $g_require_node_v
+			check_program $g_soft && {
+				print_info "Successfully install node $g_require_node_v"
+			} || {
+				print_error "Failed to install node $g_require_node_v with nvm!"
+				return 1;
+			}
 		} || {
-			print_error "You need to install $g_soft $g_require_node_v!"
+			print_error "You need to install manually nodejs $g_require_node_v"
 			return 1;
 		}
 	}
@@ -53,7 +68,11 @@ check_requirement () {
 			print_info "$g_soft version ok";
 		} || {
 			print_error "Wrong $g_soft version, please use $g_require_node_v";
-			print_warn "use: nvm install 18";
+			ask "Change node to $g_require_node_v with nvm? y/n:" && {
+				nvm install $g_require_node_v
+			} || {
+				print_error "You need to install manually nodejs $g_require_node_v"
+			}
 			return 1;
 		}
 
