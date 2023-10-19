@@ -19,24 +19,18 @@ const myId = "2"
 </script>
 
 <template>
-	<div class="flex flex-col-reverse h-full overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-text scrollbar-thumb-rounded-none scrollbar-track overscroll-y-contain">
-		<!-- <GenericTextarea class="flex m-5 bg-color2"></GenericTextarea> -->
-		<div class="w-full p-5">
-			<textarea
-				ref="textarea"
-				v-model="input"
-				class="p-0 bg-transparent border-none appearance-none resize-none focus-border-none form-textarea focus:outline-transparent" 
-				placeholder="Send a Message"
-			/>
-			<!-- <textarea
-				ref="textarea"
-				v-model="input"
-				class="w-full overflow-x-hidden bg-opacity-75 resize-none border-1 border-color1 rounded-xl bg-color3 max-h-80 scrollbar scrollbar-y-auto scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-text scrollbar-thumb-rounded-3xl scrollbar-track overscroll-y-contain"
-				placeholder="What's on your mind?"
-			/> -->
+	<div class="flex flex-col-reverse h-full">
+		<div class="w-full p-5 grid grid-cols-[auto,3em] gap-2">
+			<div class="pt-2 pb-1 pl-2 pr-0 bg-color2 rounded-2xl">
+				<textarea ref="textarea" v-model="input"
+					class="self-center w-full overflow-x-hidden bg-transparent border-transparent border-none resize-none max-h-60 text-text focus-border-none form-textarea focus:ring-0 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-text scrollbar-thumb-rounded-2xl scrollbar-track overscroll-y-contain" 
+					placeholder="Send a Message"
+				/>
+			</div>
+			<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1">
+				<Icon name="material-symbols:send" class="w-10 h-10"/>
+			</GenericButton>
 		</div>
-
-		<!-- <input type="text" name="" id="" class="m-5 rounded-xl bg-color2 focus:bg-color3"> -->
 		
 		<template v-for="message in messages">
 			<div class="inline-grid grid-rows-[auto,2em] p-5"
