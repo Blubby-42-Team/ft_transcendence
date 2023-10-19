@@ -38,9 +38,6 @@ function deleteTournament(){
 			</GenericButton>
 		</div>
 		<div class="flex mt-5 mb-5 border-2 border-text"></div>
-		<div>
-			<div>{{ route.params.id }}</div>
-			<div>{{ tournament }}</div>
-		</div>
+		<TournamentPreview/>
 	</div>
 </template>
