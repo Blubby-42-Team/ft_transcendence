@@ -1,0 +1,4 @@
+This folder was made to deposit SVG icons in so that the NuxtIcon can import them simply by name.
+For example 42.vue is the svg 42.svg transformed into a vue file and can be import
+
+<Icon name="42"/>
