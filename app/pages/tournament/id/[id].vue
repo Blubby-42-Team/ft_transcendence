@@ -27,10 +27,10 @@ function deleteTournament(){
 <template>
 	<div class="p-5">
 		<div class="flex">
-			<GenericNuxtLink to="/tournament" :buttonStyle="1" class="h-10">
+			<GenericNuxtLink to="/tournament" :buttonStyle="1" class="h-10 mr-2">
 				<Icon name="material-symbols:arrow-back-ios-new-rounded" class="w-full h-full"/>
 			</GenericNuxtLink>
-			<GenericButton :buttonStyle="1" class="h-10 pl-1 pr-1">
+			<GenericButton :buttonStyle="1" class="h-10 pl-1 pr-1 mr-2">
 				Update Event
 			</GenericButton>
 			<GenericButton :buttonStyle="1" class="h-10 pl-1 pr-1" @click="deleteTournament">

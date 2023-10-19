@@ -11,7 +11,7 @@ onMounted(() => { setPageData(EPageCategories.TOURNAMENT, "Tournaments"); })
 <template>
 	<div class="flex flex-col p-5">
 		<div class="flex flex-row">
-			<GenericButton :buttonStyle="1" class="w-10 h-10">
+			<GenericButton :buttonStyle="1" class="w-10 h-10 mr-2">
 				<Icon name="material-symbols:refresh" class="w-full h-full"/>
 			</GenericButton>
 			<GenericNuxtLink to="/" :buttonStyle="1" class="h-10 pl-1 pr-1">
