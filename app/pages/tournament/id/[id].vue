@@ -25,7 +25,7 @@ function deleteTournament(){
 </script>
 
 <template>
-	<div class="p-5">
+	<div class="grid h-full grid-rows-[min-content,min-content,auto] p-5">
 		<div class="flex">
 			<GenericNuxtLink to="/tournament" :buttonStyle="1" class="h-10 mr-2">
 				<Icon name="material-symbols:arrow-back-ios-new-rounded" class="w-full h-full"/>
@@ -37,7 +37,7 @@ function deleteTournament(){
 				Delete Event
 			</GenericButton>
 		</div>
-		<div class="flex mt-5 mb-5 border-2 border-text"></div>
+		<div class="flex h-0 mt-5 mb-5 border-2 border-text bg-text"></div>
 		<TournamentPreview/>
 	</div>
 </template>
