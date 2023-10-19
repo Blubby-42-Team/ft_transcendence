@@ -11,7 +11,7 @@ const props = defineProps({
 </script>
 
 <template>
-	<button class="flex items-center mr-2 text-center place-content-center"
+	<button class="flex items-center text-center place-content-center"
 		:class="getStyle(props.buttonStyle)"
 	>
 		<slot />

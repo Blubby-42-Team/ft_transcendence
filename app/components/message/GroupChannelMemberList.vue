@@ -30,7 +30,7 @@ const { members } = useChannelStore()
 		</div>
 	</template>
 	<template v-else>
-		<GenericButton :buttonStyle="1" class="w-12 h-12 mt-2 mr-4"
+		<GenericButton :buttonStyle="1" class="w-12 h-12 mt-2 mr-2"
 			@click="() => { isMembersOpen = !isMembersOpen }"
 		>
 			<Icon name="material-symbols:menu" class="w-full h-full"/>
