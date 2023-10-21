@@ -27,7 +27,6 @@ function remove(){
 	if (nbPlayer.value > 2){
 		nbPlayer.value -= 1
 	}
-	console.log(nbPlayer.value)
 }
 
 </script>
