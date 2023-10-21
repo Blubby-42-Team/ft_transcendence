@@ -1,65 +1,59 @@
 <script setup lang="ts">
 
-const tournament: globalThis.ITournament = {
+const tournament: ComputedRef<globalThis.ITournament> = computed(() => { return {
 	id: 'test',
 	name: 'hello',
-	attendance: 32,
+	attendance: 8,
 	maxAttendance: 4,
-}
+}})
 
-const { tournaments } = useTournamentStore();
+const nbRounds = computed(() => Math.ceil(Math.log2(tournament.value.attendance)));
+const reverseOrderedCount = computed(() => Array.from({ length: nbRounds.value }, (_, index) => nbRounds.value - index))
 
-const nbRounds = Math.ceil(Math.log2(tournament.attendance));
-const test = Array.from({ length: nbRounds }, (_, index) => nbRounds - index)
-
-function getCols(): string {
-	let res = 'auto'
-	for (let i = 1; i < nbRounds; i++){
-		res += ' auto'
-	}
-	return res
-}
-
-function getRows(round: number): string{
-	let res = '';
-	for (let i = 0; i < (2 ** (round - 1)); i++){
-		res += ' 1fr'
-	}
-	return res;
-}
 
 </script>
 
 <template>
-	<div class="grid h-auto overflow-auto bg-color1" :style="{ gridTemplateColumns: getCols() }">
-		<template v-for="round in test">
-			<div class="grid h-full" :style="{ gridTemplateRows: getRows(round) }">
+	<!-- <button @click="() => { tournament.attendance += 1; console.log(tournament.attendance) }">ADD</button>
+	<button @click="() => { tournament.attendance -= 1; console.log(tournament.attendance) }">REMOVE</button> -->
+	<div class="grid h-auto overflow-auto" :style="{ gridTemplateColumns: '15em '.repeat(nbRounds - 1) + '12em' }">
+		<template v-for="round in reverseOrderedCount">
+			<div class="grid h-full" :style="{ gridTemplateRows: ' 1fr'.repeat(2 ** (round - 1)) }">
 				<template v-for="m in 2 ** (round - 1)">
-					<div class="grid grid-rows-[1fr,auto,auto,1fr] grid-cols-[auto,1.5em,1.5em] grid-flow-col">
+					<div class="grid grid-rows-[1fr,auto,auto,1fr] grid-cols-[auto,1.5em,1.5em] grid-flow-col"
+						:class="round != 1 ? 'grid-cols-[auto,1.5em,1.5em]' : 'grid-cols-[auto]'"
+					>
 						<div class="h-4"></div>
-						<div class="h-16 row-span-2 bg-blue-500">TEST</div>
+						<div class="grid h-16 grid-cols-2 row-span-2 bg-blue-500">
+							<div>Player1</div>
+							<div>Score1</div>
+							<div>Player2</div>
+							<div>Score2</div>
+						</div>
 						<div class="h-4"></div>
-						<template v-if="m % 2">
-							<template v-if="round != 1">
-								<div class=""></div>
-								<div class="border-b"></div>
-								<div class="border-t border-r"></div>
-								<div class="border-r"></div>
-								<div class=""></div>
-								<div class=""></div>
-								<div class="border-l"></div>
-								<div class="border-b border-l"></div>
+						<template v-if="round != 1">
+							<template v-if="m % 2">
+								<template v-if="round != 1">
+									<div class=""></div>
+									<div class=""></div>
+									<div class="border-t-2"></div>
+									<div class=""></div>
+									<div class=""></div>
+									<div class=""></div>
+									<div class="border-l-2"></div>
+									<div class="border-l-2"></div>
+								</template>
 							</template>
-						</template>
-						<template v-else>
-							<div class="border-r "></div>
-							<div class="border-b border-r "></div>
-							<div class="border-t "></div>
-							<div class=""></div>
-							<div class="border-t border-l"></div>
-							<div class="border-l"></div>
-							<div class=""></div>
-							<div class=""></div>
+							<template v-else>
+								<div class=""></div>
+								<div class="border-b-2"></div>
+								<div class=""></div>
+								<div class=""></div>
+								<div class="border-t-2 border-l-2"></div>
+								<div class="border-l-2"></div>
+								<div class=""></div>
+								<div class=""></div>
+							</template>
 						</template>
 					</div>
 				</template>
