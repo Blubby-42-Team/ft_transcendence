@@ -1,21 +1,20 @@
 <script setup lang="ts">
 
-const tournament: ComputedRef<globalThis.ITournament> = computed(() => { return {
-	id: 'test',
-	name: 'hello',
-	attendance: 8,
-	maxAttendance: 4,
-}})
+const nbPlayer = useState<number>('nbPlayer');
 
-const nbRounds = computed(() => Math.ceil(Math.log2(tournament.value.attendance)));
+// const tournament: ComputedRef<globalThis.ITournament> = computed(() => { return {
+// 	id: 'test',
+// 	name: 'hello',
+// 	attendance: 8,
+// 	maxAttendance: 4,
+// }})
+
+const nbRounds = computed(() => Math.ceil(Math.log2(nbPlayer.value)));
 const reverseOrderedCount = computed(() => Array.from({ length: nbRounds.value }, (_, index) => nbRounds.value - index))
-
 
 </script>
 
 <template>
-	<!-- <button @click="() => { tournament.attendance += 1; console.log(tournament.attendance) }">ADD</button>
-	<button @click="() => { tournament.attendance -= 1; console.log(tournament.attendance) }">REMOVE</button> -->
 	<div class="grid h-auto overflow-auto" :style="{ gridTemplateColumns: '15em '.repeat(nbRounds - 1) + '12em' }">
 		<template v-for="round in reverseOrderedCount">
 			<div class="grid h-full" :style="{ gridTemplateRows: ' 1fr'.repeat(2 ** (round - 1)) }">
