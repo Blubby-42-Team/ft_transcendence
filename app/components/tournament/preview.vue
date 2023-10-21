@@ -22,36 +22,36 @@ const reverseOrderedCount = computed(() => Array.from({ length: nbRounds.value }
 					<div class="grid grid-rows-[1fr,auto,auto,1fr] grid-cols-[auto,1.5em,1.5em] grid-flow-col"
 						:class="round != 1 ? 'grid-cols-[auto,1.5em,1.5em]' : 'grid-cols-[auto]'"
 					>
-						<div class="h-4"></div>
-						<div class="grid h-16 grid-cols-2 row-span-2 bg-blue-500">
+						<div class="bg-red-400 min-h-[1rem]"></div>
+						<div class="grid h-20 grid-cols-2 row-span-2 bg-blue-500">
 							<div>Player1</div>
 							<div>Score1</div>
 							<div>Player2</div>
 							<div>Score2</div>
 						</div>
-						<div class="h-4"></div>
+						<div class="bg-red-500 min-h-[1rem]"></div>
 						<template v-if="round != 1">
 							<template v-if="m % 2">
 								<template v-if="round != 1">
-									<div class=""></div>
-									<div class=""></div>
-									<div class="border-t-2"></div>
-									<div class=""></div>
-									<div class=""></div>
-									<div class=""></div>
-									<div class="border-l-2"></div>
-									<div class="border-l-2"></div>
+									<div class="bg-green-300 "></div>
+									<div class="bg-green-400 "></div>
+									<div class="bg-green-500 border-t-2"></div>
+									<div class="bg-green-600 "></div>
+									<div class="bg-yellow-300 "></div>
+									<div class="bg-yellow-400 "></div>
+									<div class="bg-yellow-500 border-l-2"></div>
+									<div class="bg-yellow-600 border-l-2"></div>
 								</template>
 							</template>
 							<template v-else>
-								<div class=""></div>
-								<div class="border-b-2"></div>
-								<div class=""></div>
-								<div class=""></div>
-								<div class="border-t-2 border-l-2"></div>
-								<div class="border-l-2"></div>
-								<div class=""></div>
-								<div class=""></div>
+								<div class="bg-green-300 "></div>
+								<div class="bg-green-400 border-b-2"></div>
+								<div class="bg-green-500 "></div>
+								<div class="bg-green-600 "></div>
+								<div class="bg-yellow-300 border-t-2 border-l-2"></div>
+								<div class="bg-yellow-400 border-l-2"></div>
+								<div class="bg-yellow-500 "></div>
+								<div class="bg-yellow-600 "></div>
 							</template>
 						</template>
 					</div>
