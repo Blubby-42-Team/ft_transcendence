@@ -26,7 +26,7 @@ const { match, position } = defineProps({
 			<div/>
 			<div/>
 			<div class="min-h-[1rem]"></div>
-			<TournamentPreviewMatchBox :match="match"/>
+			<TournamentPreviewMatchBox class="row-span-2" :match="match"/>
 			<div class="min-h-[1rem]"></div>
 			<template v-if="position === 'top'">
 				<div class=""></div>

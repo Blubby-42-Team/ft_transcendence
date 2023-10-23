@@ -9,19 +9,34 @@ const { match } = defineProps({
 	},
 })
 
+const players = computed(() => [match.player1, match.player2])
+
 </script>
 
 <template>
-	<div class="grid h-20 row-span-2 border-2 border-text">
-		<div v-if="typeof match.player1 === 'number'" class="bg-blue-600">
-			{{ match.player1 }}
+	<GenericButton class="w-full h-full border-text" :buttonStyle="1">
+		<div class="grid w-full h-20 grid-cols-[max-content,auto] rounded bg-color2">
+			<template v-for="player in players">
+				<template v-if="typeof player === 'number'">
+					<div class="h-full p-1 bg-color3">
+						<GenericProfilePicture class="w-8 h-8" imageSrc="/amogus.png"/>
+					</div>
+					<div class="bg-color3">
+						<!-- <Icon name="material-symbols:account-ci" class="w-full h-full"/> -->
+						test
+					</div>
+				</template>
+				<template v-else>
+					<div class="h-full p-1">
+						<Icon name="material-symbols:account-circle" class="w-8 h-8"/>
+					</div>
+					<div class="">
+						...
+					</div>
+				</template>
+			</template>
 		</div>
-		<div v-else class="bg-slate-800">...</div>
-		<div v-if="typeof match.player2 === 'number'" class="bg-blue-600">
-			{{ match.player2 }}
-		</div>
-		<div v-else class="bg-slate-800">...</div>
-	</div>
+	</GenericButton>
 </template>
 
 <style>
