@@ -17,15 +17,15 @@ const players = computed(() => [match.player1, match.player2])
 	<GenericButton class="w-full h-full border-text" :buttonStyle="1">
 		<div class="grid w-full h-20 grid-cols-[2.5em,auto,2.5em] grid-rows-[2.5em,2.5em] rounded bg-color2 overflow-hidden">
 			<template v-for="(player, i) in players">
-				<div class="h-full p-1" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.hasOwnProperty('id') ? 'bg-color3' : '')">
-					<template v-if="player?.hasOwnProperty('id')">
+				<div class="h-full p-1" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+					<template v-if="player?.id !== undefined">
 						<GenericProfilePicture class="w-8 h-8" imageSrc="/amogus.png"/>
 					</template>
 				</div>
-				<div class="pt-2 pr-2 text-left truncate" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.hasOwnProperty('id') ? 'bg-color3' : '')">
-					{{ (player?.hasOwnProperty('id') ? 'Player ' + player.id : '') }}
+				<div class="pt-2 pr-2 text-left truncate" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+					{{ (player?.id !== undefined ? 'Player ' + player.id : '') }}
 				</div>
-				<div class="pt-2 border-l-2" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.hasOwnProperty('id') ? 'bg-color3' : '')">
+				<div class="pt-2 border-l-2" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
 					<div class="text-center ">-</div>
 				</div>
 			</template>
