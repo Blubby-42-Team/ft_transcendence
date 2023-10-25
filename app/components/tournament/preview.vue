@@ -22,6 +22,12 @@ export type ITournamentMatch = {
 	status: EGameStatus.COMPLETED;
 }
 
+export type ILazyTournamentMatch = {
+	player1: (ITournamentMatch) & { id?: number, score?: number, winner?: boolean };
+	player2: (ITournamentMatch) & { id?: number, score?: number, winner?: boolean };
+	status: EGameStatus;
+}
+
 const tournament: ITournamentMatch = {
 	player1: {
 		player1: {
@@ -101,7 +107,7 @@ const tournament: ITournamentMatch = {
 <template>
 	<div class="grid h-auto overflow-auto">
 
-		<TournamentPreviewMatch :match="tournament"/>
+		<TournamentPreviewMatch :match="(tournament as any)"/>
 	</div>
 </template>
 

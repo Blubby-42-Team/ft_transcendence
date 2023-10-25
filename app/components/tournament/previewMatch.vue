@@ -1,10 +1,10 @@
 <script setup lang='ts'>
 
-import { ITournamentMatch } from './preview.vue'
+import { ILazyTournamentMatch } from './preview.vue'
 
 const { match, position } = defineProps({
 	match: {
-		type: Object as () => ITournamentMatch,
+		type: Object as () => ILazyTournamentMatch,
 		required: true,
 	},
 	position: {
@@ -26,7 +26,7 @@ const { match, position } = defineProps({
 			<div/>
 			<div/>
 			<div class="min-h-[1rem]"></div>
-			<TournamentPreviewMatchBox class="row-span-2" :match="match"/>
+			<TournamentPreviewMatchBox class="row-span-2" :match="(match as any)"/>
 			<div class="min-h-[1rem]"></div>
 			<template v-if="position === 'top'">
 				<div class=""></div>
@@ -47,14 +47,16 @@ const { match, position } = defineProps({
 				<div class=""></div>
 			</template>
 		</div>
-		<template v-if="!(match.player1?.id !== undefined)">
-			<TournamentPreviewMatch :match="(match.player1 as ITournamentMatch)"
+		<template v-if="match.player1?.id === undefined">
+			<TournamentPreviewMatch
+				:match="(match.player1 as ILazyTournamentMatch)"
 				:position="match.player2?.id !== undefined ? 'middle' : 'top'"
 				:class="match.player2?.id !== undefined ? 'row-span-2' : ''"
 			/>
 		</template>
-		<template v-if="!(match.player2?.id !== undefined)">
-			<TournamentPreviewMatch :match="(match.player2 as ITournamentMatch)"
+		<template v-if="match.player2?.id === undefined">
+			<TournamentPreviewMatch
+				:match="(match.player2 as ILazyTournamentMatch)"
 				:position="match.player1?.id !== undefined ? 'middle' : 'bottom'"
 				:class="match.player1?.id !== undefined ? 'row-span-2' : ''"
 			/>

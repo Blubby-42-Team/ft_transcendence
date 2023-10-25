@@ -1,10 +1,10 @@
 <script setup lang='ts'>
 
-import { ITournamentMatch } from './preview.vue'
+import { ILazyTournamentMatch } from './preview.vue'
 
 const { match } = defineProps({
 	match: {
-		type: Object as () => ITournamentMatch,
+		type: Object as () => ILazyTournamentMatch,
 		required: true,
 	},
 })
