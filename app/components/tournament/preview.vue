@@ -8,25 +8,19 @@ enum EGameStatus {
 
 type PlayerID = number;
 
-export interface ITournamentMatchNotStarted {
+export type ITournamentMatch = {
 	player1: (ITournamentMatch) | { id: PlayerID };
 	player2: (ITournamentMatch) | { id: PlayerID };
 	status: EGameStatus.NOT_STARTED;
-}
-
-export interface ITournamentMatchInProgress {
+} | {
 	player1: (ITournamentMatch & { score: number }) | ({ id: PlayerID, score: number });
 	player2: (ITournamentMatch & { score: number }) | ({ id: PlayerID, score: number });
 	status: EGameStatus.IN_PROGRESS;
-}
-
-export interface ITournamentMatchCompleted {
+} | {
 	player1: (ITournamentMatch & { score: number, winner?: boolean }) | ({ id: PlayerID, score: number, winner?: boolean });
 	player2: (ITournamentMatch & { score: number, winner?: boolean }) | ({ id: PlayerID, score: number, winner?: boolean });
 	status: EGameStatus.COMPLETED;
 }
-
-export type ITournamentMatch = ITournamentMatchInProgress | ITournamentMatchNotStarted | ITournamentMatchCompleted
 
 const tournament: ITournamentMatch = {
 	player1: {
