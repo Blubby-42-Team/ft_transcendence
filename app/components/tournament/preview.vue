@@ -31,13 +31,14 @@ export type ILazyTournamentMatch = {
 const tournament: ITournamentMatch = {
 	player1: {
 		player1: {
-			player1: { id: 1 },
+			player1: { id: 1, score: 1 },
 			player2: {
+				score: 2,
 				player1: { id: 10, score: 1 },
 				player2: { id: 11, score: 2, winner: true },
 				status: EGameStatus.COMPLETED,
 			},
-			status: EGameStatus.NOT_STARTED,
+			status: EGameStatus.IN_PROGRESS,
 		},
 		player2: { id: 6 },
 		status: EGameStatus.NOT_STARTED,

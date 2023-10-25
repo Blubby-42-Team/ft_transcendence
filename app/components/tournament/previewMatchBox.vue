@@ -2,6 +2,12 @@
 
 import { ILazyTournamentMatch } from './preview.vue'
 
+enum EGameStatus {
+	NOT_STARTED,
+	IN_PROGRESS,
+	COMPLETED,
+}
+
 const { match } = defineProps({
 	match: {
 		type: Object as () => ILazyTournamentMatch,
@@ -14,7 +20,9 @@ const players = computed(() => [match.player1, match.player2])
 </script>
 
 <template>
-	<GenericButton class="w-full h-full border-text" :buttonStyle="1">
+	<GenericButton class="w-full h-full border-text" :buttonStyle="1"
+		:class="(match?.status == EGameStatus.IN_PROGRESS ? 'drop-shadow-[0_0_10px_rgba(255,255,0,255)]' : '')"
+	>
 		<div class="grid w-full h-20 grid-cols-[2.5em,auto,2.5em] grid-rows-[2.5em,2.5em] rounded bg-color2 overflow-hidden">
 			<template v-for="(player, i) in players">
 				<div class="h-full p-1" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
