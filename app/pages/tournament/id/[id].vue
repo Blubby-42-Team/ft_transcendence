@@ -21,14 +21,6 @@ function deleteTournament(){
 	navigateTo('/tournament')
 }
 
-const nbPlayer = useState<number>('nbPlayer', () => 3);
-
-function remove(){
-	if (nbPlayer.value > 2){
-		nbPlayer.value -= 1
-	}
-}
-
 </script>
 
 <template>
@@ -42,16 +34,6 @@ function remove(){
 			</GenericButton>
 			<GenericButton :buttonStyle="1" class="h-10 pl-1 pr-1" @click="deleteTournament">
 				Delete Event
-			</GenericButton>
-			<GenericButton :buttonStyle="1" class="w-10 h-10 pl-1 pr-1 ml-2"
-				@click="() => { nbPlayer += 1 }"
-			>
-				+
-			</GenericButton>
-			<GenericButton :buttonStyle="1" class="w-10 h-10 pl-1 pr-1 ml-2"
-				@click="remove"
-			>
-				-
 			</GenericButton>
 		</div>
 		<div class="flex h-0 mt-5 mb-5 border-2 border-text bg-text"></div>

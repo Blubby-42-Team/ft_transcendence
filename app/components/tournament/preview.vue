@@ -1,81 +1,110 @@
 <script setup lang="ts">
 
-const nbPlayer = useState<number>('nbPlayer');
-
-// const tournament: ComputedRef<globalThis.ITournament> = computed(() => { return {
-// 	id: 'test',
-// 	name: 'hello',
-// 	attendance: 8,
-// 	maxAttendance: 4,
-// }})
-
-export interface ITournamentMatch {
-	player1: ITournamentMatch | number,
-	player2: ITournamentMatch | number,
+enum EGameStatus {
+	NOT_STARTED,
+	IN_PROGRESS,
+	COMPLETED,
 }
+
+type PlayerID = number;
+
+export interface IPlayerGameStatus {
+	score: number;
+	winner: boolean,
+}
+
+export interface ITournamentMatchNotStarted {
+	player1: (ITournamentMatch) | { id: PlayerID };
+	player2: (ITournamentMatch) | { id: PlayerID };
+	status: EGameStatus.NOT_STARTED;
+}
+
+export interface ITournamentMatchInProgress {
+	player1: (ITournamentMatch & { score: number }) | ({ id: PlayerID, score: number });
+	player2: (ITournamentMatch & { score: number }) | ({ id: PlayerID, score: number });
+	status: EGameStatus.IN_PROGRESS;
+}
+
+export interface ITournamentMatchCompleted {
+	player1: (ITournamentMatch & { score: number, winner?: boolean }) | ({ id: PlayerID, score: number, winner?: boolean });
+	player2: (ITournamentMatch & { score: number, winner?: boolean }) | ({ id: PlayerID, score: number, winner?: boolean });
+	status: EGameStatus.COMPLETED;
+}
+
+export type ITournamentMatch = ITournamentMatchInProgress | ITournamentMatchNotStarted | ITournamentMatchCompleted
 
 const tournament: ITournamentMatch = {
 	player1: {
 		player1: {
-			player1: 6,
+			player1: { id: 1 },
 			player2: {
-				player1: 6,
-				player2: 5,
+				player1: { id: 10, score: 1 },
+				player2: { id: 11, score: 2, winner: true },
+				status: EGameStatus.COMPLETED,
 			},
+			status: EGameStatus.NOT_STARTED,
 		},
-		player2: 4
+		player2: { id: 6 },
+		status: EGameStatus.NOT_STARTED,
 	},
 	player2: {
 		player1: {
-			player1: 6,
-			player2: 5,
+			player1: { id: 6 },
+			player2: { id: 5 },
+			status: EGameStatus.NOT_STARTED,
 		},
 		player2: {
 			player1: {
-				player1: 6,
+				player1: { id: 5 },
 				player2: {
-					player1: 6,
+					player1: { id: 6 },
 					player2: {
-						player1: 6,
-						player2: 5,
+						player1: { id: 6 },
+						player2: { id: 5 },
+						status: EGameStatus.NOT_STARTED,
 					},
+					status: EGameStatus.NOT_STARTED,
 				},
+				status: EGameStatus.NOT_STARTED,
 			},
 			player2: {
-				player1: 6,
+				player1: { id: 6 },
 				player2: {
-					player1: 6,
+					player1: { id: 6 },
 					player2: {
 						player1: {
 							player1: {
-								player1: 6,
-								player2: 5,
+								player1: { id: 5 },
+								player2: { id: 6 },
+								status: EGameStatus.NOT_STARTED,
 							},
 							player2: {
-								player1: 6,
-								player2: 5,
+								player1: { id: 5 },
+								player2: { id: 6 },
+								status: EGameStatus.NOT_STARTED,
 							},
+							status: EGameStatus.NOT_STARTED,
 						},
 						player2: {
 							player1: {
-								player1: 6,
-								player2: 5,
+								player1: { id: 4 },
+								player2: { id: 3 },
+								status: EGameStatus.NOT_STARTED,
 							},
-							player2: 8
+							player2: { id: 2 },
+							status: EGameStatus.NOT_STARTED,
 						},
+						status: EGameStatus.NOT_STARTED,
 					},
+					status: EGameStatus.NOT_STARTED,
 				},
+				status: EGameStatus.NOT_STARTED,
 			},
+			status: EGameStatus.NOT_STARTED,
 		},
-	}
-}
-
-const nbRounds = computed(() => getNbRounds(tournament));
-
-function getNbRounds(tournament: ITournamentMatch, depth: number = 1): number {
-	const depth1 = (typeof tournament.player1 === 'number' ? depth : getNbRounds(tournament.player1, depth + 1))
-	const depth2 = (typeof tournament.player2 === 'number' ? depth : getNbRounds(tournament.player2, depth + 1))
-	return (depth1 > depth2 ? depth1 : depth2);
+		status: EGameStatus.NOT_STARTED,
+	},
+	status: EGameStatus.NOT_STARTED,
 }
 
 </script>
