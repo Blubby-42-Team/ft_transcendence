@@ -16,12 +16,12 @@ const { match, position } = defineProps({
 
 <template>
 	<div class="rtl-grid grid grid-rows-[max-content,max-content]"
-		:class="typeof match.player1 === 'number' && typeof match.player2 === 'number' ? 'grid-cols-[max-content]' : 'grid-cols-[max-content,max-content]'"
+		:class="match.player1?.hasOwnProperty('id') && match.player2?.hasOwnProperty('id') ? 'grid-cols-[max-content]' : 'grid-cols-[max-content,max-content]'"
 	>
 		<div class="grid grid-rows-[1fr,auto,auto,1fr] grid-flow-col grid-cols-[1.5em,auto,1.5em] row-span-2 w-60 ltr-grid">
 			<div/>
 			<div class="border-text"
-				:class="typeof match.player1 === 'number' && typeof match.player2 === 'number' ? '' : 'border-b-2'"
+				:class="match.player1?.hasOwnProperty('id') && match.player2?.hasOwnProperty('id') ? '' : 'border-b-2'"
 			/>
 			<div/>
 			<div/>
@@ -47,16 +47,16 @@ const { match, position } = defineProps({
 				<div class=""></div>
 			</template>
 		</div>
-		<template v-if="typeof match.player1 === 'object'">
-			<TournamentPreviewMatch :match="match.player1"
-				:position="typeof match.player2 === 'number' ? 'middle' : 'top'"
-				:class="typeof match.player2 === 'number' ? 'row-span-2' : ''"
+		<template v-if="!(match.player1?.hasOwnProperty('id'))">
+			<TournamentPreviewMatch :match="(match.player1 as ITournamentMatch)"
+				:position="match.player2?.hasOwnProperty('id') ? 'middle' : 'top'"
+				:class="match.player2?.hasOwnProperty('id') ? 'row-span-2' : ''"
 			/>
 		</template>
-		<template v-if="typeof match.player2 === 'object'">
-			<TournamentPreviewMatch :match="match.player2"
-				:position="typeof match.player1 === 'number' ? 'middle' : 'bottom'"
-				:class="typeof match.player1 === 'number' ? 'row-span-2' : ''"
+		<template v-if="!(match.player2?.hasOwnProperty('id'))">
+			<TournamentPreviewMatch :match="(match.player2 as ITournamentMatch)"
+				:position="match.player1?.hasOwnProperty('id') ? 'middle' : 'bottom'"
+				:class="match.player1?.hasOwnProperty('id') ? 'row-span-2' : ''"
 			/>
 		</template>
 	</div>

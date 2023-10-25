@@ -8,11 +8,6 @@ enum EGameStatus {
 
 type PlayerID = number;
 
-export interface IPlayerGameStatus {
-	score: number;
-	winner: boolean,
-}
-
 export interface ITournamentMatchNotStarted {
 	player1: (ITournamentMatch) | { id: PlayerID };
 	player2: (ITournamentMatch) | { id: PlayerID };
