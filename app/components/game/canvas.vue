@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import { GenericButton } from '#build/components';
 
-let canvas = ref(null)
-let ctx = ref(null)
+
+let canvas: Ref<any> = ref(null)
+let ctx: Ref<any> = ref(null)
 
 let curX = ref(0)
 let curY = ref(0)
@@ -10,13 +12,13 @@ let isDrawing = ref(false)
 let x = ref(0)
 let y = ref(0)
 
-const startDrawing = (e) => {
+const startDrawing = (e: any): any => {
 	x.value = e.offsetX
 	y.value = e.offsetY
 	isDrawing.value = true
 }
 
-const draw = (e) => {
+const draw = (e: any): any => {
 	if (isDrawing.value) {
 		ctx.value.beginPath()
 		ctx.value.moveTo(x.value, y.value)
