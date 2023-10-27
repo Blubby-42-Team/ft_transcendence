@@ -69,14 +69,6 @@ check_requirement () {
 		print_warn "Ignoring, but you will maybe need $g_soft";
 	}
 
-	# Check if nest is install
-	g_soft=nest
-	check_program $g_soft || {
-		print_warn "Ignoring, but you will maybe need $g_soft";
-		print_warn "Run:"
-		print_warn "./ttools nest"
-	}
-
 	# Check if docker is install
 	g_soft=docker
 	check_program $g_soft || {
