@@ -8,7 +8,6 @@ onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 
 <template>
 	<div>
-		<GenericButton :buttonStyle="1">TEST</GenericButton >	
 		<GameCanvas />
 	</div>
 </template>

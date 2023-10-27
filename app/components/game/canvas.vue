@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { GenericButton } from '#build/components';
-
 
 let canvas: Ref<any> = ref(null)
 let ctx: Ref<any> = ref(null)
@@ -46,6 +44,7 @@ onMounted(() => {
 
 <template>
 	<div class="p-5">
+		<GenericButton :buttonStyle="1">TEST</GenericButton >	
 		<canvas class="bg-white" ref="canvas" width="500" height="300" style="border:1px solid #ffffff;"></canvas>
 	</div>
 </template>
