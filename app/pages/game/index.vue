@@ -8,7 +8,9 @@ onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 
 <template>
 	<div>
-		<GameCanvas />
+		<client-only placeholder="loading...">
+			<GameCanvas />
+		</client-only>
 	</div>
 </template>
 
