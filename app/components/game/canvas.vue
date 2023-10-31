@@ -2,19 +2,13 @@
 
 let player1 = 260;
 let player2 = 260;
+let start = false;
 
 let ball = {
 	x: 535,
 	y: 305,
 	dir: Math.PI/6,
 	speed: 0
-}
-
-let controller = {
-	w: {pressed: false, func: moveW},
-	s: {pressed: false, func: moveS},
-	ArrowUp: {pressed: false, func: moveUp},
-	ArrowDown: {pressed: false, func: moveDown}
 }
 
 const moveW = () => {
@@ -35,6 +29,13 @@ const moveUp = () => {
 const moveDown = () => {
 	player2 += 20;
 	if (player2 > 520) {player2 = 520}
+}
+
+let controller = {
+	w: {pressed: false, func: moveW},
+	s: {pressed: false, func: moveS},
+	ArrowUp: {pressed: false, func: moveUp},
+	ArrowDown: {pressed: false, func: moveDown}
 }
 
 const executeMoves = () => {
@@ -147,14 +148,17 @@ document.addEventListener("keyup", (e) => {
 	if(controller[e.key]){
 		controller[e.key].pressed = false
 	}
-	ball.speed = 0.5;
+	ball.speed = 4;
+	start = true;
 })
 
 const game = () => {
+	executeMoves()
 	moveBall();
 	checkCollisionWall();
 	checkCollisionPad();
-	reload();
+	if (start)
+		reload();
 	window.requestAnimationFrame(game);
 }
 
