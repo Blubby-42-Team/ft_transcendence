@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
-let player1 = 260;
-let player2 = 260;
+let player1 = 310;
+let player2 = 310;
 let start = false;
 
 let scores = {
@@ -11,7 +11,7 @@ let scores = {
 
 let ball = {
 	x: 535,
-	y: 305,
+	y: 355,
 	dir: Math.PI/6,
 	speed: 0
 }
@@ -23,7 +23,7 @@ const moveW = () => {
 
 const moveS = () => {
 	player1 += 20;
-	if (player1 > 520) {player1 = 520}
+	if (player1 > 620) {player1 = 620}
 }
 
 const moveUp = () => {
@@ -33,7 +33,7 @@ const moveUp = () => {
 
 const moveDown = () => {
 	player2 += 20;
-	if (player2 > 520) {player2 = 520}
+	if (player2 > 620) {player2 = 620}
 }
 
 let controller = {
@@ -63,8 +63,8 @@ const buildBackground = (ctx) => {
 
 const buildScores = (ctx) => {
 	ctx.fillStyle = "white";
-	ctx.font = "30px Arial";
-	ctx.fillText(scores.player1.toString() + " - " + scores.player2.toString(), 500, 35); 
+	ctx.font = "100px Arial";
+	ctx.fillText(scores.player1.toString() + " - " + scores.player2.toString(), 440, 390); 
 }
 
 const buildPlayer = (ctx, x, y) => {
@@ -98,11 +98,11 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 const gameOver = async (ctx) => {
 	ctx.fillStyle = "white";
 	ctx.font = "100px Arial";
-	ctx.fillText("   GAME OVER", 100, 260);
+	ctx.fillText("   GAME OVER", 100, 310);
 	if (scores.player1 > scores.player2)
-		ctx.fillText("   PLAYER 1 WINS!", 100, 360);
+		ctx.fillText("   PLAYER 1 WINS!", 100, 410);
 	else
-		ctx.fillText("   PLAYER 2 WINS!", 100, 360);
+		ctx.fillText("   PLAYER 2 WINS!", 100, 410);
 	await sleep(3000);
 	scores.player1 = 0;
 	scores.player2 = 0;
@@ -115,7 +115,7 @@ const reload = async () => {
 	buildBackground(ctx)
 	
 	//if game over
-	if (scores.player1 >= 2 || scores.player2 >= 2) {
+	if (scores.player1 >= 5 || scores.player2 >= 5) {
 		await gameOver(ctx)
 		return ;
 	}
@@ -124,11 +124,11 @@ const reload = async () => {
 	buildScores(ctx)
 
 	//joueurs
-	buildPlayer(ctx, 20, player1 + 100)
-	buildPlayer(ctx, 1050, player2 + 100)
+	buildPlayer(ctx, 20, player1)
+	buildPlayer(ctx, 1050, player2)
 
 	//ball
-	buildBall(ctx, ball.x, ball.y + 100)
+	buildBall(ctx, ball.x, ball.y)
 }
 
 const moveBall = () => {
@@ -141,8 +141,8 @@ const checkCollisionWall = () => {
 		ball.y = 0;
 		ball.dir = 2 * Math.PI - ball.dir;
 	}
-	if (ball.y > 610) {
-		ball.y = 610;
+	if (ball.y > 710) {
+		ball.y = 710;
 		ball.dir = 2 * Math.PI - ball.dir;
 	}
 }
@@ -159,9 +159,9 @@ const checkCollisionPad = () => {
 		}
 		else {
 			ball.x = 535;
-			ball.y = 305;
-			player1 = 260;
-			player2 = 260;
+			ball.y = 355;
+			player1 = 310;
+			player2 = 310;
 			ball.speed = 0;
 			ball.dir = Math.PI * 5 / 6;
 			start = false;
@@ -180,9 +180,9 @@ const checkCollisionPad = () => {
 		}
 		else {
 			ball.x = 535;
-			ball.y = 305;
-			player1 = 260;
-			player2 = 260;
+			ball.y = 355;
+			player1 = 310;
+			player2 = 310;
 			ball.speed = 0;
 			ball.dir = Math.PI / 6;
 			start = false;
