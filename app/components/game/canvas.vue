@@ -1,26 +1,49 @@
 <script lang="ts" setup>
 
-let player1 = 40;
-let player2 = 40;
+let player1 = 260;
+let player2 = 260;
 
-game();
-
-function buildPlayer (ctx, x, y) {
-	ctx.beginPath();
-	ctx.fillStyle = "white";
-	ctx.moveTo(x, y);
-	ctx.lineTo(x + 10, y);
-	ctx.lineTo(x, y + 120);
-
-	ctx.moveTo(x + 10, y + 120);
-	ctx.lineTo(x, y + 120);
-	ctx.lineTo(x + 10, y);
-	ctx.fill();
+let ball = {
+	x: 535,
+	y: 305,
+	dir: Math.PI/6,
+	speed: 0
 }
 
-function reload (ctx) {
+let controller = {
+	w: {pressed: false, func: moveW},
+	s: {pressed: false, func: moveS},
+	ArrowUp: {pressed: false, func: moveUp},
+	ArrowDown: {pressed: false, func: moveDown}
+}
 
-	//fond
+const moveW = () => {
+	player1 -= 20;
+	if (player1 < 0) {player1 = 0}
+}
+
+const moveS = () => {
+	player1 += 20;
+	if (player1 > 520) {player1 = 520}
+}
+
+const moveUp = () => {
+	player2 -= 20;
+	if (player2 < 0) {player2 = 0}
+}
+
+const moveDown = () => {
+	player2 += 20;
+	if (player2 > 520) {player2 = 520}
+}
+
+const executeMoves = () => {
+	Object.keys(controller).forEach(key=> {
+		controller[key].pressed && controller[key].func()
+	})
+}
+
+const buildBackground = (ctx) => {
 	ctx.beginPath();
 	ctx.fillStyle = "blue";
 	ctx.moveTo(0, 0);
@@ -30,54 +53,112 @@ function reload (ctx) {
 	ctx.lineTo(0, 720);
 	ctx.lineTo(1080, 0);
 	ctx.fill();
+}
+
+const buildPlayer = (ctx, x, y) => {
+	ctx.beginPath();
+	ctx.fillStyle = "white";
+	ctx.moveTo(x, y);
+	ctx.lineTo(x + 10, y);
+	ctx.lineTo(x, y + 100);
+
+	ctx.moveTo(x + 10, y + 100);
+	ctx.lineTo(x, y + 100);
+	ctx.lineTo(x + 10, y);
+	ctx.fill();
+}
+
+const buildBall = (ctx, x, y) => {
+	ctx.beginPath();
+	ctx.fillStyle = "white";
+	ctx.moveTo(x, y);
+	ctx.lineTo(x + 10, y);
+	ctx.lineTo(x, y + 10);
+
+	ctx.moveTo(x + 10, y + 10);
+	ctx.lineTo(x, y + 10);
+	ctx.lineTo(x + 10, y);
+	ctx.fill();
+}
+
+const reload = () => {
+
+	let ctx = document.querySelector("canvas").getContext("2d");
+	//fond
+	buildBackground(ctx)
 
 	//score
 
 	//joueurs
-	buildPlayer(ctx, 20, player1 * 6 + 100)
-	buildPlayer(ctx, 1050, player2 * 6 + 100)	
+	buildPlayer(ctx, 20, player1 + 100)
+	buildPlayer(ctx, 1050, player2 + 100)
+
+	//ball
+	buildBall(ctx, ball.x, ball.y + 100)
 }
 
-document.addEventListener('keydown', function(event) {
-	if (event.key === "w") { w = true }
-	if (event.key === "s") { s = true }
-	if (event.key === "ArrowUp") { up = true }
-	if (event.key === "ArrowDown") { down = true }
-});
+const moveBall = () => {
+	ball.x += ball.speed * Math.cos(ball.dir);
+	ball.y += ball.speed * Math.sin(ball.dir);
+}
 
-document.addEventListener('keyup', function(event) {
-	if (event.key === "w") { w = false }
-	if (event.key === "s") { s = false }
-	if (event.key === "ArrowUp") { up = false }
-	if (event.key === "ArrowDown") { down = false }
-});
-
-function game () {
-	let w = false, s = false, up = false, down = false
-	while (true) {
-		if (w) {
-			player1 -= 2;
-			if (player1 < 0) {player1 = 0}
-		}
-		if (s) {
-			player1 += 2;
-			if (player1 > 80) {player1 = 80}
-		}
-		if (up) {
-			player2 -= 2;
-			if (player2 < 0) {player2 = 0}
-		}
-		if (down) {
-			player2 += 2;
-			if (player2 > 80) {player2 = 80}
-		}
-		player1 = player1
-		player2 = player2
-		let ctx = document.querySelector("canvas").getContext("2d");
-		console.log(player1)
-		reload(ctx)
+const checkCollisionWall = () => {
+	if (ball.y < 0) {
+		ball.y = 0;
+		ball.dir = 2 * Math.PI - ball.dir;
 	}
-};
+	if (ball.y > 610) {
+		ball.y = 610;
+		ball.dir = 2 * Math.PI - ball.dir;
+	}
+}
+
+const checkCollisionPad = () => {
+	if (ball.x < 30) {
+		ball.x = 30;
+		if (ball.y > player1 && ball.y < player1 + 100)
+			ball.dir = Math.PI - ball.dir;
+		else {
+			ball.x = 535;
+			ball.y = 305;
+			ball.speed = 0;
+			ball.dir = Math.PI * 5 / 6;
+		}
+	}
+	if (ball.x > 1040) {
+		ball.x = 1040;
+		if (ball.y > player2 && ball.y < player2 + 100)
+			ball.dir = Math.PI - ball.dir;
+		else {
+			ball.x = 535;
+			ball.y = 305;
+			ball.speed = 0;
+			ball.dir = Math.PI / 6;
+		}
+	}
+}
+
+document.addEventListener("keydown", (e) => {
+	if(controller[e.key]){
+		controller[e.key].pressed = true
+	}
+})
+document.addEventListener("keyup", (e) => {
+	if(controller[e.key]){
+		controller[e.key].pressed = false
+	}
+	ball.speed = 0.5;
+})
+
+const game = () => {
+	moveBall();
+	checkCollisionWall();
+	checkCollisionPad();
+	reload();
+	window.requestAnimationFrame(game);
+}
+
+window.requestAnimationFrame(game);
 
 
 </script>
