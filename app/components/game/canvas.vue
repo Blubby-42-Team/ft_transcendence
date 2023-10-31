@@ -4,6 +4,11 @@ let player1 = 260;
 let player2 = 260;
 let start = false;
 
+let scores = {
+	player1: 0,
+	player2: 0
+}
+
 let ball = {
 	x: 535,
 	y: 305,
@@ -56,6 +61,12 @@ const buildBackground = (ctx) => {
 	ctx.fill();
 }
 
+const buildScores = (ctx) => {
+	ctx.fillStyle = "white";
+	ctx.font = "30px Arial";
+	ctx.fillText(scores.player1.toString() + " - " + scores.player2.toString(), 500, 35); 
+}
+
 const buildPlayer = (ctx, x, y) => {
 	ctx.beginPath();
 	ctx.fillStyle = "white";
@@ -82,13 +93,35 @@ const buildBall = (ctx, x, y) => {
 	ctx.fill();
 }
 
-const reload = () => {
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+
+const gameOver = async (ctx) => {
+	ctx.fillStyle = "white";
+	ctx.font = "100px Arial";
+	ctx.fillText("   GAME OVER", 100, 260);
+	if (scores.player1 > scores.player2)
+		ctx.fillText("   PLAYER 1 WINS!", 100, 360);
+	else
+		ctx.fillText("   PLAYER 2 WINS!", 100, 360);
+	await sleep(3000);
+	scores.player1 = 0;
+	scores.player2 = 0;
+}
+
+const reload = async () => {
 
 	let ctx = document.querySelector("canvas").getContext("2d");
 	//fond
 	buildBackground(ctx)
+	
+	//if game over
+	if (scores.player1 >= 2 || scores.player2 >= 2) {
+		await gameOver(ctx)
+		return ;
+	}
 
 	//score
+	buildScores(ctx)
 
 	//joueurs
 	buildPlayer(ctx, 20, player1 + 100)
@@ -118,29 +151,43 @@ const checkCollisionPad = () => {
 	if (ball.x < 30) {
 		ball.x = 30;
 		if (ball.y > player1 && ball.y < player1 + 100) {
-			ball.speed += 2;
-			ball.dir = Math.PI - ball.dir;
+			ball.speed++;
+			if (ball.y < player1 + 50)
+				ball.dir = 0 - ((player1 + 50 - ball.y) / 50 * Math.PI/4)
+			else
+				ball.dir = (ball.y - (player1 + 50)) / 50 * Math.PI/4
 		}
 		else {
 			ball.x = 535;
 			ball.y = 305;
+			player1 = 260;
+			player2 = 260;
 			ball.speed = 0;
 			ball.dir = Math.PI * 5 / 6;
 			start = false;
+			scores.player2++;
+			reload();
 		}
 	}
 	if (ball.x > 1040) {
 		ball.x = 1040;
 		if (ball.y > player2 && ball.y < player2 + 100) {
-			ball.speed += 2;
-			ball.dir = Math.PI - ball.dir;
+			ball.speed++;
+			if (ball.y < player2 + 50)
+				ball.dir = Math.PI + ((player2 + 50 - ball.y) / 50 * Math.PI/4)
+			else
+				ball.dir = Math.PI - ((ball.y - (player2 + 50)) / 50 * Math.PI/4)
 		}
 		else {
 			ball.x = 535;
 			ball.y = 305;
+			player1 = 260;
+			player2 = 260;
 			ball.speed = 0;
 			ball.dir = Math.PI / 6;
 			start = false;
+			scores.player1++;
+			reload();
 		}
 	}
 }
@@ -160,12 +207,13 @@ document.addEventListener("keyup", (e) => {
 })
 
 const game = () => {
-	executeMoves()
-	moveBall();
-	checkCollisionWall();
-	checkCollisionPad();
-	if (start)
+	if (start) {
+		executeMoves()
+		moveBall();
+		checkCollisionWall();
+		checkCollisionPad();
 		reload();
+	}
 	window.requestAnimationFrame(game);
 }
 
