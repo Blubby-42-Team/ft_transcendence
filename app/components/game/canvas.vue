@@ -117,24 +117,30 @@ const checkCollisionWall = () => {
 const checkCollisionPad = () => {
 	if (ball.x < 30) {
 		ball.x = 30;
-		if (ball.y > player1 && ball.y < player1 + 100)
+		if (ball.y > player1 && ball.y < player1 + 100) {
+			ball.speed += 2;
 			ball.dir = Math.PI - ball.dir;
+		}
 		else {
 			ball.x = 535;
 			ball.y = 305;
 			ball.speed = 0;
 			ball.dir = Math.PI * 5 / 6;
+			start = false;
 		}
 	}
 	if (ball.x > 1040) {
 		ball.x = 1040;
-		if (ball.y > player2 && ball.y < player2 + 100)
+		if (ball.y > player2 && ball.y < player2 + 100) {
+			ball.speed += 2;
 			ball.dir = Math.PI - ball.dir;
+		}
 		else {
 			ball.x = 535;
 			ball.y = 305;
 			ball.speed = 0;
 			ball.dir = Math.PI / 6;
+			start = false;
 		}
 	}
 }
@@ -148,7 +154,8 @@ document.addEventListener("keyup", (e) => {
 	if(controller[e.key]){
 		controller[e.key].pressed = false
 	}
-	ball.speed = 4;
+	if (!start)
+		ball.speed = 4;
 	start = true;
 })
 
