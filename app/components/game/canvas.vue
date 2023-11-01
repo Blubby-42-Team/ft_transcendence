@@ -3,6 +3,13 @@
 let player1 = 310;
 let player2 = 310;
 let start = false;
+let canvasStart = false;
+let page = 0;
+
+let optionsList = {
+	maxPoint: 5,
+	numPlayer: 2
+}
 
 let scores = {
 	player1: 0,
@@ -51,7 +58,7 @@ const executeMoves = () => {
 
 const buildBackground = (ctx) => {
 	ctx.beginPath();
-	ctx.fillStyle = "blue";
+	ctx.fillStyle = "black";
 	ctx.moveTo(0, 0);
 	ctx.lineTo(1080, 0);
 	ctx.lineTo(0, 720);
@@ -62,7 +69,7 @@ const buildBackground = (ctx) => {
 }
 
 const buildScores = (ctx) => {
-	ctx.fillStyle = "white";
+	ctx.fillStyle = "gray";
 	ctx.font = "100px Arial";
 	ctx.fillText(scores.player1.toString() + " - " + scores.player2.toString(), 440, 390); 
 }
@@ -106,6 +113,8 @@ const gameOver = async (ctx) => {
 	await sleep(3000);
 	scores.player1 = 0;
 	scores.player2 = 0;
+	page = 0;
+	window.requestAnimationFrame(menu);
 }
 
 const reload = async () => {
@@ -115,7 +124,7 @@ const reload = async () => {
 	buildBackground(ctx)
 	
 	//if game over
-	if (scores.player1 >= 5 || scores.player2 >= 5) {
+	if (scores.player1 >= optionsList.maxPoint || scores.player2 >= optionsList.maxPoint) {
 		await gameOver(ctx)
 		return ;
 	}
@@ -207,17 +216,199 @@ document.addEventListener("keyup", (e) => {
 })
 
 const game = () => {
-	if (start) {
+	if (page === 0)
+		window.requestAnimationFrame(menu);
+	if (page === 1) {
 		executeMoves()
 		moveBall();
 		checkCollisionWall();
 		checkCollisionPad();
 		reload();
+		if (page === 1)
+			window.requestAnimationFrame(game);
 	}
-	window.requestAnimationFrame(game);
 }
 
-window.requestAnimationFrame(game);
+let mouse = {
+	x: 0,
+	y: 0,
+}
+
+const buildPongName = (ctx) => {
+	ctx.fillStyle = "gray";
+	ctx.font = "200px Arial";
+	ctx.fillText("PONG", 250, 250);
+}
+
+const buildMenuOptions = (ctx) => {
+	ctx.font = "50px Arial";
+
+	if (mouse.x > 538 && mouse.x < 698 && mouse.y > 501 && mouse.y < 538)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.fillText("START", 450, 450);
+
+	if (mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.fillText("OPTIONS", 420, 550);
+}
+
+const reloadMenu = () => {
+	let ctx = document.querySelector("canvas").getContext("2d");
+
+	//background
+	buildBackground(ctx);
+
+	//PONG
+	buildPongName(ctx);
+
+	//text + over
+	buildMenuOptions(ctx);
+}
+
+const menu = () => {
+	if (page === 0) {
+		reloadMenu();
+		window.requestAnimationFrame(menu);
+	}
+}
+
+const buildOptionsTemplate = (ctx) => {
+	ctx.font = "50px Arial";
+	
+	//Nombre de points
+	ctx.fillStyle = "gray";
+	ctx.fillText("NOMBRE DE POINTS : " + optionsList.maxPoint, 250, 150);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.beginPath();
+	ctx.moveTo(150, 125);
+	ctx.lineTo(170, 105);
+	ctx.lineTo(190, 125);
+	ctx.moveTo(190, 125);
+	ctx.lineTo(170, 105);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.beginPath();
+	ctx.moveTo(150, 135);
+	ctx.lineTo(170, 155);
+	ctx.lineTo(190, 135);
+	ctx.moveTo(190, 135);
+	ctx.lineTo(170, 155);
+	ctx.fill();
+
+	//Nombre de joueurs
+	ctx.fillStyle = "gray";
+	ctx.fillText("NOMBRE DE JOUEURS : " + optionsList.numPlayer, 250, 250);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.beginPath();
+	ctx.moveTo(150, 225);
+	ctx.lineTo(170, 205);
+	ctx.lineTo(190, 225);
+	ctx.moveTo(190, 225);
+	ctx.lineTo(170, 205);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.beginPath();
+	ctx.moveTo(150, 235);
+	ctx.lineTo(170, 255);
+	ctx.lineTo(190, 235);
+	ctx.moveTo(190, 235);
+	ctx.lineTo(170, 255);
+	ctx.fill();
+}
+
+const reloadOptions = () => {
+	let ctx = document.querySelector("canvas").getContext("2d");
+
+	//background
+	buildBackground(ctx);
+
+	//Options template
+	buildOptionsTemplate(ctx);
+}
+
+const options = () => {
+	if (page === 2) {
+		reloadOptions();
+		window.requestAnimationFrame(options);
+	}
+}
+
+if (!canvasStart) {
+		await sleep(1000);
+		canvasStart = true;
+}
+
+var canvas = document.getElementById("canvas");
+
+//report the mouse position on click
+document.addEventListener("click", function (evt) {
+	//MENU
+	//click sur start
+	if (page === 0 && mouse.x > 538 && mouse.x < 698 && mouse.y > 501 && mouse.y < 538) {
+		page = 1;
+		window.requestAnimationFrame(game);
+	}
+	//click sur option
+	if (page === 0 && mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639) {
+		page = 2;
+		window.requestAnimationFrame(options);
+	}
+
+	//OPTIONS
+	//nombre de points up
+	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215) {
+		optionsList.maxPoint++;
+		if (optionsList.maxPoint > 10)
+			optionsList.maxPoint = 10;
+	}
+	//nombre de points down
+	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244) {
+		optionsList.maxPoint--;
+		if (optionsList.maxPoint < 1)
+			optionsList.maxPoint = 1;
+	}
+	//joueurs up
+	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311) {
+		if (optionsList.numPlayer === 2)
+			optionsList.numPlayer = 4;
+		else
+			optionsList.numPlayer = 2;
+	}
+	//joueurs down
+	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343) {
+		if (optionsList.numPlayer === 2)
+			optionsList.numPlayer = 4;
+		else
+			optionsList.numPlayer = 2;
+	}
+
+	
+}, false);
+
+//Get Mouse Position
+document.addEventListener("mousemove", function(e) { 
+	mouse.x = Math.round(e.clientX);
+	mouse.y = Math.round(e.clientY);
+	console.log(mouse.x + " " + mouse.y);
+});
+
+window.requestAnimationFrame(menu);
 
 
 </script>
