@@ -32,7 +32,7 @@ let ball = {
 
 let mouse = {
 	x: 0,
-	y: 0,
+	y: 0
 }
 
 const moveW = () => {
@@ -223,24 +223,6 @@ const checkCollisionPad = () => {
 	}
 }
 
-document.addEventListener("keydown", (e) => {
-	if(controller[e.key]){
-		controller[e.key].pressed = true
-	}
-	if ((page === 2 || page === 3) && e.key === "Escape") {
-		page = 0;
-		window.requestAnimationFrame(menu);
-	}
-})
-document.addEventListener("keyup", (e) => {
-	if(controller[e.key]){
-		controller[e.key].pressed = false
-	}
-	if (!start)
-		ball.speed = 4;
-	start = true;
-})
-
 const game = () => {
 	if (page === 0)
 		window.requestAnimationFrame(menu);
@@ -263,26 +245,26 @@ const buildPongName = (ctx) => {
 
 const buildMenuOptions = (ctx) => {
 	ctx.font = "50px Arial";
-
+	
 	if (mouse.x > 538 && mouse.x < 698 && mouse.y > 501 && mouse.y < 538)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.fillText("START", 450, 450);
+	ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.fillText("START", 450, 450);
 
-	if (mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.fillText("OPTIONS", 420, 550);
+if (mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.fillText("OPTIONS", 420, 550);
 }
 
 const reloadMenu = () => {
 	let ctx = document.querySelector("canvas").getContext("2d");
-
+	
 	//background
 	buildBackground(ctx);
-
+	
 	//PONG
 	buildPongName(ctx);
 
@@ -299,21 +281,21 @@ const menu = () => {
 
 const buildOptionsTemplate = (ctx) => {
 	ctx.font = "30px Arial";
-
+	
 	//EXIT
 	if (mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.fillText("X", 1050, 30);
-	
+	ctx.fillStyle = optionsList.fontColor;
+ctx.fillText("X", 1050, 30);
+
 	ctx.font = "50px Arial";
 	//Nombre de points
 	ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("NOMBRE DE POINTS : " + optionsList.maxPoint, 250, 150);
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215)
-		ctx.fillStyle = "red";
-	else
+	ctx.fillStyle = "red";
+else
 		ctx.fillStyle = optionsList.fontColor;
 	ctx.beginPath();
 	ctx.moveTo(150, 125);
@@ -323,16 +305,16 @@ const buildOptionsTemplate = (ctx) => {
 	ctx.lineTo(170, 105);
 	ctx.fill();
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 135);
-	ctx.lineTo(170, 155);
-	ctx.lineTo(190, 135);
-	ctx.moveTo(190, 135);
-	ctx.lineTo(170, 155);
-	ctx.fill();
+	ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 135);
+ctx.lineTo(170, 155);
+ctx.lineTo(190, 135);
+ctx.moveTo(190, 135);
+ctx.lineTo(170, 155);
+ctx.fill();
 
 	//Nombre de joueurs
 	ctx.fillStyle = optionsList.fontColor;
@@ -340,47 +322,47 @@ const buildOptionsTemplate = (ctx) => {
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 225);
-	ctx.lineTo(170, 205);
-	ctx.lineTo(190, 225);
-	ctx.moveTo(190, 225);
-	ctx.lineTo(170, 205);
-	ctx.fill();
-	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 235);
-	ctx.lineTo(170, 255);
-	ctx.lineTo(190, 235);
-	ctx.moveTo(190, 235);
-	ctx.lineTo(170, 255);
-	ctx.fill();
-
-	//Ball size
 	ctx.fillStyle = optionsList.fontColor;
-	ctx.fillText("TAILLE DE LA BALLE : " + optionsList.ballSize/10 + 'x', 250, 350);
-	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 391 && mouse.y < 414)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 325);
-	ctx.lineTo(170, 305);
-	ctx.lineTo(190, 325);
-	ctx.moveTo(190, 325);
-	ctx.lineTo(170, 305);
-	ctx.fill();
-	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 422 && mouse.y < 446)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 335);
-	ctx.lineTo(170, 355);
+ctx.beginPath();
+ctx.moveTo(150, 225);
+ctx.lineTo(170, 205);
+ctx.lineTo(190, 225);
+ctx.moveTo(190, 225);
+ctx.lineTo(170, 205);
+ctx.fill();
+if (mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 235);
+ctx.lineTo(170, 255);
+ctx.lineTo(190, 235);
+ctx.moveTo(190, 235);
+ctx.lineTo(170, 255);
+ctx.fill();
+
+//Ball size
+ctx.fillStyle = optionsList.fontColor;
+ctx.fillText("TAILLE DE LA BALLE : " + optionsList.ballSize/10 + 'x', 250, 350);
+if (mouse.x > 234 && mouse.x < 280 && mouse.y > 391 && mouse.y < 414)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 325);
+ctx.lineTo(170, 305);
+ctx.lineTo(190, 325);
+ctx.moveTo(190, 325);
+ctx.lineTo(170, 305);
+ctx.fill();
+if (mouse.x > 234 && mouse.x < 280 && mouse.y > 422 && mouse.y < 446)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 335);
+ctx.lineTo(170, 355);
 	ctx.lineTo(190, 335);
 	ctx.moveTo(190, 335);
 	ctx.lineTo(170, 355);
@@ -390,48 +372,48 @@ const buildOptionsTemplate = (ctx) => {
 	ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("TAILLE DES PAD : " + optionsList.padSize/100 + 'x', 250, 450);
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 491 && mouse.y < 514)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 425);
-	ctx.lineTo(170, 405);
-	ctx.lineTo(190, 425);
-	ctx.moveTo(190, 425);
-	ctx.lineTo(170, 405);
-	ctx.fill();
-	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 522 && mouse.y < 546)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 435);
-	ctx.lineTo(170, 455);
-	ctx.lineTo(190, 435);
-	ctx.moveTo(190, 435);
-	ctx.lineTo(170, 455);
-	ctx.fill();
+	ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 425);
+ctx.lineTo(170, 405);
+ctx.lineTo(190, 425);
+ctx.moveTo(190, 425);
+ctx.lineTo(170, 405);
+ctx.fill();
+if (mouse.x > 234 && mouse.x < 280 && mouse.y > 522 && mouse.y < 546)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 435);
+ctx.lineTo(170, 455);
+ctx.lineTo(190, 435);
+ctx.moveTo(190, 435);
+ctx.lineTo(170, 455);
+ctx.fill();
 
-	//Suivant
-	if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(510, 550);
-	ctx.lineTo(510, 600);
-	ctx.lineTo(570, 575);
-	ctx.moveTo(570, 575);
-	ctx.lineTo(510, 600);
-	ctx.fill();
+//Suivant
+if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(510, 550);
+ctx.lineTo(510, 600);
+ctx.lineTo(570, 575);
+ctx.moveTo(570, 575);
+ctx.lineTo(510, 600);
+ctx.fill();
 }
 
 const buildOptionsTemplate2 = (ctx) => {
 	ctx.font = "30px Arial";
-
+	
 	//EXIT
 	if (mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119)
-		ctx.fillStyle = "red";
+	ctx.fillStyle = "red";
 	else
 		ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("X", 1050, 30);
@@ -442,51 +424,51 @@ const buildOptionsTemplate2 = (ctx) => {
 	ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("THEME : " + optionsList.theme, 250, 150);
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 125);
-	ctx.lineTo(170, 105);
-	ctx.lineTo(190, 125);
-	ctx.moveTo(190, 125);
-	ctx.lineTo(170, 105);
-	ctx.fill();
-	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(150, 135);
-	ctx.lineTo(170, 155);
-	ctx.lineTo(190, 135);
-	ctx.moveTo(190, 135);
-	ctx.lineTo(170, 155);
-	ctx.fill();
+	ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 125);
+ctx.lineTo(170, 105);
+ctx.lineTo(190, 125);
+ctx.moveTo(190, 125);
+ctx.lineTo(170, 105);
+ctx.fill();
+if (mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(150, 135);
+ctx.lineTo(170, 155);
+ctx.lineTo(190, 135);
+ctx.moveTo(190, 135);
+ctx.lineTo(170, 155);
+ctx.fill();
 
-	//Précédent
-	if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
-		ctx.fillStyle = "red";
-	else
-		ctx.fillStyle = optionsList.fontColor;
-	ctx.beginPath();
-	ctx.moveTo(570, 550);
-	ctx.lineTo(570, 600);
-	ctx.lineTo(510, 575);
-	ctx.moveTo(510, 575);
-	ctx.lineTo(570, 600);
-	ctx.fill();
+//Précédent
+if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
+ctx.fillStyle = "red";
+else
+ctx.fillStyle = optionsList.fontColor;
+ctx.beginPath();
+ctx.moveTo(570, 550);
+ctx.lineTo(570, 600);
+ctx.lineTo(510, 575);
+ctx.moveTo(510, 575);
+ctx.lineTo(570, 600);
+ctx.fill();
 }
 
 const reloadOptions = () => {
 	let ctx = document.querySelector("canvas").getContext("2d");
-
+	
 	//background
 	buildBackground(ctx);
-
+	
 	//Options template
 	if (page === 2)
-		buildOptionsTemplate(ctx);
+	buildOptionsTemplate(ctx);
 	else if (page === 3)
 		buildOptionsTemplate2(ctx);
 }
@@ -499,13 +481,13 @@ const options = () => {
 }
 
 if (!canvasStart) {
-		await sleep(1000);
-		canvasStart = true;
+	await sleep(1000);
+	canvasStart = true;
 }
 
 var canvas = document.getElementById("canvas");
 
-//report the mouse position on click
+//mouse click
 document.addEventListener("click", function (evt) {
 	//MENU
 	//click sur start
@@ -518,7 +500,7 @@ document.addEventListener("click", function (evt) {
 		page = 2;
 		window.requestAnimationFrame(options);
 	}
-
+	
 	//OPTIONS
 	//exit
 	else if ((page === 2 || page === 3) && mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119) {
@@ -529,7 +511,7 @@ document.addEventListener("click", function (evt) {
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215) {
 		optionsList.maxPoint++;
 		if (optionsList.maxPoint > 10)
-			optionsList.maxPoint = 10;
+		optionsList.maxPoint = 10;
 	}
 	//nombre de points down
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244) {
@@ -537,7 +519,7 @@ document.addEventListener("click", function (evt) {
 		if (optionsList.maxPoint < 1)
 			optionsList.maxPoint = 1;
 	}
-	//joueurs up
+//joueurs up
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311) {
 		if (optionsList.numPlayer === 2)
 			optionsList.numPlayer = 4;
@@ -547,9 +529,9 @@ document.addEventListener("click", function (evt) {
 	//joueurs down
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343) {
 		if (optionsList.numPlayer === 2)
-			optionsList.numPlayer = 4;
-		else
-			optionsList.numPlayer = 2;
+		optionsList.numPlayer = 4;
+	else
+	optionsList.numPlayer = 2;
 	}
 	//ball up
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 391 && mouse.y < 414) {
@@ -568,13 +550,13 @@ document.addEventListener("click", function (evt) {
 		optionsList.padSize += 50;
 		if (optionsList.padSize > 300)
 			optionsList.padSize = 300;
-	}
+}
 	//pad down
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 522 && mouse.y < 546) {
 		optionsList.padSize -= 50;
 		if (optionsList.padSize < 50)
 			optionsList.padSize = 50;
-	}
+}
 	//page suivante
 	else if (page === 2 && mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
 		page = 3;
@@ -593,7 +575,7 @@ document.addEventListener("click", function (evt) {
 			optionsList.backgroundColor = "black";
 			optionsList.assetsColor = "gray";
 		}
-	}
+		}
 	//theme down
 	else if (page === 3 && mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244) {
 		if (optionsList.theme === "dark mode") {
@@ -609,11 +591,34 @@ document.addEventListener("click", function (evt) {
 	}
 }, false);
 
+//Key pressed
+document.addEventListener("keydown", (e) => {
+	if(controller[e.key]){
+		controller[e.key].pressed = true
+	}
+	if ((page === 2 || page === 3) && e.key === "Escape") {
+		page = 0;
+		window.requestAnimationFrame(menu);
+	}
+})
+
+//Key released
+document.addEventListener("keyup", (e) => {
+	if(controller[e.key]){
+		controller[e.key].pressed = false
+	}
+	if (e.key === " ") {
+		if (!start)
+			ball.speed = 4;
+		start = true;
+	}
+})
+
 //Get Mouse Position
 document.addEventListener("mousemove", function(e) { 
 	mouse.x = Math.round(e.clientX);
 	mouse.y = Math.round(e.clientY);
-	console.log(mouse.x + " " + mouse.y);
+	//console.log(mouse.x + " " + mouse.y);
 });
 
 window.requestAnimationFrame(menu);
