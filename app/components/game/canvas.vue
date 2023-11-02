@@ -161,6 +161,16 @@ const checkCollisionWall = () => {
 	}
 }
 
+const resetPlay = () => {
+	ball.x = 535;
+	ball.y = 355;
+	player1 = 310;
+	player2 = 310;
+	ball.speed = 0;
+	start = false;
+	reload();
+}
+
 const checkCollisionPad = () => {
 	if (ball.x < 30) {
 		ball.x = 30;
@@ -172,15 +182,9 @@ const checkCollisionPad = () => {
 				ball.dir = (ball.y - (player1 + 50)) / 50 * Math.PI/4
 		}
 		else {
-			ball.x = 535;
-			ball.y = 355;
-			player1 = 310;
-			player2 = 310;
-			ball.speed = 0;
-			ball.dir = Math.PI * 5 / 6;
-			start = false;
 			scores.player2++;
-			reload();
+			ball.dir = Math.PI * 5 / 6;
+			resetPlay();
 		}
 	}
 	if (ball.x > 1040) {
@@ -193,15 +197,9 @@ const checkCollisionPad = () => {
 				ball.dir = Math.PI - ((ball.y - (player2 + 50)) / 50 * Math.PI/4)
 		}
 		else {
-			ball.x = 535;
-			ball.y = 355;
-			player1 = 310;
-			player2 = 310;
-			ball.speed = 0;
-			ball.dir = Math.PI / 6;
-			start = false;
 			scores.player1++;
-			reload();
+			ball.dir = Math.PI / 6;
+			resetPlay();
 		}
 	}
 }
