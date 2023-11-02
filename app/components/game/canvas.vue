@@ -23,6 +23,11 @@ let ball = {
 	speed: 0
 }
 
+let mouse = {
+	x: 0,
+	y: 0,
+}
+
 const moveW = () => {
 	player1 -= 20;
 	if (player1 < 0) {player1 = 0}
@@ -205,6 +210,10 @@ document.addEventListener("keydown", (e) => {
 	if(controller[e.key]){
 		controller[e.key].pressed = true
 	}
+	if (page === 2 && e.key === "Escape") {
+		page = 0;
+		window.requestAnimationFrame(menu);
+	}
 })
 document.addEventListener("keyup", (e) => {
 	if(controller[e.key]){
@@ -227,11 +236,6 @@ const game = () => {
 		if (page === 1)
 			window.requestAnimationFrame(game);
 	}
-}
-
-let mouse = {
-	x: 0,
-	y: 0,
 }
 
 const buildPongName = (ctx) => {
@@ -277,8 +281,16 @@ const menu = () => {
 }
 
 const buildOptionsTemplate = (ctx) => {
-	ctx.font = "50px Arial";
+	ctx.font = "30px Arial";
+
+	//EXIT
+	if (mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = "gray";
+	ctx.fillText("X", 1050, 30);
 	
+	ctx.font = "50px Arial";
 	//Nombre de points
 	ctx.fillStyle = "gray";
 	ctx.fillText("NOMBRE DE POINTS : " + optionsList.maxPoint, 250, 150);
@@ -371,6 +383,11 @@ document.addEventListener("click", function (evt) {
 	}
 
 	//OPTIONS
+	//EXIT
+	if (page === 2 && mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119) {
+		page = 0;
+		window.requestAnimationFrame(menu);
+	}
 	//nombre de points up
 	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215) {
 		optionsList.maxPoint++;
@@ -397,15 +414,13 @@ document.addEventListener("click", function (evt) {
 		else
 			optionsList.numPlayer = 2;
 	}
-
-	
 }, false);
 
 //Get Mouse Position
 document.addEventListener("mousemove", function(e) { 
 	mouse.x = Math.round(e.clientX);
 	mouse.y = Math.round(e.clientY);
-	console.log(mouse.x + " " + mouse.y);
+	//console.log(mouse.x + " " + mouse.y);
 });
 
 window.requestAnimationFrame(menu);
