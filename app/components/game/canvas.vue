@@ -1,15 +1,22 @@
 <script lang="ts" setup>
 
-let player1 = 310;
-let player2 = 310;
 let start = false;
 let canvasStart = false;
 let page = 0;
 
 let optionsList = {
 	maxPoint: 5,
-	numPlayer: 2
+	numPlayer: 2,
+	ballSize: 15,
+	padSize: 100,
+	theme: "dark mode",
+	backgroundColor: "black",
+	fontColor: "gray",
+	assetsColor: "white"
 }
+
+let player1 = 360 - optionsList.padSize/2;
+let player2 = 360 - optionsList.padSize/2;
 
 let scores = {
 	player1: 0,
@@ -17,8 +24,8 @@ let scores = {
 }
 
 let ball = {
-	x: 535,
-	y: 355,
+	x: 540 - optionsList.ballSize/2,
+	y: 360 - optionsList.ballSize/2,
 	dir: Math.PI/6,
 	speed: 0
 }
@@ -35,7 +42,7 @@ const moveW = () => {
 
 const moveS = () => {
 	player1 += 20;
-	if (player1 > 620) {player1 = 620}
+	if (player1 > 720 - optionsList.padSize) {player1 = 720 - optionsList.padSize}
 }
 
 const moveUp = () => {
@@ -45,7 +52,7 @@ const moveUp = () => {
 
 const moveDown = () => {
 	player2 += 20;
-	if (player2 > 620) {player2 = 620}
+	if (player2 > 720 - optionsList.padSize) {player2 = 720 - optionsList.padSize}
 }
 
 let controller = {
@@ -63,7 +70,7 @@ const executeMoves = () => {
 
 const buildBackground = (ctx) => {
 	ctx.beginPath();
-	ctx.fillStyle = "black";
+	ctx.fillStyle = optionsList.backgroundColor;
 	ctx.moveTo(0, 0);
 	ctx.lineTo(1080, 0);
 	ctx.lineTo(0, 720);
@@ -74,41 +81,41 @@ const buildBackground = (ctx) => {
 }
 
 const buildScores = (ctx) => {
-	ctx.fillStyle = "gray";
+	ctx.fillStyle = optionsList.fontColor;
 	ctx.font = "100px Arial";
 	ctx.fillText(scores.player1.toString() + " - " + scores.player2.toString(), 440, 390); 
 }
 
 const buildPlayer = (ctx, x, y) => {
 	ctx.beginPath();
-	ctx.fillStyle = "white";
+	ctx.fillStyle = optionsList.assetsColor;
 	ctx.moveTo(x, y);
 	ctx.lineTo(x + 10, y);
-	ctx.lineTo(x, y + 100);
+	ctx.lineTo(x, y + optionsList.padSize);
 
-	ctx.moveTo(x + 10, y + 100);
-	ctx.lineTo(x, y + 100);
+	ctx.moveTo(x + 10, y + optionsList.padSize);
+	ctx.lineTo(x, y + optionsList.padSize);
 	ctx.lineTo(x + 10, y);
 	ctx.fill();
 }
 
 const buildBall = (ctx, x, y) => {
 	ctx.beginPath();
-	ctx.fillStyle = "white";
+	ctx.fillStyle = optionsList.assetsColor;
 	ctx.moveTo(x, y);
-	ctx.lineTo(x + 10, y);
-	ctx.lineTo(x, y + 10);
+	ctx.lineTo(x + optionsList.ballSize, y);
+	ctx.lineTo(x, y + optionsList.ballSize);
 
-	ctx.moveTo(x + 10, y + 10);
-	ctx.lineTo(x, y + 10);
-	ctx.lineTo(x + 10, y);
+	ctx.moveTo(x + optionsList.ballSize, y + optionsList.ballSize);
+	ctx.lineTo(x, y + optionsList.ballSize);
+	ctx.lineTo(x + optionsList.ballSize, y);
 	ctx.fill();
 }
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const gameOver = async (ctx) => {
-	ctx.fillStyle = "white";
+	ctx.fillStyle = optionsList.assetsColor;
 	ctx.font = "100px Arial";
 	ctx.fillText("   GAME OVER", 100, 310);
 	if (scores.player1 > scores.player2)
@@ -155,17 +162,17 @@ const checkCollisionWall = () => {
 		ball.y = 0;
 		ball.dir = 2 * Math.PI - ball.dir;
 	}
-	if (ball.y > 710) {
-		ball.y = 710;
+	if (ball.y > 720 - optionsList.ballSize) {
+		ball.y = 720 - optionsList.ballSize;
 		ball.dir = 2 * Math.PI - ball.dir;
 	}
 }
 
 const resetPlay = () => {
-	ball.x = 535;
-	ball.y = 355;
-	player1 = 310;
-	player2 = 310;
+	ball.x = 540 - optionsList.ballSize/2;
+	ball.y = 360 - optionsList.ballSize/2;
+	player1 = 360 - optionsList.padSize/2;
+	player2 = 360 - optionsList.padSize/2;
 	ball.speed = 0;
 	start = false;
 	reload();
@@ -174,12 +181,18 @@ const resetPlay = () => {
 const checkCollisionPad = () => {
 	if (ball.x < 30) {
 		ball.x = 30;
-		if (ball.y > player1 && ball.y < player1 + 100) {
+		if (ball.y + optionsList.ballSize > player1 && ball.y < player1 + optionsList.padSize) {
 			ball.speed++;
-			if (ball.y < player1 + 50)
-				ball.dir = 0 - ((player1 + 50 - ball.y) / 50 * Math.PI/4)
-			else
-				ball.dir = (ball.y - (player1 + 50)) / 50 * Math.PI/4
+			if (ball.y + optionsList.ballSize/2 < player1 + optionsList.padSize/2) {
+				ball.dir = 0 - ((player1 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir < - Math.PI/4)
+					ball.dir = - Math.PI/4;
+			}
+			else {
+				ball.dir = (ball.y - (player1 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4
+				if (ball.dir > Math.PI/4)
+					ball.dir = Math.PI/4;
+			}
 		}
 		else {
 			scores.player2++;
@@ -187,14 +200,20 @@ const checkCollisionPad = () => {
 			resetPlay();
 		}
 	}
-	if (ball.x > 1040) {
-		ball.x = 1040;
-		if (ball.y > player2 && ball.y < player2 + 100) {
+	if (ball.x > 1050 - optionsList.ballSize) {
+		ball.x = 1050 - optionsList.ballSize;
+		if (ball.y + optionsList.ballSize > player2 && ball.y < player2 + optionsList.padSize) {
 			ball.speed++;
-			if (ball.y < player2 + 50)
-				ball.dir = Math.PI + ((player2 + 50 - ball.y) / 50 * Math.PI/4)
-			else
-				ball.dir = Math.PI - ((ball.y - (player2 + 50)) / 50 * Math.PI/4)
+			if (ball.y + optionsList.ballSize/2 < player2 + optionsList.padSize/2) {
+				ball.dir = Math.PI + ((player2 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir > Math.PI * 5/4)
+					ball.dir = Math.PI * 5/4;
+			}
+			else {
+				ball.dir = Math.PI - ((ball.y - (player2 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir < Math.PI * 3/4)
+					ball.dir = Math.PI * 3/4;
+			}
 		}
 		else {
 			scores.player1++;
@@ -208,7 +227,7 @@ document.addEventListener("keydown", (e) => {
 	if(controller[e.key]){
 		controller[e.key].pressed = true
 	}
-	if (page === 2 && e.key === "Escape") {
+	if ((page === 2 || page === 3) && e.key === "Escape") {
 		page = 0;
 		window.requestAnimationFrame(menu);
 	}
@@ -237,7 +256,7 @@ const game = () => {
 }
 
 const buildPongName = (ctx) => {
-	ctx.fillStyle = "gray";
+	ctx.fillStyle = optionsList.fontColor;
 	ctx.font = "200px Arial";
 	ctx.fillText("PONG", 250, 250);
 }
@@ -248,13 +267,13 @@ const buildMenuOptions = (ctx) => {
 	if (mouse.x > 538 && mouse.x < 698 && mouse.y > 501 && mouse.y < 538)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("START", 450, 450);
 
 	if (mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("OPTIONS", 420, 550);
 }
 
@@ -285,17 +304,17 @@ const buildOptionsTemplate = (ctx) => {
 	if (mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("X", 1050, 30);
 	
 	ctx.font = "50px Arial";
 	//Nombre de points
-	ctx.fillStyle = "gray";
+	ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("NOMBRE DE POINTS : " + optionsList.maxPoint, 250, 150);
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.beginPath();
 	ctx.moveTo(150, 125);
 	ctx.lineTo(170, 105);
@@ -306,7 +325,7 @@ const buildOptionsTemplate = (ctx) => {
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.beginPath();
 	ctx.moveTo(150, 135);
 	ctx.lineTo(170, 155);
@@ -316,12 +335,12 @@ const buildOptionsTemplate = (ctx) => {
 	ctx.fill();
 
 	//Nombre de joueurs
-	ctx.fillStyle = "gray";
+	ctx.fillStyle = optionsList.fontColor;
 	ctx.fillText("NOMBRE DE JOUEURS : " + optionsList.numPlayer, 250, 250);
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.beginPath();
 	ctx.moveTo(150, 225);
 	ctx.lineTo(170, 205);
@@ -332,13 +351,130 @@ const buildOptionsTemplate = (ctx) => {
 	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343)
 		ctx.fillStyle = "red";
 	else
-		ctx.fillStyle = "gray";
+		ctx.fillStyle = optionsList.fontColor;
 	ctx.beginPath();
 	ctx.moveTo(150, 235);
 	ctx.lineTo(170, 255);
 	ctx.lineTo(190, 235);
 	ctx.moveTo(190, 235);
 	ctx.lineTo(170, 255);
+	ctx.fill();
+
+	//Ball size
+	ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("TAILLE DE LA BALLE : " + optionsList.ballSize/10 + 'x', 250, 350);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 391 && mouse.y < 414)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 325);
+	ctx.lineTo(170, 305);
+	ctx.lineTo(190, 325);
+	ctx.moveTo(190, 325);
+	ctx.lineTo(170, 305);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 422 && mouse.y < 446)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 335);
+	ctx.lineTo(170, 355);
+	ctx.lineTo(190, 335);
+	ctx.moveTo(190, 335);
+	ctx.lineTo(170, 355);
+	ctx.fill();
+
+	//Pad size
+	ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("TAILLE DES PAD : " + optionsList.padSize/100 + 'x', 250, 450);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 491 && mouse.y < 514)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 425);
+	ctx.lineTo(170, 405);
+	ctx.lineTo(190, 425);
+	ctx.moveTo(190, 425);
+	ctx.lineTo(170, 405);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 522 && mouse.y < 546)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 435);
+	ctx.lineTo(170, 455);
+	ctx.lineTo(190, 435);
+	ctx.moveTo(190, 435);
+	ctx.lineTo(170, 455);
+	ctx.fill();
+
+	//Suivant
+	if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(510, 550);
+	ctx.lineTo(510, 600);
+	ctx.lineTo(570, 575);
+	ctx.moveTo(570, 575);
+	ctx.lineTo(510, 600);
+	ctx.fill();
+}
+
+const buildOptionsTemplate2 = (ctx) => {
+	ctx.font = "30px Arial";
+
+	//EXIT
+	if (mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("X", 1050, 30);
+	
+	ctx.font = "50px Arial";
+
+	//Theme
+	ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("THEME : " + optionsList.theme, 250, 150);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 125);
+	ctx.lineTo(170, 105);
+	ctx.lineTo(190, 125);
+	ctx.moveTo(190, 125);
+	ctx.lineTo(170, 105);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 135);
+	ctx.lineTo(170, 155);
+	ctx.lineTo(190, 135);
+	ctx.moveTo(190, 135);
+	ctx.lineTo(170, 155);
+	ctx.fill();
+
+	//Précédent
+	if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(570, 550);
+	ctx.lineTo(570, 600);
+	ctx.lineTo(510, 575);
+	ctx.moveTo(510, 575);
+	ctx.lineTo(570, 600);
 	ctx.fill();
 }
 
@@ -349,11 +485,14 @@ const reloadOptions = () => {
 	buildBackground(ctx);
 
 	//Options template
-	buildOptionsTemplate(ctx);
+	if (page === 2)
+		buildOptionsTemplate(ctx);
+	else if (page === 3)
+		buildOptionsTemplate2(ctx);
 }
 
 const options = () => {
-	if (page === 2) {
+	if (page === 2 || page === 3) {
 		reloadOptions();
 		window.requestAnimationFrame(options);
 	}
@@ -375,42 +514,98 @@ document.addEventListener("click", function (evt) {
 		window.requestAnimationFrame(game);
 	}
 	//click sur option
-	if (page === 0 && mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639) {
+	else if (page === 0 && mouse.x > 510 && mouse.x < 733 && mouse.y > 599 && mouse.y < 639) {
 		page = 2;
 		window.requestAnimationFrame(options);
 	}
 
 	//OPTIONS
-	//EXIT
-	if (page === 2 && mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119) {
+	//exit
+	else if ((page === 2 || page === 3) && mouse.x > 1138 && mouse.x < 1156 && mouse.y > 94 && mouse.y < 119) {
 		page = 0;
 		window.requestAnimationFrame(menu);
 	}
 	//nombre de points up
-	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215) {
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215) {
 		optionsList.maxPoint++;
 		if (optionsList.maxPoint > 10)
 			optionsList.maxPoint = 10;
 	}
 	//nombre de points down
-	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244) {
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244) {
 		optionsList.maxPoint--;
 		if (optionsList.maxPoint < 1)
 			optionsList.maxPoint = 1;
 	}
 	//joueurs up
-	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311) {
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311) {
 		if (optionsList.numPlayer === 2)
 			optionsList.numPlayer = 4;
 		else
 			optionsList.numPlayer = 2;
 	}
 	//joueurs down
-	if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343) {
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343) {
 		if (optionsList.numPlayer === 2)
 			optionsList.numPlayer = 4;
 		else
 			optionsList.numPlayer = 2;
+	}
+	//ball up
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 391 && mouse.y < 414) {
+		optionsList.ballSize += 5;
+		if (optionsList.ballSize > 50)
+			optionsList.ballSize = 50;
+	}
+	//ball down
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 422 && mouse.y < 446) {
+		optionsList.ballSize -= 5;
+		if (optionsList.ballSize < 10)
+			optionsList.ballSize = 10;
+	}
+	//pad up
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 491 && mouse.y < 514) {
+		optionsList.padSize += 50;
+		if (optionsList.padSize > 300)
+			optionsList.padSize = 300;
+	}
+	//pad down
+	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 522 && mouse.y < 546) {
+		optionsList.padSize -= 50;
+		if (optionsList.padSize < 50)
+			optionsList.padSize = 50;
+	}
+	//page suivante
+	else if (page === 2 && mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
+		page = 3;
+	//page precedente
+	else if (page === 3 && mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
+		page = 2;
+	//theme up
+	else if (page === 3 && mouse.x > 234 && mouse.x < 280 && mouse.y > 190 && mouse.y < 215) {
+		if (optionsList.theme === "dark mode") {
+			optionsList.theme = "white mode";
+			optionsList.backgroundColor = "white";
+			optionsList.assetsColor = "black";
+		}
+		else {
+			optionsList.theme = "dark mode";
+			optionsList.backgroundColor = "black";
+			optionsList.assetsColor = "gray";
+		}
+	}
+	//theme down
+	else if (page === 3 && mouse.x > 234 && mouse.x < 280 && mouse.y > 221 && mouse.y < 244) {
+		if (optionsList.theme === "dark mode") {
+			optionsList.theme = "white mode";
+			optionsList.backgroundColor = "white";
+			optionsList.assetsColor = "black";
+		}
+		else {
+			optionsList.theme = "dark mode";
+			optionsList.backgroundColor = "black";
+			optionsList.assetsColor = "gray";
+		}
 	}
 }, false);
 
@@ -418,7 +613,7 @@ document.addEventListener("click", function (evt) {
 document.addEventListener("mousemove", function(e) { 
 	mouse.x = Math.round(e.clientX);
 	mouse.y = Math.round(e.clientY);
-	//console.log(mouse.x + " " + mouse.y);
+	console.log(mouse.x + " " + mouse.y);
 });
 
 window.requestAnimationFrame(menu);
