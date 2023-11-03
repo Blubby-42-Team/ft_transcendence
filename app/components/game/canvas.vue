@@ -297,111 +297,120 @@ const checkCollisionPad = () => {
 	}
 }
 
-const checkCollisionPadActive = () => {
 
-	//GAUCHE
-	if (ball.x < 30 && activePlayer.left) {
-		ball.x = 30;
-		if (ball.y + optionsList.ballSize > player1 && ball.y < player1 + optionsList.padSize) {
-			ball.speed++;
-			if (ball.y + optionsList.ballSize/2 < player1 + optionsList.padSize/2) {
-				ball.dir = 0 - ((player1 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
-				if (ball.dir < - Math.PI/4)
-					ball.dir = - Math.PI/4;
-			}
-			else {
-				ball.dir = (ball.y - (player1 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4
-				if (ball.dir > Math.PI/4)
-					ball.dir = Math.PI/4;
-			}
+const CollisionPadLeft = () => {
+	ball.x = 30;
+	if (ball.y + optionsList.ballSize > player1 && ball.y < player1 + optionsList.padSize) {
+		ball.speed++;
+		if (ball.y + optionsList.ballSize/2 < player1 + optionsList.padSize/2) {
+			ball.dir = 0 - ((player1 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
+			if (ball.dir < - Math.PI/4)
+				ball.dir = - Math.PI/4;
 		}
 		else {
-			activePlayer.left = false;
-			ball.dir = Math.PI * 5 / 6;
-			resetPlay();
+			ball.dir = (ball.y - (player1 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4
+			if (ball.dir > Math.PI/4)
+				ball.dir = Math.PI/4;
 		}
 	}
+	else {
+		activePlayer.left = false;
+		ball.dir = Math.PI * 5 / 6;
+		resetPlay();
+	}
+}
+
+const CollisionPadRight = () => {
+	ball.x = 1050 - optionsList.ballSize;
+	if (ball.y + optionsList.ballSize > player2 && ball.y < player2 + optionsList.padSize) {
+		ball.speed++;
+		if (ball.y + optionsList.ballSize/2 < player2 + optionsList.padSize/2) {
+			ball.dir = Math.PI + ((player2 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
+			if (ball.dir > Math.PI * 5/4)
+				ball.dir = Math.PI * 5/4;
+		}
+		else {
+			ball.dir = Math.PI - ((ball.y - (player2 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4)
+			if (ball.dir < Math.PI * 3/4)
+				ball.dir = Math.PI * 3/4;
+		}
+	}
+	else {
+		activePlayer.right = false;
+		ball.dir = Math.PI / 6;
+		resetPlay();
+	}
+}
+
+const CollisionPadTop = () => {
+	ball.y = 30;
+	if (ball.x + optionsList.ballSize > player3 && ball.x < player3 + optionsList.padSize) {
+		ball.speed++;
+		if (ball.x + optionsList.ballSize/2 < player3 + optionsList.padSize/2) {
+			ball.dir = 0 - ((player3 + optionsList.padSize/2 - ball.x) / optionsList.padSize/2 * Math.PI * 3/4)
+			if (ball.dir > Math.PI * 3/4)
+				ball.dir = Math.PI * 3/4;
+		}
+		else {
+			ball.dir = (ball.x - (player3 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI * 3/4
+			if (ball.dir < Math.PI / 4)
+				ball.dir = Math.PI / 4;
+		}
+	}
+	else {
+		activePlayer.top = false;
+		ball.dir = Math.PI * 8 / 6;
+		resetPlay();
+	}
+}
+
+const CollisionPadBottom = () => {
+	ball.y = 690 - optionsList.ballSize;
+	if (ball.x + optionsList.ballSize > player4 && ball.x < player4 + optionsList.padSize) {
+		ball.speed++;
+		if (ball.x + optionsList.ballSize/2 < player4 + optionsList.padSize/2) {
+			ball.dir = Math.PI * 3/2 - ((player4 + optionsList.padSize/2 - ball.x) / optionsList.padSize/2 * Math.PI/4)
+			if (ball.dir < Math.PI * 5/4)
+				ball.dir = Math.PI * 5/4;
+		}
+		else {
+			ball.dir = Math.PI * 3/2 + ((ball.x - (player4 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI * 4)
+			if (ball.dir > Math.PI * 7 / 4)
+				ball.dir = Math.PI * 7 / 4;
+		}
+	}
+	else {
+		activePlayer.bottom = false;
+		ball.dir = Math.PI * 4 / 6;
+		resetPlay();
+	}
+}
+
+const checkCollisionPadActive = () => {
+	//GAUCHE
+	if (ball.x < 30 && activePlayer.left)
+		CollisionPadLeft();
 	else if (ball.x < 0 && !activePlayer.left) {
 		ball.x = 0;
 		ball.dir = Math.PI - ball.dir;
 	}
-
 	//DROITE
-	if (ball.x > 1050 - optionsList.ballSize && activePlayer.right) {
-		ball.x = 1050 - optionsList.ballSize;
-		if (ball.y + optionsList.ballSize > player2 && ball.y < player2 + optionsList.padSize) {
-			ball.speed++;
-			if (ball.y + optionsList.ballSize/2 < player2 + optionsList.padSize/2) {
-				ball.dir = Math.PI + ((player2 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
-				if (ball.dir > Math.PI * 5/4)
-					ball.dir = Math.PI * 5/4;
-			}
-			else {
-				ball.dir = Math.PI - ((ball.y - (player2 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4)
-				if (ball.dir < Math.PI * 3/4)
-					ball.dir = Math.PI * 3/4;
-			}
-		}
-		else {
-			activePlayer.right = false;
-			ball.dir = Math.PI / 6;
-			resetPlay();
-		}
-	}
+	if (ball.x > 1050 - optionsList.ballSize && activePlayer.right)
+		CollisionPadRight();
 	else if (ball.x > 1080 - optionsList.ballSize && !activePlayer.right) {
 		ball.x = 1080 - optionsList.ballSize;
 		ball.dir = Math.PI - ball.dir;
 	}
-
 	//HAUT
-	if (ball.y < 30 && activePlayer.top) {
-		ball.y = 30;
-		if (ball.x + optionsList.ballSize > player3 && ball.x < player3 + optionsList.padSize) {
-			ball.speed++;
-			if (ball.x + optionsList.ballSize/2 < player3 + optionsList.padSize/2) {
-				ball.dir = 0 - ((player3 + optionsList.padSize/2 - ball.x) / optionsList.padSize/2 * Math.PI * 3/4)
-				if (ball.dir > Math.PI * 3/4)
-					ball.dir = Math.PI * 3/4;
-			}
-			else {
-				ball.dir = (ball.x - (player3 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI * 3/4
-				if (ball.dir < Math.PI / 4)
-					ball.dir = Math.PI / 4;
-			}
-		}
-		else {
-			activePlayer.top = false;
-			ball.dir = Math.PI * 8 / 6;
-			resetPlay();
-		}
-	}
+	if (ball.y < 30 && activePlayer.top)
+		CollisionPadTop();
 	else if (ball.y < 0 && !activePlayer.top) {
 		ball.y = 0;
 		ball.dir = 2 * Math.PI - ball.dir;
 	}
-
 	//BAS
-	if (ball.y > 690 - optionsList.ballSize && activePlayer.bottom) {
-		ball.y = 690 - optionsList.ballSize;
-		if (ball.x + optionsList.ballSize > player4 && ball.x < player4 + optionsList.padSize) {
-			ball.speed++;
-			if (ball.x + optionsList.ballSize/2 < player4 + optionsList.padSize/2) {
-				ball.dir = Math.PI * 3/2 - ((player4 + optionsList.padSize/2 - ball.x) / optionsList.padSize/2 * Math.PI/4)
-				if (ball.dir < Math.PI * 5/4)
-					ball.dir = Math.PI * 5/4;
-			}
-			else {
-				ball.dir = Math.PI * 3/2 + ((ball.x - (player4 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI * 4)
-				if (ball.dir > Math.PI * 7 / 4)
-					ball.dir = Math.PI * 7 / 4;
-			}
-		}
-		else {
-			activePlayer.bottom = false;
-			ball.dir = Math.PI * 4 / 6;
-			resetPlay();
-		}
-	}
+	if (ball.y > 690 - optionsList.ballSize && activePlayer.bottom)
+		CollisionPadBottom();
 	else if (ball.y > 720 - optionsList.ballSize && !activePlayer.bottom) {
 		ball.y = 720 - optionsList.ballSize;
 		ball.dir = 2 * Math.PI - ball.dir;
