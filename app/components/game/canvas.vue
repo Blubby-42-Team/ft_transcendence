@@ -17,10 +17,21 @@ let optionsList = {
 
 let player1 = 360 - optionsList.padSize/2;
 let player2 = 360 - optionsList.padSize/2;
+let player3 = 540 - optionsList.padSize/2;
+let player4 = 540 - optionsList.padSize/2;
 
 let scores = {
 	player1: 0,
-	player2: 0
+	player2: 0,
+	player3: 0,
+	player4: 0
+}
+
+let activePlayer = {
+	top: false,
+	bottom: false,
+	left: true,
+	right: true
 }
 
 let ball = {
@@ -55,11 +66,35 @@ const moveDown = () => {
 	if (player2 > 720 - optionsList.padSize) {player2 = 720 - optionsList.padSize}
 }
 
+const moveC = () => {
+	player4 -= 30;
+	if (player4 < 0) {player4 = 0}
+}
+
+const moveV = () => {
+	player4 += 30;
+	if (player4 > 1080 - optionsList.padSize) {player4 = 1080 - optionsList.padSize}
+}
+
+const moveU = () => {
+	player3 -= 30;
+	if (player3 < 0) {player3 = 0}
+}
+
+const moveI = () => {
+	player3 += 30;
+	if (player3 > 1080 - optionsList.padSize) {player3 = 1080 - optionsList.padSize}
+}
+
 let controller = {
 	w: {pressed: false, func: moveW},
 	s: {pressed: false, func: moveS},
 	ArrowUp: {pressed: false, func: moveUp},
-	ArrowDown: {pressed: false, func: moveDown}
+	ArrowDown: {pressed: false, func: moveDown},
+	c: {pressed: false, func: moveC},
+	v: {pressed: false, func: moveV},
+	u: {pressed: false, func: moveU},
+	i: {pressed: false, func: moveI}
 }
 
 const executeMoves = () => {
@@ -84,19 +119,38 @@ const buildScores = (ctx) => {
 	ctx.fillStyle = optionsList.fontColor;
 	ctx.font = "100px Arial";
 	ctx.fillText(scores.player1.toString() + " - " + scores.player2.toString(), 440, 390); 
+
+	if (optionsList.numPlayer === 4) {
+		ctx.fillText(scores.player3.toString(), 510, 300);
+		ctx.fillText(scores.player4.toString(), 510, 480);
+	}
 }
 
-const buildPlayer = (ctx, x, y) => {
-	ctx.beginPath();
-	ctx.fillStyle = optionsList.assetsColor;
-	ctx.moveTo(x, y);
-	ctx.lineTo(x + 10, y);
-	ctx.lineTo(x, y + optionsList.padSize);
+const buildPlayer = (ctx, x, y, dir) => {
+	if (dir === "vertical") {
+		ctx.beginPath();
+		ctx.fillStyle = optionsList.assetsColor;
+		ctx.moveTo(x, y);
+		ctx.lineTo(x + 10, y);
+		ctx.lineTo(x, y + optionsList.padSize);
 
-	ctx.moveTo(x + 10, y + optionsList.padSize);
-	ctx.lineTo(x, y + optionsList.padSize);
-	ctx.lineTo(x + 10, y);
-	ctx.fill();
+		ctx.moveTo(x + 10, y + optionsList.padSize);
+		ctx.lineTo(x, y + optionsList.padSize);
+		ctx.lineTo(x + 10, y);
+		ctx.fill();
+	}
+	else {
+		ctx.beginPath();
+		ctx.fillStyle = optionsList.assetsColor;
+		ctx.moveTo(x, y);
+		ctx.lineTo(x, y + 10);
+		ctx.lineTo(x + optionsList.padSize, y);
+
+		ctx.moveTo(x + optionsList.padSize, y + 10);
+		ctx.lineTo(x + optionsList.padSize, y);
+		ctx.lineTo(x, y + 10);
+		ctx.fill();
+	}
 }
 
 const buildBall = (ctx, x, y) => {
@@ -118,13 +172,19 @@ const gameOver = async (ctx) => {
 	ctx.fillStyle = optionsList.assetsColor;
 	ctx.font = "100px Arial";
 	ctx.fillText("   GAME OVER", 100, 310);
-	if (scores.player1 > scores.player2)
+	if (scores.player1 > scores.player2 && scores.player1 > scores.player3 && scores.player1 > scores.player4)
 		ctx.fillText("   PLAYER 1 WINS!", 100, 410);
-	else
+	else if (scores.player2 > scores.player1 && scores.player2 > scores.player3 && scores.player2 > scores.player4)
 		ctx.fillText("   PLAYER 2 WINS!", 100, 410);
+	else if (scores.player3 > scores.player1 && scores.player3 > scores.player2 && scores.player3 > scores.player4)
+		ctx.fillText("   PLAYER 3 WINS!", 100, 410);
+	else
+		ctx.fillText("   PLAYER 4 WINS!", 100, 410);
 	await sleep(3000);
 	scores.player1 = 0;
 	scores.player2 = 0;
+	scores.player3 = 0;
+	scores.player4 = 0;
 	page = 0;
 	window.requestAnimationFrame(menu);
 }
@@ -136,7 +196,7 @@ const reload = async () => {
 	buildBackground(ctx)
 	
 	//if game over
-	if (scores.player1 >= optionsList.maxPoint || scores.player2 >= optionsList.maxPoint) {
+	if (scores.player1 >= optionsList.maxPoint || scores.player2 >= optionsList.maxPoint || scores.player3 >= optionsList.maxPoint || scores.player4 >= optionsList.maxPoint) {
 		await gameOver(ctx)
 		return ;
 	}
@@ -145,8 +205,20 @@ const reload = async () => {
 	buildScores(ctx)
 
 	//joueurs
-	buildPlayer(ctx, 20, player1)
-	buildPlayer(ctx, 1050, player2)
+	if (optionsList.numPlayer === 2) {
+		buildPlayer(ctx, 20, player1, "vertical");
+		buildPlayer(ctx, 1050, player2, "vertical");
+	}
+	else if (optionsList.numPlayer === 4) {
+		if (activePlayer.left)
+			buildPlayer(ctx, 20, player1, "vertical");
+		if (activePlayer.right)
+			buildPlayer(ctx, 1050, player2, "vertical");
+		if (activePlayer.top)
+			buildPlayer(ctx, player3, 20, "horizontal");
+		if (activePlayer.bottom)
+			buildPlayer(ctx, player4, 690, "horizontal");
+	}
 
 	//ball
 	buildBall(ctx, ball.x, ball.y)
@@ -173,6 +245,8 @@ const resetPlay = () => {
 	ball.y = 360 - optionsList.ballSize/2;
 	player1 = 360 - optionsList.padSize/2;
 	player2 = 360 - optionsList.padSize/2;
+	player3 = 540 - optionsList.padSize/2;
+	player4 = 540 - optionsList.padSize/2;
 	ball.speed = 0;
 	start = false;
 	reload();
@@ -223,14 +297,157 @@ const checkCollisionPad = () => {
 	}
 }
 
+const checkCollisionPadActive = () => {
+
+	//GAUCHE
+	if (ball.x < 30 && activePlayer.left) {
+		ball.x = 30;
+		if (ball.y + optionsList.ballSize > player1 && ball.y < player1 + optionsList.padSize) {
+			ball.speed++;
+			if (ball.y + optionsList.ballSize/2 < player1 + optionsList.padSize/2) {
+				ball.dir = 0 - ((player1 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir < - Math.PI/4)
+					ball.dir = - Math.PI/4;
+			}
+			else {
+				ball.dir = (ball.y - (player1 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4
+				if (ball.dir > Math.PI/4)
+					ball.dir = Math.PI/4;
+			}
+		}
+		else {
+			activePlayer.left = false;
+			ball.dir = Math.PI * 5 / 6;
+			resetPlay();
+		}
+	}
+	else if (ball.x < 0 && !activePlayer.left) {
+		ball.x = 0;
+		ball.dir = Math.PI - ball.dir;
+	}
+
+	//DROITE
+	if (ball.x > 1050 - optionsList.ballSize && activePlayer.right) {
+		ball.x = 1050 - optionsList.ballSize;
+		if (ball.y + optionsList.ballSize > player2 && ball.y < player2 + optionsList.padSize) {
+			ball.speed++;
+			if (ball.y + optionsList.ballSize/2 < player2 + optionsList.padSize/2) {
+				ball.dir = Math.PI + ((player2 + optionsList.padSize/2 - ball.y) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir > Math.PI * 5/4)
+					ball.dir = Math.PI * 5/4;
+			}
+			else {
+				ball.dir = Math.PI - ((ball.y - (player2 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir < Math.PI * 3/4)
+					ball.dir = Math.PI * 3/4;
+			}
+		}
+		else {
+			activePlayer.right = false;
+			ball.dir = Math.PI / 6;
+			resetPlay();
+		}
+	}
+	else if (ball.x > 1080 - optionsList.ballSize && !activePlayer.right) {
+		ball.x = 1080 - optionsList.ballSize;
+		ball.dir = Math.PI - ball.dir;
+	}
+
+	//HAUT
+	if (ball.y < 30 && activePlayer.top) {
+		ball.y = 30;
+		if (ball.x + optionsList.ballSize > player3 && ball.x < player3 + optionsList.padSize) {
+			ball.speed++;
+			if (ball.x + optionsList.ballSize/2 < player3 + optionsList.padSize/2) {
+				ball.dir = 0 - ((player3 + optionsList.padSize/2 - ball.x) / optionsList.padSize/2 * Math.PI * 3/4)
+				if (ball.dir > Math.PI * 3/4)
+					ball.dir = Math.PI * 3/4;
+			}
+			else {
+				ball.dir = (ball.x - (player3 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI * 3/4
+				if (ball.dir < Math.PI / 4)
+					ball.dir = Math.PI / 4;
+			}
+		}
+		else {
+			activePlayer.top = false;
+			ball.dir = Math.PI * 8 / 6;
+			resetPlay();
+		}
+	}
+	else if (ball.y < 0 && !activePlayer.top) {
+		ball.y = 0;
+		ball.dir = 2 * Math.PI - ball.dir;
+	}
+
+	//BAS
+	if (ball.y > 690 - optionsList.ballSize && activePlayer.bottom) {
+		ball.y = 690 - optionsList.ballSize;
+		if (ball.x + optionsList.ballSize > player4 && ball.x < player4 + optionsList.padSize) {
+			ball.speed++;
+			if (ball.x + optionsList.ballSize/2 < player4 + optionsList.padSize/2) {
+				ball.dir = Math.PI * 3/2 - ((player4 + optionsList.padSize/2 - ball.x) / optionsList.padSize/2 * Math.PI/4)
+				if (ball.dir < Math.PI * 5/4)
+					ball.dir = Math.PI * 5/4;
+			}
+			else {
+				ball.dir = Math.PI * 3/2 + ((ball.x - (player4 + optionsList.padSize/2)) / optionsList.padSize/2 * Math.PI * 4)
+				if (ball.dir > Math.PI * 7 / 4)
+					ball.dir = Math.PI * 7 / 4;
+			}
+		}
+		else {
+			activePlayer.bottom = false;
+			ball.dir = Math.PI * 4 / 6;
+			resetPlay();
+		}
+	}
+	else if (ball.y > 720 - optionsList.ballSize && !activePlayer.bottom) {
+		ball.y = 720 - optionsList.ballSize;
+		ball.dir = 2 * Math.PI - ball.dir;
+	}
+}
+
+const checkEndPlay = () => {
+	let numPlayerActive = 0;
+	if (activePlayer.top)
+		numPlayerActive++;
+	if (activePlayer.bottom)
+		numPlayerActive++;
+	if (activePlayer.left)
+		numPlayerActive++;
+	if (activePlayer.right)
+		numPlayerActive++;
+	if (numPlayerActive < 2) {
+		if (activePlayer.top)
+			scores.player3++;
+		if (activePlayer.bottom)
+			scores.player4++;
+		if (activePlayer.left)
+			scores.player1++;
+		if (activePlayer.right)
+			scores.player2++;
+		activePlayer.top = true;
+		activePlayer.bottom = true;
+		activePlayer.left = true;
+		activePlayer.right = true;
+	}
+}
+
 const game = () => {
 	if (page === 0)
 		window.requestAnimationFrame(menu);
 	if (page === 1) {
 		executeMoves()
 		moveBall();
-		checkCollisionWall();
-		checkCollisionPad();
+		if (optionsList.numPlayer === 2) {
+			checkCollisionWall();
+			checkCollisionPad();
+		}
+		else {
+			checkCollisionPadActive();
+			checkEndPlay();
+		}
 		reload();
 		if (page === 1)
 			window.requestAnimationFrame(game);
@@ -521,15 +738,25 @@ document.addEventListener("click", function (evt) {
 	}
 	//joueurs up
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311) {
-		if (optionsList.numPlayer === 2)
+		if (optionsList.numPlayer === 2) {
+			activePlayer.bottom = true;
+			activePlayer.top = true;
+			activePlayer.left = true;
+			activePlayer.right = true;
 			optionsList.numPlayer = 4;
+		}
 		else
 			optionsList.numPlayer = 2;
 	}
 	//joueurs down
 	else if (page === 2 && mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343) {
-		if (optionsList.numPlayer === 2)
+		if (optionsList.numPlayer === 2) {
+			activePlayer.bottom = true;
+			activePlayer.top = true;
+			activePlayer.left = true;
+			activePlayer.right = true;
 			optionsList.numPlayer = 4;
+		}
 		else
 			optionsList.numPlayer = 2;
 	}
