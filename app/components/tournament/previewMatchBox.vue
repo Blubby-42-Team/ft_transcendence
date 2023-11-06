@@ -1,6 +1,5 @@
 <script setup lang='ts'>
-
-import { ILazyTournamentMatch } from './preview.vue'
+import { ILazyTournamentMatch } from '~/stores/tournament';
 
 enum EGameStatus {
 	NOT_STARTED,

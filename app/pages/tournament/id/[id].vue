@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const route = useRoute()
-const { tournaments, del } = useTournamentStore();
+const { tournaments, del } = useTournamentListStore();
 
 const { setSelectedCategory, setTitle } = usePageStore();
 

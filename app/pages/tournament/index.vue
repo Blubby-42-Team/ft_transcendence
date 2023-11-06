@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-const { tournaments } = useTournamentStore();
+const { tournaments } = useTournamentListStore();
 
 definePageMeta({name: 'Tournaments'})
 const { setPageData } = usePageStore();
