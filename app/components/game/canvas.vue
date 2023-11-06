@@ -1,7 +1,7 @@
 <script lang="ts" setup>
+import { roundToNearestMinutesWithOptions } from 'date-fns/fp';
 
 let start = false;
-let canvasStart = false;
 let page = 0;
 let time = 0;
 let delay = 200;
@@ -14,7 +14,9 @@ let optionsList = {
 	theme: "dark mode",
 	backgroundColor: "black",
 	fontColor: "gray",
-	assetsColor: "white"
+	assetsColor: "white",
+	sound: "on",
+	mode: "normal"
 }
 
 let player1 = 360 - optionsList.padSize/2;
@@ -304,7 +306,6 @@ const checkCollisionPad = () => {
 		}
 	}
 }
-
 
 const CollisionPadLeft = () => {
 	ball.x = 30;
@@ -680,6 +681,84 @@ const buildOptionsTemplate2 = (ctx) => {
 	ctx.lineTo(170, 155);
 	ctx.fill();
 
+	//Nombre de joueurs
+	ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("SON : " + optionsList.sound, 250, 250);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 293 && mouse.y < 311)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 225);
+	ctx.lineTo(170, 205);
+	ctx.lineTo(190, 225);
+	ctx.moveTo(190, 225);
+	ctx.lineTo(170, 205);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 343)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 235);
+	ctx.lineTo(170, 255);
+	ctx.lineTo(190, 235);
+	ctx.moveTo(190, 235);
+	ctx.lineTo(170, 255);
+	ctx.fill();
+
+	//Ball size
+	ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("OPTION 2 : ", 250, 350);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 391 && mouse.y < 414)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 325);
+	ctx.lineTo(170, 305);
+	ctx.lineTo(190, 325);
+	ctx.moveTo(190, 325);
+	ctx.lineTo(170, 305);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 422 && mouse.y < 446)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 335);
+	ctx.lineTo(170, 355);
+	ctx.lineTo(190, 335);
+	ctx.moveTo(190, 335);
+	ctx.lineTo(170, 355);
+	ctx.fill();
+
+	//Pad size
+	ctx.fillStyle = optionsList.fontColor;
+	ctx.fillText("OPTION 3 : ", 250, 450);
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 491 && mouse.y < 514)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 425);
+	ctx.lineTo(170, 405);
+	ctx.lineTo(190, 425);
+	ctx.moveTo(190, 425);
+	ctx.lineTo(170, 405);
+	ctx.fill();
+	if (mouse.x > 234 && mouse.x < 280 && mouse.y > 522 && mouse.y < 546)
+		ctx.fillStyle = "red";
+	else
+		ctx.fillStyle = optionsList.fontColor;
+	ctx.beginPath();
+	ctx.moveTo(150, 435);
+	ctx.lineTo(170, 455);
+	ctx.lineTo(190, 435);
+	ctx.moveTo(190, 435);
+	ctx.lineTo(170, 455);
+	ctx.fill();
+
 	//Précédent
 	if (mouse.x > 595 && mouse.x < 661 && mouse.y > 640 && mouse.y < 700)
 		ctx.fillStyle = "red";
@@ -828,6 +907,20 @@ document.addEventListener("click", function (evt) {
 			optionsList.assetsColor = "gray";
 		}
 	}
+	//sound up
+	else if (page === 3 && mouse.x > 234 && mouse.x < 280 && mouse.y > 290 && mouse.y < 315) {
+		if (optionsList.sound === "on")
+			optionsList.sound = "off";
+		else
+			optionsList.sound = "on";
+	}
+	//sound down
+	else if (page === 3 && mouse.x > 234 && mouse.x < 280 && mouse.y > 321 && mouse.y < 344) {
+		if (optionsList.sound === "on")
+			optionsList.sound = "off";
+		else
+			optionsList.sound = "on";
+	}
 }, false);
 
 //Key pressed
@@ -867,6 +960,6 @@ window.requestAnimationFrame(menu);
 
 <template>
 	<div class="p-5">
-		<canvas class="bg-white" ref="canvas" width="1080" height="720" style="border:1px solid #ffffff;"></canvas>
+		<canvas class="bg-white" ref="canvas" :width="1080" :height="720" style="border:1px solid #ffffff;"></canvas>
 	</div>
 </template>
