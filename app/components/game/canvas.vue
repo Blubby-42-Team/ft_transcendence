@@ -497,7 +497,7 @@ const buildMenuOptions = (ctx) => {
 const reloadMenu = () => {
 	let ctx = document.querySelector("canvas").getContext("2d");
 
-	//background
+	//background``
 	buildBackground(ctx);
 
 	//PONG
