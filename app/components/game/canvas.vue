@@ -3,6 +3,8 @@
 let start = false;
 let canvasStart = false;
 let page = 0;
+let time = 0;
+let delay = 200;
 
 let optionsList = {
 	maxPoint: 5,
@@ -166,9 +168,21 @@ const buildBall = (ctx, x, y) => {
 	ctx.fill();
 }
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+const sleep = () => {
+	if (time < delay)
+		time++;
+	else {
+		page = 0;
+		scores.player1 = 0;
+		scores.player2 = 0;
+		scores.player3 = 0;
+		scores.player4 = 0;
+		time = 0;
+		window.requestAnimationFrame(menu);
+	}
+}
 
-const gameOver = async (ctx) => {
+const gameOver = (ctx) => {
 	ctx.fillStyle = optionsList.assetsColor;
 	ctx.font = "100px Arial";
 	ctx.fillText("   GAME OVER", 100, 310);
@@ -180,16 +194,10 @@ const gameOver = async (ctx) => {
 		ctx.fillText("   PLAYER 3 WINS!", 100, 410);
 	else
 		ctx.fillText("   PLAYER 4 WINS!", 100, 410);
-	await sleep(3000);
-	scores.player1 = 0;
-	scores.player2 = 0;
-	scores.player3 = 0;
-	scores.player4 = 0;
-	page = 0;
-	window.requestAnimationFrame(menu);
+	window.requestAnimationFrame(sleep);
 }
 
-const reload = async () => {
+const reload = () => {
 
 	let ctx = document.querySelector("canvas").getContext("2d");
 	//fond
@@ -197,7 +205,7 @@ const reload = async () => {
 	
 	//if game over
 	if (scores.player1 >= optionsList.maxPoint || scores.player2 >= optionsList.maxPoint || scores.player3 >= optionsList.maxPoint || scores.player4 >= optionsList.maxPoint) {
-		await gameOver(ctx)
+		gameOver(ctx)
 		return ;
 	}
 
@@ -704,11 +712,6 @@ const options = () => {
 		reloadOptions();
 		window.requestAnimationFrame(options);
 	}
-}
-
-if (!canvasStart) {
-		await sleep(1000);
-		canvasStart = true;
 }
 
 var canvas = document.getElementById("canvas");
