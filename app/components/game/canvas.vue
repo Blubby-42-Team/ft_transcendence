@@ -218,7 +218,7 @@ window.requestAnimationFrame(menu);
 </script>
 
 <template>
-	<div class="">
+	<div class="w-full h-full canvasDiv">
 		<client-only placeholder="loading...">
 			<canvas class="bg-white" ref="canvas" :width="screen.width" :height="screen.height" style="border:1px solid #ffffff;"></canvas>
 		</client-only>

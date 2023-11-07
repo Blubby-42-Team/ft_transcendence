@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="w-full h-full">
 		<client-only placeholder="loading...">
 			<GameCanvas />
 		</client-only>
