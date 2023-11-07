@@ -20,19 +20,19 @@ const players = computed(() => [match.player1, match.player2])
 
 <template>
 	<GenericButton class="w-full h-full border-text" :buttonStyle="1"
-		:class="(match?.status == EGameStatus.IN_PROGRESS ? 'drop-shadow-[0_0_10px_rgba(255,255,0,255)]' : '')"
+		:class="(match?.status == EGameStatus['IN_PROGRESS'] ? 'drop-shadow-[0_0_10px_rgba(255,0,0,255)]' : '')"
 	>
 		<div class="grid w-full h-20 grid-cols-[2.5em,auto,2.5em] grid-rows-[2.5em,2.5em] rounded bg-color2 overflow-hidden">
 			<template v-for="(player, i) in players">
-				<div class="h-full p-1" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+				<div class="h-full p-1 border-text" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
 					<template v-if="player?.id !== undefined">
 						<GenericProfilePicture class="w-8 h-8" imageSrc="/amogus.png"/>
 					</template>
 				</div>
-				<div class="pt-2 pr-2 text-left truncate" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+				<div class="pt-2 pr-2 text-left truncate border-text" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
 					{{ (player?.id !== undefined ? 'Player ' + player.id : '') }}
 				</div>
-				<div class="pt-2 border-l-2" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+				<div class="pt-2 border-l-2 border-text" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
 					<div class="text-center ">-</div>
 				</div>
 			</template>

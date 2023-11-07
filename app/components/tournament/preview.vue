@@ -1,11 +1,5 @@
 <script setup lang="ts">
 
-enum EGameStatus {
-	NOT_STARTED,
-	IN_PROGRESS,
-	COMPLETED,
-}
-
 const { tournament } = useTournamentStore();
 
 </script>
