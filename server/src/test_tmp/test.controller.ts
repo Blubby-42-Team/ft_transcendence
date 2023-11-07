@@ -2,9 +2,10 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { TestGuard } from './test.guard';
 import { log } from 'console';
+import { TestDto } from '@app/shared';
 
 @Controller('/test')
 export class TestController {
@@ -12,6 +13,12 @@ export class TestController {
 	@Get()
 	@UseGuards(new TestGuard())
 	test() {
+		return 'Test';
+	}
+
+	@Post()
+	@UseGuards(new TestGuard())
+	testd(@Body() testDto: TestDto) {
 		return 'Test';
 	}
 
