@@ -1,0 +1,11 @@
+{
+  "name": "libs",
+  "version": "1.0.0",
+  "description": "Shared libs",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0"
+  }
+}
