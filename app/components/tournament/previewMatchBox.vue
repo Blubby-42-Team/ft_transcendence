@@ -19,20 +19,38 @@ const players = computed(() => [match.player1, match.player2])
 </script>
 
 <template>
-	<GenericButton class="w-full h-full border-text" :buttonStyle="1"
-		:class="(match?.status == EGameStatus['IN_PROGRESS'] ? 'drop-shadow-[0_0_10px_rgba(255,0,0,255)]' : '')"
+	<GenericButton class="w-full h-full border-text group" :buttonStyle="1"
+		:class="css.has({'border-liveGameColor hover:border-opacity-60': match?.status == EGameStatus['IN_PROGRESS']})"
 	>
 		<div class="grid w-full h-20 grid-cols-[2.5em,auto,2.5em] grid-rows-[2.5em,2.5em] rounded bg-color2 overflow-hidden">
 			<template v-for="(player, i) in players">
-				<div class="h-full p-1 border-text" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+				<div class="h-full p-1 border-text group-hover:border-accent-color"
+					:class="css.has({
+						'bg-color3': player?.id !== undefined,
+						'border-liveGameColor': match?.status == EGameStatus['IN_PROGRESS'],
+						'border-b || border-t ': i == 0,
+					})"
+				>
 					<template v-if="player?.id !== undefined">
 						<GenericProfilePicture class="w-8 h-8" imageSrc="/amogus.png"/>
 					</template>
 				</div>
-				<div class="pt-2 pr-2 text-left truncate border-text" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+				<div class="pt-2 pr-2 text-left truncate border-text group-hover:border-accent-color"
+					:class="css.has({
+						'bg-color3': player?.id !== undefined,
+						'border-liveGameColor': match?.status == EGameStatus['IN_PROGRESS'],
+						'border-b || border-t ': i == 0,
+					})"
+				>
 					{{ (player?.id !== undefined ? 'Player ' + player.id : '') }}
 				</div>
-				<div class="pt-2 border-l-2 border-text" :class="(i == 0 ? 'border-b ' : 'border-t ') + (player?.id !== undefined ? 'bg-color3' : '')">
+				<div class="pt-2 border-l-2 border-text group-hover:border-accent-color"
+					:class="css.has({
+						'bg-color3': player?.id === undefined,
+						'border-liveGameColor': match?.status == EGameStatus['IN_PROGRESS'],
+						'border-b || border-t ': i == 0,
+					})"
+				>
 					<div class="text-center ">-</div>
 				</div>
 			</template>
@@ -50,4 +68,4 @@ const players = computed(() => [match.player1, match.player2])
 	direction: ltr;
 }
 
-</style>
+</style>~/utils/css
