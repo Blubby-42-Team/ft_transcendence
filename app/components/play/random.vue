@@ -3,7 +3,7 @@
 </script>
 
 <template>
-	<div class="h-full bg-red-900">
+	<div class="h-full">
 		Random
 	</div>
 </template>

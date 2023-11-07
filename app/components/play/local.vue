@@ -3,7 +3,8 @@
 </script>
 
 <template>
-	<div class="h-full bg-red-900">
+	<div class="h-full p-5">
+		
 		Local
 	</div>
 </template>
