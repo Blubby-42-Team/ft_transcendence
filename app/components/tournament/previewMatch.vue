@@ -1,7 +1,5 @@
 <script setup lang='ts'>
 
-import { ILazyTournamentMatch } from '~/stores/tournament';
-
 const { match, position } = defineProps({
 	match: {
 		type: Object as () => ILazyTournamentMatch,
@@ -11,6 +9,8 @@ const { match, position } = defineProps({
 		type: String
 	}
 })
+
+const matchPreviewModalRef = ref()
 
 </script>
 
@@ -26,7 +26,12 @@ const { match, position } = defineProps({
 			<div/>
 			<div/>
 			<div class="min-h-[1rem]"></div>
-			<TournamentPreviewMatchBox class="row-span-2" :match="(match as any)"/>
+			<GenericModal ref="matchPreviewModalRef">
+				<WatchMatchPreview :match="match"/>
+			</GenericModal>
+			<TournamentPreviewMatchBox class="row-span-2" :match="(match as any)"
+				@click="matchPreviewModalRef?.open"
+			/>
 			<div class="min-h-[1rem]"></div>
 			<template v-if="position === 'top'">
 				<div class=""></div>

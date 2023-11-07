@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { ILazyTournamentMatch } from '~/stores/tournament';
+
 
 enum EGameStatus {
 	NOT_STARTED,
@@ -46,7 +46,7 @@ const players = computed(() => [match.player1, match.player2])
 				</div>
 				<div class="pt-2 border-l-2 border-text group-hover:border-accent-color"
 					:class="css.has({
-						'bg-color3': player?.id === undefined,
+						'bg-color3': player?.id !== undefined,
 						'border-liveGameColor': match?.status == EGameStatus['IN_PROGRESS'],
 						'border-b || border-t ': i == 0,
 					})"
@@ -68,4 +68,4 @@ const players = computed(() => [match.player1, match.player2])
 	direction: ltr;
 }
 
-</style>~/utils/css
+</style>
