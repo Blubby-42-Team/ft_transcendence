@@ -1,7 +1,7 @@
 export const useGameStore = defineStore('game', {
 	state: () => ({
 		_optionsList: {
-			maxPoint: 5,
+			maxPoint: 1,
 			numPlayer: 2,
 			ballSize: 15,
 			padSize: 100,
@@ -18,10 +18,6 @@ export const useGameStore = defineStore('game', {
 			player2: 0,
 			player3: 0,
 			player4: 0
-		},
-		_mouse: {
-			x: 0,
-			y: 0
 		},
 		_players: {
 			first: 0,
@@ -56,7 +52,6 @@ export const useGameStore = defineStore('game', {
 			i: {pressed: false, func: gameController.moveI}
 		},
 		_utils: {
-			page: 0,
 			start: false
 		}
 	}),

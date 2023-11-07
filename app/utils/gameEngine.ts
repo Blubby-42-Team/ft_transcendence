@@ -1,5 +1,5 @@
-let coin = new Audio('coin.mp3');
-let waa = new Audio('waa.mp3');
+let coin = new Audio('/coin.mp3');
+let waa = new Audio('/waa.mp3');
 
 function resetPlay () {
 	const { ball, players, optionsList, utils } = useGameStore();
