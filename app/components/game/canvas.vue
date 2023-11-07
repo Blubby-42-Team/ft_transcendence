@@ -33,7 +33,7 @@ const sleep = () => {
 		scores.value.player3 = 0;
 		scores.value.player4 = 0;
 		time = 0;
-		window.requestAnimationFrame(menu);
+		navigateTo("/game");
 	}
 }
 
@@ -92,105 +92,27 @@ const reload = () => {
 }
 
 const game = () => {
-	if (utils.value.page === 0)
-		window.requestAnimationFrame(menu);
-	if (utils.value.page === 1) {
-		gameController.executeMoves()
-		gameEngine.moveBall();
-		if (optionsList.value.numPlayer === 1)
-			gameController.moveIA();
-		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
-			gameEngine.checkCollisionWall();
-			gameEngine.checkCollisionPad();
-		}
-		else if (optionsList.value.numPlayer === 4) {
-			gameEngine.checkCollisionPadActive();
-			gameEngine.checkEndPlay();
-		}
-		reload();
-		if (utils.value.page === 1)
-			window.requestAnimationFrame(game);
+	gameController.executeMoves()
+	gameEngine.moveBall();
+	if (optionsList.value.numPlayer === 1)
+		gameController.moveIA();
+	if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
+		gameEngine.checkCollisionWall();
+		gameEngine.checkCollisionPad();
 	}
-}
-
-const menu = () => {
-	if (document.getElementById('canvasDiv')?.offsetHeight > 720/1080 * document.getElementById('canvasDiv')?.offsetWidth) {
-		screen.value.width = document.getElementById('canvasDiv')?.offsetWidth * 0.95;
-		screen.value.height = screen.value.width * 720/1080;
+	else if (optionsList.value.numPlayer === 4) {
+		gameEngine.checkCollisionPadActive();
+		gameEngine.checkEndPlay();
 	}
-	else {
-		screen.value.height = document.getElementById('canvasDiv')?.offsetHeight * 0.95;
-		screen.value.width = screen.value.height * 1080/720;
-	}
-	if (utils.value.page === 0) {
-		gameGraphics.reloadMenu();
-		window.requestAnimationFrame(menu);
-	}
-}
-
-const reloadOptions = () => {
-	if (document.getElementById('canvasDiv')?.offsetHeight > 720/1080 * document.getElementById('canvasDiv')?.offsetWidth) {
-		screen.value.width = document.getElementById('canvasDiv')?.offsetWidth * 0.95;
-		screen.value.height = screen.value.width * 720/1080;
-	}
-	else {
-		screen.value.height = document.getElementById('canvasDiv')?.offsetHeight * 0.95;
-		screen.value.width = screen.value.height * 1080/720;
-	}
-	let ctx = document.querySelector("canvas").getContext("2d");
-	//background
-	gameGraphics.buildBackground(ctx);
-	//Options template
-	if (utils.value.page === 2)
-		gameGraphics.buildOptionsTemplate(ctx);
-	else if (utils.value.page === 3)
-		gameGraphics.buildOptionsTemplate2(ctx);
-}
-
-const options = () => {
-	if (utils.value.page === 2 || utils.value.page === 3) {
-		reloadOptions();
-		window.requestAnimationFrame(options);
-	}
-}
-
-function ratio () {
-	const { screen } = useGameStore()
-	return screen.value.width/1080;
-}
-
-//report the mouse.value position on click
-document.addEventListener("click", function (evt) {
-	//MENU
-	//click sur start
-	if (utils.value.page === 0 && mouse.value.x > ratio() * 560 && mouse.value.x < ratio() * 730 && mouse.value.y > ratio() * 520 && mouse.value.y < ratio() * 565) {
-		utils.value.page = 1;
+	reload();
+	if (utils.value.page === 1)
 		window.requestAnimationFrame(game);
-	}
-	//click sur option
-	else if (mouse.value.x > ratio() * 525 && mouse.value.x < ratio() * 750 && mouse.value.y > ratio() * 615 && mouse.value.y < ratio() * 660) {
-		utils.value.page = 2;
-		window.requestAnimationFrame(options);
-	}
-
-	//OPTIONS
-	//exit
-	else if ((utils.value.page === 2 || utils.value.page === 3) && mouse.value.x > 1138 && mouse.value.x < 1156 && mouse.value.y > 94 && mouse.value.y < 119) {
-		utils.value.page = 0;
-		window.requestAnimationFrame(menu);
-	}
-	else
-		gameClick.clicked();
-}, false);
+}
 
 //Key pressed
 document.addEventListener("keydown", (e) => {
 	if(controller.value[e.key]){
 		controller.value[e.key].pressed = true
-	}
-	if ((utils.value.page === 2 || utils.value.page === 3) && e.key === "Escape") {
-		utils.value.page = 0;
-		window.requestAnimationFrame(menu);
 	}
 })
 
@@ -212,7 +134,7 @@ document.addEventListener("mousemove", function(e) {
 	mouse.value.y = Math.round(e.clientY);
 });
 
-window.requestAnimationFrame(menu);
+window.requestAnimationFrame(game);
 
 
 </script>

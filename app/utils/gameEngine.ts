@@ -1,5 +1,5 @@
-let coin = new Audio('coin.mp3');
-let waa = new Audio('waa.mp3');
+let coin = new Audio('/coin.mp3');
+let waa = new Audio('/waa.mp3');
 
 function resetPlay () {
 	const { ball, players, optionsList, utils } = useGameStore();
@@ -44,8 +44,8 @@ function checkCollisionPad () {
 			}
 			ball.value.speed++;
 			if (optionsList.value.randomizer === "on") {
-				optionsList.value.ballSize = Math.floor(Math.random() * 50);
-				optionsList.value.padSize = Math.floor(Math.random() * 300);
+				optionsList.value.ballSize = Math.floor(Math.random() * 50 + 1);
+				optionsList.value.padSize = Math.floor(Math.random() * 300 + 10);
 			}
 			if (ball.value.y + optionsList.value.ballSize/2 < players.value.first + optionsList.value.padSize/2) {
 				ball.value.dir = 0 - ((players.value.first + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
@@ -75,8 +75,8 @@ function checkCollisionPad () {
 			}
 			ball.value.speed++;
 			if (optionsList.value.randomizer === "on") {
-				optionsList.value.ballSize = Math.floor(Math.random() * 50);
-				optionsList.value.padSize = Math.floor(Math.random() * 300);
+				optionsList.value.ballSize = Math.floor(Math.random() * 50 + 1);
+				optionsList.value.padSize = Math.floor(Math.random() * 300 + 10);
 			}
 			if (ball.value.y + optionsList.value.ballSize/2 < players.value.second + optionsList.value.padSize/2) {
 				ball.value.dir = Math.PI + ((players.value.second + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
@@ -105,8 +105,8 @@ function CollisionPadLeft () {
 	if (ball.value.y + optionsList.value.ballSize > players.value.first && ball.value.y < players.value.first + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer === "on") {
-			optionsList.value.ballSize = Math.floor(Math.random() * 50);
-			optionsList.value.padSize = Math.floor(Math.random() * 300);
+			optionsList.value.ballSize = Math.floor(Math.random() * 50 + 1);
+			optionsList.value.padSize = Math.floor(Math.random() * 300 + 10);
 		}
 		if (optionsList.value.sound === "on") {
 			let bonk = new Audio('bonk.mp3');
@@ -138,8 +138,8 @@ function CollisionPadRight () {
 	if (ball.value.y + optionsList.value.ballSize > players.value.second && ball.value.y < players.value.second + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer === "on") {
-			optionsList.value.ballSize = Math.floor(Math.random() * 50);
-			optionsList.value.padSize = Math.floor(Math.random() * 300);
+			optionsList.value.ballSize = Math.floor(Math.random() * 50 + 1);
+			optionsList.value.padSize = Math.floor(Math.random() * 300 + 10);
 		}
 		if (optionsList.value.sound === "on") {
 			let bonk = new Audio('bonk.mp3');
@@ -171,8 +171,8 @@ function CollisionPadTop () {
 	if (ball.value.x + optionsList.value.ballSize > players.value.third && ball.value.x < players.value.third + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer === "on") {
-			optionsList.value.ballSize = Math.floor(Math.random() * 50);
-			optionsList.value.padSize = Math.floor(Math.random() * 300);
+			optionsList.value.ballSize = Math.floor(Math.random() * 50 + 1);
+			optionsList.value.padSize = Math.floor(Math.random() * 300 + 10);
 		}
 		if (optionsList.value.sound === "on") {
 			let bonk = new Audio('bonk.mp3');
@@ -204,8 +204,8 @@ function CollisionPadBottom () {
 	if (ball.value.x + optionsList.value.ballSize > players.value.forth && ball.value.x < players.value.forth + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer === "on") {
-			optionsList.value.ballSize = Math.floor(Math.random() * 50);
-			optionsList.value.padSize = Math.floor(Math.random() * 300);
+			optionsList.value.ballSize = Math.floor(Math.random() * 50 + 1);
+			optionsList.value.padSize = Math.floor(Math.random() * 300 + 10);
 		}
 		if (optionsList.value.sound === "on") {
 			let bonk = new Audio('bonk.mp3');
