@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@shared/": [
-        "../libs/libs/src"
+        "../libs"
       ],
       "@shared/*": [
         "../libs/*"
