@@ -4,13 +4,24 @@ const { optionsList, scores, mouse, players, activePlayer, ball, screen, control
 
 let time = 0;
 
-players.value.first = screen.value.height/2 - optionsList.value.padSize/2;
-players.value.second = screen.value.height/2 - optionsList.value.padSize/2;
-players.value.third = screen.value.width/2 - optionsList.value.padSize/2;
-players.value.forth = screen.value.width/2 - optionsList.value.padSize/2;
+console.log(document.getElementById('canvasDiv'));
 
-ball.value.x = screen.value.width/2 - optionsList.value.ballSize/2;
-ball.value.y = screen.value.height/2 - optionsList.value.ballSize/2;
+if (document.getElementById('canvasDiv')?.offsetHeight >= 720/1080 * document.getElementById('canvasDiv')?.offsetWidth) {
+	screen.value.width = document.getElementById('canvasDiv')?.offsetWidth * 0.95;
+	screen.value.height = screen.value.width * 720/1080;
+}
+else {
+	screen.value.height = document.getElementById('canvasDiv')?.offsetHeight * 0.95;
+	screen.value.width = screen.value.height * 1080/720;
+}
+
+players.value.first = 360 - optionsList.value.padSize/2;
+players.value.second = 360 - optionsList.value.padSize/2;
+players.value.third = 540 - optionsList.value.padSize/2;
+players.value.forth = 540 - optionsList.value.padSize/2;
+
+ball.value.x = 540 - optionsList.value.ballSize/2;
+ball.value.y = 360 - optionsList.value.ballSize/2;
 
 const sleep = () => {
 	if (time < 200)
@@ -43,6 +54,15 @@ const gameOver = (ctx) => {
 
 const reload = () => {
 	let ctx = document.querySelector("canvas").getContext("2d");
+	if (document.getElementById('canvasDiv')?.offsetHeight > 720/1080 * document.getElementById('canvasDiv')?.offsetWidth) {
+		screen.value.width = document.getElementById('canvasDiv')?.offsetWidth * 0.95;
+		screen.value.height = screen.value.width * 720/1080;
+	}
+	else {
+		screen.value.height = document.getElementById('canvasDiv')?.offsetHeight * 0.95;
+		screen.value.width = screen.value.height * 1080/720;
+	}
+	
 	//fond
 	gameGraphics.buildBackground(ctx)
 	//if game over
@@ -53,19 +73,19 @@ const reload = () => {
 	//score
 	gameGraphics.buildScores(ctx)
 	//joueurs
-	if (optionsList.value.numPlayer === 2) {
+	if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
 		gameGraphics.buildPlayer(ctx, 20, players.value.first, "vertical");
-		gameGraphics.buildPlayer(ctx, (screen.value.width - 30), players.value.second, "vertical");
+		gameGraphics.buildPlayer(ctx, 1050, players.value.second, "vertical");
 	}
 	else if (optionsList.value.numPlayer === 4) {
 		if (activePlayer.value.left)
 			gameGraphics.buildPlayer(ctx, 20, players.value.first, "vertical");
 		if (activePlayer.value.right)
-			gameGraphics.buildPlayer(ctx, (screen.value.width - 30), players.value.second, "vertical");
+			gameGraphics.buildPlayer(ctx, 1050, players.value.second, "vertical");
 		if (activePlayer.value.top)
 			gameGraphics.buildPlayer(ctx, players.value.third, 20, "horizontal");
 		if (activePlayer.value.bottom)
-			gameGraphics.buildPlayer(ctx, players.value.forth, (screen.value.height - 30), "horizontal");
+			gameGraphics.buildPlayer(ctx, players.value.forth, 690, "horizontal");
 	}
 	//ball
 	gameGraphics.buildBall(ctx, ball.value.x, ball.value.y)
@@ -77,11 +97,13 @@ const game = () => {
 	if (utils.value.page === 1) {
 		gameController.executeMoves()
 		gameEngine.moveBall();
-		if (optionsList.value.numPlayer === 2) {
+		if (optionsList.value.numPlayer === 1)
+			gameController.moveIA();
+		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
 			gameEngine.checkCollisionWall();
 			gameEngine.checkCollisionPad();
 		}
-		else {
+		else if (optionsList.value.numPlayer === 4) {
 			gameEngine.checkCollisionPadActive();
 			gameEngine.checkEndPlay();
 		}
@@ -92,6 +114,14 @@ const game = () => {
 }
 
 const menu = () => {
+	if (document.getElementById('canvasDiv')?.offsetHeight > 720/1080 * document.getElementById('canvasDiv')?.offsetWidth) {
+		screen.value.width = document.getElementById('canvasDiv')?.offsetWidth * 0.95;
+		screen.value.height = screen.value.width * 720/1080;
+	}
+	else {
+		screen.value.height = document.getElementById('canvasDiv')?.offsetHeight * 0.95;
+		screen.value.width = screen.value.height * 1080/720;
+	}
 	if (utils.value.page === 0) {
 		gameGraphics.reloadMenu();
 		window.requestAnimationFrame(menu);
@@ -99,6 +129,14 @@ const menu = () => {
 }
 
 const reloadOptions = () => {
+	if (document.getElementById('canvasDiv')?.offsetHeight > 720/1080 * document.getElementById('canvasDiv')?.offsetWidth) {
+		screen.value.width = document.getElementById('canvasDiv')?.offsetWidth * 0.95;
+		screen.value.height = screen.value.width * 720/1080;
+	}
+	else {
+		screen.value.height = document.getElementById('canvasDiv')?.offsetHeight * 0.95;
+		screen.value.width = screen.value.height * 1080/720;
+	}
 	let ctx = document.querySelector("canvas").getContext("2d");
 	//background
 	gameGraphics.buildBackground(ctx);
@@ -116,16 +154,21 @@ const options = () => {
 	}
 }
 
+function ratio () {
+	const { screen } = useGameStore()
+	return screen.value.width/1080;
+}
+
 //report the mouse.value position on click
 document.addEventListener("click", function (evt) {
 	//MENU
 	//click sur start
-	if (utils.value.page === 0 && mouse.value.x > 538 && mouse.value.x < 698 && mouse.value.y > 501 && mouse.value.y < 538) {
+	if (utils.value.page === 0 && mouse.value.x > ratio() * 560 && mouse.value.x < ratio() * 730 && mouse.value.y > ratio() * 520 && mouse.value.y < ratio() * 565) {
 		utils.value.page = 1;
 		window.requestAnimationFrame(game);
 	}
 	//click sur option
-	else if (utils.value.page === 0 && mouse.value.x > 510 && mouse.value.x < 733 && mouse.value.y > 599 && mouse.value.y < 639) {
+	else if (mouse.value.x > ratio() * 525 && mouse.value.x < ratio() * 750 && mouse.value.y > ratio() * 615 && mouse.value.y < ratio() * 660) {
 		utils.value.page = 2;
 		window.requestAnimationFrame(options);
 	}
@@ -175,7 +218,7 @@ window.requestAnimationFrame(menu);
 </script>
 
 <template>
-	<div class="p-5">
+	<div class="">
 		<client-only placeholder="loading...">
 			<canvas class="bg-white" ref="canvas" :width="screen.width" :height="screen.height" style="border:1px solid #ffffff;"></canvas>
 		</client-only>

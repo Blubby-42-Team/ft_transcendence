@@ -1,13 +1,18 @@
+function ratio () {
+	const { screen } = useGameStore()
+	return screen.value.width/1080;
+}
+
 function clicked () {
 	//nombre de points up
 	const { utils, mouse, optionsList, activePlayer } = useGameStore();
-	if (utils.value.page === 2 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 190 && mouse.value.y < 215) {
+	if (utils.value.page === 2 && mouse.value.x > ratio() * 234 && mouse.value.x < ratio() * 280 && mouse.value.y > ratio() * 190 && mouse.value.y < ratio() * 215) {
 		optionsList.value.maxPoint++;
 		if (optionsList.value.maxPoint > 10)
 			optionsList.value.maxPoint = 10;
 	}
 	//nombre de points down
-	else if (utils.value.page === 2 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 221 && mouse.value.y < 244) {
+	else if (utils.value.page === 2 && mouse.value.x > ratio() * 234 && mouse.value.x < ratio() * 280 && mouse.value.y > ratio() * 221 && mouse.value.y < ratio() * 244) {
 		optionsList.value.maxPoint--;
 		if (optionsList.value.maxPoint < 1)
 			optionsList.value.maxPoint = 1;
@@ -21,20 +26,24 @@ function clicked () {
 			activePlayer.value.right = true;
 			optionsList.value.numPlayer = 4;
 		}
+		else if (optionsList.value.numPlayer === 4)
+			optionsList.value.numPlayer = 1;
 		else
 			optionsList.value.numPlayer = 2;
 	}
 	//joueurs down
 	else if (utils.value.page === 2 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 321 && mouse.value.y < 343) {
-		if (optionsList.value.numPlayer === 2) {
+		if (optionsList.value.numPlayer === 1) {
 			activePlayer.value.bottom = true;
 			activePlayer.value.top = true;
 			activePlayer.value.left = true;
 			activePlayer.value.right = true;
 			optionsList.value.numPlayer = 4;
 		}
-		else
+		else if (optionsList.value.numPlayer === 4)
 			optionsList.value.numPlayer = 2;
+		else
+			optionsList.value.numPlayer = 1;
 	}
 	//ball up
 	else if (utils.value.page === 2 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 391 && mouse.value.y < 414) {
@@ -105,6 +114,38 @@ function clicked () {
 			optionsList.value.sound = "off";
 		else
 			optionsList.value.sound = "on";
+	}
+	//mode up
+	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 390 && mouse.value.y < 415) {
+		if (optionsList.value.mode === "easy")
+			optionsList.value.mode = "hard";
+		else if (optionsList.value.mode === "hard")
+			optionsList.value.mode = "crazy";
+		else
+			optionsList.value.mode = "easy";
+	}
+	//mode down
+	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 421 && mouse.value.y < 444) {
+		if (optionsList.value.mode === "easy")
+			optionsList.value.mode = "crazy";
+		else if (optionsList.value.mode === "crazy")
+			optionsList.value.mode = "hard";
+		else
+			optionsList.value.mode = "easy";
+	}
+	//random up
+	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 490 && mouse.value.y < 515) {
+		if (optionsList.value.randomizer === "on")
+			optionsList.value.randomizer = "off";
+		else
+			optionsList.value.randomizer = "on";
+	}
+	//random down
+	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 521 && mouse.value.y < 544) {
+		if (optionsList.value.randomizer === "on")
+			optionsList.value.randomizer = "off";
+		else
+			optionsList.value.randomizer = "on";
 	}
 }
 

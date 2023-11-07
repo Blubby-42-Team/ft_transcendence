@@ -9,8 +9,9 @@ export const useGameStore = defineStore('game', {
 			backgroundColor: "black",
 			fontColor: "gray",
 			assetsColor: "white",
-			sound: "on",
-			mode: "normal"
+			sound: "off",
+			mode: "easy",
+			randomizer: "off"
 		},
 		_scores: {
 			player1: 0,
@@ -41,8 +42,8 @@ export const useGameStore = defineStore('game', {
 			speed: 0
 		},
 		_screen: {
-			width: 1080,
-			height: 720
+			width: 400,
+			height: 300
 		},
 		_controller: {
 			w: {pressed: false, func: gameController.moveW},

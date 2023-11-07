@@ -1,96 +1,101 @@
 //Fond noir ou blanc
 function buildBackground (ctx) {
-	const { optionsList } = useGameStore()
+	const { optionsList, screen } = useGameStore()
 	ctx.beginPath();
 	ctx.fillStyle = optionsList.value.backgroundColor;
 	ctx.moveTo(0, 0);
-	ctx.lineTo(1080, 0);
-	ctx.lineTo(0, 720);
-	ctx.moveTo(1080, 720);
-	ctx.lineTo(0, 720);
-	ctx.lineTo(1080, 0);
+	ctx.lineTo(screen.value.width, 0);
+	ctx.lineTo(0, screen.value.height);
+	ctx.moveTo(screen.value.width, screen.value.height);
+	ctx.lineTo(0, screen.value.height);
+	ctx.lineTo(screen.value.width, 0);
 	ctx.fill();
 }
 
 //Affichage des scores
 function buildScores (ctx) {
-	const { optionsList, scores } = useGameStore()
+	const { optionsList, scores, screen } = useGameStore()
 	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.font = "100px Arial";
-	ctx.fillText(scores.value.player1.toString() + " - " + scores.value.player2.toString(), 440, 390); 
+	ctx.font = (screen.value.width * 0.093).toString() + "px Arial";
+	ctx.fillText(scores.value.player1.toString() + " - " + scores.value.player2.toString(), screen.value.width * 0.407, screen.value.height * 0.542); 
 
 	if (optionsList.value.numPlayer === 4) {
-		ctx.fillText(scores.value.player3.toString(), 510, 300);
-		ctx.fillText(scores.value.player4.toString(), 510, 480);
+		ctx.fillText(scores.value.player3.toString(), screen.value.width * 0.480, screen.value.height * 0.417);
+		ctx.fillText(scores.value.player4.toString(), screen.value.width * 0.480, screen.value.height * 0.667);
 	}
 }
 
 //Affichage d'un joueur
 function buildPlayer (ctx, x, y, dir) {
-	const { optionsList } = useGameStore()
+	const { optionsList, screen } = useGameStore()
 	if (dir === "vertical") {
 		ctx.beginPath();
 		ctx.fillStyle = optionsList.value.assetsColor;
-		ctx.moveTo(x, y);
-		ctx.lineTo(x + 10, y);
-		ctx.lineTo(x, y + optionsList.value.padSize);
+		ctx.moveTo(x * screen.value.width/1080, y * screen.value.height/720);
+		ctx.lineTo((x + 10) * screen.value.width/1080, y * screen.value.height/720);
+		ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.padSize) * screen.value.height/720);
 
-		ctx.moveTo(x + 10, y + optionsList.value.padSize);
-		ctx.lineTo(x, y + optionsList.value.padSize);
-		ctx.lineTo(x + 10, y);
+		ctx.moveTo((x + 10) * screen.value.width/1080, (y + optionsList.value.padSize) * screen.value.height/720);
+		ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.padSize) * screen.value.height/720);
+		ctx.lineTo((x + 10) * screen.value.width/1080, y * screen.value.height/720);
 		ctx.fill();
 	}
 	else {
 		ctx.beginPath();
 		ctx.fillStyle = optionsList.value.assetsColor;
-		ctx.moveTo(x, y);
-		ctx.lineTo(x, y + 10);
-		ctx.lineTo(x + optionsList.value.padSize, y);
+		ctx.moveTo(x * screen.value.width/1080, y * screen.value.height/720);
+		ctx.lineTo(x * screen.value.width/1080, (y + 10) * screen.value.height/720);
+		ctx.lineTo((x + optionsList.value.padSize) * screen.value.width/1080, y * screen.value.height/720);
 
-		ctx.moveTo(x + optionsList.value.padSize, y + 10);
-		ctx.lineTo(x + optionsList.value.padSize, y);
-		ctx.lineTo(x, y + 10);
+		ctx.moveTo((x + optionsList.value.padSize) * screen.value.width/1080, (y + 10) * screen.value.height/720);
+		ctx.lineTo((x + optionsList.value.padSize) * screen.value.width/1080, y * screen.value.height/720);
+		ctx.lineTo(x * screen.value.width/1080, (y + 10) * screen.value.height/720);
 		ctx.fill();
 	}
 }
 
 //Affichage de la balle
 function buildBall (ctx, x, y) {
-	const { optionsList } = useGameStore()
+	const { optionsList, screen } = useGameStore()
 	ctx.beginPath();
 	ctx.fillStyle = optionsList.value.assetsColor;
-	ctx.moveTo(x, y);
-	ctx.lineTo(x + optionsList.value.ballSize, y);
-	ctx.lineTo(x, y + optionsList.value.ballSize);
+	ctx.moveTo(x * screen.value.width/1080, y * screen.value.height/720);
+	ctx.lineTo((x + optionsList.value.ballSize) * screen.value.width/1080, y * screen.value.height/720);
+	ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.ballSize) * screen.value.height/720);
 
-	ctx.moveTo(x + optionsList.value.ballSize, y + optionsList.value.ballSize);
-	ctx.lineTo(x, y + optionsList.value.ballSize);
-	ctx.lineTo(x + optionsList.value.ballSize, y);
+	ctx.moveTo((x + optionsList.value.ballSize) * screen.value.width/1080, (y + optionsList.value.ballSize) * screen.value.height/720);
+	ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.ballSize) * screen.value.height/720);
+	ctx.lineTo((x + optionsList.value.ballSize) * screen.value.width/1080, y * screen.value.height/720);
 	ctx.fill();
 }
 
+function ratio () {
+	const { screen } = useGameStore()
+	return screen.value.width/1060;
+}
+
 function buildPongName (ctx) {
-	const { optionsList } = useGameStore()
+	const { optionsList, screen } = useGameStore()
 	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.font = "200px Arial";
-	ctx.fillText("PONG", 250, 250);
+	ctx.font = (ratio() * 200).toString() + "px Arial";
+	ctx.fillText("PONG", ratio() * 250, ratio() * 250);
 }
 
 function buildMenuOptions (ctx) {
 	const { optionsList, mouse } = useGameStore()
-	ctx.font = "50px Arial";
+	ctx.font = (ratio() * 50).toString() + "px Arial";
 
-	if (mouse.value.x > 538 && mouse.value.x < 698 && mouse.value.y > 501 && mouse.value.y < 538)
+	if (mouse.value.x > ratio() * 538 && mouse.value.x < ratio() * 698 && mouse.value.y > ratio() * 501 && mouse.value.y < ratio() * 538)
 		ctx.fillStyle = "red";
 	else
 		ctx.fillStyle = optionsList.value.fontColor;
-	ctx.fillText("START", 450, 450);
+	ctx.fillText("START", ratio() * 450, ratio() * 450);
 
-	if (mouse.value.x > 510 && mouse.value.x < 733 && mouse.value.y > 599 && mouse.value.y < 639)
+	if (mouse.value.x > ratio() * 510 && mouse.value.x < ratio() * 733 && mouse.value.y > ratio() * 599 && mouse.value.y < ratio() * 639)
 		ctx.fillStyle = "red";
 	else
 		ctx.fillStyle = optionsList.value.fontColor;
-	ctx.fillText("OPTIONS", 420, 550);
+	ctx.fillText("OPTIONS", ratio() * 420, ratio() * 550);
 }
 
 function buildOptionsTemplate (ctx) {
@@ -108,27 +113,27 @@ function buildOptionsTemplate (ctx) {
 	//Nombre de points
 	ctx.fillStyle = optionsList.value.fontColor;
 	ctx.fillText("NOMBRE DE POINTS : " + optionsList.value.maxPoint, 250, 150);
-	if (mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 190 && mouse.value.y < 215)
+	if (mouse.value.x > ratio() * 234 && mouse.value.x < ratio() * 280 && mouse.value.y > ratio() * 190 && mouse.value.y < ratio() * 215)
 		ctx.fillStyle = "red";
 	else
 		ctx.fillStyle = optionsList.value.fontColor;
 	ctx.beginPath();
-	ctx.moveTo(150, 125);
-	ctx.lineTo(170, 105);
-	ctx.lineTo(190, 125);
-	ctx.moveTo(190, 125);
-	ctx.lineTo(170, 105);
+	ctx.moveTo(ratio() * 150, ratio() * 125);
+	ctx.lineTo(ratio() * 170, ratio() * 105);
+	ctx.lineTo(ratio() * 190, ratio() * 125);
+	ctx.moveTo(ratio() * 190, ratio() * 125);
+	ctx.lineTo(ratio() * 170, ratio() * 105);
 	ctx.fill();
-	if (mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 221 && mouse.value.y < 244)
+	if (mouse.value.x > ratio() * 234 && mouse.value.x < ratio() * 280 && mouse.value.y > ratio() * 221 && mouse.value.y < ratio() * 244)
 		ctx.fillStyle = "red";
 	else
 		ctx.fillStyle = optionsList.value.fontColor;
 	ctx.beginPath();
-	ctx.moveTo(150, 135);
-	ctx.lineTo(170, 155);
-	ctx.lineTo(190, 135);
-	ctx.moveTo(190, 135);
-	ctx.lineTo(170, 155);
+	ctx.moveTo(ratio() * 150, ratio() * 135);
+	ctx.lineTo(ratio() * 170, ratio() * 155);
+	ctx.lineTo(ratio() * 190, ratio() * 135);
+	ctx.moveTo(ratio() * 190, ratio() * 135);
+	ctx.lineTo(ratio() * 170, ratio() * 155);
 	ctx.fill();
 
 	//Nombre de joueurs
@@ -290,7 +295,7 @@ function buildOptionsTemplate2 (ctx) {
 
 	//Ball size
 	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.fillText("OPTION 2 : ", 250, 350);
+	ctx.fillText("MODE : " + optionsList.value.mode, 250, 350);
 	if (mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 391 && mouse.value.y < 414)
 		ctx.fillStyle = "red";
 	else
@@ -316,7 +321,7 @@ function buildOptionsTemplate2 (ctx) {
 
 	//Pad size
 	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.fillText("OPTION 3 : ", 250, 450);
+	ctx.fillText("RANDOMIZER : " + optionsList.value.randomizer, 250, 450);
 	if (mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 491 && mouse.value.y < 514)
 		ctx.fillStyle = "red";
 	else
