@@ -1,15 +1,59 @@
+function buildImageBackground(ctx, theme)
+{
+	const { screen } = useGameStore()
+	let base_image = new Image();
+	base_image.src = "themes/" + theme + "/background.jpg";
+	base_image.onload = function(){
+		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
+	}
+}
+
+function buildImagePlayerVertical(ctx, theme)
+{
+	const { screen } = useGameStore()
+	let base_image = new Image();
+	base_image.src = "themes/" + theme + '/playerV.jpg';
+	base_image.onload = function(){
+		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
+	}
+}
+
+function buildImagePlayerHorizontal(ctx, theme)
+{
+	const { screen } = useGameStore()
+	let base_image = new Image();
+	base_image.src = "themes/" + theme + '/playerH.jpg';
+	base_image.onload = function(){
+		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
+	}
+}
+
+function buildImageBall(ctx, theme)
+{
+	const { screen } = useGameStore()
+	let base_image = new Image();
+	base_image.src = "themes/" + theme + '/ball.jpg';
+	base_image.onload = function(){
+		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
+	}
+}
+
 //Fond noir ou blanc
 function buildBackground (ctx) {
 	const { optionsList, screen } = useGameStore()
-	ctx.beginPath();
-	ctx.fillStyle = optionsList.value.backgroundColor;
-	ctx.moveTo(0, 0);
-	ctx.lineTo(screen.value.width, 0);
-	ctx.lineTo(0, screen.value.height);
-	ctx.moveTo(screen.value.width, screen.value.height);
-	ctx.lineTo(0, screen.value.height);
-	ctx.lineTo(screen.value.width, 0);
-	ctx.fill();
+	if (screen.value.background === "default") {
+		ctx.beginPath();
+		ctx.fillStyle = optionsList.value.backgroundColor;
+		ctx.moveTo(0, 0);
+		ctx.lineTo(screen.value.width, 0);
+		ctx.lineTo(0, screen.value.height);
+		ctx.moveTo(screen.value.width, screen.value.height);
+		ctx.lineTo(0, screen.value.height);
+		ctx.lineTo(screen.value.width, 0);
+		ctx.fill();
+	}
+	else
+		buildImageBackground(ctx, screen.value.background)
 }
 
 //Affichage des scores

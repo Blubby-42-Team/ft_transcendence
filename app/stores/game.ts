@@ -40,7 +40,8 @@ export const useGameStore = defineStore('game', {
 		_screen: {
 			width: 200,
 			height: 200,
-			preview: false
+			preview: false,
+			background: "night"
 		},
 		_controller: {
 			w: {pressed: false, func: gameController.moveW},
