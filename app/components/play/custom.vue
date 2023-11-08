@@ -12,9 +12,9 @@ const isHost = ref(false)
 			<div class="w-full p-2 text-3xl text-center bg-color3">Settings</div>
 			<div class="grid grid-cols-[auto,5rem,3rem,3rem,3rem] p-1 gap-1 w-full">
 				<div class="flex items-center h-full col-span-2">Number of Players</div>
-				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12"><Icon name="material-symbols:looks-one" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12"><Icon name="material-symbols:looks-two" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12"><Icon name="material-symbols:looks-4" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="!isHost" :selected="optionsList.numPlayer === 1" class="w-full h-12" @click="() => optionsList.numPlayer = 1"><Icon name="material-symbols:looks-one" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="!isHost" :selected="optionsList.numPlayer === 2" class="w-full h-12" @click="() => optionsList.numPlayer = 2"><Icon name="material-symbols:looks-two" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="!isHost" :selected="optionsList.numPlayer === 4" class="w-full h-12" @click="() => optionsList.numPlayer = 4"><Icon name="material-symbols:looks-4" class="w-full h-full"/></GenericButton>
 
 				<div class="flex items-center h-full col-span-2">Max Round</div>
 				<div class="flex items-center h-full">{{ optionsList.maxPoint }}</div>
@@ -42,14 +42,12 @@ const isHost = ref(false)
 				<GenericButton :buttonStyle="1" class="w-full h-12" :disabled="!isHost" :selected="optionsList.mode === 'hard'"  @click="() => optionsList.mode = 'hard'"> <Icon name="material-symbols:sentiment-dissatisfied" class="w-full h-full"/></GenericButton>
 				<GenericButton :buttonStyle="1" class="w-full h-12" :disabled="!isHost" :selected="optionsList.mode === 'crazy'" @click="() => optionsList.mode = 'crazy'"><Icon name="material-symbols:sentiment-extremely-dissatisfied" class="w-full h-full"/></GenericButton>
 			</div>
-			{{ isHost }}
-			<!-- <client-only placeholder="loading...">
-				<GamePreviewCanvas/>
-			</client-only> -->
+			
+			<GamePreviewCanvas/>
 
 			<div class="w-full p-2">
 				<GenericButton :button-style="1" class="flex w-full p-2"
-					@click="() => { isHost = !isHost; console.log(isHost) }"
+					@click="() => isHost = !isHost"
 				>
 					Play
 				</GenericButton>
