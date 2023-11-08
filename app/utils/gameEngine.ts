@@ -198,7 +198,7 @@ function CollisionPadTop () {
 			bonk.play();
 		}
 		if (ball.value.x + optionsList.value.ballSize/2 < players.value.third + optionsList.value.padSize/2) {
-			ball.value.dir = 0 - ((players.value.third + optionsList.value.padSize/2 - ball.value.x) / optionsList.value.padSize/2 * Math.PI * 3/4)
+			ball.value.dir = Math.PI/2 + ((players.value.third + optionsList.value.padSize/2 - ball.value.x) / optionsList.value.padSize/2 * Math.PI * 3/4)
 			if (ball.value.dir > Math.PI * 3/4)
 				ball.value.dir = Math.PI * 3/4;
 		}

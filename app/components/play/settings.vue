@@ -22,6 +22,14 @@ function updateRounds(delta: number){
 	}
 }
 
+function updateRandomizer() {
+	if (optionsList.value.randomizer) {
+		optionsList.value.padSize = 100;
+		optionsList.value.ballSize = 15;
+	}
+	optionsList.value.randomizer = !optionsList.value.randomizer
+}
+
 const difficulties = [
 	{ name:'easy', icon: 'material-symbols:sentiment-neutral' },
 	{ name:'hard', icon: 'material-symbols:sentiment-dissatisfied' },
@@ -55,7 +63,7 @@ const difficulties = [
 			<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12" @click="updatePadSize(-50)"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
 
 			<div class="flex items-center h-full col-span-4">Activate Randomizer</div>
-			<GenericButton :buttonStyle="1" :selected="optionsList.randomizer" :disabled="!isHost" class="w-full h-12" @click="() => optionsList.randomizer = !optionsList.randomizer">
+			<GenericButton :buttonStyle="1" :selected="optionsList.randomizer" :disabled="!isHost" class="w-full h-12" @click="updateRandomizer">
 				<Icon v-if="optionsList.randomizer" name="material-symbols:check-box" class="w-full h-full"/>
 				<Icon v-else name="material-symbols:check-box-outline-blank" class="w-full h-full"/>
 			</GenericButton>
