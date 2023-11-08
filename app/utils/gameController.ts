@@ -6,7 +6,7 @@ function moveW () {
 }
 
 function moveS () {
-	const { players, screen, optionsList } = useGameStore();
+	const { players, optionsList } = useGameStore();
 	if (optionsList.value.numPlayer !== 1)
 		players.value.first += 20;
 	if (players.value.first > 720 - optionsList.value.padSize) {players.value.first = 720 - optionsList.value.padSize}
@@ -19,7 +19,7 @@ function moveUp () {
 }
 
 function moveDown () {
-	const { players, screen, optionsList } = useGameStore();
+	const { players, optionsList } = useGameStore();
 	players.value.second += 20;
 	if (players.value.second > 720 - optionsList.value.padSize) {players.value.second = 720 - optionsList.value.padSize}
 }
@@ -31,7 +31,7 @@ function moveC () {
 }
 
 function moveV () {
-	const { players, screen, optionsList } = useGameStore();
+	const { players, optionsList } = useGameStore();
 	players.value.forth += 30;
 	if (players.value.forth > 1080 - optionsList.value.padSize) {players.value.forth = 1080 - optionsList.value.padSize}
 }
@@ -43,7 +43,7 @@ function moveU () {
 }
 
 function moveI () {
-	const { players, screen, optionsList } = useGameStore();
+	const { players, optionsList } = useGameStore();
 	players.value.third += 30;
 	if (players.value.third > 1080 - optionsList.value.padSize) {players.value.third = 1080 - optionsList.value.padSize}
 }
@@ -81,6 +81,22 @@ function moveIASec () {
 		players.value.second += IASpeed();
 }
 
+function moveIAThird () {
+	const { optionsList, players, ball } = useGameStore();
+	if (players.value.third > ball.value.x + optionsList.value.ballSize)
+		players.value.third -= IASpeed() * 3/2;
+	else if (players.value.third + optionsList.value.padSize < ball.value.x)
+		players.value.third += IASpeed() * 3/2;
+}
+
+function moveIAForth () {
+	const { optionsList, players, ball } = useGameStore();
+	if (players.value.forth > ball.value.x + optionsList.value.ballSize)
+		players.value.forth -= IASpeed() * 3/2;
+	else if (players.value.forth + optionsList.value.padSize < ball.value.x)
+		players.value.forth += IASpeed() * 3/2;
+}
+
 export default {
 	moveW,
 	moveS,
@@ -92,5 +108,7 @@ export default {
 	moveI,
 	executeMoves,
 	moveIA,
-	moveIASec
+	moveIASec,
+	moveIAThird,
+	moveIAForth
 }

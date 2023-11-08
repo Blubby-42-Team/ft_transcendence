@@ -3,25 +3,28 @@
 const { optionsList, screen, players, activePlayer, ball } = useGameStore()
 
 onMounted(() => {
-	let oldOptions = {
-		maxPoint: optionsList.value.maxPoint,
-		numPlayer: optionsList.value.numPlayer,
-		randomizer: optionsList.value.randomizer,
-		padSize: optionsList.value.padSize,
-		ballSize: optionsList.value.ballSize,
-	}
-
 	function startLoop() {
 		players.value.first = 360 - optionsList.value.padSize/2;
 		players.value.second = 360 - optionsList.value.padSize/2;
 		players.value.third = 540 - optionsList.value.padSize/2;
 		players.value.forth = 540 - optionsList.value.padSize/2;
 
+		activePlayer.value.top = true;
+		activePlayer.value.bottom = true;
+		activePlayer.value.left = true;
+		activePlayer.value.right = true;
+
 		ball.value.x = 540 - optionsList.value.ballSize/2;
 		ball.value.y = 360 - optionsList.value.ballSize/2;
 		ball.value.dir = Math.PI/6;
 		ball.value.speed = 4;
 	}
+
+	watch(optionsList.value, (newValue, oldValue) => {
+		console.log(optionsList.value ,oldValue, newValue)
+		if (!optionsList.value.randomizer)
+			startLoop();
+	}, { deep: true, immediate: true })
 
 	function refreshSize () {
 		if (document.getElementById('previewCanvasDiv')?.offsetHeight >= 720/1080 * document.getElementById('previewCanvasDiv')?.offsetWidth) {
@@ -57,29 +60,26 @@ onMounted(() => {
 		gameGraphics.buildBall(ctx, ball.value.x, ball.value.y)
 	}
 
-	function checkOption () {
-		if (optionsList.value.maxPoint !== oldOptions.maxPoint
-			|| optionsList.value.randomizer !== oldOptions.randomizer
-			|| optionsList.value.numPlayer !== oldOptions.numPlayer
-			|| ((optionsList.value.padSize !== oldOptions.padSize
-				|| optionsList.value.ballSize !== oldOptions.ballSize)
-				&& !optionsList.value.randomizer)) {
-			startLoop();
-			oldOptions = optionsList.value;
-		}
-	}
-
 	function preview () {
 		refreshSize();
-		checkOption();
 		if (!ball.value.speed)
 			ball.value.speed = 4;
 		screen.value.preview = true;
 		gameEngine.moveBall();
 		gameController.moveIA();
 		gameController.moveIASec();
-		gameEngine.checkCollisionWall();
-		gameEngine.checkCollisionPad();
+		if (optionsList.value.numPlayer === 4) {
+			gameController.moveIAThird();
+			gameController.moveIAForth();
+		}
+		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
+			gameEngine.checkCollisionWall();
+			gameEngine.checkCollisionPad();
+		}
+		else {
+			gameEngine.checkCollisionPadActive();
+			gameEngine.checkEndPlay();
+		}
 		reload();
 		window.requestAnimationFrame(preview)
 	}

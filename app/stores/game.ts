@@ -38,8 +38,8 @@ export const useGameStore = defineStore('game', {
 			speed: 0
 		},
 		_screen: {
-			width: 1080,
-			height: 720,
+			width: 200,
+			height: 200,
 			preview: false
 		},
 		_controller: {
