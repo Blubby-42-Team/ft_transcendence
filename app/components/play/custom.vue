@@ -4,6 +4,30 @@ const { optionsList } = useGameStore()
 
 const isHost = ref(false)
 
+function updatePadSize(delta: number){
+	if (0 < optionsList.value.padSize + delta && optionsList.value.padSize + delta < 300){
+		optionsList.value.padSize += delta
+	}
+}
+
+function updateBallSize(delta: number){
+	if (5 < optionsList.value.ballSize + delta && optionsList.value.ballSize + delta < 55){
+		optionsList.value.ballSize += delta
+	}
+}
+
+function updateRounds(delta: number){
+	if (0 < optionsList.value.maxPoint + delta && optionsList.value.maxPoint + delta < 11){
+		optionsList.value.maxPoint += delta
+	}
+}
+
+const difficulties = [
+	{ name:'easy', icon: 'material-symbols:sentiment-neutral' },
+	{ name:'hard', icon: 'material-symbols:sentiment-dissatisfied' },
+	{ name:'crazy', icon: 'material-symbols:sentiment-extremely-dissatisfied' },
+]
+
 </script>
 
 <template>
@@ -18,18 +42,18 @@ const isHost = ref(false)
 
 				<div class="flex items-center h-full col-span-2">Max Round</div>
 				<div class="flex items-center h-full">{{ optionsList.maxPoint }}</div>
-				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12"><Icon name="material-symbols:add" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12" @click="updateRounds(1)"> <Icon name="material-symbols:add" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="!isHost" class="w-full h-12" @click="updateRounds(-1)"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
 
 				<div class="flex items-center h-full col-span-2">Ball Size</div>
 				<div class="flex items-center h-full"><span v-if="!optionsList.randomizer">{{ optionsList.ballSize / 10}}x</span></div>
-				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12"><Icon name="material-symbols:add" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12" @click="updateBallSize(5)"> <Icon name="material-symbols:add" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12" @click="updateBallSize(-5)"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
 
 				<div class="flex items-center h-full col-span-2">Pad Size</div>
 				<div class="flex items-center h-full"><span v-if="!optionsList.randomizer">{{ optionsList.padSize / 100 }}x</span></div>
-				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12"><Icon name="material-symbols:add" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12" @click="updatePadSize(50)"> <Icon name="material-symbols:add" class="w-full h-full"/></GenericButton>
+				<GenericButton :buttonStyle="1" :disabled="optionsList.randomizer || !isHost" class="w-full h-12" @click="updatePadSize(-50)"><Icon name="material-symbols:remove" class="w-full h-full"/></GenericButton>
 
 				<div class="flex items-center h-full col-span-4">Activate Randomizer</div>
 				<GenericButton :buttonStyle="1" :selected="optionsList.randomizer" :disabled="!isHost" class="w-full h-12" @click="() => optionsList.randomizer = !optionsList.randomizer">
@@ -38,19 +62,23 @@ const isHost = ref(false)
 				</GenericButton>
 				
 				<div class="flex items-center h-full col-span-2">Bot Difficulty</div>
-				<GenericButton :buttonStyle="1" class="w-full h-12" :disabled="!isHost" :selected="optionsList.mode === 'easy'"  @click="() => optionsList.mode = 'easy'"> <Icon name="material-symbols:sentiment-neutral" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" class="w-full h-12" :disabled="!isHost" :selected="optionsList.mode === 'hard'"  @click="() => optionsList.mode = 'hard'"> <Icon name="material-symbols:sentiment-dissatisfied" class="w-full h-full"/></GenericButton>
-				<GenericButton :buttonStyle="1" class="w-full h-12" :disabled="!isHost" :selected="optionsList.mode === 'crazy'" @click="() => optionsList.mode = 'crazy'"><Icon name="material-symbols:sentiment-extremely-dissatisfied" class="w-full h-full"/></GenericButton>
+				<template v-for="difficulty in difficulties">
+					<GenericButton :buttonStyle="1" class="w-full h-12"
+						:disabled="!isHost || optionsList.numPlayer !== 1"
+						:selected="optionsList.mode === difficulty.name  && optionsList.numPlayer === 1"
+						@click="() => optionsList.mode = difficulty.name"
+					>
+						<Icon :name="difficulty.icon" class="w-full h-full"/>
+					</GenericButton>
+				</template>
 			</div>
 			
-			<GamePreviewCanvas/>
+			<div class="p-5">
+				<GamePreviewCanvas/>
+			</div>
 
 			<div class="w-full p-2">
-				<GenericButton :button-style="1" class="flex w-full p-2"
-					@click="() => isHost = !isHost"
-				>
-					Play
-				</GenericButton>
+				<GenericButton :button-style="1" class="flex w-full p-2" @click="() => isHost = !isHost">Play</GenericButton>
 			</div>
 		</div>
 		<div class="p-5 bg-yellow-400">
