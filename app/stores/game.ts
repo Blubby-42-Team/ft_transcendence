@@ -59,7 +59,6 @@ export const useGameStore = defineStore('game', {
 	getters: {
 		optionsList: (state) => computed(() => state._optionsList),
 		scores: (state) => computed(() => state._scores),
-		mouse: (state) => computed(() => state._mouse),
 		players: (state) => computed(() => state._players),
 		activePlayer: (state) => computed(() => state._activePlayer),
 		ball: (state) => computed(() => state._ball),
