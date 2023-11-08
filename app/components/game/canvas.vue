@@ -144,7 +144,7 @@ document.addEventListener("keyup", (e) => {
 </script>
 
 <template>
-	<div class="w-full h-full canvasDiv">
+	<div id="canvasDiv" class="w-full h-full">
 		<client-only placeholder="loading...">
 			<canvas class="bg-white" ref="canvas" :width="screen.width" :height="screen.height" style="border:1px solid #ffffff;"></canvas>
 		</client-only>
