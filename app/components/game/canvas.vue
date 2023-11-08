@@ -105,6 +105,7 @@ onMounted(() => {
 	const game = () => {
 		gameController.executeMoves()
 		gameEngine.moveBall();
+		screen.value.preview = false;
 		if (optionsList.value.numPlayer === 1)
 			gameController.moveIA();
 		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
