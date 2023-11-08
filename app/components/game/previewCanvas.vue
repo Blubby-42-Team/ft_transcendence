@@ -20,11 +20,13 @@ onMounted(() => {
 		ball.value.speed = 4;
 	}
 
-	watch(optionsList.value, (newValue, oldValue) => {
-		console.log(optionsList.value ,oldValue, newValue)
+	watch(() => JSON.stringify(optionsList.value), (newValueString, oldValueString) => {
+		const newValue = JSON.parse(newValueString);
+		const oldValue = oldValueString ? JSON.parse(oldValueString) : {};
+		console.log(oldValue, newValue)
 		if (!optionsList.value.randomizer)
 			startLoop();
-	}, { deep: true, immediate: true })
+	})
 
 	function refreshSize () {
 		if (document.getElementById('previewCanvasDiv')?.offsetHeight >= 720/1080 * document.getElementById('previewCanvasDiv')?.offsetWidth) {

@@ -7,11 +7,6 @@ const test = [
 	{ name: 'James iewweawewsertrwa', profilepic: '/amogus.png' },
 ];
 
-watch(optionsList, () => {}, {
-	deep: true,
-	immediate: true
-})
-
 </script>
 
 <template>
