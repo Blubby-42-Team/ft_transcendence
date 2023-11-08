@@ -23,8 +23,9 @@ onMounted(() => {
 	watch(() => JSON.stringify(optionsList.value), (newValueString, oldValueString) => {
 		const newValue = JSON.parse(newValueString);
 		const oldValue = oldValueString ? JSON.parse(oldValueString) : {};
-		console.log(oldValue, newValue)
 		if (!optionsList.value.randomizer)
+			startLoop();
+		else if (newValue.numPlayer !== oldValue.numPlayer || newValue.mode !== oldValue.mode || newValue.maxPoint !== oldValue.maxPoint)
 			startLoop();
 	})
 
