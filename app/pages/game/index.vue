@@ -25,20 +25,18 @@ const selectedMode = useState('selectedMode', () => modes[0]);
 			</template>
 		</div>
 		<div>
-			<TransitionFade mode="out-in" :duration="{ enter: 100, leave: 100 }">
-				<template v-if="selectedMode === 'Local'">
-					<PlayLocal/>
-				</template>
-				<template v-else-if="selectedMode === 'Classic'">
-					<PlayClassic/>
-				</template>
-				<template v-else-if="selectedMode === 'Random'">
-					<PlayRandom/>
-				</template>
-				<template v-else-if="selectedMode === 'Custom'">
-					<PlayCustom/>
-				</template>
-			</TransitionFade>
+			<template v-if="selectedMode === 'Local'">
+				<PlayLocal/>
+			</template>
+			<template v-else-if="selectedMode === 'Classic'">
+				<PlayClassic/>
+			</template>
+			<template v-else-if="selectedMode === 'Random'">
+				<PlayRandom/>
+			</template>
+			<template v-else-if="selectedMode === 'Custom'">
+				<PlayCustom/>
+			</template>
 		</div>
 		<!-- <client-only placeholder="loading...">
 			<GameCanvas />
