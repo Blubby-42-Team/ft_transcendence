@@ -18,7 +18,7 @@ function checkCollisionWall () {
 	if (ball.value.y < 0) {
 		ball.value.y = 0;
 		ball.value.dir = 2 * Math.PI - ball.value.dir;
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -26,7 +26,7 @@ function checkCollisionWall () {
 	if (ball.value.y > 720 - optionsList.value.ballSize) {
 		ball.value.y = 720 - optionsList.value.ballSize;
 		ball.value.dir = 2 * Math.PI - ball.value.dir;
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -38,12 +38,12 @@ function checkCollisionPad () {
 	if (ball.value.x < 30) {
 		ball.value.x = 30;
 		if (ball.value.y + optionsList.value.ballSize > players.value.first && ball.value.y < players.value.first + optionsList.value.padSize) {
-			if (optionsList.value.sound === "on") {
+			if (optionsList.value.sound) {
 				let bonk = new Audio('bonk.mp3');
 				bonk.play()
 			}
 			ball.value.speed++;
-			if (optionsList.value.randomizer === "on") {
+			if (optionsList.value.randomizer) {
 				optionsList.value.ballSize = Math.floor(Math.random() * 50);
 				optionsList.value.padSize = Math.floor(Math.random() * 300);
 			}
@@ -59,7 +59,7 @@ function checkCollisionPad () {
 			}
 		}
 		else {
-			if (optionsList.value.sound === "on")
+			if (optionsList.value.sound)
 				coin.play();
 			scores.value.player2++;
 			ball.value.dir = Math.PI * 5 / 6;
@@ -69,12 +69,12 @@ function checkCollisionPad () {
 	if (ball.value.x > (1080 - 30) - optionsList.value.ballSize) {
 		ball.value.x = (1080 - 30) - optionsList.value.ballSize;
 		if (ball.value.y + optionsList.value.ballSize > players.value.second && ball.value.y < players.value.second + optionsList.value.padSize) {
-			if (optionsList.value.sound === "on") {
+			if (optionsList.value.sound) {
 				let bonk = new Audio('bonk.mp3');
 				bonk.play()
 			}
 			ball.value.speed++;
-			if (optionsList.value.randomizer === "on") {
+			if (optionsList.value.randomizer) {
 				optionsList.value.ballSize = Math.floor(Math.random() * 50);
 				optionsList.value.padSize = Math.floor(Math.random() * 300);
 			}
@@ -90,7 +90,7 @@ function checkCollisionPad () {
 			}
 		}
 		else {
-			if (optionsList.value.sound === "on")
+			if (optionsList.value.sound)
 				coin.play();
 			scores.value.player1++;
 			ball.value.dir = Math.PI / 6;
@@ -104,11 +104,11 @@ function CollisionPadLeft () {
 	ball.value.x = 30;
 	if (ball.value.y + optionsList.value.ballSize > players.value.first && ball.value.y < players.value.first + optionsList.value.padSize) {
 		ball.value.speed++;
-		if (optionsList.value.randomizer === "on") {
+		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 50);
 			optionsList.value.padSize = Math.floor(Math.random() * 300);
 		}
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -124,7 +124,7 @@ function CollisionPadLeft () {
 		}
 	}
 	else {
-		if (optionsList.value.sound === "on")
+		if (optionsList.value.sound)
 			waa.play();
 		activePlayer.value.left = false;
 		ball.value.dir = Math.PI * 5 / 6;
@@ -137,11 +137,11 @@ function CollisionPadRight () {
 	ball.value.x = (1080 - 30) - optionsList.value.ballSize;
 	if (ball.value.y + optionsList.value.ballSize > players.value.second && ball.value.y < players.value.second + optionsList.value.padSize) {
 		ball.value.speed++;
-		if (optionsList.value.randomizer === "on") {
+		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 50);
 			optionsList.value.padSize = Math.floor(Math.random() * 300);
 		}
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -157,7 +157,7 @@ function CollisionPadRight () {
 		}
 	}
 	else {
-		if (optionsList.value.sound === "on")
+		if (optionsList.value.sound)
 			waa.play();
 		activePlayer.value.right = false;
 		ball.value.dir = Math.PI / 6;
@@ -170,11 +170,11 @@ function CollisionPadTop () {
 	ball.value.y = 30;
 	if (ball.value.x + optionsList.value.ballSize > players.value.third && ball.value.x < players.value.third + optionsList.value.padSize) {
 		ball.value.speed++;
-		if (optionsList.value.randomizer === "on") {
+		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 50);
 			optionsList.value.padSize = Math.floor(Math.random() * 300);
 		}
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -190,7 +190,7 @@ function CollisionPadTop () {
 		}
 	}
 	else {
-		if (optionsList.value.sound === "on")
+		if (optionsList.value.sound)
 			waa.play();
 		activePlayer.value.top = false;
 		ball.value.dir = Math.PI * 8 / 6;
@@ -203,11 +203,11 @@ function CollisionPadBottom () {
 	ball.value.y = (720 - 30) - optionsList.value.ballSize;
 	if (ball.value.x + optionsList.value.ballSize > players.value.forth && ball.value.x < players.value.forth + optionsList.value.padSize) {
 		ball.value.speed++;
-		if (optionsList.value.randomizer === "on") {
+		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 50);
 			optionsList.value.padSize = Math.floor(Math.random() * 300);
 		}
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -223,7 +223,7 @@ function CollisionPadBottom () {
 		}
 	}
 	else {
-		if (optionsList.value.sound === "on")
+		if (optionsList.value.sound)
 			waa.play();
 		activePlayer.value.bottom = false;
 		ball.value.dir = Math.PI * 4 / 6;
@@ -237,7 +237,7 @@ function checkCollisionPadActive () {
 	if (ball.value.x < 30 && activePlayer.value.left)
 		CollisionPadLeft();
 	else if (ball.value.x < 0 && !activePlayer.value.left) {
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -248,7 +248,7 @@ function checkCollisionPadActive () {
 	if (ball.value.x > (1080 - 30) - optionsList.value.ballSize && activePlayer.value.right)
 		CollisionPadRight();
 	else if (ball.value.x > 1080 - optionsList.value.ballSize && !activePlayer.value.right) {
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -259,7 +259,7 @@ function checkCollisionPadActive () {
 	if (ball.value.y < 30 && activePlayer.value.top)
 		CollisionPadTop();
 	else if (ball.value.y < 0 && !activePlayer.value.top) {
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}
@@ -270,7 +270,7 @@ function checkCollisionPadActive () {
 	if (ball.value.y > (720 - 30) - optionsList.value.ballSize && activePlayer.value.bottom)
 		CollisionPadBottom();
 	else if (ball.value.y > 720 - optionsList.value.ballSize && !activePlayer.value.bottom) {
-		if (optionsList.value.sound === "on") {
+		if (optionsList.value.sound) {
 			let bonk = new Audio('bonk.mp3');
 			bonk.play();
 		}

@@ -9,9 +9,9 @@ export const useGameStore = defineStore('game', {
 			backgroundColor: "black",
 			fontColor: "gray",
 			assetsColor: "white",
-			sound: "off",
+			sound: false,
 			mode: "easy",
-			randomizer: "off"
+			randomizer: false
 		},
 		_scores: {
 			player1: 0,

@@ -103,17 +103,11 @@ function clicked () {
 	}
 	//sound up
 	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 290 && mouse.value.y < 315) {
-		if (optionsList.value.sound === "on")
-			optionsList.value.sound = "off";
-		else
-			optionsList.value.sound = "on";
+		optionsList.value.randomizer = true;
 	}
 	//sound down
 	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 321 && mouse.value.y < 344) {
-		if (optionsList.value.sound === "on")
-			optionsList.value.sound = "off";
-		else
-			optionsList.value.sound = "on";
+		optionsList.value.randomizer = false;
 	}
 	//mode up
 	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 390 && mouse.value.y < 415) {
@@ -135,17 +129,11 @@ function clicked () {
 	}
 	//random up
 	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 490 && mouse.value.y < 515) {
-		if (optionsList.value.randomizer === "on")
-			optionsList.value.randomizer = "off";
-		else
-			optionsList.value.randomizer = "on";
+		optionsList.value.randomizer = true;
 	}
 	//random down
 	else if (utils.value.page === 3 && mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 521 && mouse.value.y < 544) {
-		if (optionsList.value.randomizer === "on")
-			optionsList.value.randomizer = "off";
-		else
-			optionsList.value.randomizer = "on";
+		optionsList.value.randomizer = false;
 	}
 }
 

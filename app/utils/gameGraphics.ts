@@ -269,7 +269,7 @@ function buildOptionsTemplate2 (ctx) {
 
 	//Nombre de joueurs
 	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.fillText("SON : " + optionsList.value.sound, 250, 250);
+	ctx.fillText("SON : " + (optionsList.value.sound ? 'on' : 'off'), 250, 250);
 	if (mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 293 && mouse.value.y < 311)
 		ctx.fillStyle = "red";
 	else
@@ -321,7 +321,7 @@ function buildOptionsTemplate2 (ctx) {
 
 	//Pad size
 	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.fillText("RANDOMIZER : " + optionsList.value.randomizer, 250, 450);
+	ctx.fillText("RANDOMIZER : " + (optionsList.value.randomizer ? 'on' : 'off'), 250, 450);
 	if (mouse.value.x > 234 && mouse.value.x < 280 && mouse.value.y > 491 && mouse.value.y < 514)
 		ctx.fillStyle = "red";
 	else
