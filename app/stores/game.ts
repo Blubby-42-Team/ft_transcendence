@@ -2,16 +2,16 @@ export const useGameStore = defineStore('game', {
 	state: () => ({
 		_optionsList: {
 			maxPoint: 1,
-			numPlayer: 2,
+			numPlayer: 1,
 			ballSize: 15,
 			padSize: 100,
 			theme: "dark mode",
 			backgroundColor: "black",
 			fontColor: "gray",
 			assetsColor: "white",
-			sound: "off",
-			mode: "easy",
-			randomizer: "off"
+			sound: true,
+			mode: "crazy",
+			randomizer: true
 		},
 		_scores: {
 			player1: 0,
