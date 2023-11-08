@@ -11,7 +11,7 @@ const themeIndex = useState('themeIndex');
 		<LayoutSidebar/>
 		<div class="grid grid-rows-[4em,auto,min-content] h-screen overflow-hidden">
 			<LayoutHeader/>
-			<div id="canvasDiv" class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 scrollbar-thumb-rounded-full scrollbar-track">
+			<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 scrollbar-thumb-rounded-full scrollbar-track">
 				<slot />
 			</div>
 			<LayoutFooter/>
