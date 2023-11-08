@@ -23,7 +23,6 @@ onMounted(() => {
 	watch(() => JSON.stringify(optionsList.value), (newValueString, oldValueString) => {
 		const newValue = JSON.parse(newValueString);
 		const oldValue = oldValueString ? JSON.parse(oldValueString) : {};
-		console.log(oldValue, newValue)
 		if (!optionsList.value.randomizer)
 			startLoop();
 	})
