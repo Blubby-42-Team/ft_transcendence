@@ -73,6 +73,14 @@ function moveIA () {
 		players.value.first += IASpeed();
 }
 
+function moveIASec () {
+	const { optionsList, players, ball } = useGameStore();
+	if (players.value.second > ball.value.y + optionsList.value.ballSize)
+		players.value.second -= IASpeed();
+	else if (players.value.second + optionsList.value.padSize < ball.value.y)
+		players.value.second += IASpeed();
+}
+
 export default {
 	moveW,
 	moveS,
@@ -83,5 +91,6 @@ export default {
 	moveU,
 	moveI,
 	executeMoves,
-	moveIA
+	moveIA,
+	moveIASec
 }

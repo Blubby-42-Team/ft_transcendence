@@ -10,7 +10,7 @@ export const useGameStore = defineStore('game', {
 			fontColor: "gray",
 			assetsColor: "white",
 			sound: true,
-			mode: "crazy",
+			mode: "easy",
 			randomizer: true
 		},
 		_scores: {
@@ -39,11 +39,8 @@ export const useGameStore = defineStore('game', {
 		},
 		_screen: {
 			width: 1080,
-			height: 720
-		},
-		_previewSize: {
-			width: 200,
-			height: 200
+			height: 720,
+			preview: false
 		},
 		_controller: {
 			w: {pressed: false, func: gameController.moveW},
@@ -68,8 +65,7 @@ export const useGameStore = defineStore('game', {
 		ball: (state) => computed(() => state._ball),
 		screen: (state) => computed(() => state._screen),
 		controller: (state) => computed(() => state._controller),
-		utils: (state) => computed(() => state._utils),
-		previewSize: (state) => computed(() => state._previewSize)
+		utils: (state) => computed(() => state._utils)
 	},
 	actions: {
 	}
