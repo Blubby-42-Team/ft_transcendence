@@ -1,7 +1,12 @@
-import { ConnectedSocket, MessageBody, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
 import { log } from 'console';
 import { Server, Socket } from 'socket.io'
 import {JoinRoomRequest} from '@shared/ws.dto'
+import { TestDto } from '@shared/test.dto';
+import { validate } from 'class-validator';
+import { BadRequestException, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { WsBadRequestExceptionFilter } from './game.exception.filter';
+import { plainToClass } from 'class-transformer';
 
 @WebSocketGateway({
 	namespace: 'game',
@@ -10,28 +15,24 @@ import {JoinRoomRequest} from '@shared/ws.dto'
 		credentials: true
 	},
 })
-export class GameGateway implements OnGatewayInit{
+
+// Catch all BadRequestException and send it to the client by emitting an error `event`
+@UseFilters(new WsBadRequestExceptionFilter())
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+
+	// When a client connect to the server
+	handleConnection(client: Socket, ...args: any[]) {
+		log(`Client ${client.id} connected`);
+	}
 	
+	// When a client disconnect from the server
+	handleDisconnect(client: Socket) {
+		log(`Client ${client.id} disconnected`);
+	}
+
+	// Inject the server instance
 	@WebSocketServer()
 	server: Server;
-
-	afterInit() {
-	}
-
-	@SubscribeMessage('connection')
-	handleConnection(client: any, payload: any): string {
-		log("New ws connextion");
-		return 'ok';
-	}
-	
-	// @SubscribeMessage('message')
-	// handleMessage(@MessageBody() data: any) {
-	// 	log("Recieve new message")
-	// 	log(JSON.stringify(data))
-	// 	this.server.emit('message', {
-	// 		res: "Hello world!"
-	// 	})
-	// }
 
 	@SubscribeMessage('message')
 	handleMessage(@MessageBody() data: any) : WsResponse<string>{
@@ -47,26 +48,18 @@ export class GameGateway implements OnGatewayInit{
 	}
 
 	@SubscribeMessage('testRoom')
-	testRooms(@ConnectedSocket() client: Socket, req: JoinRoomRequest) {
-		// validate(req).then(errors => {
-		// 	if (errors.length > 0) {
-		// 		log("Error")
-		// 		log(errors)
-		// 	} else {
-		// 		log("No error")
-		// 	}
-		// }
-		// )
-		log("Test room")
+	@UsePipes(new ValidationPipe())
+	async testRooms(@ConnectedSocket() client: Socket, @MessageBody() req: JoinRoomRequest) {
+		log(req)
 	}
 
-  @SubscribeMessage('joinRoom')
-  handleJoinRoom(client: Socket, room: string) {
-    client.join(room);
-    console.log(`Client ${client.id} joined room ${room}`);
+//   @SubscribeMessage('joinRoom')
+//   handleJoinRoom(client: Socket, room: string) {
+//     client.join(room);
+//     console.log(`Client ${client.id} joined room ${room}`);
     
-    // You can also broadcast to the room or emit a message to the client
-    this.server.to(room).emit('message', 'Hello from the room!');
-    client.emit('message', 'Welcome to the room!');
-  }
+//     // You can also broadcast to the room or emit a message to the client
+//     this.server.to(room).emit('message', 'Hello from the room!');
+//     client.emit('message', 'Welcome to the room!');
+//   }
 }
