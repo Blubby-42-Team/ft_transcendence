@@ -1,4 +1,4 @@
-import { gameOption, gameScreen, gameTexture, gameTheme } from "~/stores/game";
+import { gameOption, gamePlayers, gameScreen, gameTexture, gameTheme } from "~/stores/game";
 
 function loadTexture(text: gameTexture){
 	if (text.type === 'image'){
@@ -9,10 +9,10 @@ function loadTexture(text: gameTexture){
 
 function loadTheme(theme: gameTheme){
 	loadTexture(theme.background);
-	loadTexture(theme.player1);
-	loadTexture(theme.player2);
-	loadTexture(theme.player3);
-	loadTexture(theme.player4);
+	loadTexture(theme.player_left);
+	loadTexture(theme.player_right);
+	loadTexture(theme.player_top);
+	loadTexture(theme.player_bottom);
 	loadTexture(theme.ball);
 }
 
@@ -63,14 +63,15 @@ function buildBackground(ctx: CanvasRenderingContext2D, screen: gameScreen, them
 
 //Affichage des scores
 function buildScores (ctx: CanvasRenderingContext2D) {
-	const { optionsList, scores, screen, theme } = useGameStore()
+	const { optionsList, player, screen, theme } = useGameStore()
 	ctx.fillStyle = theme.value.fontColor;
 	ctx.font = (screen.value.width * 0.093).toString() + "px Arial";
-	ctx.fillText(scores.value.player1.toString() + " - " + scores.value.player2.toString(), screen.value.width * 0.407, screen.value.height * 0.542); 
+	
+	ctx.fillText(`${player.value.left.score} - ${player.value.right.score}`, screen.value.width * 0.407, screen.value.height * 0.542); 
 
 	if (optionsList.value.numPlayer === 4) {
-		ctx.fillText(scores.value.player3.toString(), screen.value.width * 0.480, screen.value.height * 0.417);
-		ctx.fillText(scores.value.player4.toString(), screen.value.width * 0.480, screen.value.height * 0.667);
+		ctx.fillText(`${player.value.top.score}`,		screen.value.width * 0.480, screen.value.height * 0.417);
+		ctx.fillText(`${player.value.bottom.score}`,	screen.value.width * 0.480, screen.value.height * 0.667);
 	}
 }
 
@@ -132,26 +133,21 @@ function drawGame(ctx: CanvasRenderingContext2D,
 	screen: gameScreen,
 	theme: gameTheme,
 	optionsList: gameOption,
-	players: { first: number, second: number, third: number, forth: number },
-	activePlayer: { top: boolean, bottom: boolean, left: boolean, right: boolean },
+	player: gamePlayers,
 	ball: { x: number, y: number, dir: number, speed: number },
 ){
 	buildBackground(ctx, screen, theme);
 	buildScores(ctx)
 
 	if (optionsList.numPlayer === 1 || optionsList.numPlayer === 2) {
-		buildPlayer(ctx, 20, players.first, "vertical", theme.player1);
-		buildPlayer(ctx, 1050, players.second, "vertical", theme.player2);
+		buildPlayer(ctx, 20, player.left.position,		"vertical", theme.player_left);
+		buildPlayer(ctx, 1050, player.right.position,	"vertical", theme.player_right)
 	}
 	else if (optionsList.numPlayer === 4) {
-		if (activePlayer.left)
-			buildPlayer(ctx, 20, players.first, "vertical", theme.player1);
-		if (activePlayer.right)
-			buildPlayer(ctx, 1050, players.second, "vertical", theme.player2);
-		if (activePlayer.top)
-			buildPlayer(ctx, players.third, 20, "horizontal", theme.player3);
-		if (activePlayer.bottom)
-			buildPlayer(ctx, players.forth, 690, "horizontal", theme.player4);
+		if (player.left.active)		buildPlayer(ctx, 20, player.left.position,		"vertical", theme.player_left);
+		if (player.right.active)	buildPlayer(ctx, 1050, player.right.position,	"vertical", theme.player_right);
+		if (player.top.active)		buildPlayer(ctx, player.top.position, 20,		"horizontal", theme.player_top);
+		if (player.bottom.active)	buildPlayer(ctx, player.bottom.position, 690,	"horizontal", theme.player_bottom);
 	}
 
 	buildBall(ctx, ball.x, ball.y);
@@ -161,18 +157,18 @@ function drawGame(ctx: CanvasRenderingContext2D,
 function drawGameOver(ctx: CanvasRenderingContext2D,
 	screen: gameScreen,
 	theme: gameTheme,
-	scores: {player1: number, player2: number, player3: number, player4: number}
+	player: gamePlayers
 ){
 	buildBackground(ctx, screen, theme);
 
 	ctx.fillStyle = theme.fontColor;
-	ctx.font = (screen.deltaX * 100).toString + "px Arial";
+	ctx.font = `${screen.deltaX * 100}px Arial`;
 	ctx.fillText("   GAME OVER", screen.deltaX * 100, screen.deltaX * 310);
-	if (scores.player1 > scores.player2 && scores.player1 > scores.player3 && scores.player1 > scores.player4)
+	if (player.left.score > player.right.score && player.left.score > player.top.score && player.left.score > player.bottom.score)
 		ctx.fillText("   PLAYER 1 WINS!", screen.deltaX * 100, screen.deltaX * 410);
-	else if (scores.player2 > scores.player1 && scores.player2 > scores.player3 && scores.player2 > scores.player4)
+	else if (player.right.score > player.left.score && player.right.score > player.top.score && player.right.score > player.bottom.score)
 		ctx.fillText("   PLAYER 2 WINS!", screen.deltaX * 100, screen.deltaX * 410);
-	else if (scores.player3 > scores.player1 && scores.player3 > scores.player2 && scores.player3 > scores.player4)
+	else if (player.top.score > player.left.score && player.top.score > player.right.score && player.top.score > player.bottom.score)
 		ctx.fillText("   PLAYER 3 WINS!", screen.deltaX * 100, screen.deltaX * 410);
 	else
 		ctx.fillText("   PLAYER 4 WINS!", screen.deltaX * 100, screen.deltaX * 410);

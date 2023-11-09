@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 
-const { screen, players, ball, optionsList, controller, utils, theme, scores, activePlayer } = useGameStore()
+const { screen, player, ball, optionsList, controller, utils, theme } = useGameStore()
 
 enum gameStatus {
 	STARTED,
 	GAMEOVER
 }
 
+const canvasParentId = 'canvasDiv';
 let time = 0;
 let status: gameStatus = gameStatus.STARTED;
 
@@ -17,21 +18,21 @@ function game() {
 		return ;
 	}
 	
-	gameGraphics.updateSize(screen, 'canvasDiv');
+	gameGraphics.updateSize(screen, canvasParentId);
 
 	if (status === gameStatus.STARTED){
 		gameEngine.gameTick(optionsList.value, screen);
 
-		if (gameEngine.isGameOver(scores.value, optionsList.value)){
+		if (gameEngine.isGameOver(player.value, optionsList.value)){
 			status = gameStatus.GAMEOVER;
 		}
-		gameGraphics.drawGame(ctx, screen.value, theme.value, optionsList.value, players.value, activePlayer.value, ball.value);
+		gameGraphics.drawGame(ctx, screen.value, theme.value, optionsList.value, player.value, ball.value);
 	}
 	else if (status === gameStatus.GAMEOVER){
-		gameGraphics.drawGameOver(ctx, screen.value, theme.value, scores.value);
+		gameGraphics.drawGameOver(ctx, screen.value, theme.value, player.value);
 		time++;
 		if (time > 200){
-			gameEngine.reset(scores, ball, players, optionsList.value);
+			gameEngine.reset(ball, player, optionsList.value);
 			status = gameStatus.STARTED;
 			time = 0;
 		}
@@ -40,31 +41,30 @@ function game() {
 	window.requestAnimationFrame(game);
 }
 
-onMounted(() => {
+onMounted(() => {	
+	document.addEventListener("keydown", (e) => {
+		if(controller.value[e.key]){
+			controller.value[e.key].pressed = true
+		}
+	})
+	
+	document.addEventListener("keyup", (e) => {
+		if(controller.value.hasOwnProperty(e.key)){
+			controller.value[e.key].pressed = false
+		}
+		if (e.key === " ") {
+			if (!utils.value.start)
+				ball.value.speed = 4;
+			utils.value.start = true;
+		}
+	})
+
 	gameGraphics.updateSize(screen, 'canvasDiv');
 	gameGraphics.loadTheme(theme.value);
-	gameEngine.reset(scores, ball, players, optionsList.value);
+	gameEngine.reset(ball, player, optionsList.value);
 	window.requestAnimationFrame(game);
 })
 
-//Key pressed
-document.addEventListener("keydown", (e) => {
-	if(controller.value[e.key]){
-		controller.value[e.key].pressed = true
-	}
-})
-
-//Key released
-document.addEventListener("keyup", (e) => {
-	if(controller.value.hasOwnProperty(e.key)){
-		controller.value[e.key].pressed = false
-	}
-	if (e.key === " ") {
-		if (!utils.value.start)
-			ball.value.speed = 4;
-		utils.value.start = true;
-	}
-})
 
 </script>
 

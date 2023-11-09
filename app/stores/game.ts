@@ -29,35 +29,32 @@ export type gameTexture = {
 
 export type gameTheme = {
 	fontColor: string,
-	background: gameTexture,
-	player1: gameTexture,
-	player2: gameTexture,
-	player3: gameTexture,
-	player4: gameTexture,
-	ball: gameTexture,
+	background:		gameTexture,
+	player_top:		gameTexture,
+	player_bottom:	gameTexture,
+	player_left:	gameTexture,
+	player_right:	gameTexture,
+	ball:			gameTexture,
+}
+
+export type gamePlayer = {
+	active: boolean,
+	isBot: boolean,
+	position: number,
+	score:number
+}
+
+export type gamePlayers = {
+	top:	gamePlayer,
+	bottom: gamePlayer,
+	left:	gamePlayer,
+	right:	gamePlayer,
 }
 
 export type gameState =  {
 	_optionsList: gameOption,
 	_theme: gameTheme,
-	_scores: {
-		player1: number,
-		player2: number,
-		player3: number,
-		player4: number
-	},
-	_players: {
-		first: number,
-		second: number,
-		third: number,
-		forth: number
-	},
-	_activePlayer: {
-		top: boolean,
-		bottom: boolean,
-		left: boolean,
-		right: boolean
-	},
+	_player: gamePlayers,
 	_ball: {
 		x: number,
 		y: number,
@@ -83,31 +80,19 @@ export const useGameStore = defineStore('game', {
 			randomizer: true
 		},
 		_theme: {
-			fontColor:	"gray",
-			background:	{ type: 'color', color: 'black' },
-			player1:	{ type: 'color', color: 'white' },
-			player2:	{ type: 'color', color: 'white' },
-			player3:	{ type: 'color', color: 'white' },
-			player4:	{ type: 'color', color: 'white' },
-			ball:		{ type: 'color', color: 'white' },
+			fontColor:		"gray",
+			background:		{ type: 'color', color: 'black' },
+			player_top:		{ type: 'color', color: 'white' },
+			player_bottom:	{ type: 'color', color: 'white' },
+			player_left:	{ type: 'color', color: 'white' },
+			player_right:	{ type: 'color', color: 'white' },
+			ball:			{ type: 'color', color: 'white' },
 		},
-		_scores: {
-			player1: 0,
-			player2: 0,
-			player3: 0,
-			player4: 0
-		},
-		_players: {
-			first: 0,
-			second: 0,
-			third: 0,
-			forth: 0
-		},
-		_activePlayer: {
-			top: false,
-			bottom: false,
-			left: true,
-			right: true
+		_player: {
+			top:	{ active: false, isBot: false, position: 0, score: 0 },
+			bottom: { active: false, isBot: false, position: 0, score: 0 },
+			left:	{ active: false, isBot: false, position: 0, score: 0 },
+			right:	{ active: false, isBot: false, position: 0, score: 0 },
 		},
 		_ball: {
 			x: 0,
@@ -124,29 +109,27 @@ export const useGameStore = defineStore('game', {
 			background: "default"
 		},
 		_controller: {
-			w: {pressed: false, func: gameController.moveW},
-			s: {pressed: false, func: gameController.moveS},
-			ArrowUp: {pressed: false, func: gameController.moveUp},
-			ArrowDown: {pressed: false, func: gameController.moveDown},
-			c: {pressed: false, func: gameController.moveC},
-			v: {pressed: false, func: gameController.moveV},
-			u: {pressed: false, func: gameController.moveU},
-			i: {pressed: false, func: gameController.moveI}
+			w:			{ pressed: false, func: gameController.moveW },
+			s:			{ pressed: false, func: gameController.moveS },
+			ArrowUp:	{ pressed: false, func: gameController.moveUp },
+			ArrowDown:	{ pressed: false, func: gameController.moveDown },
+			c:			{ pressed: false, func: gameController.moveC },
+			v:			{ pressed: false, func: gameController.moveV },
+			u:			{ pressed: false, func: gameController.moveU },
+			i:			{ pressed: false, func: gameController.moveI }
 		},
 		_utils: {
 			start: false
 		}
 	}),
 	getters: {
-		optionsList: (state) => computed(() => state._optionsList),
-		theme: (state) => computed(() => state._theme),
-		scores: (state) => computed(() => state._scores),
-		players: (state) => computed(() => state._players),
-		activePlayer: (state) => computed(() => state._activePlayer),
-		ball: (state) => computed(() => state._ball),
-		screen: (state) => computed(() => state._screen),
-		controller: (state) => computed(() => state._controller),
-		utils: (state) => computed(() => state._utils)
+		optionsList:	(state) => computed(() => state._optionsList),
+		theme:			(state) => computed(() => state._theme),
+		player: 		(state) => computed(() => state._player),
+		ball: 			(state) => computed(() => state._ball),
+		screen: 		(state) => computed(() => state._screen),
+		controller: 	(state) => computed(() => state._controller),
+		utils: 			(state) => computed(() => state._utils)
 	},
 	actions: {
 	}

@@ -1,15 +1,15 @@
 function resetPlay () {
-	const { ball, players, optionsList, utils } = useGameStore();
+	const { ball, player, optionsList, utils } = useGameStore();
 	if (optionsList.value.randomizer) {
 		optionsList.value.ballSize = 15;
 		optionsList.value.padSize = 100;
 	}
 	ball.value.x = 540 - optionsList.value.ballSize/2;
 	ball.value.y = 360 - optionsList.value.ballSize/2;
-	players.value.first = 360 - optionsList.value.padSize/2;
-	players.value.second = 360 - optionsList.value.padSize/2;
-	players.value.third = 540 - optionsList.value.padSize/2;
-	players.value.forth = 540 - optionsList.value.padSize/2;
+	player.value.left.position		= 360 - optionsList.value.padSize/2;
+	player.value.right.position		= 360 - optionsList.value.padSize/2;
+	player.value.top.position		= 540 - optionsList.value.padSize/2;
+	player.value.bottom.position	= 540 - optionsList.value.padSize/2;
 	ball.value.speed = 0;
 	utils.value.start = false;
 }
@@ -35,10 +35,10 @@ function checkCollisionWall () {
 }
 
 function checkCollisionPad () {
-	const { ball, players, optionsList, scores, screen } = useGameStore();
+	const { ball, player, optionsList, screen } = useGameStore();
 	if (ball.value.x < 30) {
 		ball.value.x = 30;
-		if (ball.value.y + optionsList.value.ballSize > players.value.first && ball.value.y < players.value.first + optionsList.value.padSize) {
+		if (ball.value.y + optionsList.value.ballSize > player.value.left.position && ball.value.y < player.value.left.position + optionsList.value.padSize) {
 			if (optionsList.value.sound && !screen.value.preview) {
 				let bonk = new Audio('/bonk.mp3');
 				bonk.play();
@@ -50,13 +50,13 @@ function checkCollisionPad () {
 					ball.value.x = 1050 - optionsList.value.ballSize - 1;
 				optionsList.value.padSize = Math.floor(Math.random() * 250) + 50;
 			}
-			if (ball.value.y + optionsList.value.ballSize/2 < players.value.first + optionsList.value.padSize/2) {
-				ball.value.dir = 0 - ((players.value.first + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
+			if (ball.value.y + optionsList.value.ballSize/2 < player.value.left.position + optionsList.value.padSize/2) {
+				ball.value.dir = 0 - ((player.value.left.position + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
 				if (ball.value.dir < - Math.PI/4)
 					ball.value.dir = - Math.PI/4;
 			}
 			else {
-				ball.value.dir = (ball.value.y - (players.value.first + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4
+				ball.value.dir = (ball.value.y - (player.value.left.position + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4
 				if (ball.value.dir > Math.PI/4)
 					ball.value.dir = Math.PI/4;
 			}
@@ -66,14 +66,14 @@ function checkCollisionPad () {
 				let coin = new Audio('/coin.mp3');
 				coin.play();
 			}
-			scores.value.player2++;
+			player.value.right.score++;
 			ball.value.dir = Math.PI * 5 / 6;
 			resetPlay();
 		}
 	}
 	if (ball.value.x > (1080 - 30) - optionsList.value.ballSize) {
 		ball.value.x = (1080 - 30) - optionsList.value.ballSize;
-		if (ball.value.y + optionsList.value.ballSize > players.value.second && ball.value.y < players.value.second + optionsList.value.padSize) {
+		if (ball.value.y + optionsList.value.ballSize > player.value.right.position && ball.value.y < player.value.right.position + optionsList.value.padSize) {
 			if (optionsList.value.sound && !screen.value.preview) {
 				let bonk = new Audio('/bonk.mp3');
 				bonk.play();
@@ -85,13 +85,13 @@ function checkCollisionPad () {
 					ball.value.x = 1050 - optionsList.value.ballSize - 1;
 				optionsList.value.padSize = Math.floor(Math.random() * 250) + 50;
 			}
-			if (ball.value.y + optionsList.value.ballSize/2 < players.value.second + optionsList.value.padSize/2) {
-				ball.value.dir = Math.PI + ((players.value.second + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
+			if (ball.value.y + optionsList.value.ballSize/2 < player.value.right.position + optionsList.value.padSize/2) {
+				ball.value.dir = Math.PI + ((player.value.right.position + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
 				if (ball.value.dir > Math.PI * 5/4)
 					ball.value.dir = Math.PI * 5/4;
 			}
 			else {
-				ball.value.dir = Math.PI - ((ball.value.y - (players.value.second + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4)
+				ball.value.dir = Math.PI - ((ball.value.y - (player.value.right.position + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4)
 				if (ball.value.dir < Math.PI * 3/4)
 					ball.value.dir = Math.PI * 3/4;
 			}
@@ -101,7 +101,7 @@ function checkCollisionPad () {
 				let coin = new Audio('/coin.mp3');
 				coin.play();
 			}
-			scores.value.player1++;
+			player.value.left.score++;
 			ball.value.dir = Math.PI / 6;
 			resetPlay();
 		}
@@ -109,9 +109,9 @@ function checkCollisionPad () {
 }
 
 function CollisionPadLeft () {
-	const { ball, players, optionsList, activePlayer, screen } = useGameStore();
+	const { ball, player, optionsList, screen } = useGameStore();
 	ball.value.x = 30;
-	if (ball.value.y + optionsList.value.ballSize > players.value.first && ball.value.y < players.value.first + optionsList.value.padSize) {
+	if (ball.value.y + optionsList.value.ballSize > player.value.left.position && ball.value.y < player.value.left.position + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 45) + 5;
@@ -123,13 +123,13 @@ function CollisionPadLeft () {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
 		}
-		if (ball.value.y + optionsList.value.ballSize/2 < players.value.first + optionsList.value.padSize/2) {
-			ball.value.dir = 0 - ((players.value.first + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
+		if (ball.value.y + optionsList.value.ballSize/2 < player.value.left.position + optionsList.value.padSize/2) {
+			ball.value.dir = 0 - ((player.value.left.position + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
 			if (ball.value.dir < - Math.PI/4)
 				ball.value.dir = - Math.PI/4;
 		}
 		else {
-			ball.value.dir = (ball.value.y - (players.value.first + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4
+			ball.value.dir = (ball.value.y - (player.value.left.position + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4
 			if (ball.value.dir > Math.PI/4)
 				ball.value.dir = Math.PI/4;
 		}
@@ -139,16 +139,16 @@ function CollisionPadLeft () {
 			let waa = new Audio('/waa.mp3');
 			waa.play();
 		}
-		activePlayer.value.left = false;
+		player.value.left.active = false;
 		ball.value.dir = Math.PI * 5 / 6;
 		resetPlay();
 	}
 }
 
 function CollisionPadRight () {
-	const { ball, players, optionsList, activePlayer, screen } = useGameStore();
+	const { ball, player, optionsList, screen } = useGameStore();
 	ball.value.x = (1080 - 30) - optionsList.value.ballSize;
-	if (ball.value.y + optionsList.value.ballSize > players.value.second && ball.value.y < players.value.second + optionsList.value.padSize) {
+	if (ball.value.y + optionsList.value.ballSize > player.value.right.position && ball.value.y < player.value.right.position + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 45) + 5;
@@ -160,13 +160,13 @@ function CollisionPadRight () {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
 		}
-		if (ball.value.y + optionsList.value.ballSize/2 < players.value.second + optionsList.value.padSize/2) {
-			ball.value.dir = Math.PI + ((players.value.second + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
+		if (ball.value.y + optionsList.value.ballSize/2 < player.value.right.position + optionsList.value.padSize/2) {
+			ball.value.dir = Math.PI + ((player.value.right.position + optionsList.value.padSize/2 - ball.value.y) / optionsList.value.padSize/2 * Math.PI/4)
 			if (ball.value.dir > Math.PI * 5/4)
 				ball.value.dir = Math.PI * 5/4;
 		}
 		else {
-			ball.value.dir = Math.PI - ((ball.value.y - (players.value.second + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4)
+			ball.value.dir = Math.PI - ((ball.value.y - (player.value.right.position + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI/4)
 			if (ball.value.dir < Math.PI * 3/4)
 				ball.value.dir = Math.PI * 3/4;
 		}
@@ -176,16 +176,16 @@ function CollisionPadRight () {
 			let waa = new Audio('/waa.mp3');
 			waa.play();
 		}
-		activePlayer.value.right = false;
+		player.value.right.active = false;
 		ball.value.dir = Math.PI / 6;
 		resetPlay();
 	}
 }
 
 function CollisionPadTop () {
-	const { ball, players, optionsList, activePlayer, screen } = useGameStore();
+	const { ball, player, optionsList, screen } = useGameStore();
 	ball.value.y = 30;
-	if (ball.value.x + optionsList.value.ballSize > players.value.third && ball.value.x < players.value.third + optionsList.value.padSize) {
+	if (ball.value.x + optionsList.value.ballSize > player.value.top.position && ball.value.x < player.value.top.position + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 45) + 5;
@@ -197,13 +197,13 @@ function CollisionPadTop () {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
 		}
-		if (ball.value.x + optionsList.value.ballSize/2 < players.value.third + optionsList.value.padSize/2) {
-			ball.value.dir = Math.PI/2 + ((players.value.third + optionsList.value.padSize/2 - ball.value.x) / optionsList.value.padSize/2 * Math.PI * 3/4)
+		if (ball.value.x + optionsList.value.ballSize/2 < player.value.top.position + optionsList.value.padSize/2) {
+			ball.value.dir = Math.PI/2 + ((player.value.top.position + optionsList.value.padSize/2 - ball.value.x) / optionsList.value.padSize/2 * Math.PI * 3/4)
 			if (ball.value.dir > Math.PI * 3/4)
 				ball.value.dir = Math.PI * 3/4;
 		}
 		else {
-			ball.value.dir = (ball.value.x - (players.value.third + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI * 3/4
+			ball.value.dir = (ball.value.x - (player.value.top.position + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI * 3/4
 			if (ball.value.dir < Math.PI / 4)
 				ball.value.dir = Math.PI / 4;
 		}
@@ -213,16 +213,16 @@ function CollisionPadTop () {
 			let waa = new Audio('/waa.mp3');
 			waa.play();
 		}
-		activePlayer.value.top = false;
+		player.value.top.active = false;
 		ball.value.dir = Math.PI * 8 / 6;
 		resetPlay();
 	}
 }
 
 function CollisionPadBottom () {
-	const { ball, players, optionsList, activePlayer, screen } = useGameStore();
+	const { ball, player, optionsList, screen } = useGameStore();
 	ball.value.y = (720 - 30) - optionsList.value.ballSize;
-	if (ball.value.x + optionsList.value.ballSize > players.value.forth && ball.value.x < players.value.forth + optionsList.value.padSize) {
+	if (ball.value.x + optionsList.value.ballSize > player.value.bottom.position && ball.value.x < player.value.bottom.position + optionsList.value.padSize) {
 		ball.value.speed++;
 		if (optionsList.value.randomizer) {
 			optionsList.value.ballSize = Math.floor(Math.random() * 45) + 5;
@@ -234,13 +234,13 @@ function CollisionPadBottom () {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
 		}
-		if (ball.value.x + optionsList.value.ballSize/2 < players.value.forth + optionsList.value.padSize/2) {
-			ball.value.dir = Math.PI * 3/2 - ((players.value.forth + optionsList.value.padSize/2 - ball.value.x) / optionsList.value.padSize/2 * Math.PI/4)
+		if (ball.value.x + optionsList.value.ballSize/2 < player.value.bottom.position + optionsList.value.padSize/2) {
+			ball.value.dir = Math.PI * 3/2 - ((player.value.bottom.position + optionsList.value.padSize/2 - ball.value.x) / optionsList.value.padSize/2 * Math.PI/4)
 			if (ball.value.dir < Math.PI * 5/4)
 				ball.value.dir = Math.PI * 5/4;
 		}
 		else {
-			ball.value.dir = Math.PI * 3/2 + ((ball.value.x - (players.value.forth + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI * 4)
+			ball.value.dir = Math.PI * 3/2 + ((ball.value.x - (player.value.bottom.position + optionsList.value.padSize/2)) / optionsList.value.padSize/2 * Math.PI * 4)
 			if (ball.value.dir > Math.PI * 7 / 4)
 				ball.value.dir = Math.PI * 7 / 4;
 		}
@@ -250,18 +250,18 @@ function CollisionPadBottom () {
 			let waa = new Audio('/waa.mp3');
 			waa.play();
 		}
-		activePlayer.value.bottom = false;
+		player.value.bottom.active = false;
 		ball.value.dir = Math.PI * 4 / 6;
 		resetPlay();
 	}
 }
 
 function checkCollisionPadActive () {
-	const { ball, optionsList, activePlayer, screen } = useGameStore();
+	const { ball, optionsList, player, screen } = useGameStore();
 	//GAUCHE
-	if (ball.value.x < 30 && activePlayer.value.left)
+	if (ball.value.x < 30 && player.value.left.active)
 		CollisionPadLeft();
-	else if (ball.value.x < 0 && !activePlayer.value.left) {
+	else if (ball.value.x < 0 && !player.value.left.active) {
 		if (optionsList.value.sound && !screen.value.preview) {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
@@ -270,9 +270,9 @@ function checkCollisionPadActive () {
 		ball.value.dir = Math.PI - ball.value.dir;
 	}
 	//DROITE
-	if (ball.value.x > (1080 - 30) - optionsList.value.ballSize && activePlayer.value.right)
+	if (ball.value.x > (1080 - 30) - optionsList.value.ballSize && player.value.right.active)
 		CollisionPadRight();
-	else if (ball.value.x > 1080 - optionsList.value.ballSize && !activePlayer.value.right) {
+	else if (ball.value.x > 1080 - optionsList.value.ballSize && !player.value.right.active) {
 		if (optionsList.value.sound && !screen.value.preview) {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
@@ -281,9 +281,9 @@ function checkCollisionPadActive () {
 		ball.value.dir = Math.PI - ball.value.dir;
 	}
 	//HAUT
-	if (ball.value.y < 30 && activePlayer.value.top)
+	if (ball.value.y < 30 && player.value.top.active)
 		CollisionPadTop();
-	else if (ball.value.y < 0 && !activePlayer.value.top) {
+	else if (ball.value.y < 0 && !player.value.top.active) {
 		if (optionsList.value.sound && !screen.value.preview) {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
@@ -292,9 +292,9 @@ function checkCollisionPadActive () {
 		ball.value.dir = 2 * Math.PI - ball.value.dir;
 	}
 	//BAS
-	if (ball.value.y > (720 - 30) - optionsList.value.ballSize && activePlayer.value.bottom)
+	if (ball.value.y > (720 - 30) - optionsList.value.ballSize && player.value.bottom.active)
 		CollisionPadBottom();
-	else if (ball.value.y > 720 - optionsList.value.ballSize && !activePlayer.value.bottom) {
+	else if (ball.value.y > 720 - optionsList.value.ballSize && !player.value.bottom.active) {
 		if (optionsList.value.sound && !screen.value.preview) {
 			let bonk = new Audio('/bonk.mp3');
 			bonk.play();
@@ -305,33 +305,33 @@ function checkCollisionPadActive () {
 }
 
 function checkEndPlay () {
-	const { scores, activePlayer, optionsList, screen } = useGameStore();
+	const { player, optionsList, screen } = useGameStore();
 	let numPlayerActive = 0;
-	if (activePlayer.value.top)
+	if (player.value.top.active)
 		numPlayerActive++;
-	if (activePlayer.value.bottom)
+	if (player.value.bottom.active)
 		numPlayerActive++;
-	if (activePlayer.value.left)
+	if (player.value.left.active)
 		numPlayerActive++;
-	if (activePlayer.value.right)
+	if (player.value.right.active)
 		numPlayerActive++;
 	if (numPlayerActive < 2) {
 		if (optionsList.value.sound && !screen.value.preview) {
 			let coin = new Audio('/coin.mp3');
 			coin.play();
 		}
-		if (activePlayer.value.top)
-			scores.value.player3++;
-		if (activePlayer.value.bottom)
-			scores.value.player4++;
-		if (activePlayer.value.left)
-			scores.value.player1++;
-		if (activePlayer.value.right)
-			scores.value.player2++;
-		activePlayer.value.top = true;
-		activePlayer.value.bottom = true;
-		activePlayer.value.left = true;
-		activePlayer.value.right = true;
+		if (player.value.top.active)
+			player.value.top.score++;
+		if (player.value.bottom.active)
+			player.value.bottom.score++;
+		if (player.value.left.active)
+			player.value.left.score++;
+		if (player.value.right.active)
+			player.value.right.score++;
+		player.value.top.active = true;
+		player.value.bottom.active = true;
+		player.value.left.active = true;
+		player.value.right.active = true;
 	}
 }
 
@@ -341,29 +341,29 @@ function moveBall () {
 	ball.value.y += ball.value.speed * Math.sin(ball.value.dir);
 }
 
-function isGameOver(scores: {player1: number, player2: number, player3: number, player4: number}, optionsList: gameOption){
-	return scores.player1 >= optionsList.maxPoint
-	|| scores.player2 >= optionsList.maxPoint
-	|| scores.player3 >= optionsList.maxPoint
-	|| scores.player4 >= optionsList.maxPoint
+function isGameOver(player: gamePlayers, optionsList: gameOption){
+	return player.top.score >= optionsList.maxPoint
+	|| player.bottom.score >= optionsList.maxPoint
+	|| player.left.score >= optionsList.maxPoint
+	|| player.right.score >= optionsList.maxPoint
 }
 
 function reset(
-	scores: ComputedRef<{player1: number, player2: number, player3: number, player4: number}>,
 	ball: ComputedRef<{x: number, y: number, dir: number, speed: number}>,
-	players: ComputedRef<{first: number, second: number, third: number, forth: number}>,
+	players: ComputedRef<gamePlayers>,
 	optionsList: gameOption,
 ){
-	scores.value.player1 = 0;
-	scores.value.player2 = 0;
-	scores.value.player3 = 0;
-	scores.value.player4 = 0;
 	ball.value.speed = 0;
 
-	players.value.first = 360 - optionsList.padSize/2;
-	players.value.second = 360 - optionsList.padSize/2;
-	players.value.third = 540 - optionsList.padSize/2;
-	players.value.forth = 540 - optionsList.padSize/2;
+	players.value.left.score	= 0;
+	players.value.right.score	= 0;
+	players.value.top.score		= 0;
+	players.value.bottom.score	= 0;
+
+	players.value.left.position		= 360 - optionsList.padSize/2;
+	players.value.right.position	= 360 - optionsList.padSize/2;
+	players.value.top.position		= 540 - optionsList.padSize/2;
+	players.value.bottom.position	= 540 - optionsList.padSize/2;
 
 	ball.value.x = 540 - optionsList.ballSize/2;
 	ball.value.y = 360 - optionsList.ballSize/2;

@@ -1,101 +1,122 @@
-function moveW () {
-	const { players, optionsList } = useGameStore();
-	if (optionsList.value.numPlayer !== 1)
-		players.value.first -= 20;
-	if (players.value.first < 0) {players.value.first = 0}
+enum MoveDirection {
+	VERTICAL,
+	HORIZONTAL,
+};
+
+function move(player: gamePlayer, dir: MoveDirection, delta: number, padSize: number){
+	console.log('here')
+	if (!player.active || player.isBot){
+		return ;
+	}
+	if (dir === MoveDirection.VERTICAL){
+		if (0 + padSize < player.position + delta && player.position + delta < 720 - padSize)
+			player.position += delta;
+		else if (0 +padSize > player.position + delta){
+			player.position = 0 + padSize;
+		}
+		else if (player.position + delta > 720 - padSize){
+			player.position = 720 - padSize;
+		}
+	}
+	else if (dir === MoveDirection.HORIZONTAL){
+		if (0 + padSize < player.position + delta && player.position + delta < 1080 - padSize)
+			player.position += delta;
+		else if (0 +padSize > player.position + delta){
+			player.position = 0 + padSize;
+		}
+		else if (player.position + delta > 1080 - padSize){
+			player.position = 1080 - padSize;
+		}
+	}
 }
 
-function moveS () {
-	const { players, optionsList } = useGameStore();
-	if (optionsList.value.numPlayer !== 1)
-		players.value.first += 20;
-	if (players.value.first > 720 - optionsList.value.padSize) {players.value.first = 720 - optionsList.value.padSize}
+
+function moveW() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.left, MoveDirection.VERTICAL, -20, optionsList.value.padSize)
 }
 
-function moveUp () {
-	const { players } = useGameStore();
-	players.value.second -= 20;
-	if (players.value.second < 0) {players.value.second = 0}
+function moveS() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.left, MoveDirection.VERTICAL, 20, optionsList.value.padSize)
 }
 
-function moveDown () {
-	const { players, optionsList } = useGameStore();
-	players.value.second += 20;
-	if (players.value.second > 720 - optionsList.value.padSize) {players.value.second = 720 - optionsList.value.padSize}
+function moveUp() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.right, MoveDirection.VERTICAL, -20, optionsList.value.padSize)
 }
 
-function moveC () {
-	const { players } = useGameStore();
-	players.value.forth -= 30;
-	if (players.value.forth < 0) {players.value.forth = 0}
+function moveDown() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.right, MoveDirection.VERTICAL, 20, optionsList.value.padSize)
 }
 
-function moveV () {
-	const { players, optionsList } = useGameStore();
-	players.value.forth += 30;
-	if (players.value.forth > 1080 - optionsList.value.padSize) {players.value.forth = 1080 - optionsList.value.padSize}
+function moveC() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.bottom, MoveDirection.HORIZONTAL, -20, optionsList.value.padSize)
 }
 
-function moveU () {
-	const { players } = useGameStore();
-	players.value.third -= 30;
-	if (players.value.third < 0) {players.value.third = 0}
+function moveV() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.bottom, MoveDirection.HORIZONTAL, 20, optionsList.value.padSize)
 }
 
-function moveI () {
-	const { players, optionsList } = useGameStore();
-	players.value.third += 30;
-	if (players.value.third > 1080 - optionsList.value.padSize) {players.value.third = 1080 - optionsList.value.padSize}
+function moveU() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.top, MoveDirection.HORIZONTAL, -20, optionsList.value.padSize)
 }
 
-function executeMoves () {
+function moveI() {
+	const { player, optionsList } = useGameStore();
+	move(player.value.top, MoveDirection.HORIZONTAL, 20, optionsList.value.padSize)
+}
+
+function executeMoves() {
 	const { controller } = useGameStore();
-	Object.keys(controller.value).forEach(key=> {
-		controller.value[key].pressed && controller.value[key].func()
+	Object.keys(controller.value).forEach((key) => {
+		if (controller.value[key].pressed){
+			controller.value[key].func()
+		}
 	})
 }
 
-function IASpeed () {
-	const { optionsList } = useGameStore();
-	if (optionsList.value.mode === "easy")
+function IASpeed(optionsList: gameOption) {
+	if (optionsList.mode === "easy")
 		return 2;
-	else if (optionsList.value.mode === "hard")
+	else if (optionsList.mode === "hard")
 		return 5;
 	else
 		return 10;
 }
 
-function moveIA () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.first > ball.value.y + optionsList.value.ballSize)
-		players.value.first -= IASpeed();
-	else if (players.value.first + optionsList.value.padSize < ball.value.y)
-		players.value.first += IASpeed();
+function moveIA() {
+	const { optionsList, player, ball } = useGameStore();
+	if (player.value.left.isBot){
+		if (player.value.left.position > ball.value.y + optionsList.value.ballSize)
+			player.value.left.position -= IASpeed(optionsList.value);
+		else if (player.value.left.position + optionsList.value.padSize < ball.value.y)
+			player.value.left.position += IASpeed(optionsList.value);
+	}
+	if (player.value.right.isBot){
+		if (player.value.right.position > ball.value.y + optionsList.value.ballSize)
+			player.value.right.position -= IASpeed(optionsList.value);
+		else if (player.value.right.position + optionsList.value.padSize < ball.value.y)
+			player.value.right.position += IASpeed(optionsList.value);
+	}
+	if (player.value.top.isBot){
+		if (player.value.top.position > ball.value.x + optionsList.value.ballSize)
+			player.value.top.position -= IASpeed(optionsList.value) * 3/2;
+		else if (player.value.top.position + optionsList.value.padSize < ball.value.x)
+			player.value.top.position += IASpeed(optionsList.value) * 3/2;
+	}
+	if (player.value.bottom.isBot){
+		if (player.value.bottom.position > ball.value.x + optionsList.value.ballSize)
+			player.value.bottom.position -= IASpeed(optionsList.value) * 3/2;
+		else if (player.value.bottom.position + optionsList.value.padSize < ball.value.x)
+			player.value.bottom.position += IASpeed(optionsList.value) * 3/2;
+	}
 }
 
-function moveIASec () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.second > ball.value.y + optionsList.value.ballSize)
-		players.value.second -= IASpeed();
-	else if (players.value.second + optionsList.value.padSize < ball.value.y)
-		players.value.second += IASpeed();
-}
-
-function moveIAThird () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.third > ball.value.x + optionsList.value.ballSize)
-		players.value.third -= IASpeed() * 3/2;
-	else if (players.value.third + optionsList.value.padSize < ball.value.x)
-		players.value.third += IASpeed() * 3/2;
-}
-
-function moveIAForth () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.forth > ball.value.x + optionsList.value.ballSize)
-		players.value.forth -= IASpeed() * 3/2;
-	else if (players.value.forth + optionsList.value.padSize < ball.value.x)
-		players.value.forth += IASpeed() * 3/2;
-}
 
 export default {
 	moveW,
@@ -108,7 +129,4 @@ export default {
 	moveI,
 	executeMoves,
 	moveIA,
-	moveIASec,
-	moveIAThird,
-	moveIAForth
 }
