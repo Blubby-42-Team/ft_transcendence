@@ -25,6 +25,8 @@ onMounted(() => {
 		const oldValue = oldValueString ? JSON.parse(oldValueString) : {};
 		if (!optionsList.value.randomizer)
 			startLoop();
+		else if (newValue.numPlayer !== oldValue.numPlayer || newValue.mode !== oldValue.mode || newValue.maxPoint !== oldValue.maxPoint)
+			startLoop();
 	})
 
 	function refreshSize () {
