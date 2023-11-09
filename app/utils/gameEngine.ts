@@ -341,10 +341,53 @@ function moveBall () {
 	ball.value.y += ball.value.speed * Math.sin(ball.value.dir);
 }
 
+function isGameOver(scores: {player1: number, player2: number, player3: number, player4: number}, optionsList: gameOption){
+	return scores.player1 >= optionsList.maxPoint
+	|| scores.player2 >= optionsList.maxPoint
+	|| scores.player3 >= optionsList.maxPoint
+	|| scores.player4 >= optionsList.maxPoint
+}
+
+function reset(
+	scores: ComputedRef<{player1: number, player2: number, player3: number, player4: number}>,
+	ball: ComputedRef<{x: number, y: number, dir: number, speed: number}>,
+	players: ComputedRef<{first: number, second: number, third: number, forth: number}>,
+	optionsList: gameOption,
+){
+	scores.value.player1 = 0;
+	scores.value.player2 = 0;
+	scores.value.player3 = 0;
+	scores.value.player4 = 0;
+	ball.value.speed = 0;
+
+	players.value.first = 360 - optionsList.padSize/2;
+	players.value.second = 360 - optionsList.padSize/2;
+	players.value.third = 540 - optionsList.padSize/2;
+	players.value.forth = 540 - optionsList.padSize/2;
+
+	ball.value.x = 540 - optionsList.ballSize/2;
+	ball.value.y = 360 - optionsList.ballSize/2;
+
+}
+
+function gameTick(optionsList: gameOption, screen: ComputedRef<gameScreen>){
+	gameController.executeMoves()
+	moveBall();
+	screen.value.preview = false;
+	if (optionsList.numPlayer === 1)
+		gameController.moveIA();
+	if (optionsList.numPlayer === 1 || optionsList.numPlayer === 2) {
+		checkCollisionWall();
+		checkCollisionPad();
+	}
+	else if (optionsList.numPlayer === 4) {
+		checkCollisionPadActive();
+		checkEndPlay();
+	}
+}
+
 export default {
-	checkCollisionWall,
-	checkCollisionPad,
-	checkCollisionPadActive,
-	checkEndPlay,
-	moveBall
+	reset,
+	isGameOver,
+	gameTick,
 }

@@ -1,94 +1,71 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 
-const { optionsList, screen, players, activePlayer, ball } = useGameStore()
+const { screen, players, ball, optionsList, controller, utils, theme, scores, activePlayer } = useGameStore()
+
+enum gameStatus {
+	STARTED,
+	GAMEOVER
+}
+
+let time = 0;
+let status: gameStatus = gameStatus.STARTED;
+
+function game() {
+	if (!document){
+		return;
+	}
+	let ctx = document.querySelector("canvas")?.getContext("2d");
+	if (!ctx){
+		window.requestAnimationFrame(game);
+		return ;
+	}
+	
+	gameGraphics.updateSize(screen, 'previewCanvasDiv');
+
+	if (status === gameStatus.STARTED){
+		gameEngine.gameTick(optionsList.value, screen);
+
+		if (gameEngine.isGameOver(scores.value, optionsList.value)){
+			status = gameStatus.GAMEOVER;
+		}
+		gameGraphics.drawGame(ctx, screen.value, theme.value, optionsList.value, players.value, activePlayer.value, ball.value);
+	}
+	else if (status === gameStatus.GAMEOVER){
+		gameGraphics.drawGameOver(ctx, screen.value, theme.value, scores.value);
+		time++;
+		if (time > 200){
+			gameEngine.reset(scores, ball, players, optionsList.value);
+			status = gameStatus.STARTED;
+			time = 0;
+		}
+	}		
+	window.requestAnimationFrame(game);
+}
 
 onMounted(() => {
-	function startLoop() {
-		players.value.first = 360 - optionsList.value.padSize/2;
-		players.value.second = 360 - optionsList.value.padSize/2;
-		players.value.third = 540 - optionsList.value.padSize/2;
-		players.value.forth = 540 - optionsList.value.padSize/2;
+	gameGraphics.updateSize(screen, 'canvasDiv');
+	gameGraphics.loadTheme(theme.value);
+	gameEngine.reset(scores, ball, players, optionsList.value);
+	window.requestAnimationFrame(game);
+})
 
-		activePlayer.value.top = true;
-		activePlayer.value.bottom = true;
-		activePlayer.value.left = true;
-		activePlayer.value.right = true;
-
-		ball.value.x = 540 - optionsList.value.ballSize/2;
-		ball.value.y = 360 - optionsList.value.ballSize/2;
-		ball.value.dir = Math.PI/6;
-		ball.value.speed = 4;
+//Key pressed
+document.addEventListener("keydown", (e) => {
+	if(controller.value[e.key]){
+		controller.value[e.key].pressed = true
 	}
+})
 
-	watch(() => JSON.stringify(optionsList.value), (newValueString, oldValueString) => {
-		const newValue = JSON.parse(newValueString);
-		const oldValue = oldValueString ? JSON.parse(oldValueString) : {};
-		if (!optionsList.value.randomizer)
-			startLoop();
-		else if (newValue.numPlayer !== oldValue.numPlayer || newValue.mode !== oldValue.mode || newValue.maxPoint !== oldValue.maxPoint)
-			startLoop();
-	})
-
-	function refreshSize () {
-		if (document.getElementById('previewCanvasDiv')?.offsetHeight >= 720/1080 * document.getElementById('previewCanvasDiv')?.offsetWidth) {
-			screen.value.width = document.getElementById('previewCanvasDiv')?.offsetWidth * 0.98;
-			screen.value.height = screen.value.width * 720/1080;
-		}
-		else {
-			screen.value.height = document.getElementById('previewCanvasDiv')?.offsetHeight * 0.98;
-			screen.value.width = screen.value.height * 1080/720;
-		}
+//Key released
+document.addEventListener("keyup", (e) => {
+	if(controller.value.hasOwnProperty(e.key)){
+		controller.value[e.key].pressed = false
 	}
-
-	function reload () {
-		let ctx = document.querySelector("canvas").getContext("2d");
-		//background
-		gameGraphics.buildBackground(ctx);
-		//joueurs
-		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
-			gameGraphics.buildPlayer(ctx, 20, players.value.first, "vertical");
-			gameGraphics.buildPlayer(ctx, 1050, players.value.second, "vertical");
-		}
-		else if (optionsList.value.numPlayer === 4) {
-			if (activePlayer.value.left)
-				gameGraphics.buildPlayer(ctx, 20, players.value.first, "vertical");
-			if (activePlayer.value.right)
-				gameGraphics.buildPlayer(ctx, 1050, players.value.second, "vertical");
-			if (activePlayer.value.top)
-				gameGraphics.buildPlayer(ctx, players.value.third, 20, "horizontal");
-			if (activePlayer.value.bottom)
-				gameGraphics.buildPlayer(ctx, players.value.forth, 690, "horizontal");
-		}
-		//ball
-		gameGraphics.buildBall(ctx, ball.value.x, ball.value.y)
-	}
-
-	function preview () {
-		refreshSize();
-		if (!ball.value.speed)
+	if (e.key === " ") {
+		if (!utils.value.start)
 			ball.value.speed = 4;
-		screen.value.preview = true;
-		gameEngine.moveBall();
-		gameController.moveIA();
-		gameController.moveIASec();
-		if (optionsList.value.numPlayer === 4) {
-			gameController.moveIAThird();
-			gameController.moveIAForth();
-		}
-		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
-			gameEngine.checkCollisionWall();
-			gameEngine.checkCollisionPad();
-		}
-		else {
-			gameEngine.checkCollisionPadActive();
-			gameEngine.checkEndPlay();
-		}
-		reload();
-		window.requestAnimationFrame(preview)
+		utils.value.start = true;
 	}
-
-	startLoop();
-	window.requestAnimationFrame(preview);
 })
 
 </script>
