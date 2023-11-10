@@ -13,7 +13,7 @@ export type gameOption = {
 	ballSize: number,
 	padSize: number,
 	sound: boolean,
-	mode: string,
+	mode: BotDifficulty,
 	randomizer: boolean,
 }
 
@@ -51,22 +51,33 @@ export type gamePlayers = {
 	right:	gamePlayer,
 }
 
-export type gameState =  {
-	_optionsList: gameOption,
-	_theme: gameTheme,
-	_player: gamePlayers,
-	_ball: {
-		x: number,
-		y: number,
-		dir: number,
-		speed: number,
-	},
-	_screen: gameScreen,
-	_controller: {[key: string]: { pressed: boolean, func: () => void }},
-	_utils: {
-		status: gameStatus;
-	}
+export type gameBall = {
+	x: number,
+	y: number,
+	dir: number,
+	speed: number,
 }
+
+export type gameUtils = {
+	status: gameStatus,
+	iaSpeed: number,
+}
+
+export type gameState =  {
+	_optionsList:	gameOption,
+	_theme:			gameTheme,
+	_player:		gamePlayers,
+	_ball:			gameBall,
+	_screen:		gameScreen,
+	_controller:	gameControllerType,
+	_utils:			gameUtils
+}
+
+export enum BotDifficulty {
+	NORMAL,
+	HARD,
+	CRAZY,
+};
 
 export enum PlayerPosition {
 	LEFT,
@@ -101,7 +112,7 @@ export const useGameStore = defineStore('game', {
 			ballSize: 15,
 			padSize: 100,
 			sound: true,
-			mode: "easy",
+			mode: BotDifficulty.NORMAL,
 			randomizer: true
 		},
 		_theme: {
@@ -136,6 +147,7 @@ export const useGameStore = defineStore('game', {
 		_controller: {},
 		_utils: {
 			status: gameStatus.ON_HOLD,
+			iaSpeed: 0,
 		}
 	}),
 	getters: {
@@ -151,6 +163,13 @@ export const useGameStore = defineStore('game', {
 	actions: {
 		start(){
 			if (this._utils.status === gameStatus.ON_HOLD){
+				this._utils.iaSpeed = (() => {
+					switch (this._optionsList.mode){
+						case BotDifficulty.NORMAL:	return 2;
+						case BotDifficulty.HARD:	return 5;
+						case BotDifficulty.CRAZY:	return 10;
+					}
+				})()
 				this._ball.speed = 4;
 				this._utils.status = gameStatus.STARTED;
 			}
@@ -212,10 +231,10 @@ export const useGameStore = defineStore('game', {
 				return ;
 			}
 			if (dir === MoveDirection2.VERTICAL){
-				if (0 + this._optionsList.padSize < player.position + delta && player.position + delta < 720 - this._optionsList.padSize)
+				if (0 < player.position + delta && player.position + delta < 720 - this._optionsList.padSize)
 					player.position += delta;
-				else if (0 + this._optionsList.padSize > player.position + delta){
-					player.position = 0 + this._optionsList.padSize;
+				else if (0 > player.position + delta){
+					player.position = 0;
 				}
 				else if (player.position + delta > 720 - this._optionsList.padSize){
 					player.position = 720 - this._optionsList.padSize;
@@ -224,12 +243,12 @@ export const useGameStore = defineStore('game', {
 			else if (dir === MoveDirection2.HORIZONTAL){
 				if (0 + this._optionsList.padSize < player.position + delta && player.position + delta < 1080 - this._optionsList.padSize)
 					player.position += delta;
-				else if (0 + this._optionsList.padSize > player.position + delta){
-					player.position = 0 + this._optionsList.padSize;
-				}
-				else if (player.position + delta > 1080 - this._optionsList.padSize){
-					player.position = 1080 - this._optionsList.padSize;
-				}
+				// else if (0 + this._optionsList.padSize > player.position + delta){
+				// 	player.position = 0 + this._optionsList.padSize;
+				// }
+				// else if (player.position + delta > 1080 - this._optionsList.padSize){
+				// 	player.position = 1080 - this._optionsList.padSize;
+				// }
 			}
 		}
 	}

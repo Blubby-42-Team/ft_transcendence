@@ -1,4 +1,4 @@
-import { gameOption, gamePlayers, gameScreen, gameTexture, gameTheme } from "~/stores/game";
+import { gameBall, gameOption, gamePlayers, gameScreen, gameTexture, gameTheme } from "~/stores/game";
 
 function loadTexture(text: gameTexture){
 	if (text.type === 'image'){
@@ -14,46 +14,6 @@ function loadTheme(theme: gameTheme){
 	loadTexture(theme.player_top);
 	loadTexture(theme.player_bottom);
 	loadTexture(theme.ball);
-}
-
-function buildImageBackground(ctx: CanvasRenderingContext2D, theme: string)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + "/background.jpg";
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
-	}
-}
-
-function buildImagePlayerVertical(ctx: CanvasRenderingContext2D, theme: string)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + '/playerV.jpg';
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
-	}
-}
-
-function buildImagePlayerHorizontal(ctx: CanvasRenderingContext2D, theme: string)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + '/playerH.jpg';
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
-	}
-}
-
-function buildImageBall(ctx: CanvasRenderingContext2D, theme: string)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + '/ball.jpg';
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
-	}
 }
 
 //Fond noir ou blanc
@@ -92,19 +52,15 @@ function buildBall(ctx: CanvasRenderingContext2D, x: number, y: number) {
 	drawRectTexture(ctx, screen.value, x, y, optionsList.value.ballSize, optionsList.value.ballSize, theme.value.ball);
 }
 
-function drawRect(ctx: CanvasRenderingContext2D, screen: gameScreen | undefined, x: number, y: number, w: number, l: number, color: string){
-	ctx.beginPath();
-	ctx.fillStyle = color;
-	if (screen){
-		ctx.rect(x * screen.deltaX, y * screen.deltaY, w * screen.deltaX, l * screen.deltaY);
-	}
-	else {
-		ctx.rect(x, y, w, l);
-	}
-	ctx.fill();
-}
-
-function drawRectTexture(ctx: CanvasRenderingContext2D, screen: gameScreen | undefined, x: number, y: number, w: number, l: number, text: gameTexture){
+function drawRectTexture(
+	ctx: CanvasRenderingContext2D,
+	screen: gameScreen | undefined,
+	x: number,
+	y: number,
+	w: number,
+	l: number,
+	text: gameTexture,
+){
 	ctx.beginPath();
 	if (text.type === 'color'){
 		ctx.fillStyle = text.color;
@@ -116,25 +72,26 @@ function drawRectTexture(ctx: CanvasRenderingContext2D, screen: gameScreen | und
 		}
 	}
 	else if (text.type === 'image'){
-		let base_image = new Image();
-		base_image.src = text.imageSrc;
-		base_image.onload = () => {
-			// ctx.save();
-			// ctx.translate(x + w / 2, y + l / 2);
-			// ctx.rotate(text.imageRotation * Math.PI / 2);
-			ctx.drawImage(base_image, 10, 10, 100, 100);
-			// ctx.restore();
-		};
+		if (!text.image){
+			return ;
+		}
+		if (screen){
+			ctx.drawImage(text.image, x * screen.deltaX, y * screen.deltaY, w * screen.deltaX, l * screen.deltaY);
+		}
+		else {
+			ctx.drawImage(text.image, x, y, w, l);
+		}
 	}
 	ctx.fill();
 }
 
-function drawGame(ctx: CanvasRenderingContext2D,
+function drawGame(
+	ctx: CanvasRenderingContext2D,
 	screen: gameScreen,
 	theme: gameTheme,
 	optionsList: gameOption,
 	player: gamePlayers,
-	ball: { x: number, y: number, dir: number, speed: number },
+	ball: gameBall,
 ){
 	buildBackground(ctx, screen, theme);
 	buildScores(ctx)
@@ -154,7 +111,8 @@ function drawGame(ctx: CanvasRenderingContext2D,
 }
 
 
-function drawGameOver(ctx: CanvasRenderingContext2D,
+function drawGameOver(
+	ctx: CanvasRenderingContext2D,
 	screen: gameScreen,
 	theme: gameTheme,
 	player: gamePlayers

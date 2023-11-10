@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { gameControllerType, gameStatus } from '~/stores/game';
 
-const { screen, player, ball, optionsList, theme, status, move, start, changeGameStatus, reset, setPlayer } = useGameStore()
+const { screen, player, ball, optionsList, theme, utils, status, move, start, changeGameStatus, reset, setPlayer } = useGameStore()
 
 function game() {
 	let ctx = document.querySelector("canvas")?.getContext("2d");
@@ -16,7 +16,7 @@ function game() {
 		case gameStatus.ON_HOLD:
 		case gameStatus.STARTED:
 			gameController.executeKey(controller);
-			gameEngine.gameTick(optionsList.value, screen);
+			gameEngine.gameTick(optionsList.value, utils, screen, ball, player);
 		
 			if (gameEngine.isGameOver(player.value, optionsList.value)){
 				changeGameStatus(gameStatus.GAMEOVER);

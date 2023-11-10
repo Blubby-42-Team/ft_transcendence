@@ -340,11 +340,44 @@ function isGameOver(player: gamePlayers, optionsList: gameOption){
 	|| player.right.score >= optionsList.maxPoint
 }
 
-function gameTick(optionsList: gameOption, screen: ComputedRef<gameScreen>){
+function moveIA(
+	player: ComputedRef<gamePlayers>,
+	ball: ComputedRef<gameBall>,
+	IASpeed: number,
+	ballSize: number,
+	padSize: number
+){
+	if (player.value.left.isBot){
+		if (player.value.left.position > ball.value.y + ballSize)
+			player.value.left.position -= IASpeed;
+		else if (player.value.left.position + padSize < ball.value.y)
+			player.value.left.position += IASpeed;
+	}
+	if (player.value.right.isBot){
+		if (player.value.right.position > ball.value.y + ballSize)
+			player.value.right.position -= IASpeed;
+		else if (player.value.right.position + padSize < ball.value.y)
+			player.value.right.position += IASpeed;
+	}
+	if (player.value.top.isBot){
+		if (player.value.top.position > ball.value.x + ballSize)
+			player.value.top.position -= IASpeed * 3/2;
+		else if (player.value.top.position + padSize < ball.value.x)
+			player.value.top.position += IASpeed * 3/2;
+	}
+	if (player.value.bottom.isBot){
+		if (player.value.bottom.position > ball.value.x + ballSize)
+			player.value.bottom.position -= IASpeed * 3/2;
+		else if (player.value.bottom.position + padSize < ball.value.x)
+			player.value.bottom.position += IASpeed * 3/2;
+	}
+}
+
+function gameTick(optionsList: gameOption, utils: ComputedRef<gameUtils>, screen: ComputedRef<gameScreen>, ball: ComputedRef<gameBall>, player: ComputedRef<gamePlayers>){
 	moveBall();
 	screen.value.preview = false;
 	if (optionsList.numPlayer === 1)
-		gameController.moveIA();
+		moveIA(player, ball, utils.value.iaSpeed, optionsList.ballSize, optionsList.padSize);
 	if (optionsList.numPlayer === 1 || optionsList.numPlayer === 2) {
 		checkCollisionWall();
 		checkCollisionPad();
