@@ -1,81 +1,12 @@
-enum MoveDirection {
-	VERTICAL,
-	HORIZONTAL,
-};
-
-function move(player: gamePlayer, dir: MoveDirection, delta: number, padSize: number){
-	console.log('here')
-	if (!player.active || player.isBot){
-		return ;
-	}
-	if (dir === MoveDirection.VERTICAL){
-		if (0 + padSize < player.position + delta && player.position + delta < 720 - padSize)
-			player.position += delta;
-		else if (0 +padSize > player.position + delta){
-			player.position = 0 + padSize;
-		}
-		else if (player.position + delta > 720 - padSize){
-			player.position = 720 - padSize;
-		}
-	}
-	else if (dir === MoveDirection.HORIZONTAL){
-		if (0 + padSize < player.position + delta && player.position + delta < 1080 - padSize)
-			player.position += delta;
-		else if (0 +padSize > player.position + delta){
-			player.position = 0 + padSize;
-		}
-		else if (player.position + delta > 1080 - padSize){
-			player.position = 1080 - padSize;
-		}
-	}
+function keyEvent(controller: gameControllerType, keyName: string, status: boolean){
+	if(controller.hasOwnProperty(keyName))
+		controller[keyName].pressed = status;
 }
 
-
-function moveW() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.left, MoveDirection.VERTICAL, -20, optionsList.value.padSize)
-}
-
-function moveS() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.left, MoveDirection.VERTICAL, 20, optionsList.value.padSize)
-}
-
-function moveUp() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.right, MoveDirection.VERTICAL, -20, optionsList.value.padSize)
-}
-
-function moveDown() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.right, MoveDirection.VERTICAL, 20, optionsList.value.padSize)
-}
-
-function moveC() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.bottom, MoveDirection.HORIZONTAL, -20, optionsList.value.padSize)
-}
-
-function moveV() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.bottom, MoveDirection.HORIZONTAL, 20, optionsList.value.padSize)
-}
-
-function moveU() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.top, MoveDirection.HORIZONTAL, -20, optionsList.value.padSize)
-}
-
-function moveI() {
-	const { player, optionsList } = useGameStore();
-	move(player.value.top, MoveDirection.HORIZONTAL, 20, optionsList.value.padSize)
-}
-
-function executeMoves() {
-	const { controller } = useGameStore();
-	Object.keys(controller.value).forEach((key) => {
-		if (controller.value[key].pressed){
-			controller.value[key].func()
+function executeKey(controller: gameControllerType) {
+	Object.keys(controller).forEach((key) => {
+		if (controller[key].pressed){
+			controller[key].func()
 		}
 	})
 }
@@ -117,16 +48,8 @@ function moveIA() {
 	}
 }
 
-
 export default {
-	moveW,
-	moveS,
-	moveUp,
-	moveDown,
-	moveC,
-	moveV,
-	moveU,
-	moveI,
-	executeMoves,
+	keyEvent,
+	executeKey,
 	moveIA,
 }

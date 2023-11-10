@@ -1,17 +1,9 @@
 function resetPlay () {
-	const { ball, player, optionsList, utils } = useGameStore();
+	const { optionsList } = useGameStore();
 	if (optionsList.value.randomizer) {
 		optionsList.value.ballSize = 15;
 		optionsList.value.padSize = 100;
 	}
-	ball.value.x = 540 - optionsList.value.ballSize/2;
-	ball.value.y = 360 - optionsList.value.ballSize/2;
-	player.value.left.position		= 360 - optionsList.value.padSize/2;
-	player.value.right.position		= 360 - optionsList.value.padSize/2;
-	player.value.top.position		= 540 - optionsList.value.padSize/2;
-	player.value.bottom.position	= 540 - optionsList.value.padSize/2;
-	ball.value.speed = 0;
-	utils.value.start = false;
 }
 
 function checkCollisionWall () {
@@ -348,30 +340,7 @@ function isGameOver(player: gamePlayers, optionsList: gameOption){
 	|| player.right.score >= optionsList.maxPoint
 }
 
-function reset(
-	ball: ComputedRef<{x: number, y: number, dir: number, speed: number}>,
-	players: ComputedRef<gamePlayers>,
-	optionsList: gameOption,
-){
-	ball.value.speed = 0;
-
-	players.value.left.score	= 0;
-	players.value.right.score	= 0;
-	players.value.top.score		= 0;
-	players.value.bottom.score	= 0;
-
-	players.value.left.position		= 360 - optionsList.padSize/2;
-	players.value.right.position	= 360 - optionsList.padSize/2;
-	players.value.top.position		= 540 - optionsList.padSize/2;
-	players.value.bottom.position	= 540 - optionsList.padSize/2;
-
-	ball.value.x = 540 - optionsList.ballSize/2;
-	ball.value.y = 360 - optionsList.ballSize/2;
-
-}
-
 function gameTick(optionsList: gameOption, screen: ComputedRef<gameScreen>){
-	gameController.executeMoves()
 	moveBall();
 	screen.value.preview = false;
 	if (optionsList.numPlayer === 1)
@@ -387,7 +356,6 @@ function gameTick(optionsList: gameOption, screen: ComputedRef<gameScreen>){
 }
 
 export default {
-	reset,
 	isGameOver,
 	gameTick,
 }
