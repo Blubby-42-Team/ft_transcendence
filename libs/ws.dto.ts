@@ -1,11 +1,4 @@
-import { IsNotEmpty, IsJWT, isNotEmpty, IsString } from 'class-validator'
-
-export class JoinRoomRequest {
-	@IsNotEmpty()
-	@IsJWT()
-	token: string;
-
-}
+import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive } from 'class-validator'
 
 export class AcknowledgmentWsDto {
 
@@ -20,4 +13,31 @@ export class AcknowledgmentWsDto {
 
 	@IsString()
 	message: string;
+}
+
+export class WsRequestDto {
+	@IsNotEmpty()
+	@IsJWT()
+	auth_token: string;
+}
+
+export class CreateGameRoomRequestDto extends WsRequestDto {
+}
+
+export class JoinGameRoomRequestDto extends WsRequestDto {
+	@IsNotEmpty()
+	@IsNumber()
+	@IsPositive()
+	game_room_id: number;
+}
+
+export class JoinGameRoomResponseDto extends AcknowledgmentWsDto {
+	@IsNotEmpty()
+	@IsJWT()
+	game_room_token: string;
+
+	@IsNotEmpty()
+	@IsNumber()
+	@IsPositive()
+	game_room_id: number;
 }
