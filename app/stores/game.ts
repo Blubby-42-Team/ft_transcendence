@@ -28,13 +28,16 @@ export type gameTexture = {
 }
 
 export type gameTheme = {
-	fontColor: string,
+	fontColor:		string,
 	background:		gameTexture,
 	player_top:		gameTexture,
 	player_bottom:	gameTexture,
 	player_left:	gameTexture,
 	player_right:	gameTexture,
 	ball:			gameTexture,
+	win_sound:		string,
+	die_sound:		string,
+	bounce_sound:	string,
 }
 
 export type gamePlayer = {
@@ -123,6 +126,9 @@ export const useGameStore = defineStore('game', {
 			player_left:	{ type: 'color', color: 'white' },
 			player_right:	{ type: 'color', color: 'white' },
 			ball:			{ type: 'color', color: 'white' },
+			win_sound:		'/coin.mp3',
+			die_sound:		'/waa.mp3',
+			bounce_sound:	'/bonk.mp3',
 		},
 		_player: {
 			top:	{ active: false, isBot: false, position: 0, score: 0 },
