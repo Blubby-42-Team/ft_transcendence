@@ -1,7 +1,7 @@
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException, WsResponse } from '@nestjs/websockets';
 import { log } from 'console';
 import { Server, Socket } from 'socket.io'
-import {JoinRoomRequest} from '@shared/ws.dto'
+import {AcknowledgmentWsDto, JoinRoomRequest} from '@shared/ws.dto'
 import { TestDto } from '@shared/test.dto';
 import { validate } from 'class-validator';
 import { BadRequestException, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
@@ -34,32 +34,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 
-	@SubscribeMessage('message')
-	handleMessage(@MessageBody() data: any) : WsResponse<string>{
-		log("Recieve new message")
-		log(JSON.stringify(data))
-		// this.server.emit('message', {
-		// 	res: "Hello world!"
-		// })
-		return ({
-			event: "message",
-			data: "test"
-		})
-	}
+	@SubscribeMessage('joinRoom')
+	async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() req: JoinRoomRequest): Promise<AcknowledgmentWsDto> {
+		
+		// Check jwt party
 
-	@SubscribeMessage('testRoom')
-	@UsePipes(new ValidationPipe())
-	async testRooms(@ConnectedSocket() client: Socket, @MessageBody() req: JoinRoomRequest) {
-		log(req)
-	}
+		const room = 'room1';
+		client.join(room);
+		console.log(`Client ${client.id} joined room ${room}`);
+		// You can also broadcast to the room or emit a message to the client
+		this.server.to(room).emit('message', 'Hello from the room!');
+		client.emit('message', 'Welcome to the room!');
 
-//   @SubscribeMessage('joinRoom')
-//   handleJoinRoom(client: Socket, room: string) {
-//     client.join(room);
-//     console.log(`Client ${client.id} joined room ${room}`);
-    
-//     // You can also broadcast to the room or emit a message to the client
-//     this.server.to(room).emit('message', 'Hello from the room!');
-//     client.emit('message', 'Welcome to the room!');
-//   }
+		return new AcknowledgmentWsDto('ok', 'ok');
+	}
 }

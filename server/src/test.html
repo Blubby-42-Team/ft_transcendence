@@ -17,11 +17,15 @@
         console.log('Socket.io connected');
 
         // Sending a message to the server
-        socket.emit('testRoom', 'test');
+        socket.emit('joinRoom', {
+    "token": "eyJhbGciOiJIUzI1Ni.IsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDlllIyfQSflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+}, (response) => {
+			console.log(response); // ok
+		});
 	});
 
     // Listen for messages from the server
-    socket.on('error', (data) => {
+    socket.on('message', (data) => {
         console.log('Message from server:', data);
     });
 
