@@ -110,7 +110,7 @@ export type gameControllerType = {[key: string]: { pressed: boolean, func: () =>
 export const useGameStore = defineStore('game', {
 	state: (): gameState => ({
 		_optionsList: {
-			maxPoint: 1,
+			maxPoint: 2,
 			numPlayer: 1,
 			ballSize: 15,
 			padSize: 100,
@@ -168,17 +168,15 @@ export const useGameStore = defineStore('game', {
 	},
 	actions: {
 		start(){
-			if (this._utils.status === gameStatus.ON_HOLD){
-				this._utils.iaSpeed = (() => {
-					switch (this._optionsList.mode){
-						case BotDifficulty.NORMAL:	return 2;
-						case BotDifficulty.HARD:	return 5;
-						case BotDifficulty.CRAZY:	return 10;
-					}
-				})()
-				this._ball.speed = 4;
-				this._utils.status = gameStatus.STARTED;
-			}
+			this._ball.speed = 4;
+			this._utils.iaSpeed = (() => {
+				switch (this._optionsList.mode){
+					case BotDifficulty.NORMAL:	return 2;
+					case BotDifficulty.HARD:	return 5;
+					case BotDifficulty.CRAZY:	return 10;
+				}
+			})()
+			this._utils.status = gameStatus.STARTED;
 		},
 		reset(){
 			this._ball.speed = 0;
@@ -216,7 +214,6 @@ export const useGameStore = defineStore('game', {
 			this._utils.status = newStatus;
 		},
 		move(pos: PlayerPosition, dir: MoveDirection){
-			console.log(pos, dir)
 			switch (pos) {
 				case PlayerPosition.LEFT:
 					if		(dir === MoveDirection.LEFT)	return this.movePlayer(this._player.left, MoveDirection2.VERTICAL, -20);

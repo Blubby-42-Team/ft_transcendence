@@ -17,7 +17,6 @@ function game() {
 			gameEngine.gameTick(optionsList.value, utils, screen, ball, player);
 		
 			if (gameEngine.isGameOver(player.value, optionsList.value)){
-				console.log('')
 				reset();
 				start();
 			}
@@ -27,7 +26,6 @@ function game() {
 		case gameStatus.ON_HOLD:
 		case gameStatus.GAMEOVER:
 			changeGameStatus(gameStatus.STARTED);
-			start();
 			break ;
 	}
 
