@@ -1,69 +1,54 @@
 <script lang="ts" setup>
-import { gameControllerType, gameStatus } from '~/stores/game';
+import { gameStatusType } from '#imports';
+import { getNewStateWithGameSettings } from '~/utils/getNewStateWithGameSettings';
 
-const { screen, player, ball, optionsList, theme, utils, status, move, start, changeGameStatus, reset, setPlayer } = useGameStore()
 
-function game() {
-	let ctx = document.querySelector("canvas")?.getContext("2d");
-	if (!ctx){
-		window.requestAnimationFrame(game);
-		return ;
-	}
-	
-	gameGraphics.updateSize(screen, canvasParentId);
-	
-	switch (status.value){
-		case gameStatus.ON_HOLD:
-		case gameStatus.STARTED:
-			gameController.executeKey(controller);
-			gameEngine.gameTick(optionsList.value, utils, screen, ball, player);
-		
-			if (gameEngine.isGameOver(player.value, optionsList.value)){
-				changeGameStatus(gameStatus.GAMEOVER);
-			}
-			gameGraphics.drawGame(ctx, screen.value, theme.value, optionsList.value, player.value, ball.value);
+const { theme } = useGame2Store()
 
-			break ;
-		case gameStatus.GAMEOVER:
-			gameGraphics.drawGameOver(ctx, screen.value, theme.value, player.value);
-			time++;
-			if (time > 200){
-				reset();
-				changeGameStatus(gameStatus.ON_HOLD);
-				time = 0;
-			}
-			
-			break ;
-	}
+const screenSize = ref({
+	width: 0,
+	height: 0,
+})
 
-	window.requestAnimationFrame(game);
+let gameState: Ref<gameStateType> = ref(getNewStateWithGameSettings());
+let gameStatus: gameStatusType = gameStatusType.ON_HOLD;
+
+const emptyFunction = (status: boolean) => {};
+const controller: {[key: string]: (status: boolean) => void} = {
+	w:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.TOP,		status),
+	s:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.BOTTOM,	status),
+	ArrowUp:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.TOP,		status),
+	ArrowDown:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.BOTTOM,	status),
+	c:			(status: boolean) => gameController.move(Direction.BOTTOM,	Direction.LEFT,		status),
+	v:			(status: boolean) => gameController.move(Direction.BOTTOM,	Direction.RIGHT,	status),
+	u:			(status: boolean) => gameController.move(Direction.TOP,		Direction.LEFT,		status),
+	i:			(status: boolean) => gameController.move(Direction.TOP,		Direction.RIGHT,	status),
+	' ':		(status: boolean) => gameController.startRound(status),
 }
-
-const controller: gameControllerType = {
-	w:			{ pressed: false, func: () => move(PlayerPosition.LEFT,		MoveDirection.LEFT)		},
-	s:			{ pressed: false, func: () => move(PlayerPosition.LEFT,		MoveDirection.RIGHT)	},
-	ArrowUp:	{ pressed: false, func: () => move(PlayerPosition.RIGHT,	MoveDirection.LEFT)		},
-	ArrowDown:	{ pressed: false, func: () => move(PlayerPosition.RIGHT,	MoveDirection.RIGHT)	},
-	c:			{ pressed: false, func: () => move(PlayerPosition.TOP,		MoveDirection.LEFT)		},
-	v:			{ pressed: false, func: () => move(PlayerPosition.TOP,		MoveDirection.RIGHT)	},
-	u:			{ pressed: false, func: () => move(PlayerPosition.BOTTOM,	MoveDirection.LEFT)		},
-	i:			{ pressed: false, func: () => move(PlayerPosition.BOTTOM,	MoveDirection.RIGHT)	},
-	' ':		{ pressed: false, func: () => start()												},
-}
-const canvasParentId = 'canvasDiv';
-let time = 0;
-
-setPlayer(PlayerPosition.LEFT, true, true);
-setPlayer(PlayerPosition.RIGHT, true, false);
 
 onMounted(() => {
-	document.addEventListener("keydown", (e) => gameController.keyEvent(controller, e.key, true))
-	document.addEventListener("keyup",   (e) => gameController.keyEvent(controller, e.key, false))
+	document.addEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
+	document.addEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
+	
+	gameEngine.start((newState, newGameStatus) => {
+		gameState.value = newState;
+		gameStatus = newGameStatus;
+	})
+	
+	gameGraphics.start('canvasDiv', theme.value, gameState, (ctx, screen) => {
+		screenSize.value.width = screen.width;
+		screenSize.value.height = screen.height;
 
-	gameGraphics.updateSize(screen, canvasParentId);
-	gameGraphics.loadTheme(theme.value);
-	reset();
-	window.requestAnimationFrame(game);
+		gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
+	})
+})
+
+onBeforeRouteLeave(() => {
+	document.removeEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
+	document.removeEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
+
+	gameEngine.stop();
+	gameGraphics.stop();
 })
 
 </script>
@@ -71,7 +56,7 @@ onMounted(() => {
 <template>
 	<div id="canvasDiv" class="w-full h-full">
 		<client-only placeholder="loading...">
-			<canvas class="bg-white border border-text" ref="canvas" :width="screen.width" :height="screen.height"></canvas>
+			<canvas class="bg-white border border-text" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
 		</client-only>
 	</div>
 </template>
