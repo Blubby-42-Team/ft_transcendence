@@ -11,7 +11,7 @@ export default defineNuxtConfig({
 		dirs: ['stores/**'],
 	},
 	devServer: {
-		port: 3000,
+		port: 4000,
 	},
 	devtools: { enabled: false },
 	modules: [

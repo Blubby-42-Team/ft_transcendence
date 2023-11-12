@@ -110,13 +110,13 @@ export type gameControllerType = {[key: string]: { pressed: boolean, func: () =>
 export const useGameStore = defineStore('game', {
 	state: (): gameState => ({
 		_optionsList: {
-			maxPoint: 2,
+			maxPoint: 5,
 			numPlayer: 1,
 			ballSize: 15,
 			padSize: 100,
 			sound: true,
 			mode: BotDifficulty.NORMAL,
-			randomizer: true
+			randomizer: false,
 		},
 		_theme: {
 			fontColor:		"gray",
