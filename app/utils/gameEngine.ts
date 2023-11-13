@@ -1,4 +1,4 @@
-import { Direction, Rectangle, gameStatusType } from "#imports";
+import { Direction, Rectangle, gameStateType, gameStatusType } from "#imports";
 import { getNewStateWithGameSettings } from "./getNewStateWithGameSettings";
 
 enum Axis {
@@ -62,9 +62,58 @@ function getIntersection(rec1: Rectangle, rec2: Rectangle, preference: Axis): Di
 	}
 }
 
-function moveBall(){
+function calcutateNewBallDirectionAfterHittingPlayer(
+	ball: Rectangle & { speed: number, direction: number },
+	player: Rectangle,
+	direction: Direction.LEFT | Direction.RIGHT | Direction.TOP | Direction.BOTTOM,
+){
+	/**
+	
+
+	dir:		Angle of the bounce (0: right, 1: top, 2: left, 3: bottom) that need to be multiplied by PI / 2
+	Py or Px:	position of the center of the player (depends on if looking on Axis X or Y);
+	By or Bx:	position of the center of the ball (depends on if looking on Axis X or Y);
+	H:			height of the player divided by two,
+
+	res = dir * PI/2 + Min(Px - Bx, 1) * PI / 4
+	                   ---------------
+					         H
+	res = PI * (dir/2 + Min(Px - Bx, 1))
+	                    ---------------
+						       4H
+
+	*/
+	
+	ball.direction = (() => {
+		switch (direction) {
+			case Direction.RIGHT:	return Math.PI * (1 + (Math.min(player.center.y - ball.center.y, 1) / (4 * player.height_d_2) * Math.sign(ball.direction)));
+			case Direction.LEFT:	return Math.PI * (0 + (Math.min(player.center.y - ball.center.y, 1) / (4 * player.height_d_2) * Math.sign(ball.direction)));
+			case Direction.TOP:		return Math.PI * (3/2 + (Math.min(player.center.x - ball.center.x, 1) / (4 * player.width_d_2) * Math.sign(ball.direction)));
+			case Direction.BOTTOM:	return Math.PI * (1/2 + (Math.min(player.center.x - ball.center.x, 1) / (4 * player.width_d_2) * Math.sign(ball.direction)));
+		}
+	})();
+	
+}
+
+
+
+function calcutateNewBallDirectionAfterHittingObstacle(
+	ball: Rectangle & { speed: number, direction: number },
+	direction: Direction.LEFT | Direction.RIGHT | Direction.TOP | Direction.BOTTOM,
+){
+	ball.direction = (() => {
+		switch (direction) {
+			case Direction.RIGHT:	return Math.PI - ball.direction;
+			case Direction.LEFT:	return Math.PI - ball.direction;
+			case Direction.TOP:		return 2 * Math.PI - ball.direction;
+			case Direction.BOTTOM:	return 2 * Math.PI - ball.direction;
+		}
+	})();
+}
+
+function moveBall(gamestate: gameStateType){
 	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.gameArea, Axis.X);
+		const doesIntersect = getIntersection(gamestate.ball, gamestate.gameArea, Axis.y);
 		if (doesIntersect !== Direction.NONE){
 			gamestate.ball.center.x = 0;
 			gamestate.ball.center.y = 0;
@@ -73,43 +122,60 @@ function moveBall(){
 			return ;
 		}
 	}
-	
-	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_bottom as Rectangle, Axis.X);
-		if (doesIntersect !== Direction.NONE){
-			return ;
-		}
-	}
-	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_top as Rectangle, Axis.X);
-		if (doesIntersect !== Direction.NONE){
-			return ;
-		}
-	}
-	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_left as Rectangle, Axis.X);
-		if (doesIntersect !== Direction.NONE){
-			return ;
-		}
-	}
-	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_right as Rectangle, Axis.X);
-		if (doesIntersect !== Direction.NONE){
-			return ;
-		}
-	}
+
 	for (const obstacleKey in gamestate.obstacles){
 		const doesIntersect = getIntersection(gamestate.ball, gamestate.obstacles[obstacleKey], Axis.X);
 		if (doesIntersect !== Direction.NONE){
+			calcutateNewBallDirectionAfterHittingObstacle(gamestate.ball, doesIntersect);
+			gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
+			gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
 			return ;
 		}
 	}
+	
+	if (gamestate.player_bottom.active){
+		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_bottom, Axis.X);
+		if (doesIntersect === Direction.TOP){
+			calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_bottom, doesIntersect);
+			gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
+			gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
+			return ;
+		}
+	}
+	if (gamestate.player_top.active){
+		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_top, Axis.X);
+		if (doesIntersect === Direction.BOTTOM){
+			calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_top, doesIntersect);
+			gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
+			gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
+			return ;
+		}
+	}
+	if (gamestate.player_left.active){
+		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_left, Axis.Y);
+		if (doesIntersect === Direction.LEFT){
+			calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_left, doesIntersect);
+			gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
+			gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
+			return ;
+		}
+	}
+	if (gamestate.player_right.active){
+		const doesIntersect = getIntersection(gamestate.ball, gamestate.player_right, Axis.Y);
+		if (doesIntersect === Direction.RIGHT){
+			calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_right, doesIntersect);
+			gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
+			gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
+			return ;
+		}
+	}
+	
 	gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
 	gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
 }
 
 
-function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, blockIfDirectionIs: Direction){
+function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, blockIfDirectionIs: Direction, gamestate: gameStateType){
 	switch (axis) {
 		case Axis.X:
 			for (const obstacleKey in gamestate.obstacles){
@@ -130,62 +196,59 @@ function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, 
 	}
 }
 
-function moveAllPlayers(){
+function moveAllPlayers(gamestate: gameStateType){
 	if (gamestate.player_left.active && !gamestate.player_left.isBot && !gamestate.player_left.eleminated){
 		if (gameController.controller.playerLeftMoveUp){
-			movePlayer(gamestate.player_left, Axis.Y, -0.5, Direction.BOTTOM);
+			movePlayer(gamestate.player_left, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
 		}
 		if (gameController.controller.playerLeftMoveDown){
-			movePlayer(gamestate.player_left, Axis.Y, 0.5, Direction.TOP);
+			movePlayer(gamestate.player_left, Axis.Y, 0.5, Direction.TOP, gamestate);
 		}
 	}
 	if (gamestate.player_right.active && !gamestate.player_right.isBot && !gamestate.player_right.eleminated){
 		if (gameController.controller.playerRightMoveUp){
-			movePlayer(gamestate.player_right, Axis.Y, -0.5, Direction.BOTTOM);
+			movePlayer(gamestate.player_right, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
 		}
 		if (gameController.controller.playerRightMoveDown){
-			movePlayer(gamestate.player_right, Axis.Y, 0.5, Direction.TOP);
+			movePlayer(gamestate.player_right, Axis.Y, 0.5, Direction.TOP, gamestate);
 		}
 	}
 	if (gamestate.player_top.active && !gamestate.player_top.isBot && !gamestate.player_top.eleminated){
 		if (gameController.controller.playerTopMoveLeft){
-			movePlayer(gamestate.player_top, Axis.X, -0.5, Direction.LEFT);
+			movePlayer(gamestate.player_top, Axis.X, -0.5, Direction.LEFT, gamestate);
 		}
 		if (gameController.controller.playerTopMoveRight){
-			movePlayer(gamestate.player_top, Axis.X, 0.5, Direction.RIGHT);
+			movePlayer(gamestate.player_top, Axis.X, 0.5, Direction.RIGHT, gamestate);
 		}
 	}
 	if (gamestate.player_bottom.active && !gamestate.player_bottom.isBot && !gamestate.player_bottom.eleminated){
 		if (gameController.controller.playerBottomMoveLeft){
-			movePlayer(gamestate.player_bottom, Axis.X, -0.5, Direction.LEFT);
+			movePlayer(gamestate.player_bottom, Axis.X, -0.5, Direction.LEFT, gamestate);
 		}
 		if (gameController.controller.playerBottomMoveRight){
-			movePlayer(gamestate.player_bottom, Axis.X, 0.5, Direction.RIGHT);
+			movePlayer(gamestate.player_bottom, Axis.X, 0.5, Direction.RIGHT, gamestate);
 		}
 	}
 }
 
+const updatePerSeconds = 30
+const millisecondsPerUpdate = 1000/updatePerSeconds
 let continueLoop = true;
-let updatePerSeconds = 30
-let millisecondsPerUpdate = 1000/updatePerSeconds
-let gamestate: gameStateType;
-let gameStatus: gameStatusType = gameStatusType.ON_HOLD;
 
 async function start(updateGameState: (newGameState: gameStateType, gameStatus: gameStatusType) => void){
 	console.log('Game Engine Start');
-	continueLoop = true;
-	gamestate = getNewStateWithGameSettings();
+	let gamestate = getNewStateWithGameSettings();
+	let gamestatus = gameStatusType.ON_HOLD;
+
 	while (continueLoop){
 		if (gameController.controller.startRound){
 			gamestate.ball.speed = 0.5
 		}
-		moveAllPlayers();
-		moveBall();
+		moveAllPlayers(gamestate);
 		// Move IA
-		// Move Ball
-		// Check Colisition
+		moveBall(gamestate);
 
-		updateGameState(gamestate, gameStatus);
+		updateGameState(gamestate, gamestatus);
 
 		await new Promise(resolve => setTimeout(resolve, millisecondsPerUpdate));
 	}

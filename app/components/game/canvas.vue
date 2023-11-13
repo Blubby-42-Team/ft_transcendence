@@ -38,7 +38,7 @@ onMounted(() => {
 	gameGraphics.start('canvasDiv', theme.value, gameState, (ctx, screen) => {
 		screenSize.value.width = screen.width;
 		screenSize.value.height = screen.height;
-
+ 
 		gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
 	})
 })

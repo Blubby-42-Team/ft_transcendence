@@ -45,7 +45,7 @@ export type gamePlayer2 = {
 	score: number,
 }
 
-export enum BotDifficulty {
+export enum BotDifficulty2 {
 	NORMAL,
 	HARD,
 	CRAZY,
@@ -72,7 +72,7 @@ export type gameSettingsType = {
 	numPlayer:	number,
 	ballSize:	number,
 	padSize:	number,
-	mode:		BotDifficulty,
+	mode:		BotDifficulty2,
 	randomizer:	boolean,
 }
 
@@ -98,18 +98,18 @@ export const useGame2Store = defineStore('game', {
 			player4TopRight:	{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
 			player4BottomLeft:	{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
 			player4TopLeft:		{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
-			player2Bottom:		{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
-			player2Top:			{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
+			player2Bottom:		{	type: 'color',	color: 'deeppink'	},
+			player2Top:			{	type: 'color',	color: 'deeppink'	},
 		},
 		_localSettings: {
 			sound: false,
 		},
 		_gameSettings: {
 			maxPoint:	3,
-			numPlayer:	4,
+			numPlayer:	2,
 			ballSize:	5,
 			padSize:	5,
-			mode:		BotDifficulty.NORMAL,
+			mode:		BotDifficulty2.NORMAL,
 			randomizer:	false,
 		},
 	}),
