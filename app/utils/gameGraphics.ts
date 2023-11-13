@@ -11,6 +11,12 @@ function loadTheme(theme: { [key: string]: gameTexture }){
 	}
 }
 
+function drawScore(ctx: CanvasRenderingContext2D, gameState: gameStateType, screen: screenData,){
+	if (gameState.player_bottom.active){
+		ctx.fillText(`${gameState.player_bottom.score}`, screen.width * 0.480, screen.height * 0.417);
+	}
+}
+
 function drawRectTexture(
 	ctx: CanvasRenderingContext2D,
 	x: number,
@@ -57,6 +63,8 @@ function drawGame(
 ){
 	// Draw Background
 	drawRectTexture(ctx, 0, 0, screen.width, screen.height, theme.background)
+
+	// drawScore(ctx);
 
 	// Draw Ball
 	drawGameElement(ctx, theme.ball, gameState.ball, screen);

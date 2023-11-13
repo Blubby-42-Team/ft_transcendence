@@ -22,7 +22,7 @@ const gameState4PlayersDefault: gameStateType = {
 const gameState2PlayersDefault: gameStateType = {
 	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 30,		width_d_2: 40,	},
 	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 0, direction: Math.PI / 4	},
-	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: true,	score: 0	},
+	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_right:		{	center: {	x: 25,	y: 0,		},	height_d_2: 5,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_top:			{	active: false,	},
 	player_bottom:		{	active: false,	},
@@ -58,6 +58,10 @@ export function getNewStateWithGameSettings(): gameStateType {
 	const { gameSettings } = useGame2Store();
 
 	let base = (gameSettings.value.numPlayer === 4 ? gameState4PlayersDefault : gameState2PlayersDefault);
+
+	if (gameSettings.value.numPlayer === 1 && base.player_left.active){
+		base.player_left.isBot = true;
+	}
 
 	if (base.player_top.active){
 		base.player_top.width_d_2 = gameSettings.value.padSize;
