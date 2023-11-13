@@ -5,15 +5,32 @@ function loadTexture(text: gameTexture){
 	}
 }
 
-function loadTheme(theme: { [key: string]: gameTexture }){
+function loadTheme(theme: gameTheme2){
 	for (const textKey in theme){
-		loadTexture(theme[textKey]);
+		loadTexture((theme as any)[textKey]);
 	}
 }
 
-function drawScore(ctx: CanvasRenderingContext2D, gameState: gameStateType, screen: screenData,){
+function drawScore(
+	ctx: CanvasRenderingContext2D,
+	gameState: gameStateType,
+	screen: screenData,
+	fontColor: string,
+){
+	ctx.fillStyle = fontColor;
+	ctx.font = `${4 * screen.delta.y}px Arial`;
+	const test = 2 * screen.delta.y
 	if (gameState.player_bottom.active){
-		ctx.fillText(`${gameState.player_bottom.score}`, screen.width * 0.480, screen.height * 0.417);
+		ctx.fillText(`${gameState.player_bottom.score}`, screen.width * 0.48, screen.height * 0.59);
+	}
+	if (gameState.player_top.active){
+		ctx.fillText(`${gameState.player_top.score}`, screen.width * 0.48, screen.height * 0.459);
+	}
+	if (gameState.player_left.active){
+		ctx.fillText(`${gameState.player_left.score}`, screen.width * 0.42, screen.height * 0.525);
+	}
+	if (gameState.player_right.active){
+		ctx.fillText(`${gameState.player_right.score}`, screen.width * 0.54, screen.height * 0.525);
 	}
 }
 
@@ -59,15 +76,15 @@ function drawGame(
 	ctx: CanvasRenderingContext2D,
 	gameState: gameStateType,
 	screen: screenData,
-	theme: { [key: string]: gameTexture },
+	theme: gameTheme2,
 ){
 	// Draw Background
 	drawRectTexture(ctx, 0, 0, screen.width, screen.height, theme.background)
 
-	// drawScore(ctx);
-
 	// Draw Ball
 	drawGameElement(ctx, theme.ball, gameState.ball, screen);
+
+	drawScore(ctx, gameState, screen, theme.fontColor);
 	
 	// Draw Players
 	if (gameState.player_left.active && !gameState.player_left.eleminated){
@@ -85,7 +102,7 @@ function drawGame(
 
 	// Draw Obstacles
 	for (const obstacleKey in gameState.obstacles){
-		drawGameElement(ctx, theme?.[obstacleKey] ?? { type: 'color', color: 'green' }, gameState.obstacles[obstacleKey], screen);
+		drawGameElement(ctx, (theme as any)?.[obstacleKey] ?? { type: 'color', color: 'purple' }, gameState.obstacles[obstacleKey], screen);
 	}
 }
 

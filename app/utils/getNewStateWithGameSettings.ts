@@ -1,7 +1,7 @@
 import { Direction } from "#imports";
 
 const gameState4PlayersDefault: gameStateType = {
-	gameArea: 				{	center: {	x: 0,	y: 0,		},	height_d_2: 35,		width_d_2: 35,	},
+	gameArea: 				{	center: {	x: 0,	y: 0,		},	height_d_2: 32,		width_d_2: 32,	},
 	ball: 					{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 0, direction: Math.PI / 4	},
 	player_top: 			{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_bottom:			{	center: {	x: 0,	y: 25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -12,10 +12,10 @@ const gameState4PlayersDefault: gameStateType = {
 		player4TopRight:	{	center: {	x: 27,	y: -27,		},	height_d_2: 3,		width_d_2: 3,	hidden: false	},
 		player4BottomLeft:	{	center: {	x: -27,	y: 27,		},	height_d_2: 3,		width_d_2: 3,	hidden: false	},
 		player4TopLeft:		{	center: {	x: -27,	y: -27,		},	height_d_2: 3,		width_d_2: 3,	hidden: false	},
-		// test1:				{	center: {	x: 0,	y: 15,		},	height_d_2: 1,		width_d_2: 30,	hidden: false	},
-		// test2:				{	center: {	x: 0,	y: -15,		},	height_d_2: 1,		width_d_2: 30,	hidden: false	},
-		// test3:				{	center: {	x: 15,	y: 0,		},	height_d_2: 30,		width_d_2: 1,	hidden: false	},
-		// test4:				{	center: {	x: -15,	y: 0,		},	height_d_2: 30,		width_d_2: 1,	hidden: false	},
+		player4BottomElim:	{	center: {	x: 0,	y: 25,		},	height_d_2: 1,		width_d_2: 24,	hidden: false	},
+		player4TopElim:		{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 24,	hidden: false	},
+		player4LeftElim:	{	center: {	x: -25,	y: 0,		},	height_d_2: 24,		width_d_2: 1,	hidden: false	},
+		player4RightElim:	{	center: {	x: 25,	y: 0,		},	height_d_2: 24,		width_d_2: 1,	hidden: false	},
 	}
 }
 

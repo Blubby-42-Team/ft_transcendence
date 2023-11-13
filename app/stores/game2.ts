@@ -24,6 +24,7 @@ export type screenData = {
 }
 
 export type gameTheme2 = {
+	fontColor:			string,
 	background:			gameTexture,
 	ball:				gameTexture,
 	player_top:			gameTexture,
@@ -34,6 +35,10 @@ export type gameTheme2 = {
 	player4TopRight:	gameTexture,
 	player4BottomLeft:	gameTexture,
 	player4TopLeft:		gameTexture,
+	player4BottomElim:	gameTexture,
+	player4TopElim:		gameTexture,
+	player4LeftElim:	gameTexture,
+	player4RightElim:	gameTexture,
 	player2Bottom:		gameTexture,
 	player2Top:			gameTexture,
 }
@@ -88,18 +93,23 @@ type gameStoreType = {
 export const useGame2Store = defineStore('game', {
 	state: (): gameStoreType => ({
 		_theme: {
-			background:			{	type: 'image',	imageSrc: '/themes/anime/astolfo.jpg',		imageRotation: 0,	},
-			ball:				{	type: 'image',	imageSrc: '/themes/anime/ballbarbie.jpg',	imageRotation: 0,	},
-			player_top:			{	type: 'color',	color: 'deeppink'	},
-			player_bottom:		{	type: 'color',	color: 'deeppink'	},
-			player_left:		{	type: 'color',	color: 'deeppink'	},
-			player_right:		{	type: 'color',	color: 'deeppink'	},
-			player4BottomRight:	{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
-			player4TopRight:	{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
-			player4BottomLeft:	{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
-			player4TopLeft:		{	type: 'image',	imageSrc: '/themes/anime/pinksquare.jpg',	imageRotation: 0,	},
-			player2Bottom:		{	type: 'color',	color: 'deeppink'	},
-			player2Top:			{	type: 'color',	color: 'deeppink'	},
+			fontColor:			'white',
+			background:			{	type: 'color',	color: 'black'	},
+			ball:				{	type: 'color',	color: 'white'	},
+			player_top:			{	type: 'color',	color: 'white'	},
+			player_bottom:		{	type: 'color',	color: 'white'	},
+			player_left:		{	type: 'color',	color: 'white'	},
+			player_right:		{	type: 'color',	color: 'white'	},
+			player4BottomRight:	{	type: 'color',	color: 'white'	},
+			player4TopRight:	{	type: 'color',	color: 'white'	},
+			player4BottomLeft:	{	type: 'color',	color: 'white'	},
+			player4TopLeft:		{	type: 'color',	color: 'white'	},
+			player4BottomElim:	{	type: 'color',	color: 'white'	},
+			player4TopElim:		{	type: 'color',	color: 'white'	},
+			player4LeftElim:	{	type: 'color',	color: 'white'	},
+			player4RightElim:	{	type: 'color',	color: 'white'	},
+			player2Bottom:		{	type: 'color',	color: 'white'	},
+			player2Top:			{	type: 'color',	color: 'white'	},
 		},
 		_localSettings: {
 			sound: false,
@@ -107,7 +117,7 @@ export const useGame2Store = defineStore('game', {
 		_gameSettings: {
 			maxPoint:	3,
 			numPlayer:	4,
-			ballSize:	5,
+			ballSize:	1,
 			padSize:	5,
 			mode:		BotDifficulty2.NORMAL,
 			randomizer:	false,

@@ -92,7 +92,6 @@ function calcutateNewBallDirectionAfterHittingPlayer(
 			case Direction.BOTTOM:	return Math.PI / 2 - (ball.center.x - player.center.x)/(ball.width_d_2 + player.width_d_2) * Math.PI/4;;
 		}
 	})();
-	
 }
 
 
@@ -113,7 +112,7 @@ function calcutateNewBallDirectionAfterHittingObstacle(
 
 function moveBall(gamestate: gameStateType){
 	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.gameArea, Axis.y);
+		const doesIntersect = getIntersection(gamestate.ball, gamestate.gameArea, Axis.Y);
 		if (doesIntersect !== Direction.NONE){
 			gamestate.ball.center.x = 0;
 			gamestate.ball.center.y = 0;
@@ -237,6 +236,7 @@ let continueLoop = true;
 
 async function start(updateGameState: (newGameState: gameStateType, gameStatus: gameStatusType) => void){
 	console.log('Game Engine Start');
+	continueLoop = true;
 	let gamestate = getNewStateWithGameSettings();
 	let gamestatus = gameStatusType.ON_HOLD;
 
