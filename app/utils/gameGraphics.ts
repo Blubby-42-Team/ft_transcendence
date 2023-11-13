@@ -77,7 +77,7 @@ function drawGame(
 
 	// Draw Obstacles
 	for (const obstacleKey in gameState.obstacles){
-		drawGameElement(ctx, theme[obstacleKey], gameState.obstacles[obstacleKey], screen);
+		drawGameElement(ctx, theme?.[obstacleKey] ?? { type: 'color', color: 'green' }, gameState.obstacles[obstacleKey], screen);
 	}
 }
 
@@ -94,8 +94,8 @@ function updateSize(gameState: gameStateType, screen: screenData, canvasParentId
 		screen.width = canvas.offsetHeight * gameState.gameArea.width_d_2 / gameState.gameArea.height_d_2 - 2;
 		screen.height = canvas.offsetHeight - 2;
 	}
-	screen.delta.x = screen.width / (gameState.gameArea.width_d_2 * 2);
-	screen.delta.y = screen.height / (gameState.gameArea.height_d_2 * 2);
+	screen.delta.x = screen.width / ((gameState.gameArea.width_d_2 - gameState.ball.width_d_2 * 2) * 2);
+	screen.delta.y = screen.height / ((gameState.gameArea.height_d_2 - gameState.ball.height_d_2 * 2) * 2);
 }
 
 let continueLoop = true;
