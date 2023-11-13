@@ -1,48 +1,113 @@
-export interface ITournament {
-	id:				string,
-	name:			string,
-	attendance:		number,
-	maxAttendance:	number,
+export enum EGameStatus {
+	NOT_STARTED,
+	IN_PROGRESS,
+	COMPLETED,
+}
+
+type PlayerID = number;
+
+export type ITournamentMatch = {
+	player1: (ITournamentMatch) | { id: PlayerID };
+	player2: (ITournamentMatch) | { id: PlayerID };
+	status: EGameStatus.NOT_STARTED;
+} | {
+	player1: (ITournamentMatch & { score: number }) | ({ id: PlayerID, score: number });
+	player2: (ITournamentMatch & { score: number }) | ({ id: PlayerID, score: number });
+	status: EGameStatus.IN_PROGRESS;
+} | {
+	player1: (ITournamentMatch & { score: number, winner?: boolean }) | ({ id: PlayerID, score: number, winner?: boolean });
+	player2: (ITournamentMatch & { score: number, winner?: boolean }) | ({ id: PlayerID, score: number, winner?: boolean });
+	status: EGameStatus.COMPLETED;
+}
+
+export interface ILazyTournamentMatch {
+	player1: (ILazyTournamentMatch) & { id?: number, score?: number, winner?: boolean };
+	player2: (ILazyTournamentMatch) & { id?: number, score?: number, winner?: boolean };
+	status: EGameStatus;
 }
 
 export const useTournamentStore = defineStore('tournament', {
 	state: (): {
-		_tournaments: Array<ITournament>;
+		_tournament: ITournamentMatch;
 	} => ({
-		_tournaments: [
-			{	id: "1",	name: 'Pong Super Cup',				attendance: 4,		maxAttendance: 8	},
-			{	id: "2",	name: 'EPP Pro League',				attendance: 2,		maxAttendance: 8	},
-			{	id: "3",	name: 'EPP Masters Katowice',		attendance: 1,		maxAttendance: 4	},
-			{	id: "4",	name: 'FACEPONG Masters',			attendance: 0,		maxAttendance: 8	},
-			{	id: "5",	name: 'Pong Champions \'23',		attendance: 0,		maxAttendance: 4	},
-			{	id: "6",	name: 'Pong Challengers \'23',		attendance: 0,		maxAttendance: 4	},
-			{	id: "7",	name: 'Ping Pong Internationale',	attendance: 0,		maxAttendance: 4	},
-			{	id: "8",	name: 'Olympic Pong Games',			attendance: 0,		maxAttendance: 8	},
-			{	id: "9",	name: 'Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup ',				attendance: 4,		maxAttendance: 8	},
-			{	id: "10",	name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',				attendance: 2,		maxAttendance: 8	},
-		]
+		_tournament: {
+			player1: {
+				player1: {
+					player1: { id: 1, score: 1 },
+					player2: {
+						score: 2,
+						player1: { id: 10, score: 1 },
+						player2: { id: 11, score: 2, winner: true },
+						status: EGameStatus.COMPLETED,
+					},
+					status: EGameStatus.IN_PROGRESS,
+				},
+				player2: { id: 6 },
+				status: EGameStatus.NOT_STARTED,
+			},
+			player2: {
+				player1: {
+					player1: { id: 6 },
+					player2: { id: 5 },
+					status: EGameStatus.NOT_STARTED,
+				},
+				player2: {
+					player1: {
+						player1: { id: 5 },
+						player2: {
+							player1: { id: 6 },
+							player2: {
+								player1: { id: 6 },
+								player2: { id: 5 },
+								status: EGameStatus.NOT_STARTED,
+							},
+							status: EGameStatus.NOT_STARTED,
+						},
+						status: EGameStatus.NOT_STARTED,
+					},
+					player2: {
+						player1: { id: 6 },
+						player2: {
+							player1: { id: 6 },
+							player2: {
+								player1: {
+									player1: {
+										player1: { id: 5 },
+										player2: { id: 6 },
+										status: EGameStatus.NOT_STARTED,
+									},
+									player2: {
+										player1: { id: 5 },
+										player2: { id: 6 },
+										status: EGameStatus.NOT_STARTED,
+									},
+									status: EGameStatus.NOT_STARTED,
+								},
+								player2: {
+									player1: {
+										player1: { id: 4 },
+										player2: { id: 3 },
+										status: EGameStatus.NOT_STARTED,
+									},
+									player2: { id: 2 },
+									status: EGameStatus.NOT_STARTED,
+								},
+								status: EGameStatus.NOT_STARTED,
+							},
+							status: EGameStatus.NOT_STARTED,
+						},
+						status: EGameStatus.NOT_STARTED,
+					},
+					status: EGameStatus.NOT_STARTED,
+				},
+				status: EGameStatus.NOT_STARTED,
+			},
+			status: EGameStatus.NOT_STARTED,
+		},
 	}),
 	getters: {
-		tournaments: (state): Array<ITournament> => state._tournaments,
+		tournament: (state) => computed(() => state._tournament),
 	},
 	actions: {
-		add(id: string, name: string, attendance: number, maxAttendance: number) {
-			if (this._tournaments.find((el) => el.id == id) === undefined){
-				let newElem: ITournament = { id, name, attendance, maxAttendance };
-				this._tournaments.push(newElem);
-			}
-			else {
-				console.log("Could not add new element");
-			}
-		},
-		del(id: string) {
-			console.log(id, this._tournaments, this._tournaments.find((el) => el.id === id))
-			if (this._tournaments.find((el) => el.id === id) !== undefined){
-				this._tournaments = this._tournaments.filter((el) => el.id !== id)
-			}
-			else {
-				console.log("Could not delete element");
-			}
-		},
 	},
 })

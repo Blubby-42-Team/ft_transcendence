@@ -11,11 +11,11 @@ const { title } = usePageStore();
 		
 		<div class="ml-auto"></div><!-- OFFSET -->
 		
-		<GenericNuxtLink to="/" class="self-center w-12 h-12 p-1 rounded-full" :buttonStyle="1">
+		<GenericNuxtLink to="/" class="self-center w-12 h-12 p-1 mr-2 rounded-full" :buttonStyle="1">
 			<Icon name="material-symbols:notifications" class="w-full h-full"/>
 		</GenericNuxtLink>
-		<GenericNuxtLink to="/profile" class="self-center w-12 h-12 rounded-full" :buttonStyle="1">
-			<GenericProfilePicture class="w-12 h-12 hover:bg-accent-color" imageSrc="/amogus.png"/>
+		<GenericNuxtLink to="/profile" class="self-center w-12 h-12 border-none rounded-full hover:border-none" :buttonStyle="1">
+			<GenericProfilePicture class="w-full h-full hover:border-none" imageSrc="/amogus.png"/>
 		</GenericNuxtLink>
 	</div>
 </template>

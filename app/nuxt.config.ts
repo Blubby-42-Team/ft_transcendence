@@ -1,11 +1,17 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
+	experimental: {
+		renderJsonPayloads: false
+	},
 	typescript: {
 		strict: true
 	},
 	imports: {
 		dirs: ['stores/**'],
+	},
+	devServer: {
+		port: 3000,
 	},
 	devtools: { enabled: false },
 	modules: [

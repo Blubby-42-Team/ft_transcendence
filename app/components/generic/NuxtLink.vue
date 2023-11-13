@@ -12,12 +12,14 @@ const props = defineProps({
 	},
 })
 
+const style = getStyle(props.buttonStyle);
+
 </script>
 
 <template>
 	<NuxtLink :to="props.to"
-		class="flex items-center mr-2 text-center place-content-center"
-		:class="getStyle(props.buttonStyle)"
+		class="flex items-center text-center place-content-center"
+		:class="style.normal + ' ' + style.unselected"
 	>
 		<slot />
 	</NuxtLink>

@@ -27,7 +27,7 @@ const categories: Array<TSidebarCategory> = [
 </script>
 
 <template>
-	<div class="flex flex-col h-full p-2 bg-background3 text-text-light">
+	<div class="flex flex-col h-full p-2 overflow-hidden bg-background3 text-text-light">
 		<template v-for="category in categories">
 			<template v-if="category.type == EType.CATEGORY">
 				<NuxtLink :to="category.path"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const { tournaments } = useTournamentStore();
+const { tournaments } = useTournamentListStore();
 
 </script>
 

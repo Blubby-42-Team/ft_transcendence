@@ -1,12 +1,45 @@
 <script lang="ts" setup>
 const isGroupSelected	= useState('isGroupSelected');
 const isGroupsOpen		= useState('isGroupsOpen');
+const isChatsOpen		= useState('isChatsOpen');
 const isFriendsOpen		= useState('isFriendsOpen');
 
 </script>
 
 <template>
 	<div class="h-full overflow-x-hidden bg-color2 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-text scrollbar-thumb-rounded-none scrollbar-track">
+		<!-- Friends Hiding Button -->
+		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
+			@click="() => { isChatsOpen = !isChatsOpen }"
+		>
+			<Icon name="material-symbols:person" class="w-10 h-10"/>
+			<div class="pl-2">Chats</div>
+		</GenericButton>
+
+		<div class="border-b-[1px] border-text"></div>
+
+		<!-- Friends List -->
+		<TransitionExpand>
+			<template v-if="isChatsOpen">
+				<div class="p-1">
+					<template v-for="i in 10">
+						<GenericButton class="w-full h-10 mb-2 rounded place-content-start" :buttonStyle="2"
+							@click="() => isGroupSelected = false"
+						>
+							<GenericProfilePicture class="w-10 h-10 bg-background3" imageSrc="/amogus.png"/>
+							<div class="pl-2">Chats {{ i }}</div>
+						</GenericButton>
+					</template>
+				</div>
+			</template>
+		</TransitionExpand>
+
+		<TransitionExpand>
+			<template v-if="isChatsOpen">
+				<div class="pb-4 border-b-[1px] border-text"></div>
+			</template>
+		</TransitionExpand>
+		
 		<!-- Groups Hiding Button -->
 		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
 			@click="() => { isGroupsOpen = !isGroupsOpen }"
@@ -39,6 +72,8 @@ const isFriendsOpen		= useState('isFriendsOpen');
 			</template>
 		</TransitionExpand>
 		
+
+
 		<!-- Friends Hiding Button -->
 		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
 			@click="() => { isFriendsOpen = !isFriendsOpen }"

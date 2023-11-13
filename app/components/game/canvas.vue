@@ -1,49 +1,62 @@
 <script lang="ts" setup>
+import { gameStatusType } from '#imports';
+import { getNewStateWithGameSettings } from '~/utils/getNewStateWithGameSettings';
 
-let canvas = ref(null)
-let ctx = ref(null)
 
-let curX = ref(0)
-let curY = ref(0)
-let pressed = ref(false)
-let isDrawing = ref(false)
-let x = ref(0)
-let y = ref(0)
+const { theme } = useGame2Store()
 
-const startDrawing = (e) => {
-	x.value = e.offsetX
-	y.value = e.offsetY
-	isDrawing.value = true
-}
+const screenSize = ref({
+	width: 0,
+	height: 0,
+})
 
-const draw = (e) => {
-	if (isDrawing.value) {
-		ctx.value.beginPath()
-		ctx.value.moveTo(x.value, y.value)
-		ctx.value.lineTo(e.offsetX, e.offsetY)
-		ctx.value.stroke()
-		x.value = e.offsetX
-		y.value = e.offsetY
-	}
-}
+let gameState: Ref<gameStateType> = ref(getNewStateWithGameSettings());
+let gameStatus: gameStatusType = gameStatusType.ON_HOLD;
 
-const stopDrawing = () => {
-	x.value = 0
-	y.value = 0
-	isDrawing.value = false
+const emptyFunction = (status: boolean) => {};
+const controller: {[key: string]: (status: boolean) => void} = {
+	w:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.TOP,		status),
+	s:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.BOTTOM,	status),
+	ArrowUp:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.TOP,		status),
+	ArrowDown:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.BOTTOM,	status),
+	c:			(status: boolean) => gameController.move(Direction.BOTTOM,	Direction.LEFT,		status),
+	v:			(status: boolean) => gameController.move(Direction.BOTTOM,	Direction.RIGHT,	status),
+	u:			(status: boolean) => gameController.move(Direction.TOP,		Direction.LEFT,		status),
+	i:			(status: boolean) => gameController.move(Direction.TOP,		Direction.RIGHT,	status),
+	' ':		(status: boolean) => gameController.startRound(status),
 }
 
 onMounted(() => {
-	ctx.value = canvas.value.getContext('2d')
-	canvas.value.addEventListener('mousedown', startDrawing)
-	canvas.value.addEventListener('mousemove', draw)
-	canvas.value.addEventListener('mouseup', stopDrawing)
-	canvas.value.addEventListener('mouseleave', stopDrawing)
+	document.addEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
+	document.addEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
+	
+	gameEngine.start((newState, newGameStatus) => {
+		gameState.value = newState;
+		gameStatus = newGameStatus;
+	})
+	
+	gameGraphics.start('canvasDiv', theme.value, gameState, (ctx, screen) => {
+		screenSize.value.width = screen.width;
+		screenSize.value.height = screen.height;
+ 
+		gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
+	})
 })
+
+onBeforeRouteLeave(() => {
+	document.removeEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
+	document.removeEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
+
+	gameEngine.stop();
+	gameGraphics.stop();
+})
+
 </script>
 
 <template>
-	<div class="p-5">
-		<canvas class="bg-white" ref="canvas" width="500" height="300" style="border:1px solid #ffffff;"></canvas>
+	<div id="canvasDiv" class="w-full h-full">
+		<client-only placeholder="loading...">
+			<canvas class="bg-white border border-text" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
+		</client-only>
 	</div>
 </template>
