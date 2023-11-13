@@ -1,102 +1,56 @@
-<script setup lang="ts">
+<script lang="ts" setup>
+import { gameStatus } from '~/stores/game';
 
-const { optionsList, screen, players, activePlayer, ball } = useGameStore()
+const { screen, player, ball, optionsList, theme, utils, status, move, start, changeGameStatus, reset, setPlayer } = useGameStore()
+
+function game() {
+	let ctx = document.querySelector("canvas")?.getContext("2d");
+	if (!ctx){
+		window.requestAnimationFrame(game);
+		return ;
+	}
+	
+	gameGraphics.updateSize(screen, canvasParentId);
+	
+	switch (status.value){
+		case gameStatus.STARTED:
+			gameEngine.gameTick(optionsList.value, utils, screen, ball, player);
+		
+			if (gameEngine.isGameOver(player.value, optionsList.value)){
+				reset();
+				start();
+			}
+			gameGraphics.drawGame(ctx, screen.value, theme.value, optionsList.value, player.value, ball.value);
+
+			break ;
+		case gameStatus.ON_HOLD:
+		case gameStatus.GAMEOVER:
+			changeGameStatus(gameStatus.STARTED);
+			break ;
+	}
+
+	window.requestAnimationFrame(game);
+}
+
+const canvasParentId = 'canvasDiv';
+
+setPlayer(PlayerPosition.LEFT, true, true);
+setPlayer(PlayerPosition.RIGHT, true, true);
 
 onMounted(() => {
-	function startLoop() {
-		players.value.first = 360 - optionsList.value.padSize/2;
-		players.value.second = 360 - optionsList.value.padSize/2;
-		players.value.third = 540 - optionsList.value.padSize/2;
-		players.value.forth = 540 - optionsList.value.padSize/2;
-
-		activePlayer.value.top = true;
-		activePlayer.value.bottom = true;
-		activePlayer.value.left = true;
-		activePlayer.value.right = true;
-
-		ball.value.x = 540 - optionsList.value.ballSize/2;
-		ball.value.y = 360 - optionsList.value.ballSize/2;
-		ball.value.dir = Math.PI/6;
-		ball.value.speed = 4;
-	}
-
-	watch(() => JSON.stringify(optionsList.value), (newValueString, oldValueString) => {
-		const newValue = JSON.parse(newValueString);
-		const oldValue = oldValueString ? JSON.parse(oldValueString) : {};
-		if (!optionsList.value.randomizer)
-			startLoop();
-		else if (newValue.numPlayer !== oldValue.numPlayer || newValue.mode !== oldValue.mode || newValue.maxPoint !== oldValue.maxPoint)
-			startLoop();
-	})
-
-	function refreshSize () {
-		if (document.getElementById('previewCanvasDiv')?.offsetHeight >= 720/1080 * document.getElementById('previewCanvasDiv')?.offsetWidth) {
-			screen.value.width = document.getElementById('previewCanvasDiv')?.offsetWidth * 0.98;
-			screen.value.height = screen.value.width * 720/1080;
-		}
-		else {
-			screen.value.height = document.getElementById('previewCanvasDiv')?.offsetHeight * 0.98;
-			screen.value.width = screen.value.height * 1080/720;
-		}
-	}
-
-	function reload () {
-		let ctx = document.querySelector("canvas").getContext("2d");
-		//background
-		gameGraphics.buildBackground(ctx);
-		//joueurs
-		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
-			gameGraphics.buildPlayer(ctx, 20, players.value.first, "vertical");
-			gameGraphics.buildPlayer(ctx, 1050, players.value.second, "vertical");
-		}
-		else if (optionsList.value.numPlayer === 4) {
-			if (activePlayer.value.left)
-				gameGraphics.buildPlayer(ctx, 20, players.value.first, "vertical");
-			if (activePlayer.value.right)
-				gameGraphics.buildPlayer(ctx, 1050, players.value.second, "vertical");
-			if (activePlayer.value.top)
-				gameGraphics.buildPlayer(ctx, players.value.third, 20, "horizontal");
-			if (activePlayer.value.bottom)
-				gameGraphics.buildPlayer(ctx, players.value.forth, 690, "horizontal");
-		}
-		//ball
-		gameGraphics.buildBall(ctx, ball.value.x, ball.value.y)
-	}
-
-	function preview () {
-		refreshSize();
-		if (!ball.value.speed)
-			ball.value.speed = 4;
-		screen.value.preview = true;
-		gameEngine.moveBall();
-		gameController.moveIA();
-		gameController.moveIASec();
-		if (optionsList.value.numPlayer === 4) {
-			gameController.moveIAThird();
-			gameController.moveIAForth();
-		}
-		if (optionsList.value.numPlayer === 1 || optionsList.value.numPlayer === 2) {
-			gameEngine.checkCollisionWall();
-			gameEngine.checkCollisionPad();
-		}
-		else {
-			gameEngine.checkCollisionPadActive();
-			gameEngine.checkEndPlay();
-		}
-		reload();
-		window.requestAnimationFrame(preview)
-	}
-
-	startLoop();
-	window.requestAnimationFrame(preview);
+	gameGraphics.updateSize(screen, canvasParentId);
+	gameGraphics.loadTheme(theme.value);
+	reset();
+	start();
+	window.requestAnimationFrame(game);
 })
 
 </script>
 
 <template>
-	<div id="previewCanvasDiv" class="w-full h-full overflow-hidden">
+	<div id="canvasDiv" class="w-full h-full">
 		<client-only placeholder="loading...">
-			<canvas class="bg-white" ref="canvas" :width="screen.width" :height="screen.height" style="border:1px solid #ffffff;"></canvas>
+			<canvas class="bg-white border border-text" ref="canvas" :width="screen.width" :height="screen.height"></canvas>
 		</client-only>
 	</div>
 </template>

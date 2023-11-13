@@ -1,114 +1,55 @@
-function moveW () {
-	const { players, optionsList } = useGameStore();
-	if (optionsList.value.numPlayer !== 1)
-		players.value.first -= 20;
-	if (players.value.first < 0) {players.value.first = 0}
+import { Direction } from "#imports";
+
+const controller = {
+	playerTopMoveLeft:		false,
+	playerTopMoveRight:		false,
+	playerBottomMoveLeft:	false,
+	playerBottomMoveRight:	false,
+	playerLeftMoveUp:		false,
+	playerLeftMoveDown:		false,
+	playerRightMoveUp:		false,
+	playerRightMoveDown:	false,
+	startRound:				false,
 }
 
-function moveS () {
-	const { players, optionsList } = useGameStore();
-	if (optionsList.value.numPlayer !== 1)
-		players.value.first += 20;
-	if (players.value.first > 720 - optionsList.value.padSize) {players.value.first = 720 - optionsList.value.padSize}
+
+
+function move(player: Direction, direction: Direction, status: boolean){
+	switch (player) {
+		case Direction.LEFT:
+			switch (direction) {
+				case Direction.TOP:		controller.playerLeftMoveUp = status;		return;
+				case Direction.BOTTOM:	controller.playerLeftMoveDown = status;		return;
+				default:															return;
+			}
+		case Direction.RIGHT:
+			switch (direction) {
+				case Direction.TOP:		controller.playerRightMoveUp = status;		return;
+				case Direction.BOTTOM:	controller.playerRightMoveDown = status;	return;
+				default:															return;
+			}
+		case Direction.TOP:
+			switch (direction) {
+				case Direction.LEFT:	controller.playerTopMoveLeft = status;		return;
+				case Direction.RIGHT:	controller.playerTopMoveRight = status;		return;
+				default:															return;
+			}
+		case Direction.BOTTOM:
+			switch (direction) {
+				case Direction.LEFT:	controller.playerBottomMoveLeft = status;	return;
+				case Direction.RIGHT:	controller.playerBottomMoveRight = status;	return;
+				default:															return;
+			}
+		default:																	return;
+	}
 }
 
-function moveUp () {
-	const { players } = useGameStore();
-	players.value.second -= 20;
-	if (players.value.second < 0) {players.value.second = 0}
-}
-
-function moveDown () {
-	const { players, optionsList } = useGameStore();
-	players.value.second += 20;
-	if (players.value.second > 720 - optionsList.value.padSize) {players.value.second = 720 - optionsList.value.padSize}
-}
-
-function moveC () {
-	const { players } = useGameStore();
-	players.value.forth -= 30;
-	if (players.value.forth < 0) {players.value.forth = 0}
-}
-
-function moveV () {
-	const { players, optionsList } = useGameStore();
-	players.value.forth += 30;
-	if (players.value.forth > 1080 - optionsList.value.padSize) {players.value.forth = 1080 - optionsList.value.padSize}
-}
-
-function moveU () {
-	const { players } = useGameStore();
-	players.value.third -= 30;
-	if (players.value.third < 0) {players.value.third = 0}
-}
-
-function moveI () {
-	const { players, optionsList } = useGameStore();
-	players.value.third += 30;
-	if (players.value.third > 1080 - optionsList.value.padSize) {players.value.third = 1080 - optionsList.value.padSize}
-}
-
-function executeMoves () {
-	const { controller } = useGameStore();
-	Object.keys(controller.value).forEach(key=> {
-		controller.value[key].pressed && controller.value[key].func()
-	})
-}
-
-function IASpeed () {
-	const { optionsList } = useGameStore();
-	if (optionsList.value.mode === "easy")
-		return 2;
-	else if (optionsList.value.mode === "hard")
-		return 5;
-	else
-		return 10;
-}
-
-function moveIA () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.first > ball.value.y + optionsList.value.ballSize)
-		players.value.first -= IASpeed();
-	else if (players.value.first + optionsList.value.padSize < ball.value.y)
-		players.value.first += IASpeed();
-}
-
-function moveIASec () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.second > ball.value.y + optionsList.value.ballSize)
-		players.value.second -= IASpeed();
-	else if (players.value.second + optionsList.value.padSize < ball.value.y)
-		players.value.second += IASpeed();
-}
-
-function moveIAThird () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.third > ball.value.x + optionsList.value.ballSize)
-		players.value.third -= IASpeed() * 3/2;
-	else if (players.value.third + optionsList.value.padSize < ball.value.x)
-		players.value.third += IASpeed() * 3/2;
-}
-
-function moveIAForth () {
-	const { optionsList, players, ball } = useGameStore();
-	if (players.value.forth > ball.value.x + optionsList.value.ballSize)
-		players.value.forth -= IASpeed() * 3/2;
-	else if (players.value.forth + optionsList.value.padSize < ball.value.x)
-		players.value.forth += IASpeed() * 3/2;
+function startRound(status: boolean){
+	controller.startRound = status;
 }
 
 export default {
-	moveW,
-	moveS,
-	moveUp,
-	moveDown,
-	moveC,
-	moveV,
-	moveU,
-	moveI,
-	executeMoves,
-	moveIA,
-	moveIASec,
-	moveIAThird,
-	moveIAForth
+	controller,
+	move,
+	startRound,
 }

@@ -1,120 +1,144 @@
-function buildImageBackground(ctx, theme)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + "/background.jpg";
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
+function loadTexture(text: gameTexture){
+	if (text.type === 'image'){
+		text.image = new Image();
+		text.image.src = text.imageSrc;
 	}
 }
 
-function buildImagePlayerVertical(ctx, theme)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + '/playerV.jpg';
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
+function loadTheme(theme: { [key: string]: gameTexture }){
+	for (const textKey in theme){
+		loadTexture(theme[textKey]);
 	}
 }
 
-function buildImagePlayerHorizontal(ctx, theme)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + '/playerH.jpg';
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
-	}
-}
-
-function buildImageBall(ctx, theme)
-{
-	const { screen } = useGameStore()
-	let base_image = new Image();
-	base_image.src = "themes/" + theme + '/ball.jpg';
-	base_image.onload = function(){
-		ctx.drawImage(base_image, 0, 0, screen.value.width, screen.value.height);
-	}
-}
-
-//Fond noir ou blanc
-function buildBackground (ctx) {
-	const { optionsList, screen } = useGameStore()
-	if (screen.value.background === "default") {
-		ctx.beginPath();
-		ctx.fillStyle = optionsList.value.backgroundColor;
-		ctx.moveTo(0, 0);
-		ctx.lineTo(screen.value.width, 0);
-		ctx.lineTo(0, screen.value.height);
-		ctx.moveTo(screen.value.width, screen.value.height);
-		ctx.lineTo(0, screen.value.height);
-		ctx.lineTo(screen.value.width, 0);
-		ctx.fill();
-	}
-	else
-		buildImageBackground(ctx, screen.value.background)
-}
-
-//Affichage des scores
-function buildScores (ctx) {
-	const { optionsList, scores, screen } = useGameStore()
-	ctx.fillStyle = optionsList.value.fontColor;
-	ctx.font = (screen.value.width * 0.093).toString() + "px Arial";
-	ctx.fillText(scores.value.player1.toString() + " - " + scores.value.player2.toString(), screen.value.width * 0.407, screen.value.height * 0.542); 
-
-	if (optionsList.value.numPlayer === 4) {
-		ctx.fillText(scores.value.player3.toString(), screen.value.width * 0.480, screen.value.height * 0.417);
-		ctx.fillText(scores.value.player4.toString(), screen.value.width * 0.480, screen.value.height * 0.667);
-	}
-}
-
-//Affichage d'un joueur
-function buildPlayer (ctx, x, y, dir) {
-	const { optionsList, screen } = useGameStore()
-	if (dir === "vertical") {
-		ctx.beginPath();
-		ctx.fillStyle = optionsList.value.assetsColor;
-		ctx.moveTo(x * screen.value.width/1080, y * screen.value.height/720);
-		ctx.lineTo((x + 10) * screen.value.width/1080, y * screen.value.height/720);
-		ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.padSize) * screen.value.height/720);
-
-		ctx.moveTo((x + 10) * screen.value.width/1080, (y + optionsList.value.padSize) * screen.value.height/720);
-		ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.padSize) * screen.value.height/720);
-		ctx.lineTo((x + 10) * screen.value.width/1080, y * screen.value.height/720);
-		ctx.fill();
-	}
-	else {
-		ctx.beginPath();
-		ctx.fillStyle = optionsList.value.assetsColor;
-		ctx.moveTo(x * screen.value.width/1080, y * screen.value.height/720);
-		ctx.lineTo(x * screen.value.width/1080, (y + 10) * screen.value.height/720);
-		ctx.lineTo((x + optionsList.value.padSize) * screen.value.width/1080, y * screen.value.height/720);
-
-		ctx.moveTo((x + optionsList.value.padSize) * screen.value.width/1080, (y + 10) * screen.value.height/720);
-		ctx.lineTo((x + optionsList.value.padSize) * screen.value.width/1080, y * screen.value.height/720);
-		ctx.lineTo(x * screen.value.width/1080, (y + 10) * screen.value.height/720);
-		ctx.fill();
-	}
-}
-
-//Affichage de la balle
-function buildBall (ctx, x, y) {
-	const { optionsList, screen } = useGameStore()
+function drawRectTexture(
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	w: number,
+	l: number,
+	text: gameTexture,
+){
 	ctx.beginPath();
-	ctx.fillStyle = optionsList.value.assetsColor;
-	ctx.moveTo(x * screen.value.width/1080, y * screen.value.height/720);
-	ctx.lineTo((x + optionsList.value.ballSize) * screen.value.width/1080, y * screen.value.height/720);
-	ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.ballSize) * screen.value.height/720);
-
-	ctx.moveTo((x + optionsList.value.ballSize) * screen.value.width/1080, (y + optionsList.value.ballSize) * screen.value.height/720);
-	ctx.lineTo(x * screen.value.width/1080, (y + optionsList.value.ballSize) * screen.value.height/720);
-	ctx.lineTo((x + optionsList.value.ballSize) * screen.value.width/1080, y * screen.value.height/720);
+	if (text.type === 'color'){
+		ctx.fillStyle = text.color;
+		ctx.rect(x, y, w, l);
+	}
+	else if (text.type === 'image'){
+		if (!text.image){
+			return ;
+		}
+		ctx.drawImage(text.image, x, y, w, l);
+	}
 	ctx.fill();
 }
+
+function drawGameElement(
+	ctx: CanvasRenderingContext2D,
+	text: gameTexture,
+	rec: Rectangle,
+	screen: screenData,
+){
+	drawRectTexture(
+		ctx,
+		screen.width / 2 + (rec.center.x - rec.width_d_2) * screen.delta.x,
+		screen.height / 2 + (rec.center.y - rec.height_d_2) * screen.delta.y,
+		rec.width_d_2 * 2 * screen.delta.x,
+		rec.height_d_2 * 2 * screen.delta.x,
+		text,
+	);
+}
+
+function drawGame(
+	ctx: CanvasRenderingContext2D,
+	gameState: gameStateType,
+	screen: screenData,
+	theme: { [key: string]: gameTexture },
+){
+	// Draw Background
+	drawRectTexture(ctx, 0, 0, screen.width, screen.height, theme.background)
+
+	// Draw Ball
+	drawGameElement(ctx, theme.ball, gameState.ball, screen);
+	
+	// Draw Players
+	if (gameState.player_left.active && !gameState.player_left.eleminated){
+		drawGameElement(ctx, theme.player_left, gameState.player_left as Rectangle, screen);
+	}
+	if (gameState.player_right.active && !gameState.player_right.eleminated){
+		drawGameElement(ctx, theme.player_right, gameState.player_right as Rectangle, screen);
+	}
+	if (gameState.player_top.active && !gameState.player_top.eleminated){
+		drawGameElement(ctx, theme.player_top, gameState.player_top as Rectangle, screen);
+	}
+	if (gameState.player_bottom.active && !gameState.player_bottom.eleminated){
+		drawGameElement(ctx, theme.player_bottom, gameState.player_bottom as Rectangle, screen);
+	}
+
+	// Draw Obstacles
+	for (const obstacleKey in gameState.obstacles){
+		drawGameElement(ctx, theme[obstacleKey], gameState.obstacles[obstacleKey], screen);
+	}
+}
+
+function updateSize(gameState: gameStateType, screen: screenData, canvasParentId: string) {
+	const canvas = document.getElementById(canvasParentId);
+	if (!canvas){
+		return ;
+	}
+	if (canvas.offsetHeight >= gameState.gameArea.height_d_2 / gameState.gameArea.width_d_2 * canvas.offsetWidth) {
+		screen.width = canvas.offsetWidth - 2;
+		screen.height = canvas.offsetWidth * gameState.gameArea.height_d_2 / gameState.gameArea.width_d_2 - 2;
+	}
+	else {
+		screen.width = canvas.offsetHeight * gameState.gameArea.width_d_2 / gameState.gameArea.height_d_2 - 2;
+		screen.height = canvas.offsetHeight - 2;
+	}
+	screen.delta.x = screen.width / (gameState.gameArea.width_d_2 * 2);
+	screen.delta.y = screen.height / (gameState.gameArea.height_d_2 * 2);
+}
+
+let continueLoop = true;
+
+function start(canvasParentId: string, theme: gameTheme2, state: Ref<gameStateType>, onLoop: (ctx: CanvasRenderingContext2D, screen: screenData, gameState: gameStateType) => void){
+	console.log('Graphic Engine Start')
+	continueLoop = true;
+
+	let screen: screenData = {
+		delta: {
+			x: 0,
+			y: 0,
+		},
+		width: 0,
+		height: 0,
+	}
+
+	loadTheme(theme);
+
+	function loop(){
+		let ctx = document.querySelector("canvas")?.getContext("2d");
+		if (!ctx){
+			window.requestAnimationFrame(loop);
+			return ;
+		}
+
+		updateSize(state.value, screen, canvasParentId);
+		onLoop(ctx, screen, state.value);
+
+		if (continueLoop){
+			window.requestAnimationFrame(loop);
+		}
+	}
+	window.requestAnimationFrame(loop);
+}
+
+function stop(){
+	continueLoop = false;
+	console.log('Graphic Engine Stop')
+}
+
 export default {
-	buildBackground,
-	buildBall,
-	buildPlayer,
-	buildScores
+	drawGame,
+	start,
+	stop,
 }
