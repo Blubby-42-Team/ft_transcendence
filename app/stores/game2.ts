@@ -106,7 +106,7 @@ export const useGame2Store = defineStore('game', {
 		},
 		_gameSettings: {
 			maxPoint:	3,
-			numPlayer:	2,
+			numPlayer:	4,
 			ballSize:	5,
 			padSize:	5,
 			mode:		BotDifficulty2.NORMAL,

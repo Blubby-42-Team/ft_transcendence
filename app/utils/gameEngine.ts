@@ -86,10 +86,10 @@ function calcutateNewBallDirectionAfterHittingPlayer(
 	
 	ball.direction = (() => {
 		switch (direction) {
-			case Direction.RIGHT:	return Math.PI * (1 + (Math.min(player.center.y - ball.center.y, 1) / (4 * player.height_d_2) * Math.sign(ball.direction)));
-			case Direction.LEFT:	return Math.PI * (0 + (Math.min(player.center.y - ball.center.y, 1) / (4 * player.height_d_2) * Math.sign(ball.direction)));
-			case Direction.TOP:		return Math.PI * (3/2 + (Math.min(player.center.x - ball.center.x, 1) / (4 * player.width_d_2) * Math.sign(ball.direction)));
-			case Direction.BOTTOM:	return Math.PI * (1/2 + (Math.min(player.center.x - ball.center.x, 1) / (4 * player.width_d_2) * Math.sign(ball.direction)));
+			case Direction.RIGHT:	return Math.PI - (ball.center.y - player.center.y)/(ball.height_d_2 + player.height_d_2) * Math.PI/4;
+			case Direction.LEFT:	return 0 + (ball.center.y - player.center.y)/(ball.height_d_2 + player.height_d_2) * Math.PI/4;
+			case Direction.TOP:		return Math.PI * 3/2 + (ball.center.x - player.center.x)/(ball.width_d_2 + player.width_d_2) * Math.PI/4;
+			case Direction.BOTTOM:	return Math.PI / 2 - (ball.center.x - player.center.x)/(ball.width_d_2 + player.width_d_2) * Math.PI/4;;
 		}
 	})();
 	
