@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException, WsResponse } from '@nestjs/websockets';
 import { log } from 'console';
 import { Server, Socket } from 'socket.io'
-import {AcknowledgmentWsDto, JoinGameRoomRequest} from '@shared/ws.dto'
+import {AcknowledgmentWsDto, JoinGameRoomRequestDto} from '@shared/ws.dto'
 import { TestDto } from '@shared/test.dto';
 import { validate } from 'class-validator';
 import { BadRequestException, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
@@ -35,7 +35,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	server: Server;
 
 	@SubscribeMessage('joinRoom')
-	async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() req: JoinGameRoomRequest): Promise<AcknowledgmentWsDto> {
+	async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() req: JoinGameRoomRequestDto): Promise<AcknowledgmentWsDto> {
 		
 		// Check jwt party
 
