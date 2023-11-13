@@ -7,6 +7,7 @@ import { validate } from 'class-validator';
 import { BadRequestException, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsBadRequestExceptionFilter } from './game.exception.filter';
 import { plainToClass } from 'class-transformer';
+import { GameService } from './game.service';
 
 @WebSocketGateway({
 	namespace: 'game',
@@ -20,13 +21,17 @@ import { plainToClass } from 'class-transformer';
 @UseFilters(new WsBadRequestExceptionFilter())
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
+	constructor(private readonly gameService: GameService) {}
+
 	// When a client connect to the server
 	handleConnection(client: Socket, ...args: any[]) {
+		// this.gameService.startRoom(client.id, this.server);
 		log(`Client ${client.id} connected`);
 	}
 	
 	// When a client disconnect from the server
 	handleDisconnect(client: Socket) {
+		// this.gameService.stopRoom(client.id);
 		log(`Client ${client.id} disconnected`);
 	}
 
@@ -39,12 +44,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		
 		// Check jwt party
 
-		const room = 'room1';
+		const room = req.game_room_id;
 		client.join(room);
 		console.log(`Client ${client.id} joined room ${room}`);
 		// You can also broadcast to the room or emit a message to the client
-		this.server.to(room).emit('message', 'Hello from the room!');
-		client.emit('message', 'Welcome to the room!');
+		this.server.to(room).emit('message', `Client ${client.id} joined room ${room}`);
+		this.gameService.startRoom(room, this.server);
 
 		return new AcknowledgmentWsDto('ok', 'ok');
 	}

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive } from 'class-validator'
+import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive} from 'class-validator'
 
 export class AcknowledgmentWsDto {
 
@@ -26,9 +26,8 @@ export class CreateGameRoomRequestDto extends WsRequestDto {
 
 export class JoinGameRoomRequestDto extends WsRequestDto {
 	@IsNotEmpty()
-	@IsNumber()
-	@IsPositive()
-	game_room_id: number;
+	@IsString()
+	game_room_id: string;
 }
 
 export class JoinGameRoomResponseDto extends AcknowledgmentWsDto {
