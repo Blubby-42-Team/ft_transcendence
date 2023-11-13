@@ -1,8 +1,10 @@
-import { IsNotEmpty, IsDefined, IsEmail, IsOptional} from 'class-validator'
+import { IsNotEmpty, IsDefined, IsEmail, IsOptional, IsNumber, IsPositive} from 'class-validator'
 
 export class TestDto {
 	@IsNotEmpty()
 	@IsDefined()
+	@IsNumber()
+	@IsPositive()
 	id: number;
 
 	@IsEmail()
