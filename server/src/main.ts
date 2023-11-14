@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import tracer from './tracer';
 
 async function bootstrap() {
@@ -14,6 +14,8 @@ async function bootstrap() {
 		origin: ["http://localhost:3000", "https://admin.socket.io"],
 		credentials: true
 	});
+
+	app.useGlobalInterceptors(new ClassSerializerInterceptor(new Reflector()))
 
 	await app.listen(3000);
 }

@@ -1,3 +1,4 @@
+import { PostgresModule } from './service/postgres/postgres.module'
 import { AdminModule } from './admin/admin.module';
 import { APP_FILTER } from '@nestjs/core';
 import { Module } from '@nestjs/common';
@@ -8,15 +9,19 @@ import { GameController } from './game/game.controller';
 import { GameModule } from './game/game.module';
 import { AdminGateway } from './admin/admin.gateway';
 import { AdminController } from './admin/admin.controller';
+import { ServiceModule } from './service/service.module';
+import { ModelModule } from './model/model.module';
 
 @Module({
 	imports: [
+		PostgresModule,
 		AdminModule,
-		GameModule,],
+		GameModule,
+		ServiceModule,
+		ModelModule,],
 	controllers: [
 		AppController,
 		GameController,
-		AdminController,
 	],
 	providers: [
 		GameService, AppService, AdminGateway],
