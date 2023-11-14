@@ -20,30 +20,37 @@ const controller: {[key: string]: (status: boolean) => void} = {
 	' ':		(status: boolean) => gameController.startRound(status),
 }
 
-onMounted(() => {
+const { stop } = await gameEngine.start((newState, newGameStatus) => {
+	console.log(newGameStatus)
+	gameState.value = newState;
+	gameStatus = newGameStatus;
+})
+
+onMounted(async () => {
 	document.addEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.addEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
-	
-	gameEngine.start((newState, newGameStatus) => {
-		WebSocket.emit(`game:<id>:<usr_id>`, {
-			state: newState,
-			status: newGameStatus
-		})
-	})
 	
 	gameGraphics.start('canvasDiv', theme.value, gameState, (ctx, screen) => {
 		screenSize.value.width = screen.width;
 		screenSize.value.height = screen.height;
- 
-		gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
-	})
+
+		switch (gameStatus) {
+			case gameStatusType.ON_HOLD:
+			case gameStatusType.STARTED:
+				gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
+				break ;
+			case gameStatusType.GAMEOVER:
+				gameGraphics.drawGameOver(ctx, screen, theme.value, 1);
+				break ;
+		}
+ 	})
 })
 
 onBeforeRouteLeave(() => {
 	document.removeEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.removeEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
 
-	gameEngine.stop();
+	stop();
 	gameGraphics.stop();
 })
 

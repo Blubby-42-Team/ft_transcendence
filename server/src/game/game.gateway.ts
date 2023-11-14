@@ -1,8 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException, WsResponse } from '@nestjs/websockets';
 import { log } from 'console';
 import { Server, Socket } from 'socket.io'
-import {AcknowledgmentWsDto, JoinGameRoomRequestDto} from '@shared/game.dto'
-import { TestDto } from '@shared/test.dto';
+import {AcknowledgmentWsDto, JoinGameRoomRequestDto} from '@shared/dto/ws.dto'
 import { validate } from 'class-validator';
 import { BadRequestException, Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsBadRequestExceptionFilter } from './game.exception.filter';

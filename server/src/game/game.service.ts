@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GameOptDto } from '@shared/game.dto';
+import { GameOptDto } from '@shared/dto/game.dto';
 import { Server } from 'socket.io';
 import { roomType } from './game.class';
 

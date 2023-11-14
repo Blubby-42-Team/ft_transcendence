@@ -1,4 +1,4 @@
-import { Direction, Rectangle, gameStateType, gameStatusType } from "#imports";
+import { Direction, Rectangle, gameSettingsType, gameStateType, gameStatusType } from "#imports";
 import { getNewStateWithGameSettings } from "./getNewStateWithGameSettings";
 
 enum Axis {
@@ -94,8 +94,6 @@ function calcutateNewBallDirectionAfterHittingPlayer(
 	})();
 }
 
-
-
 function calcutateNewBallDirectionAfterHittingObstacle(
 	ball: Rectangle & { speed: number, direction: number },
 	direction: Direction.LEFT | Direction.RIGHT | Direction.TOP | Direction.BOTTOM,
@@ -110,19 +108,96 @@ function calcutateNewBallDirectionAfterHittingObstacle(
 	})();
 }
 
-function moveBall(gamestate: gameStateType){
+function resetRound(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
+	gameStatus.value = gameStatusType.ON_HOLD;
+	if (gamestate.player_bottom.active){
+		gamestate.player_bottom.eleminated = false;
+		gamestate.obstacles.player4BottomElim.hidden = true;
+	}
+	if (gamestate.player_top.active){
+		gamestate.player_top.eleminated = false;
+		gamestate.obstacles.player4TopElim.hidden = true;
+	}
+	if (gamestate.player_right.active){
+		gamestate.player_right.eleminated = false;
+		gamestate.obstacles.player4RightElim.hidden = true;
+	}
+	if (gamestate.player_left.active){
+		gamestate.player_left.eleminated = false;
+		gamestate.obstacles.player4LeftElim.hidden = true;
+	}
+}
+
+function updatePoints(gamestate: gameStateType, doesIntersect: Direction, gameStatus: Ref<gameStatusType>){
+	const { gameSettings } = useGame2Store();
+
+	if (gamestate.player_left.active && gamestate.player_right.active && gamestate.player_top.active && gamestate.player_bottom.active){
+		switch (doesIntersect) {
+			case Direction.BOTTOM:	gamestate.player_bottom.eleminated	= true; gamestate.obstacles.player4BottomElim.hidden = false; break;
+			case Direction.TOP:		gamestate.player_top.eleminated		= true; gamestate.obstacles.player4TopElim.hidden = false; break;
+			case Direction.LEFT:	gamestate.player_right.eleminated	= true; gamestate.obstacles.player4RightElim.hidden = false; break;
+			case Direction.RIGHT:	gamestate.player_left.eleminated	= true; gamestate.obstacles.player4LeftElim.hidden = false; break;
+		}
+		if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_left.eleminated){
+			gamestate.player_right.score += 1;
+			resetRound(gamestate, gameStatus);
+		}
+		else if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
+			gamestate.player_left.score += 1;
+			resetRound(gamestate, gameStatus);
+		}
+		else if (gamestate.player_bottom.eleminated && gamestate.player_left.eleminated && gamestate.player_right.eleminated){
+			gamestate.player_top.score += 1;
+			resetRound(gamestate, gameStatus);
+		}
+		else if (gamestate.player_left.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
+			gamestate.player_bottom.score += 1;
+			resetRound(gamestate, gameStatus);
+		}
+		if (gamestate.player_bottom.score >= gameSettings.value.maxPoint || gamestate.player_top.score >= gameSettings.value.maxPoint ||
+			gamestate.player_left.score >= gameSettings.value.maxPoint || gamestate.player_right.score >= gameSettings.value.maxPoint
+		){
+			gameStatus.value = gameStatusType.GAMEOVER;
+		}
+	}
+	else if (gamestate.player_left.active && gamestate.player_right.active){
+		if (doesIntersect === Direction.LEFT){
+			gamestate.player_right.score += 1;
+			gameStatus.value = gameStatusType.ON_HOLD;
+		}
+		else if (doesIntersect === Direction.RIGHT){
+			gamestate.player_left.score += 1;
+			gameStatus.value = gameStatusType.ON_HOLD;
+		}
+	}
+}
+
+function moveBall(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
 	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.gameArea, Axis.Y);
+		const gameArea: Rectangle = {
+			center: {
+				x: gamestate.gameArea.center.x,
+				y: gamestate.gameArea.center.y
+			},
+			width_d_2: gamestate.gameArea.width_d_2 + gamestate.ball.width_d_2 * 2,
+			height_d_2: gamestate.gameArea.height_d_2 + gamestate.ball.height_d_2 * 2
+		};
+		const doesIntersect = getIntersection(gamestate.ball, gameArea, Axis.Y);
 		if (doesIntersect !== Direction.NONE){
 			gamestate.ball.center.x = 0;
 			gamestate.ball.center.y = 0;
-			gamestate.ball.speed = 0;
-			// RemovePlayer(direction)
+			gamestate.ball.speed = 0.5;
+			updatePoints(gamestate, doesIntersect, gameStatus);
 			return ;
 		}
 	}
 
+	gamestate.ball.speed += 0.001;
+
 	for (const obstacleKey in gamestate.obstacles){
+		if (gamestate.obstacles[obstacleKey].hidden){
+			continue ;
+		}
 		const doesIntersect = getIntersection(gamestate.ball, gamestate.obstacles[obstacleKey], Axis.X);
 		if (doesIntersect !== Direction.NONE){
 			calcutateNewBallDirectionAfterHittingObstacle(gamestate.ball, doesIntersect);
@@ -232,34 +307,57 @@ function moveAllPlayers(gamestate: gameStateType){
 
 const updatePerSeconds = 30
 const millisecondsPerUpdate = 1000/updatePerSeconds
-let continueLoop = true;
 
 async function start(updateGameState: (newGameState: gameStateType, gameStatus: gameStatusType) => void){
-	console.log('Game Engine Start');
-	continueLoop = true;
+	let continueLoop = true;
 	let gamestate = getNewStateWithGameSettings();
-	let gamestatus = gameStatusType.ON_HOLD;
-
-	while (continueLoop){
-		if (gameController.controller.startRound){
-			gamestate.ball.speed = 0.5
+	let gamestatus: Ref<gameStatusType> = ref(gameStatusType.ON_HOLD);
+	let needsSleep = false;
+	let datewip = new Date;
+	
+	async function loop() {
+		console.log('Game Engine Start');
+		while (continueLoop){
+			switch (gamestatus.value) {
+				case gameStatusType.ON_HOLD:
+					moveAllPlayers(gamestate);
+					break ;
+				case gameStatusType.STARTED: 
+					moveAllPlayers(gamestate);
+					// Move IA
+					moveBall(gamestate, gamestatus);
+					break ;
+				case gameStatusType.GAMEOVER:
+					if (needsSleep){
+						needsSleep = false;
+						datewip = new Date((new Date).getTime() + 10000);;
+					}
+					else if (new Date() > datewip){
+						console.log('here')
+						needsSleep = true;
+						gamestate = getNewStateWithGameSettings();
+						gamestatus.value = gameStatusType.ON_HOLD;
+					}
+					break ;
+			}
+			updateGameState(gamestate, gamestatus.value);
+			if (gameController.controller.startRound && gamestatus.value == gameStatusType.ON_HOLD){
+				gamestatus.value = gameStatusType.STARTED;
+			}
+	
+			await new Promise(resolve => setTimeout(resolve, millisecondsPerUpdate));
 		}
-		moveAllPlayers(gamestate);
-		// Move IA
-		moveBall(gamestate);
-
-		updateGameState(gamestate, gamestatus);
-
-		await new Promise(resolve => setTimeout(resolve, millisecondsPerUpdate));
+		console.log('Game Engine Stop');
 	}
-	console.log('Game Engine Stop');
-}
 
-function stop(){
-	continueLoop = false;
+	function stop() {
+		continueLoop = false;
+	}
+	
+	loop();
+	return { stop };
 }
 
 export default {
 	start,
-	stop,
 }
