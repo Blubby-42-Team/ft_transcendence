@@ -8,9 +8,15 @@ export class GameService {
 		status: boolean,
 	} } = {};
 
+	users: { [key: string]: {
+		room: string,
+	} } = {};
+	
+
 	async startRoom(roomName: string, opt: GameOptDto, io: Server) {
 		this.rooms[roomName] = {
 			status: true,
+			//TODO @mkoyamba add user to room
 		}
 
 		const id = this.makeid(5);
@@ -54,5 +60,28 @@ export class GameService {
 
 		//return room id
 		return this.makeid(5);
+	}
+
+	addPlayerToRoom(roomName: string, userId: string) {
+		if (this.users[userId]) {
+			console.log(`user ${userId} already in room ${this.users[userId].room}`);
+			return;
+		}
+
+
+		this.users[userId] = {
+			room: roomName,
+		}
+	}
+
+	removePlayerFromRoom(userId: string) {
+		if (!this.users[userId]) {
+			console.log(`user ${userId} not in any room`);
+			return;
+		}
+
+		const roomName = this.users[userId].room;
+		//TODO @mkoyamba remove player from active room
+		delete this.users[userId];
 	}
 }
