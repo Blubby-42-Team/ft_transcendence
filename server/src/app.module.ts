@@ -11,6 +11,7 @@ import { AdminGateway } from './admin/admin.gateway';
 import { AdminController } from './admin/admin.controller';
 import { ServiceModule } from './service/service.module';
 import { ModelModule } from './model/model.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
 	imports: [
@@ -18,12 +19,17 @@ import { ModelModule } from './model/model.module';
 		AdminModule,
 		GameModule,
 		ServiceModule,
-		ModelModule,],
+		ModelModule,
+		AuthModule,
+	],
 	controllers: [
 		AppController,
 		GameController,
 	],
 	providers: [
-		GameService, AppService, AdminGateway],
+		GameService,
+		AppService,
+		AdminGateway
+	],
 })
 export class AppModule { }

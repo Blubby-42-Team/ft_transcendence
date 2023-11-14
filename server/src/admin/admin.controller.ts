@@ -2,9 +2,12 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller, Redirect, Get, Post, ClassSerializerInterceptor, Body, UseInterceptors} from '@nestjs/common';
+import { Controller, Redirect, Get, Post, ClassSerializerInterceptor, Body, UseInterceptors, UseGuards} from '@nestjs/common';
 import { instanceToPlain, plainToClass } from 'class-transformer';
 import { log } from 'console';
+import { UserRoleType } from 'src/auth/auth.class';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Roles } from 'src/auth/role.decorator';
 import { User } from 'src/model/user/user.model';
 import { UserService } from 'src/model/user/user.service';
 
@@ -20,6 +23,9 @@ export class AdminController {
 	@Redirect('https://admin.socket.io/')
 	redirectToAdminSocket() {}
 
+	// @Roles([UserRoleType.Admin])
+	@Roles()
+	@UseGuards(AuthGuard)
 	@Post('addUser')
 	addUser(@Body() user : User) : Promise<User> {
 		log(user)
