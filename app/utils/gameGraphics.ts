@@ -107,6 +107,22 @@ function drawGame(
 	}
 }
 
+function drawGameOver(
+	ctx: CanvasRenderingContext2D,
+	screen: screenData,
+	theme: gameTheme2,
+	player: number,
+){
+	// Draw Background
+	drawRectTexture(ctx, 0, 0, screen.width, screen.height, theme.background)
+
+	ctx.fillStyle = theme.fontColor;
+	ctx.font = `${screen.delta.x * 100}px Arial`;
+	ctx.fillText(`   GAME OVER`, screen.delta.x * 100, screen.delta.x * 310);
+	ctx.fillText(`   PLAYER ${player} WINS!`, screen.delta.x * 100, screen.delta.x * 410);
+}
+
+
 function updateSize(gameState: gameStateType, screen: screenData, canvasParentId: string) {
 	const canvas = document.getElementById(canvasParentId);
 	if (!canvas){
@@ -120,8 +136,8 @@ function updateSize(gameState: gameStateType, screen: screenData, canvasParentId
 		screen.width = canvas.offsetHeight * gameState.gameArea.width_d_2 / gameState.gameArea.height_d_2 - 2;
 		screen.height = canvas.offsetHeight - 2;
 	}
-	screen.delta.x = screen.width / ((gameState.gameArea.width_d_2 - gameState.ball.width_d_2 * 2) * 2);
-	screen.delta.y = screen.height / ((gameState.gameArea.height_d_2 - gameState.ball.height_d_2 * 2) * 2);
+	screen.delta.x = screen.width / (gameState.gameArea.width_d_2 * 2);
+	screen.delta.y = screen.height / (gameState.gameArea.height_d_2 * 2);
 }
 
 let continueLoop = true;
@@ -165,6 +181,7 @@ function stop(){
 
 export default {
 	drawGame,
+	drawGameOver,
 	start,
 	stop,
 }

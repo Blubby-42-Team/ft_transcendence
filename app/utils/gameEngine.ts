@@ -94,8 +94,6 @@ function calcutateNewBallDirectionAfterHittingPlayer(
 	})();
 }
 
-
-
 function calcutateNewBallDirectionAfterHittingObstacle(
 	ball: Rectangle & { speed: number, direction: number },
 	direction: Direction.LEFT | Direction.RIGHT | Direction.TOP | Direction.BOTTOM,
@@ -110,7 +108,8 @@ function calcutateNewBallDirectionAfterHittingObstacle(
 	})();
 }
 
-function resetRound(gamestate: gameStateType){
+function resetRound(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
+	gameStatus.value = gameStatusType.ON_HOLD;
 	if (gamestate.player_bottom.active){
 		gamestate.player_bottom.eleminated = false;
 		gamestate.obstacles.player4BottomElim.hidden = true;
@@ -141,19 +140,19 @@ function updatePoints(gamestate: gameStateType, doesIntersect: Direction, gameSt
 		}
 		if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_left.eleminated){
 			gamestate.player_right.score += 1;
-			resetRound(gamestate);
+			resetRound(gamestate, gameStatus);
 		}
 		else if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
 			gamestate.player_left.score += 1;
-			resetRound(gamestate);
+			resetRound(gamestate, gameStatus);
 		}
 		else if (gamestate.player_bottom.eleminated && gamestate.player_left.eleminated && gamestate.player_right.eleminated){
 			gamestate.player_top.score += 1;
-			resetRound(gamestate);
+			resetRound(gamestate, gameStatus);
 		}
 		else if (gamestate.player_left.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
 			gamestate.player_bottom.score += 1;
-			resetRound(gamestate);
+			resetRound(gamestate, gameStatus);
 		}
 		if (gamestate.player_bottom.score >= gameSettings.value.maxPoint || gamestate.player_top.score >= gameSettings.value.maxPoint ||
 			gamestate.player_left.score >= gameSettings.value.maxPoint || gamestate.player_right.score >= gameSettings.value.maxPoint
@@ -164,24 +163,36 @@ function updatePoints(gamestate: gameStateType, doesIntersect: Direction, gameSt
 	else if (gamestate.player_left.active && gamestate.player_right.active){
 		if (doesIntersect === Direction.LEFT){
 			gamestate.player_right.score += 1;
+			gameStatus.value = gameStatusType.ON_HOLD;
 		}
 		else if (doesIntersect === Direction.RIGHT){
 			gamestate.player_left.score += 1;
+			gameStatus.value = gameStatusType.ON_HOLD;
 		}
 	}
 }
 
 function moveBall(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
 	{
-		const doesIntersect = getIntersection(gamestate.ball, gamestate.gameArea, Axis.Y);
+		const gameArea: Rectangle = {
+			center: {
+				x: gamestate.gameArea.center.x,
+				y: gamestate.gameArea.center.y
+			},
+			width_d_2: gamestate.gameArea.width_d_2 + gamestate.ball.width_d_2 * 2,
+			height_d_2: gamestate.gameArea.height_d_2 + gamestate.ball.height_d_2 * 2
+		};
+		const doesIntersect = getIntersection(gamestate.ball, gameArea, Axis.Y);
 		if (doesIntersect !== Direction.NONE){
 			gamestate.ball.center.x = 0;
 			gamestate.ball.center.y = 0;
-			gamestate.ball.speed = 0;
+			gamestate.ball.speed = 0.5;
 			updatePoints(gamestate, doesIntersect, gameStatus);
 			return ;
 		}
 	}
+
+	gamestate.ball.speed += 0.001;
 
 	for (const obstacleKey in gamestate.obstacles){
 		if (gamestate.obstacles[obstacleKey].hidden){
@@ -301,38 +312,37 @@ async function start(updateGameState: (newGameState: gameStateType, gameStatus: 
 	let continueLoop = true;
 	let gamestate = getNewStateWithGameSettings();
 	let gamestatus: Ref<gameStatusType> = ref(gameStatusType.ON_HOLD);
-	let hasSleepGameOverTime = false;
-	let dateSleep = new Date;
+	let needsSleep = false;
+	let datewip = new Date;
 	
 	async function loop() {
 		console.log('Game Engine Start');
 		while (continueLoop){
 			switch (gamestatus.value) {
 				case gameStatusType.ON_HOLD:
+					moveAllPlayers(gamestate);
 					break ;
 				case gameStatusType.STARTED: 
 					moveAllPlayers(gamestate);
 					// Move IA
 					moveBall(gamestate, gamestatus);
-			
 					break ;
 				case gameStatusType.GAMEOVER:
-					if (hasSleepGameOverTime){
-						dateSleep = new Date((new Date).getTime() + 3000);
-						hasSleepGameOverTime = true;
+					if (needsSleep){
+						needsSleep = false;
+						datewip = new Date((new Date).getTime() + 10000);;
 					}
-					if (new Date >= dateSleep){
-						console.log('here', (new Date).getTime(), dateSleep.getTime())
-						hasSleepGameOverTime = false;
+					else if (new Date() > datewip){
+						console.log('here')
+						needsSleep = true;
 						gamestate = getNewStateWithGameSettings();
 						gamestatus.value = gameStatusType.ON_HOLD;
 					}
 					break ;
 			}
 			updateGameState(gamestate, gamestatus.value);
-			if (gameController.controller.startRound){
+			if (gameController.controller.startRound && gamestatus.value == gameStatusType.ON_HOLD){
 				gamestatus.value = gameStatusType.STARTED;
-				gamestate.ball.speed = 0.5;
 			}
 	
 			await new Promise(resolve => setTimeout(resolve, millisecondsPerUpdate));

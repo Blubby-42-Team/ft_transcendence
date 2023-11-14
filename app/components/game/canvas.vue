@@ -46,6 +46,7 @@ onMounted(async () => {
 				gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
 				break ;
 			case gameStatusType.GAMEOVER:
+				gameGraphics.drawGameOver(ctx, screen, theme.value, 1);
 				break ;
 		}
  	})
