@@ -1,23 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { GameOptDto } from '@shared/ws.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import { GameOptDto } from '@shared/game.dto';
 import { Server } from 'socket.io';
+import { roomType } from './game.class';
 
 @Injectable()
 export class GameService {
-	rooms : { [key: string]: {
-		status: boolean,
-	} } = {};
+
+	private readonly logger = new Logger(GameService.name);
+
+	rooms : { [key: string]: roomType} = {};
 
 	users: { [key: string]: {
 		room: string,
 	} } = {};
-	
 
 	async startRoom(roomName: string, opt: GameOptDto, io: Server) {
-		this.rooms[roomName] = {
-			status: true,
-			//TODO @mkoyamba add user to room
-		}
+		this.rooms[roomName].status = true;
 
 		const id = this.makeid(5);
 
@@ -26,8 +24,7 @@ export class GameService {
 		//infinit loop
 		
 		while(this.rooms[roomName].status) {
-			console.log(`${id} room ${roomName} is running`);
-			io.to(roomName).emit('message', `${id} room ${roomName} is running`);
+
 			await new Promise(resolve => setTimeout(resolve, 1000));
 		}
 
@@ -55,11 +52,19 @@ export class GameService {
 		return result;
 	}
 
-	createRoom() {
+	async createRoom(userId: string) {
 		//TODO generate room id and store in db
 
-		//return room id
-		return this.makeid(5);
+		const roomId = this.makeid(5);
+
+		this.rooms[roomId]
+		this.rooms[roomId].ownerPlayerId = userId;
+
+		this.users[userId] = {
+			room: roomId,
+		}
+
+		return roomId;
 	}
 
 	addPlayerToRoom(roomName: string, userId: string) {
@@ -72,6 +77,8 @@ export class GameService {
 		this.users[userId] = {
 			room: roomName,
 		}
+
+		// this.rooms[roomName]
 	}
 
 	removePlayerFromRoom(userId: string) {
@@ -84,4 +91,37 @@ export class GameService {
 		//TODO @mkoyamba remove player from active room
 		delete this.users[userId];
 	}
+	
+	disconnectPlayerFromRoom(userId: string) {
+		if (!this.users[userId]) {
+			console.log(`user ${userId} not in any room`);
+			return;
+		}
+
+		if (!this.rooms[this.users[userId].room]) {
+			console.log(`room ${this.users[userId].room} not found`);
+			return;
+		}
+
+		const room = this.rooms[this.users[userId].room];
+
+		for (const key in room.playerInfo) {
+			if (room.playerInfo[key].id === userId) {
+				room.playerInfo[key].status = false;
+				console.log(`user ${userId} disconnected from room ${this.users[userId].room}`);
+				return;
+			}
+		}
+
+	}
+	
+	reconnectPlayerToRoom(userId: string) {
+		if (!this.users[userId]) {
+			console.log(`user ${userId} not in any room`);
+			return;
+		}
+		return this.users[userId].room;
+	}
+
+	
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive} from 'class-validator'
+import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolean} from 'class-validator'
 
 export class AcknowledgmentWsDto {
 
@@ -25,18 +25,23 @@ export class CreateGameRoomRequestDto extends WsRequestDto {
 }
 
 export class GameRoomIdDto {
+
+	constructor(id: string) {
+		this.game_room_id = id;
+	}
+	
 	@IsNotEmpty()
 	@IsString()
 	game_room_id: string;
 }
 
 export class JoinGameRoomRequestDto extends WsRequestDto {
-	//TODO check if dto will validate GAmeRoomIdDto wiouth decorator
+	@IsNotEmpty()
+	@IsString()
 	game_room_id: string;
 }
 
 export class JoinGameRoomResponseDto extends AcknowledgmentWsDto {
-	//TODO create dto
 	@IsNotEmpty()
 	@IsJWT()
 	game_room_token: string;
@@ -44,17 +49,26 @@ export class JoinGameRoomResponseDto extends AcknowledgmentWsDto {
 	game_room_id: GameRoomIdDto;
 }
 
-export class GameOptDto /* //TODO extends with auth class (auth and game_auth)*/ {
-	// TODO extend 
-	// @IsNotEmpty()
-	// @IsJWT()
-	// auth_token: string;
-	// @IsNotEmpty()
-	// @IsJWT()
-	// game_room_token: string;
+export class GameOptDto  {
 
+	@IsNotEmpty()
+	@IsJWT()
+	auth_token: string;
+
+	@IsNotEmpty()
+	@IsJWT()
+	game_room_token: string;
+
+	@IsNotEmpty()
+	@IsString()
 	game_room_id: string;
 
-
 	//TODO @mkoyamba: add game options
+	game_opt: {
+		padSize: number,
+		ballSize: number,
+		numPlayer: 1 | 2 | 3 | 4,
+		random: boolean,
+		pointMax: number,
+	}
 }
