@@ -10,7 +10,6 @@ const screenSize = ref({
 })
 
 let gameState: Ref<gameStateType> = ref(getNewStateWithGameSettings());
-let gameStatus: gameStatusType = gameStatusType.ON_HOLD;
 let stopGameEngine: () => void = () => {};
 
 onMounted(async () => {
@@ -38,7 +37,7 @@ onMounted(async () => {
 		screenSize.value.width = screen.width;
 		screenSize.value.height = screen.height;
 
-		switch (gameStatus) {
+		switch (gameState.value.status) {
 			case gameStatusType.ON_HOLD:
 			case gameStatusType.GAMEOVER:
 				changeGameStatus(gameStatusType.STARTED);

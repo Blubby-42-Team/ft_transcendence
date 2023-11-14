@@ -11,7 +11,6 @@ const screenSize = ref({
 })
 
 let gameState: Ref<gameStateType> = ref(getNewStateWithGameSettings());
-let gameStatus: gameStatusType = gameStatusType.ON_HOLD;
 
 const emptyFunction = (status: boolean) => {};
 const controller: gameControllerType = {
@@ -43,7 +42,7 @@ onMounted(async () => {
 		screenSize.value.width = screen.width;
 		screenSize.value.height = screen.height;
 
-		switch (gameStatus) {
+		switch (gameState.value.status) {
 			case gameStatusType.ON_HOLD:
 			case gameStatusType.STARTED:
 				gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
