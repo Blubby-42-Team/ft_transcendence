@@ -12,10 +12,10 @@ const gameState4PlayersDefault: gameStateType = {
 		player4TopRight:	{	center: {	x: 27,	y: -27,		},	height_d_2: 3,		width_d_2: 3,	hidden: false	},
 		player4BottomLeft:	{	center: {	x: -27,	y: 27,		},	height_d_2: 3,		width_d_2: 3,	hidden: false	},
 		player4TopLeft:		{	center: {	x: -27,	y: -27,		},	height_d_2: 3,		width_d_2: 3,	hidden: false	},
-		player4BottomElim:	{	center: {	x: 0,	y: 25,		},	height_d_2: 1,		width_d_2: 24,	hidden: false	},
-		player4TopElim:		{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 24,	hidden: false	},
-		player4LeftElim:	{	center: {	x: -25,	y: 0,		},	height_d_2: 24,		width_d_2: 1,	hidden: false	},
-		player4RightElim:	{	center: {	x: 25,	y: 0,		},	height_d_2: 24,		width_d_2: 1,	hidden: false	},
+		player4BottomElim:	{	center: {	x: 0,	y: 27,		},	height_d_2: 3,		width_d_2: 24,	hidden: true	},
+		player4TopElim:		{	center: {	x: 0,	y: -27,		},	height_d_2: 3,		width_d_2: 24,	hidden: true	},
+		player4LeftElim:	{	center: {	x: -27,	y: 0,		},	height_d_2: 24,		width_d_2: 3,	hidden: true	},
+		player4RightElim:	{	center: {	x: 27,	y: 0,		},	height_d_2: 24,		width_d_2: 3,	hidden: true	},
 	}
 }
 

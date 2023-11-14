@@ -19,7 +19,6 @@ function drawScore(
 ){
 	ctx.fillStyle = fontColor;
 	ctx.font = `${4 * screen.delta.y}px Arial`;
-	const test = 2 * screen.delta.y
 	if (gameState.player_bottom.active){
 		ctx.fillText(`${gameState.player_bottom.score}`, screen.width * 0.48, screen.height * 0.59);
 	}
@@ -102,7 +101,9 @@ function drawGame(
 
 	// Draw Obstacles
 	for (const obstacleKey in gameState.obstacles){
-		drawGameElement(ctx, (theme as any)?.[obstacleKey] ?? { type: 'color', color: 'purple' }, gameState.obstacles[obstacleKey], screen);
+		if (!gameState.obstacles[obstacleKey].hidden){
+			drawGameElement(ctx, (theme as any)?.[obstacleKey] ?? { type: 'color', color: 'purple' }, gameState.obstacles[obstacleKey], screen);
+		}
 	}
 }
 

@@ -115,7 +115,7 @@ export const useGame2Store = defineStore('game', {
 			sound: false,
 		},
 		_gameSettings: {
-			maxPoint:	3,
+			maxPoint:	1,
 			numPlayer:	4,
 			ballSize:	1,
 			padSize:	5,
