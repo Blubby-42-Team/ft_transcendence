@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GameOptDto } from '@shared/ws.dto';
 import { Server } from 'socket.io';
 
 @Injectable()
@@ -7,9 +8,9 @@ export class GameService {
 		status: boolean,
 	} } = {};
 
-	async startRoom(roomName: string, server: Server) {
+	async startRoom(roomName: string, opt: GameOptDto, io: Server) {
 		this.rooms[roomName] = {
-			status: true 
+			status: true,
 		}
 
 		const id = this.makeid(5);
@@ -20,7 +21,7 @@ export class GameService {
 		
 		while(this.rooms[roomName].status) {
 			console.log(`${id} room ${roomName} is running`);
-			server.to(roomName).emit('message', `${id} room ${roomName} is running`);
+			io.to(roomName).emit('message', `${id} room ${roomName} is running`);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 		}
 
@@ -49,7 +50,7 @@ export class GameService {
 	}
 
 	createRoom() {
-		//generate room id and store in db
+		//TODO generate room id and store in db
 
 		//return room id
 		return this.makeid(5);

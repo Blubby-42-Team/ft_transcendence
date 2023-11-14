@@ -1,6 +1,7 @@
 import { Body, Controller, Headers, Post } from '@nestjs/common';
 import { GameService } from './game.service';
 import { GameGateway } from './game.gateway';
+import { GameOptDto } from '@shared/ws.dto';
 
 @Controller('game')
 export class GameController {
@@ -13,7 +14,17 @@ export class GameController {
 		//TODO check jwt in head
 
 		const room = await this.gameService.createRoom();
-		this.gameService.startRoom(room, this.gameGateway.server);
+
 		return {room_id: room};
+	}
+
+	@Post('/room/start')
+	async startRoom(@Headers() head: any, @Body() body: GameOptDto): Promise<any/*//TODO create dto*/> {
+		//TODO check jwt in head
+
+		// TODO start room later
+		// NOTE: Dont run this with await, it need to be run in background
+		this.gameService.startRoom(body.game_room_id, body, this.gameGateway.server);
+		return "ok";
 	}
 }

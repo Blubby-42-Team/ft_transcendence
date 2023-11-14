@@ -25,13 +25,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// When a client connect to the server
 	handleConnection(client: Socket, ...args: any[]) {
-		// this.gameService.startRoom(client.id, this.server);
 		log(`Client ${client.id} connected`);
 	}
 	
 	// When a client disconnect from the server
 	handleDisconnect(client: Socket) {
-		// this.gameService.stopRoom(client.id);
 		log(`Client ${client.id} disconnected`);
 	}
 
@@ -49,7 +47,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log(`Client ${client.id} joined room ${room}`);
 		// You can also broadcast to the room or emit a message to the client
 		this.server.to(room).emit('message', `Client ${client.id} joined room ${room}`);
-		this.gameService.startRoom(room, this.server);
 
 		return new AcknowledgmentWsDto('ok', 'ok');
 	}
