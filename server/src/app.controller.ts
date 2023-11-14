@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { TestDto } from '@shared/test.dto'
+import { TestDto } from '@shared/dto/test.dto'
 
 @Controller()
 export class AppController {

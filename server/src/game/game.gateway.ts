@@ -1,8 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException, WsResponse } from '@nestjs/websockets';
 import { log } from 'console';
 import { Server, Socket } from 'socket.io'
-import {AcknowledgmentWsDto, JoinGameRoomRequestDto} from '@shared/ws.dto'
-import { TestDto } from '@shared/test.dto';
+import {AcknowledgmentWsDto, JoinGameRoomRequestDto} from '@shared/dto/ws.dto'
 import { validate } from 'class-validator';
 import { BadRequestException, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsBadRequestExceptionFilter } from './game.exception.filter';
@@ -22,7 +21,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// When a client connect to the server
 	handleConnection(client: Socket, ...args: any[]) {
-		log(`Client ${client.id} connected`);
+				log(`Client ${client.id} connected`);
 	}
 	
 	// When a client disconnect from the server

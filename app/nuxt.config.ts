@@ -8,7 +8,10 @@ export default defineNuxtConfig({
 		strict: true
 	},
 	imports: {
-		dirs: ['stores/**'],
+		dirs: [
+			'stores/**',
+			'../libs/types/**',
+		],
 	},
 	devServer: {
 		port: 3000,
