@@ -12,11 +12,6 @@ const controller = {
 	startRound:				false,
 }
 
-
-function moveSocket(){
-	
-}
-
 function move(player: Direction, direction: Direction, status: boolean){
 	switch (player) {
 		case Direction.LEFT:

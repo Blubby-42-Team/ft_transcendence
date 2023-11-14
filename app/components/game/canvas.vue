@@ -14,7 +14,7 @@ let gameState: Ref<gameStateType> = ref(getNewStateWithGameSettings());
 let gameStatus: gameStatusType = gameStatusType.ON_HOLD;
 
 const emptyFunction = (status: boolean) => {};
-const controller: {[key: string]: (status: boolean) => void} = {
+const controller: gameControllerType = {
 	w:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.TOP,		status),
 	s:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.BOTTOM,	status),
 	ArrowUp:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.TOP,		status),

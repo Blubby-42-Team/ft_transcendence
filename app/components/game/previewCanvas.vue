@@ -15,7 +15,6 @@ let stopGameEngine: () => void = () => {};
 
 onMounted(async () => {
 	const { stop, changeGameStatus } = await gameEngine.start((newState) => {
-			console.log(newState.status);
 			gameState.value = newState;
 		},
 		(state) => {

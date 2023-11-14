@@ -1,3 +1,5 @@
+export type gameControllerType = {[key: string]: (status: boolean) => void};
+
 export type gameTexture = {
 	type: 'color',
 	color: string,
