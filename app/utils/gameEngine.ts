@@ -192,7 +192,7 @@ function moveBall(gamestate: gameStateType){
 		}
 	}
 
-	gamestate.ball.speed += 0.001;
+	gamestate.ball.speed += 0.01;
 
 	for (const obstacleKey in gamestate.obstacles){
 		if (gamestate.obstacles[obstacleKey].hidden){
@@ -270,11 +270,20 @@ function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, 
 	}
 }
 
+const aispeed = 0.6;
+
 function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<gameSettingsType>){
 	if (gamestate.player_left.active && !gamestate.player_left.eleminated){
 		if (gamestate.player_left.isBot){
-			console.log((gamestate.ball.center.y - gamestate.player_left.center.y < 0 ? 1 : -1), gameSettings.value.mode)
-			movePlayer(gamestate.player_left, Axis.Y, (gamestate.ball.center.y - gamestate.player_left.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
+			const newPosition = gamestate.ball.center.y - gamestate.player_left.center.y + gamestate.ball.height_d_2 * 2;
+			if (Math.abs(newPosition) > aispeed){
+				if (newPosition < 0){
+					movePlayer(gamestate.player_left, Axis.Y, -aispeed, Direction.BOTTOM, gamestate);
+				}
+				else {
+					movePlayer(gamestate.player_left, Axis.Y, aispeed, Direction.TOP, gamestate);
+				}
+			}
 		}
 		else {
 			if (gameController.controller.playerLeftMoveUp){
@@ -287,8 +296,15 @@ function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<game
 	}
 	if (gamestate.player_right.active && !gamestate.player_right.eleminated){
 		if (gamestate.player_right.isBot){
-			console.log((gamestate.ball.center.y - gamestate.player_right.center.y < 0 ? 1 : -1), gameSettings.value.mode)
-			movePlayer(gamestate.player_right, Axis.Y, (gamestate.ball.center.y - gamestate.player_right.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
+			const newPosition = gamestate.ball.center.y - gamestate.player_right.center.y - gamestate.ball.height_d_2 * 2;
+			if (Math.abs(newPosition) > aispeed){
+				if (newPosition < 0){
+					movePlayer(gamestate.player_right, Axis.Y, -aispeed, Direction.BOTTOM, gamestate);
+				}
+				else {
+					movePlayer(gamestate.player_right, Axis.Y, aispeed, Direction.TOP, gamestate);
+				}
+			}
 		}
 		else {
 			if (gameController.controller.playerRightMoveUp){
@@ -301,8 +317,15 @@ function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<game
 	}
 	if (gamestate.player_top.active && !gamestate.player_top.eleminated){
 		if (gamestate.player_top.isBot){
-			console.log((gamestate.ball.center.y - gamestate.player_top.center.y < 0 ? 1 : -1), gameSettings.value.mode)
-			movePlayer(gamestate.player_top, Axis.X, (gamestate.ball.center.y - gamestate.player_top.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
+			const newPosition = gamestate.ball.center.x - gamestate.player_top.center.x + gamestate.ball.width_d_2 * 2;
+			if (Math.abs(newPosition) > aispeed){
+				if (newPosition < 0){
+					movePlayer(gamestate.player_top, Axis.X, -aispeed, Direction.LEFT, gamestate);
+				}
+				else {
+					movePlayer(gamestate.player_top, Axis.X, aispeed, Direction.RIGHT, gamestate);
+				}
+			}
 		}
 		else {
 			if (gameController.controller.playerTopMoveLeft){
@@ -315,8 +338,15 @@ function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<game
 	}
 	if (gamestate.player_bottom.active && !gamestate.player_bottom.eleminated){
 		if (gamestate.player_bottom.isBot){
-			console.log((gamestate.ball.center.y - gamestate.player_bottom.center.y < 0 ? 1 : -1), gameSettings.value.mode)
-			movePlayer(gamestate.player_bottom, Axis.X, (gamestate.ball.center.y - gamestate.player_bottom.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
+			const newPosition = gamestate.ball.center.x - gamestate.player_bottom.center.x - gamestate.ball.width_d_2 * 2;
+			if (Math.abs(newPosition) > aispeed){
+				if (newPosition < 0){
+					movePlayer(gamestate.player_bottom, Axis.X, -aispeed, Direction.LEFT, gamestate);
+				}
+				else {
+					movePlayer(gamestate.player_bottom, Axis.X, aispeed, Direction.RIGHT, gamestate);
+				}
+			}
 		}
 		else {
 			if (gameController.controller.playerBottomMoveLeft){
