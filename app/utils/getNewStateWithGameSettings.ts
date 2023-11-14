@@ -1,6 +1,7 @@
 import { Direction } from "#imports";
 
 const gameState4PlayersDefault: gameStateType = {
+	status:					gameStatusType.ON_HOLD,
 	gameArea: 				{	center: {	x: 0,	y: 0,		},	height_d_2: 30,		width_d_2: 30,	},
 	ball: 					{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 0.5, direction: Math.PI / 4	},
 	player_top: 			{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -20,6 +21,7 @@ const gameState4PlayersDefault: gameStateType = {
 }
 
 const gameState2PlayersDefault: gameStateType = {
+	status:				gameStatusType.ON_HOLD,
 	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 25,		width_d_2: 35,	},
 	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 0.5, direction: Math.PI / 4	},
 	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -32,17 +34,6 @@ const gameState2PlayersDefault: gameStateType = {
 		
 	}
 }
-
-const emptyDefault: gameStateType = {
-	gameArea:			{	center: { x: 0, y: 0 }, width_d_2: 1, height_d_2: 1	},
-	ball:				{	center: { x: 0, y: 0 }, width_d_2: 1, height_d_2: 1,	speed: 0.5, direction: Math.PI / 4	},
-	player_top:			{	active: false	},
-	player_bottom:		{	active: false	},
-	player_left:		{	active: false	},
-	player_right:		{	active: false	},
-	obstacles: {},
-}
-
 
 export function getNewAngleForBall(dir: Direction = Direction.NONE) {
 	switch (dir) {

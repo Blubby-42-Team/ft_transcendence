@@ -108,8 +108,8 @@ function calcutateNewBallDirectionAfterHittingObstacle(
 	})();
 }
 
-function resetRound(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
-	gameStatus.value = gameStatusType.ON_HOLD;
+function resetRound(gamestate: gameStateType){
+	gamestate.status = gameStatusType.ON_HOLD;
 	if (gamestate.player_bottom.active){
 		gamestate.player_bottom.eleminated = false;
 		gamestate.obstacles.player4BottomElim.hidden = true;
@@ -128,7 +128,7 @@ function resetRound(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
 	}
 }
 
-function updatePoints(gamestate: gameStateType, doesIntersect: Direction, gameStatus: Ref<gameStatusType>){
+function updatePoints(gamestate: gameStateType, doesIntersect: Direction){
 	const { gameSettings } = useGame2Store();
 
 	if (gamestate.player_left.active && gamestate.player_right.active && gamestate.player_top.active && gamestate.player_bottom.active){
@@ -140,39 +140,39 @@ function updatePoints(gamestate: gameStateType, doesIntersect: Direction, gameSt
 		}
 		if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_left.eleminated){
 			gamestate.player_right.score += 1;
-			resetRound(gamestate, gameStatus);
+			resetRound(gamestate);
 		}
 		else if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
 			gamestate.player_left.score += 1;
-			resetRound(gamestate, gameStatus);
+			resetRound(gamestate);
 		}
 		else if (gamestate.player_bottom.eleminated && gamestate.player_left.eleminated && gamestate.player_right.eleminated){
 			gamestate.player_top.score += 1;
-			resetRound(gamestate, gameStatus);
+			resetRound(gamestate);
 		}
 		else if (gamestate.player_left.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
 			gamestate.player_bottom.score += 1;
-			resetRound(gamestate, gameStatus);
+			resetRound(gamestate);
 		}
 		if (gamestate.player_bottom.score >= gameSettings.value.maxPoint || gamestate.player_top.score >= gameSettings.value.maxPoint ||
 			gamestate.player_left.score >= gameSettings.value.maxPoint || gamestate.player_right.score >= gameSettings.value.maxPoint
 		){
-			gameStatus.value = gameStatusType.GAMEOVER;
+			gamestate.status = gameStatusType.GAMEOVER;
 		}
 	}
 	else if (gamestate.player_left.active && gamestate.player_right.active){
 		if (doesIntersect === Direction.LEFT){
 			gamestate.player_right.score += 1;
-			gameStatus.value = gameStatusType.ON_HOLD;
+			gamestate.status = gameStatusType.ON_HOLD;
 		}
 		else if (doesIntersect === Direction.RIGHT){
 			gamestate.player_left.score += 1;
-			gameStatus.value = gameStatusType.ON_HOLD;
+			gamestate.status = gameStatusType.ON_HOLD;
 		}
 	}
 }
 
-function moveBall(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
+function moveBall(gamestate: gameStateType){
 	{
 		const gameArea: Rectangle = {
 			center: {
@@ -187,7 +187,7 @@ function moveBall(gamestate: gameStateType, gameStatus: Ref<gameStatusType>){
 			gamestate.ball.center.x = 0;
 			gamestate.ball.center.y = 0;
 			gamestate.ball.speed = 0.5;
-			updatePoints(gamestate, doesIntersect, gameStatus);
+			updatePoints(gamestate, doesIntersect);
 			return ;
 		}
 	}
@@ -270,37 +270,61 @@ function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, 
 	}
 }
 
-function moveAllPlayers(gamestate: gameStateType){
-	if (gamestate.player_left.active && !gamestate.player_left.isBot && !gamestate.player_left.eleminated){
-		if (gameController.controller.playerLeftMoveUp){
-			movePlayer(gamestate.player_left, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
+function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<gameSettingsType>){
+	if (gamestate.player_left.active && !gamestate.player_left.eleminated){
+		if (gamestate.player_left.isBot){
+			console.log((gamestate.ball.center.y - gamestate.player_left.center.y < 0 ? 1 : -1), gameSettings.value.mode)
+			movePlayer(gamestate.player_left, Axis.Y, (gamestate.ball.center.y - gamestate.player_left.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
 		}
-		if (gameController.controller.playerLeftMoveDown){
-			movePlayer(gamestate.player_left, Axis.Y, 0.5, Direction.TOP, gamestate);
-		}
-	}
-	if (gamestate.player_right.active && !gamestate.player_right.isBot && !gamestate.player_right.eleminated){
-		if (gameController.controller.playerRightMoveUp){
-			movePlayer(gamestate.player_right, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
-		}
-		if (gameController.controller.playerRightMoveDown){
-			movePlayer(gamestate.player_right, Axis.Y, 0.5, Direction.TOP, gamestate);
+		else {
+			if (gameController.controller.playerLeftMoveUp){
+				movePlayer(gamestate.player_left, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
+			}
+			if (gameController.controller.playerLeftMoveDown){
+				movePlayer(gamestate.player_left, Axis.Y, 0.5, Direction.TOP, gamestate);
+			}
 		}
 	}
-	if (gamestate.player_top.active && !gamestate.player_top.isBot && !gamestate.player_top.eleminated){
-		if (gameController.controller.playerTopMoveLeft){
-			movePlayer(gamestate.player_top, Axis.X, -0.5, Direction.LEFT, gamestate);
+	if (gamestate.player_right.active && !gamestate.player_right.eleminated){
+		if (gamestate.player_right.isBot){
+			console.log((gamestate.ball.center.y - gamestate.player_right.center.y < 0 ? 1 : -1), gameSettings.value.mode)
+			movePlayer(gamestate.player_right, Axis.Y, (gamestate.ball.center.y - gamestate.player_right.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
 		}
-		if (gameController.controller.playerTopMoveRight){
-			movePlayer(gamestate.player_top, Axis.X, 0.5, Direction.RIGHT, gamestate);
+		else {
+			if (gameController.controller.playerRightMoveUp){
+				movePlayer(gamestate.player_right, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
+			}
+			if (gameController.controller.playerRightMoveDown){
+				movePlayer(gamestate.player_right, Axis.Y, 0.5, Direction.TOP, gamestate);
+			}
 		}
 	}
-	if (gamestate.player_bottom.active && !gamestate.player_bottom.isBot && !gamestate.player_bottom.eleminated){
-		if (gameController.controller.playerBottomMoveLeft){
-			movePlayer(gamestate.player_bottom, Axis.X, -0.5, Direction.LEFT, gamestate);
+	if (gamestate.player_top.active && !gamestate.player_top.eleminated){
+		if (gamestate.player_top.isBot){
+			console.log((gamestate.ball.center.y - gamestate.player_top.center.y < 0 ? 1 : -1), gameSettings.value.mode)
+			movePlayer(gamestate.player_top, Axis.X, (gamestate.ball.center.y - gamestate.player_top.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
 		}
-		if (gameController.controller.playerBottomMoveRight){
-			movePlayer(gamestate.player_bottom, Axis.X, 0.5, Direction.RIGHT, gamestate);
+		else {
+			if (gameController.controller.playerTopMoveLeft){
+				movePlayer(gamestate.player_top, Axis.X, -0.5, Direction.LEFT, gamestate);
+			}
+			if (gameController.controller.playerTopMoveRight){
+				movePlayer(gamestate.player_top, Axis.X, 0.5, Direction.RIGHT, gamestate);
+			}
+		}
+	}
+	if (gamestate.player_bottom.active && !gamestate.player_bottom.eleminated){
+		if (gamestate.player_bottom.isBot){
+			console.log((gamestate.ball.center.y - gamestate.player_bottom.center.y < 0 ? 1 : -1), gameSettings.value.mode)
+			movePlayer(gamestate.player_bottom, Axis.X, (gamestate.ball.center.y - gamestate.player_bottom.center.y < 0 ? 1 : -1) * gameSettings.value.mode, Direction.BOTTOM, gamestate);
+		}
+		else {
+			if (gameController.controller.playerBottomMoveLeft){
+				movePlayer(gamestate.player_bottom, Axis.X, -0.5, Direction.LEFT, gamestate);
+			}
+			if (gameController.controller.playerBottomMoveRight){
+				movePlayer(gamestate.player_bottom, Axis.X, 0.5, Direction.RIGHT, gamestate);
+			}
 		}
 	}
 }
@@ -308,41 +332,44 @@ function moveAllPlayers(gamestate: gameStateType){
 const updatePerSeconds = 30
 const millisecondsPerUpdate = 1000/updatePerSeconds
 
-async function start(updateGameState: (newGameState: gameStateType, gameStatus: gameStatusType) => void){
+async function start(
+	sendGameStateUpdate: (newGameState: gameStateType) => void,
+	editLocalState: (state: gameStateType) => void = () => {}
+){
+	const { gameSettings } = useGame2Store();
 	let continueLoop = true;
 	let gamestate = getNewStateWithGameSettings();
-	let gamestatus: Ref<gameStatusType> = ref(gameStatusType.ON_HOLD);
+	editLocalState(gamestate);
 	let needsSleep = false;
 	let datewip = new Date;
 	
 	async function loop() {
 		console.log('Game Engine Start');
 		while (continueLoop){
-			switch (gamestatus.value) {
+			switch (gamestate.status) {
 				case gameStatusType.ON_HOLD:
-					moveAllPlayers(gamestate);
+					moveAllPlayers(gamestate, gameSettings);
 					break ;
 				case gameStatusType.STARTED: 
-					moveAllPlayers(gamestate);
-					// Move IA
-					moveBall(gamestate, gamestatus);
+					moveAllPlayers(gamestate, gameSettings);
+					moveBall(gamestate);
 					break ;
 				case gameStatusType.GAMEOVER:
 					if (needsSleep){
 						needsSleep = false;
-						datewip = new Date((new Date).getTime() + 10000);;
+						datewip = new Date((new Date).getTime() + 10000);
 					}
 					else if (new Date() > datewip){
-						console.log('here')
 						needsSleep = true;
 						gamestate = getNewStateWithGameSettings();
-						gamestatus.value = gameStatusType.ON_HOLD;
+						editLocalState(gamestate);
+						gamestate.status = gameStatusType.ON_HOLD;
 					}
 					break ;
 			}
-			updateGameState(gamestate, gamestatus.value);
-			if (gameController.controller.startRound && gamestatus.value == gameStatusType.ON_HOLD){
-				gamestatus.value = gameStatusType.STARTED;
+			sendGameStateUpdate(gamestate);
+			if (gameController.controller.startRound && gamestate.status == gameStatusType.ON_HOLD){
+				gamestate.status = gameStatusType.STARTED;
 			}
 	
 			await new Promise(resolve => setTimeout(resolve, millisecondsPerUpdate));
@@ -353,9 +380,13 @@ async function start(updateGameState: (newGameState: gameStateType, gameStatus: 
 	function stop() {
 		continueLoop = false;
 	}
+
+	function changeGameStatus(newStatus: gameStatusType){
+		gamestate.status = newStatus;
+	}
 	
 	loop();
-	return { stop };
+	return { stop, changeGameStatus };
 }
 
 export default {

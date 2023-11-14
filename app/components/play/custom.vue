@@ -1,8 +1,5 @@
 <script setup lang="ts">
 
-
-const { optionsList } = useGameStore()
-
 const playerList = [
 	'James iewweawewsertrwa',
 	'Alexei iewweawewsertrwa',

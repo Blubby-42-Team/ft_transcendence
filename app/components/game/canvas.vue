@@ -17,18 +17,27 @@ const emptyFunction = (status: boolean) => {};
 const controller: {[key: string]: (status: boolean) => void} = {
 	w:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.TOP,		status),
 	s:			(status: boolean) => gameController.move(Direction.LEFT,	Direction.BOTTOM,	status),
+	ArrowUp:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.TOP,		status),
+	ArrowDown:	(status: boolean) => gameController.move(Direction.RIGHT,	Direction.BOTTOM,	status),
+	c:			(status: boolean) => gameController.move(Direction.BOTTOM,	Direction.LEFT,		status),
+	v:			(status: boolean) => gameController.move(Direction.BOTTOM,	Direction.RIGHT,	status),
+	u:			(status: boolean) => gameController.move(Direction.TOP,		Direction.LEFT,		status),
+	i:			(status: boolean) => gameController.move(Direction.TOP,		Direction.RIGHT,	status),
 	' ':		(status: boolean) => gameController.startRound(status),
 }
 
-const { stop } = await gameEngine.start((newState, newGameStatus) => {
-	console.log(newGameStatus)
-	gameState.value = newState;
-	gameStatus = newGameStatus;
-})
+
+let stopGameEngine: () => void = () => {};
 
 onMounted(async () => {
 	document.addEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.addEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
+
+	const { stop } = await gameEngine.start((newState) => {
+		gameState.value = newState;
+	})
+
+	stopGameEngine = stop;
 	
 	gameGraphics.start('canvasDiv', theme.value, gameState, (ctx, screen) => {
 		screenSize.value.width = screen.width;

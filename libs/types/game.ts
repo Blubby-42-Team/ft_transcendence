@@ -73,6 +73,7 @@ export enum gameStatusType {
 };
 
 export type gameStateType = {
+	status:				gameStatusType,
 	gameArea:			Rectangle,
 	ball:				Rectangle & { speed: number, direction: number },
 	player_top:			Rectangle & gamePlayer2 | { active: false },
