@@ -8,10 +8,25 @@ const screenSize = ref({
 	height: 0,
 })
 
-let gameState: gameStateType;
+let gameState: gameStateType = {
+	status:				gameStatusType.ON_HOLD,
+	aispeed:			0.1,
+	playerspeed:		0.5,
+	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 25,		width_d_2: 35,	},
+	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
+	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
+	player_right:		{	center: {	x: 25,	y: 0,		},	height_d_2: 5,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
+	player_top:			{	active: false,	},
+	player_bottom:		{	active: false,	},
+	obstacles: {
+		player2Bottom:	{	center: {	x: 0,	y: 26 ,	},	height_d_2: 1,	width_d_2: 35,	hidden: false	},
+		player2Top:		{	center: {	x: 0,	y: -26,	},	height_d_2: 1,	width_d_2: 35,	hidden: false	},
+		
+	}
+};
+
 const engine = new GameEngine(gameSettings.value, (state) => {
 		gameState = state;
-		console.log(state);
 	},
 	(state) => {
 		if (state.player_bottom.active){
@@ -29,29 +44,30 @@ const engine = new GameEngine(gameSettings.value, (state) => {
 	}
 );
 
+const graphic = new GraphicEngine('previewCanvasDiv', theme.value, () => gameState, (ctx, screen) => {
+	screenSize.value.width = screen.width;
+	screenSize.value.height = screen.height;
+
+	switch (gameState.status) {
+		case gameStatusType.GAMEOVER:
+			engine.restart(gameSettings.value);
+		case gameStatusType.ON_HOLD:
+			engine.changeGameStatus(gameStatusType.STARTED);
+		case gameStatusType.STARTED:
+			graphic.drawGame(ctx);
+	}
+});
+
 onMounted(async () => {
 	engine.start()
+	graphic.start();
 
 	watch(gameSettings.value, () => engine.restart(gameSettings.value));
-
-	gameGraphics.start('previewCanvasDiv', theme.value, gameState, (ctx, screen) => {
-		screenSize.value.width = screen.width;
-		screenSize.value.height = screen.height;
-
-		switch (gameState.status) {
-			case gameStatusType.GAMEOVER:
-				engine.restart(gameSettings.value);
-			case gameStatusType.ON_HOLD:
-				engine.changeGameStatus(gameStatusType.STARTED);
-			case gameStatusType.STARTED:
-				gameGraphics.drawGame(ctx, gameState, screen, theme.value);
-		}
- 	});
 })
 
 onBeforeRouteLeave(() => {
 	engine.stop();
-	gameGraphics.stop();
+	graphic.stop();
 })
 
 </script>
