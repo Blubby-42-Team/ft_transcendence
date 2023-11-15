@@ -17,7 +17,6 @@ export class GraphicEngine {
 		public onLoop: (ctx: CanvasRenderingContext2D, screen: screenData, gameState: gameStateType) => void
 	){
 		this.state = this.getState();
-		console.log(this.state)
 		for (const textKey in theme){
 			this.loadTexture((theme as any)[textKey]);
 		}

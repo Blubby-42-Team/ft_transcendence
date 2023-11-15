@@ -8,22 +8,7 @@ const screenSize = ref({
 	height: 0,
 })
 
-let gameState: gameStateType = {
-	status:				gameStatusType.ON_HOLD,
-	aispeed:			0.1,
-	playerspeed:		0.5,
-	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 25,		width_d_2: 35,	},
-	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
-	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
-	player_right:		{	center: {	x: 25,	y: 0,		},	height_d_2: 5,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
-	player_top:			{	active: false,	},
-	player_bottom:		{	active: false,	},
-	obstacles: {
-		player2Bottom:	{	center: {	x: 0,	y: 26 ,	},	height_d_2: 1,	width_d_2: 35,	hidden: false	},
-		player2Top:		{	center: {	x: 0,	y: -26,	},	height_d_2: 1,	width_d_2: 35,	hidden: false	},
-		
-	}
-};
+let gameState: any = {};
 
 const engine = new GameEngine(gameSettings.value, (state) => {
 		gameState = state;

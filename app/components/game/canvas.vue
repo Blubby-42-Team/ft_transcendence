@@ -8,13 +8,11 @@ const screenSize = ref({
 	height: 0,
 })
 
-let gameState: gameStateType;
+let gameState: any = {};
 
 const engine = new GameEngine(gameSettings.value, (state) => {
 	gameState = state;
 });
-
-// const game = new GameEngine();
 
 const emptyFunction = (status: boolean) => {};
 const controller: gameControllerType = {
@@ -29,35 +27,35 @@ const controller: gameControllerType = {
 	' ':		(status: boolean) => engine.startRound(status),
 }
 
+const graphic = new GraphicEngine('canvasDiv', theme.value, () => gameState, (ctx, screen) => {
+	screenSize.value.width = screen.width;
+	screenSize.value.height = screen.height;
+	
+	switch (gameState.status) {
+		case gameStatusType.ON_HOLD:
+		case gameStatusType.STARTED:
+			graphic.drawGame(ctx);
+			break ;
+		case gameStatusType.GAMEOVER:
+			graphic.drawGameOver(ctx, 1);
+			break ;
+	}
+});
 
 onMounted(async () => {
 	document.addEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.addEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
-
-	engine.start();
-
-	gameGraphics.start('canvasDiv', theme.value, gameState, (ctx, screen) => {
-		screenSize.value.width = screen.width;
-		screenSize.value.height = screen.height;
-
-		switch (gameState.status) {
-			case gameStatusType.ON_HOLD:
-			case gameStatusType.STARTED:
-				gameGraphics.drawGame(ctx, gameState, screen, theme.value);
-				break ;
-			case gameStatusType.GAMEOVER:
-				gameGraphics.drawGameOver(ctx, screen, theme.value, 1);
-				break ;
-		}
- 	})
+	
+	engine.start()
+	graphic.start();
 })
 
 onBeforeRouteLeave(() => {
 	document.removeEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.removeEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
-
+	
 	engine.stop();
-	gameGraphics.stop();
+	graphic.stop();
 })
 
 </script>
