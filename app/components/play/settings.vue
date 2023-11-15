@@ -31,9 +31,9 @@ function updateRandomizer() {
 }
 
 const difficulties = [
-	{ name: BotDifficulty2.NORMAL, icon: 'material-symbols:sentiment-neutral' },
-	{ name: BotDifficulty2.HARD, icon: 'material-symbols:sentiment-dissatisfied' },
-	{ name: BotDifficulty2.CRAZY, icon: 'material-symbols:sentiment-extremely-dissatisfied' },
+	{ name: BotDifficulty.NORMAL, icon: 'material-symbols:sentiment-neutral' },
+	{ name: BotDifficulty.HARD, icon: 'material-symbols:sentiment-dissatisfied' },
+	{ name: BotDifficulty.CRAZY, icon: 'material-symbols:sentiment-extremely-dissatisfied' },
 ]
 
 </script>

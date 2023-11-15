@@ -1,5 +1,5 @@
 type gameStoreType = {
-	_theme: gameTheme2,
+	_theme: gameTheme,
 	_localSettings: {
 		sound: boolean,
 	}
@@ -35,7 +35,7 @@ export const useGame2Store = defineStore('game', {
 			numPlayer:	4,
 			ballSize:	1,
 			padSize:	5,
-			mode:		BotDifficulty2.NORMAL,
+			mode:		BotDifficulty.NORMAL,
 			randomizer:	false,
 		},
 	}),

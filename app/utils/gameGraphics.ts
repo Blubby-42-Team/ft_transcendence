@@ -5,7 +5,7 @@ function loadTexture(text: gameTexture){
 	}
 }
 
-function loadTheme(theme: gameTheme2){
+function loadTheme(theme: gameTheme){
 	for (const textKey in theme){
 		loadTexture((theme as any)[textKey]);
 	}
@@ -75,7 +75,7 @@ function drawGame(
 	ctx: CanvasRenderingContext2D,
 	gameState: gameStateType,
 	screen: screenData,
-	theme: gameTheme2,
+	theme: gameTheme,
 ){
 	// Draw Background
 	drawRectTexture(ctx, 0, 0, screen.width, screen.height, theme.background)
@@ -110,7 +110,7 @@ function drawGame(
 function drawGameOver(
 	ctx: CanvasRenderingContext2D,
 	screen: screenData,
-	theme: gameTheme2,
+	theme: gameTheme,
 	player: number,
 ){
 	// Draw Background
@@ -142,7 +142,7 @@ function updateSize(gameState: gameStateType, screen: screenData, canvasParentId
 
 let continueLoop = true;
 
-function start(canvasParentId: string, theme: gameTheme2, state: Ref<gameStateType>, onLoop: (ctx: CanvasRenderingContext2D, screen: screenData, gameState: gameStateType) => void){
+function start(canvasParentId: string, theme: gameTheme, state: gameStateType, onLoop: (ctx: CanvasRenderingContext2D, screen: screenData, gameState: gameStateType) => void){
 	console.log('Graphic Engine Start')
 	continueLoop = true;
 
@@ -164,8 +164,8 @@ function start(canvasParentId: string, theme: gameTheme2, state: Ref<gameStateTy
 			return ;
 		}
 
-		updateSize(state.value, screen, canvasParentId);
-		onLoop(ctx, screen, state.value);
+		updateSize(state, screen, canvasParentId);
+		onLoop(ctx, screen, state);
 
 		if (continueLoop){
 			window.requestAnimationFrame(loop);
