@@ -1,8 +1,9 @@
-import { BotDifficulty2, Direction } from "#imports";
+import { gameStateType, gameStatusType, BotDifficulty, Direction, gameSettingsType } from "../types/game";
 
 const gameState4PlayersDefault: gameStateType = {
 	status:					gameStatusType.ON_HOLD,
 	aispeed:				0.1,
+	playerspeed:			0.5,
 	gameArea: 				{	center: {	x: 0,	y: 0,		},	height_d_2: 30,		width_d_2: 30,	},
 	ball: 					{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
 	player_top: 			{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -24,6 +25,7 @@ const gameState4PlayersDefault: gameStateType = {
 const gameState2PlayersDefault: gameStateType = {
 	status:				gameStatusType.ON_HOLD,
 	aispeed:			0.1,
+	playerspeed:		0.5,
 	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 25,		width_d_2: 35,	},
 	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
 	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -37,7 +39,7 @@ const gameState2PlayersDefault: gameStateType = {
 	}
 }
 
-export function getNewAngleForBall(dir: Direction = Direction.NONE) {
+function getNewAngleForBall(dir: Direction = Direction.NONE) {
 	switch (dir) {
 		case Direction.TOP:		return (1/2 + 1/16) * Math.PI;
 		case Direction.BOTTOM:	return (3/2 + 1/16) * Math.PI;
@@ -47,41 +49,43 @@ export function getNewAngleForBall(dir: Direction = Direction.NONE) {
 	}
 }
 
-export function getSpeedForDifficulty(difficulty: BotDifficulty2) {
+function getSpeedForDifficulty(difficulty: BotDifficulty) {
 	switch (difficulty) {
-		case BotDifficulty2.NORMAL:		return 0.2;
-		case BotDifficulty2.HARD:		return 0.4;
-		case BotDifficulty2.CRAZY:		return 0.6;
+		case BotDifficulty.NORMAL:		return 0.4;
+		case BotDifficulty.HARD:		return 0.6;
+		case BotDifficulty.CRAZY:		return 1;
 	}
 }
 
-export function getNewStateWithGameSettings(): gameStateType {
-	const { gameSettings } = useGame2Store();
+export function getNewStateWithGameSettings(
+	gameSettings: gameSettingsType,
+	editLocalState: (state: gameStateType) => void,
+): gameStateType {
+	let base = JSON.parse(JSON.stringify((gameSettings.numPlayer === 4 ? gameState4PlayersDefault : gameState2PlayersDefault)));
 
-	let base = JSON.parse(JSON.stringify((gameSettings.value.numPlayer === 4 ? gameState4PlayersDefault : gameState2PlayersDefault)));
-
-	if (gameSettings.value.numPlayer === 1 && base.player_left.active){
+	if (gameSettings.numPlayer === 1 && base.player_left.active){
 		base.player_left.isBot = true;
 	}
 
 	if (base.player_top.active){
-		base.player_top.width_d_2 = gameSettings.value.padSize;
+		base.player_top.width_d_2 = gameSettings.padSize;
 	}
 	if (base.player_bottom.active){
-		base.player_bottom.width_d_2 = gameSettings.value.padSize;
+		base.player_bottom.width_d_2 = gameSettings.padSize;
 	}
 	if (base.player_left.active){
-		base.player_left.height_d_2 = gameSettings.value.padSize;
+		base.player_left.height_d_2 = gameSettings.padSize;
 	}
 	if (base.player_right.active){
-		base.player_right.height_d_2 = gameSettings.value.padSize;
+		base.player_right.height_d_2 = gameSettings.padSize;
 	}
 
-	base.ball.height_d_2 = gameSettings.value.ballSize;
-	base.ball.width_d_2 = gameSettings.value.ballSize;
+	base.ball.height_d_2 = gameSettings.ballSize;
+	base.ball.width_d_2 = gameSettings.ballSize;
 
 	base.ball.direction = getNewAngleForBall();
-	base.aispeed = getSpeedForDifficulty(gameSettings.value.mode);
+	base.aispeed = getSpeedForDifficulty(gameSettings.mode);
 
+	editLocalState(base);
 	return base;
 }

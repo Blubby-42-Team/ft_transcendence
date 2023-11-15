@@ -40,7 +40,7 @@ export type screenData = {
 	height: number,
 }
 
-export type gameTheme2 = {
+export type gameTheme = {
 	fontColor:			string,
 	background:			gameTexture,
 	ball:				gameTexture,
@@ -60,14 +60,14 @@ export type gameTheme2 = {
 	player2Top:			gameTexture,
 }
 
-export type gamePlayer2 = {
+export type gamePlayer = {
 	active: true,
 	eleminated: boolean,
 	isBot: boolean,
 	score: number,
 }
 
-export enum BotDifficulty2 {
+export enum BotDifficulty {
 	NORMAL,
 	HARD,
 	CRAZY,
@@ -82,12 +82,13 @@ export enum gameStatusType {
 export type gameStateType = {
 	status:				gameStatusType,
 	aispeed:			number,
+	playerspeed:		number,
 	gameArea:			Rectangle,
 	ball:				Rectangle & { speed: number, direction: number },
-	player_top:			Rectangle & gamePlayer2 | { active: false },
-	player_bottom:		Rectangle & gamePlayer2 | { active: false },
-	player_left:		Rectangle & gamePlayer2 | { active: false },
-	player_right:		Rectangle & gamePlayer2 | { active: false },
+	player_top:			Rectangle & gamePlayer | { active: false },
+	player_bottom:		Rectangle & gamePlayer | { active: false },
+	player_left:		Rectangle & gamePlayer | { active: false },
+	player_right:		Rectangle & gamePlayer | { active: false },
 	obstacles:			{ [key: string]: Rectangle & { hidden: boolean } }
 }
 
@@ -96,6 +97,6 @@ export type gameSettingsType = {
 	numPlayer:	number,
 	ballSize:	number,
 	padSize:	number,
-	mode:		BotDifficulty2,
+	mode:		BotDifficulty,
 	randomizer:	boolean,
 }
