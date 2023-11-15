@@ -27,10 +27,10 @@ export class GameEngine extends Controller {
 		while (this.continueLoop){
 			switch (this.gamestate.status) {
 				case gameStatusType.ON_HOLD:
-					this.moveAllPlayers(this.gamestate);
+					this.moveAllPlayers();
 					break ;
 				case gameStatusType.STARTED: 
-					this.moveAllPlayers(this.gamestate);
+					this.moveAllPlayers();
 					this.moveBall();
 					break ;
 				case gameStatusType.GAMEOVER:
@@ -138,68 +138,68 @@ export class GameEngine extends Controller {
 		})();
 	}
 
-	private resetRound(gamestate: gameStateType){
-		gamestate.status = gameStatusType.ON_HOLD;
-		if (gamestate.player_bottom.active){
-			gamestate.player_bottom.eleminated = false;
-			gamestate.obstacles.player4BottomElim.hidden = true;
+	private resetRound(){
+		this.gamestate.status = gameStatusType.ON_HOLD;
+		if (this.gamestate.player_bottom.active){
+			this.gamestate.player_bottom.eleminated = false;
+			this.gamestate.obstacles.player4BottomElim.hidden = true;
 		}
-		if (gamestate.player_top.active){
-			gamestate.player_top.eleminated = false;
-			gamestate.obstacles.player4TopElim.hidden = true;
+		if (this.gamestate.player_top.active){
+			this.gamestate.player_top.eleminated = false;
+			this.gamestate.obstacles.player4TopElim.hidden = true;
 		}
-		if (gamestate.player_right.active){
-			gamestate.player_right.eleminated = false;
-			if (gamestate.obstacles?.player4RightElim){
-				gamestate.obstacles.player4RightElim.hidden = true;
+		if (this.gamestate.player_right.active){
+			this.gamestate.player_right.eleminated = false;
+			if (this.gamestate.obstacles?.player4RightElim){
+				this.gamestate.obstacles.player4RightElim.hidden = true;
 			}
 		}
-		if (gamestate.player_left.active){
-			gamestate.player_left.eleminated = false;
-			if (gamestate.obstacles?.player4LeftElim){
-				gamestate.obstacles.player4LeftElim.hidden = true;
+		if (this.gamestate.player_left.active){
+			this.gamestate.player_left.eleminated = false;
+			if (this.gamestate.obstacles?.player4LeftElim){
+				this.gamestate.obstacles.player4LeftElim.hidden = true;
 			}
 		}
 	}
 
-	private updatePoints(gamestate: gameStateType, doesIntersect: Direction){
-		if (gamestate.player_left.active && gamestate.player_right.active && gamestate.player_top.active && gamestate.player_bottom.active){
+	private updatePoints(doesIntersect: Direction){
+		if (this.gamestate.player_left.active && this.gamestate.player_right.active && this.gamestate.player_top.active && this.gamestate.player_bottom.active){
 			switch (doesIntersect) {
-				case Direction.BOTTOM:	gamestate.player_bottom.eleminated	= true; gamestate.obstacles.player4BottomElim.hidden = false; break;
-				case Direction.TOP:		gamestate.player_top.eleminated		= true; gamestate.obstacles.player4TopElim.hidden = false; break;
-				case Direction.LEFT:	gamestate.player_right.eleminated	= true; gamestate.obstacles.player4RightElim.hidden = false; break;
-				case Direction.RIGHT:	gamestate.player_left.eleminated	= true; gamestate.obstacles.player4LeftElim.hidden = false; break;
+				case Direction.BOTTOM:	this.gamestate.player_bottom.eleminated	= true; this.gamestate.obstacles.player4BottomElim.hidden = false; break;
+				case Direction.TOP:		this.gamestate.player_top.eleminated	= true; this.gamestate.obstacles.player4TopElim.hidden = false; break;
+				case Direction.LEFT:	this.gamestate.player_right.eleminated	= true; this.gamestate.obstacles.player4RightElim.hidden = false; break;
+				case Direction.RIGHT:	this.gamestate.player_left.eleminated	= true; this.gamestate.obstacles.player4LeftElim.hidden = false; break;
 			}
-			if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_left.eleminated){
-				gamestate.player_right.score += 1;
-				this.resetRound(gamestate);
+			if (this.gamestate.player_bottom.eleminated && this.gamestate.player_top.eleminated && this.gamestate.player_left.eleminated){
+				this.gamestate.player_right.score += 1;
+				this.resetRound();
 			}
-			else if (gamestate.player_bottom.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
-				gamestate.player_left.score += 1;
-				this.resetRound(gamestate);
+			else if (this.gamestate.player_bottom.eleminated && this.gamestate.player_top.eleminated && this.gamestate.player_right.eleminated){
+				this.gamestate.player_left.score += 1;
+				this.resetRound();
 			}
-			else if (gamestate.player_bottom.eleminated && gamestate.player_left.eleminated && gamestate.player_right.eleminated){
-				gamestate.player_top.score += 1;
-				this.resetRound(gamestate);
+			else if (this.gamestate.player_bottom.eleminated && this.gamestate.player_left.eleminated && this.gamestate.player_right.eleminated){
+				this.gamestate.player_top.score += 1;
+				this.resetRound();
 			}
-			else if (gamestate.player_left.eleminated && gamestate.player_top.eleminated && gamestate.player_right.eleminated){
-				gamestate.player_bottom.score += 1;
-				this.resetRound(gamestate);
+			else if (this.gamestate.player_left.eleminated && this.gamestate.player_top.eleminated && this.gamestate.player_right.eleminated){
+				this.gamestate.player_bottom.score += 1;
+				this.resetRound();
 			}
-			if (gamestate.player_bottom.score >= this.gameSettings.maxPoint || gamestate.player_top.score >= this.gameSettings.maxPoint ||
-				gamestate.player_left.score >= this.gameSettings.maxPoint || gamestate.player_right.score >= this.gameSettings.maxPoint
+			if (this.gamestate.player_bottom.score >= this.gameSettings.maxPoint || this.gamestate.player_top.score >= this.gameSettings.maxPoint ||
+				this.gamestate.player_left.score >= this.gameSettings.maxPoint || this.gamestate.player_right.score >= this.gameSettings.maxPoint
 			){
-				gamestate.status = gameStatusType.GAMEOVER;
+				this.gamestate.status = gameStatusType.GAMEOVER;
 			}
 		}
-		else if (gamestate.player_left.active && gamestate.player_right.active){
+		else if (this.gamestate.player_left.active && this.gamestate.player_right.active){
 			if (doesIntersect === Direction.LEFT){
-				gamestate.player_right.score += 1;
-				this.resetRound(gamestate);
+				this.gamestate.player_right.score += 1;
+				this.resetRound();
 			}
 			else if (doesIntersect === Direction.RIGHT){
-				gamestate.player_left.score += 1;
-				this.resetRound(gamestate);
+				this.gamestate.player_left.score += 1;
+				this.resetRound();
 			}
 		}
 	}
@@ -209,7 +209,7 @@ export class GameEngine extends Controller {
 		direction: Exclude<Direction, Direction.NONE>,
 		axis: Axis,
 	){
-		if (player.active){
+		if (player.active && !player.eleminated){
 			const doesIntersect = this.getIntersection(this.gamestate.ball, player, axis);
 			if (doesIntersect === direction){
 				this.calcutateNewBallDirectionAfterHittingPlayer(this.gamestate.ball, player, doesIntersect);
@@ -228,7 +228,7 @@ export class GameEngine extends Controller {
 				this.gamestate.ball.center.x = 0;
 				this.gamestate.ball.center.y = 0;
 				this.gamestate.ball.speed = 0.5;
-				this.updatePoints(this.gamestate, doesIntersect);
+				this.updatePoints(doesIntersect);
 				return ;
 			}
 		}
@@ -253,19 +253,19 @@ export class GameEngine extends Controller {
 		this.gamestate.ball.center.y += Math.sin(this.gamestate.ball.direction) * this.gamestate.ball.speed;
 	}
 
-	private movePlayer(player: Rectangle & gamePlayer, axis: Axis, delta: number, blockIfDirectionIs: Direction, gamestate: gameStateType){
+	private movePlayer(player: Rectangle & gamePlayer, axis: Axis, delta: number, blockIfDirectionIs: Direction){
 		switch (axis) {
 			case Axis.X:
-				for (const obstacleKey in gamestate.obstacles){
-					if (this.getIntersection(player, gamestate.obstacles[obstacleKey], Axis.X) === blockIfDirectionIs){
+				for (const obstacleKey in this.gamestate.obstacles){
+					if (this.getIntersection(player, this.gamestate.obstacles[obstacleKey], Axis.X) === blockIfDirectionIs){
 						return ;
 					}
 				}
 				player.center.x += delta
 				break;
 			case Axis.Y:
-				for (const obstacleKey in gamestate.obstacles){
-					if (this.getIntersection(player, gamestate.obstacles[obstacleKey], Axis.Y) === blockIfDirectionIs){
+				for (const obstacleKey in this.gamestate.obstacles){
+					if (this.getIntersection(player, this.gamestate.obstacles[obstacleKey], Axis.Y) === blockIfDirectionIs){
 						return ;
 					}
 				}
@@ -274,91 +274,45 @@ export class GameEngine extends Controller {
 		}
 	}
 
-	private moveAllPlayers(gamestate: gameStateType){
-		if (gamestate.player_left.active && !gamestate.player_left.eleminated){
-			if (gamestate.player_left.isBot){
-				const newPosition = gamestate.ball.center.y - gamestate.player_left.center.y + gamestate.ball.height_d_2 * 2;
-				if (Math.abs(newPosition) > gamestate.aispeed){
+	private movePlayerTo(
+		player: (Rectangle & gamePlayer) | { active: false },
+		axis: Axis,
+		dir1: Direction,
+		dir2: Direction,
+		controller1: boolean,
+		controller2: boolean,
+	){
+		if (player.active && !player.eleminated){
+			if (player.isBot){
+				const newPosition = (axis === Axis.Y
+					? this.gamestate.ball.center.y - player.center.y + this.gamestate.ball.height_d_2 * 2
+					: this.gamestate.ball.center.x - player.center.x + this.gamestate.ball.width_d_2 * 2);
+
+				if (Math.abs(newPosition) > this.gamestate.aispeed){
 					if (newPosition < 0){
-						this.movePlayer(gamestate.player_left, Axis.Y, -gamestate.aispeed, Direction.BOTTOM, gamestate);
+						this.movePlayer(player, axis, -this.gamestate.aispeed, dir1);
 					}
 					else {
-						this.movePlayer(gamestate.player_left, Axis.Y, gamestate.aispeed, Direction.TOP, gamestate);
+						this.movePlayer(player, axis, this.gamestate.aispeed, dir2);
 					}
 				}
 			}
 			else {
-				if (this.controller.playerLeftMoveUp){
-					this.movePlayer(gamestate.player_left, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
+				if (controller1){
+					this.movePlayer(player, axis, -0.5, dir1);
 				}
-				if (this.controller.playerLeftMoveDown){
-					this.movePlayer(gamestate.player_left, Axis.Y, 0.5, Direction.TOP, gamestate);
-				}
-			}
-		}
-		if (gamestate.player_right.active && !gamestate.player_right.eleminated){
-			if (gamestate.player_right.isBot){
-				const newPosition = gamestate.ball.center.y - gamestate.player_right.center.y - gamestate.ball.height_d_2 * 2;
-				if (Math.abs(newPosition) > gamestate.aispeed){
-					if (newPosition < 0){
-						this.movePlayer(gamestate.player_right, Axis.Y, -gamestate.aispeed, Direction.BOTTOM, gamestate);
-					}
-					else {
-						this.movePlayer(gamestate.player_right, Axis.Y, gamestate.aispeed, Direction.TOP, gamestate);
-					}
-				}
-			}
-			else {
-				if (this.controller.playerRightMoveUp){
-					this.movePlayer(gamestate.player_right, Axis.Y, -0.5, Direction.BOTTOM, gamestate);
-				}
-				if (this.controller.playerRightMoveDown){
-					this.movePlayer(gamestate.player_right, Axis.Y, 0.5, Direction.TOP, gamestate);
+				if (controller2){
+					this.movePlayer(player, axis, 0.5, dir2);
 				}
 			}
 		}
-		if (gamestate.player_top.active && !gamestate.player_top.eleminated){
-			if (gamestate.player_top.isBot){
-				const newPosition = gamestate.ball.center.x - gamestate.player_top.center.x + gamestate.ball.width_d_2 * 2;
-				if (Math.abs(newPosition) > gamestate.aispeed){
-					if (newPosition < 0){
-						this.movePlayer(gamestate.player_top, Axis.X, -gamestate.aispeed, Direction.LEFT, gamestate);
-					}
-					else {
-						this.movePlayer(gamestate.player_top, Axis.X, gamestate.aispeed, Direction.RIGHT, gamestate);
-					}
-				}
-			}
-			else {
-				if (this.controller.playerTopMoveLeft){
-					this.movePlayer(gamestate.player_top, Axis.X, -0.5, Direction.LEFT, gamestate);
-				}
-				if (this.controller.playerTopMoveRight){
-					this.movePlayer(gamestate.player_top, Axis.X, 0.5, Direction.RIGHT, gamestate);
-				}
-			}
-		}
-		if (gamestate.player_bottom.active && !gamestate.player_bottom.eleminated){
-			if (gamestate.player_bottom.isBot){
-				const newPosition = gamestate.ball.center.x - gamestate.player_bottom.center.x - gamestate.ball.width_d_2 * 2;
-				if (Math.abs(newPosition) > gamestate.aispeed){
-					if (newPosition < 0){
-						this.movePlayer(gamestate.player_bottom, Axis.X, -gamestate.aispeed, Direction.LEFT, gamestate);
-					}
-					else {
-						this.movePlayer(gamestate.player_bottom, Axis.X, gamestate.aispeed, Direction.RIGHT, gamestate);
-					}
-				}
-			}
-			else {
-				if (this.controller.playerBottomMoveLeft){
-					this.movePlayer(gamestate.player_bottom, Axis.X, -0.5, Direction.LEFT, gamestate);
-				}
-				if (this.controller.playerBottomMoveRight){
-					this.movePlayer(gamestate.player_bottom, Axis.X, 0.5, Direction.RIGHT, gamestate);
-				}
-			}
-		}
+	}
+
+	private moveAllPlayers(){
+		this.movePlayerTo(this.gamestate.player_left, Axis.Y, Direction.BOTTOM, Direction.TOP, this.controller.playerLeftMoveUp, this.controller.playerLeftMoveDown);
+		this.movePlayerTo(this.gamestate.player_right, Axis.Y, Direction.BOTTOM, Direction.TOP, this.controller.playerRightMoveUp, this.controller.playerRightMoveDown);
+		this.movePlayerTo(this.gamestate.player_top, Axis.X, Direction.LEFT, Direction.RIGHT, this.controller.playerTopMoveLeft, this.controller.playerTopMoveRight);
+		this.movePlayerTo(this.gamestate.player_bottom, Axis.X, Direction.LEFT, Direction.RIGHT, this.controller.playerBottomMoveLeft, this.controller.playerBottomMoveRight);
 	}
 
 	public start() {
