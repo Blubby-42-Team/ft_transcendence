@@ -1,11 +1,6 @@
 import { Direction, Rectangle, gameSettingsType, gameStateType, gameStatusType } from "#imports";
 import { getNewStateWithGameSettings } from "./getNewStateWithGameSettings";
 
-enum Axis {
-	X,
-	Y,
-};
-
 function getIntersection(rec1: Rectangle, rec2: Rectangle, preference: Axis): Direction {
 	// Calculate the boundaries of the rectangles
 	const rec1Left = rec1.center.x - rec1.width_d_2;
@@ -270,7 +265,7 @@ function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, 
 	}
 }
 
-function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<gameSettingsType>){
+function moveAllPlayers(gamestate: gameStateType){
 	if (gamestate.player_left.active && !gamestate.player_left.eleminated){
 		if (gamestate.player_left.isBot){
 			const newPosition = gamestate.ball.center.y - gamestate.player_left.center.y + gamestate.ball.height_d_2 * 2;
@@ -376,10 +371,10 @@ async function start(
 		while (continueLoop){
 			switch (gamestate.status) {
 				case gameStatusType.ON_HOLD:
-					moveAllPlayers(gamestate, gameSettings);
+					moveAllPlayers(gamestate);
 					break ;
 				case gameStatusType.STARTED: 
-					moveAllPlayers(gamestate, gameSettings);
+					moveAllPlayers(gamestate);
 					moveBall(gamestate);
 					break ;
 				case gameStatusType.GAMEOVER:

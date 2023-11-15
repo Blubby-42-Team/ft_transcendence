@@ -23,6 +23,11 @@ export type Coordinates = {
 	y: number,
 }
 
+export enum Axis {
+	X,
+	Y,
+};
+
 export type Rectangle = {
 	center: Coordinates,
 	height_d_2: number, // height divided by two
