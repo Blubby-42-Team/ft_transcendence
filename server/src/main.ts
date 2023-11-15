@@ -1,13 +1,17 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 import tracer from './tracer';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
 	await tracer.start();
 
 	const app = await NestFactory.create(AppModule);
 
+	const configService: ConfigService = app.get<ConfigService>(ConfigService);
+	const logger: Logger = new Logger('Main');
+	
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
 	app.enableCors({
@@ -17,6 +21,10 @@ async function bootstrap() {
 
 	app.useGlobalInterceptors(new ClassSerializerInterceptor(new Reflector()))
 
-	await app.listen(3000);
+	await app.listen(
+		configService.get<number>('PORT'),
+		configService.get<string>('SERVER_HOST'),
+	);
+	logger.log(`Server running on ${configService.get<string>('SERVER_HOST')}:${configService.get<number>('PORT')}`);
 }
 bootstrap();

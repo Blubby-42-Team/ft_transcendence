@@ -7,6 +7,7 @@ import { instanceToPlain, plainToClass } from 'class-transformer';
 import { log } from 'console';
 import { UserRoleType } from 'src/auth/auth.class';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Auth42Guard } from 'src/auth/auth42/auth42.guard';
 import { Roles } from 'src/auth/role.decorator';
 import { User } from 'src/model/user/user.model';
 import { UserService } from 'src/model/user/user.service';
@@ -38,5 +39,11 @@ export class AdminController {
 		// user.passwordHash = "tes"
 		const debug : Promise<User> = this.userService.createUser(user);
 		return debug;
+	}
+
+	@UseGuards(Auth42Guard)
+	@Get('test')
+	test () {
+		return 'test'
 	}
 }

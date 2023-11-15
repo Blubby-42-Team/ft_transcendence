@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
 
 	private readonly logger = new Logger(AuthGuard.name);
 
-	async canActivate(context: ExecutionContext,): boolean | Promise<boolean> {
+	async canActivate(context: ExecutionContext,): Promise<boolean> {
 		const roles = this.reflector.get(Roles, context.getClass());
 
 		log(roles)
