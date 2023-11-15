@@ -1,56 +1,67 @@
 <script lang="ts" setup>
-import { gameStatus } from '~/stores/game';
+import { gameStatusType } from '#imports';
 
-const { screen, player, ball, optionsList, theme, utils, status, move, start, changeGameStatus, reset, setPlayer } = useGameStore()
+const { theme, gameSettings } = useGame2Store()
 
-function game() {
-	let ctx = document.querySelector("canvas")?.getContext("2d");
-	if (!ctx){
-		window.requestAnimationFrame(game);
-		return ;
+const screenSize = ref({
+	width: 0,
+	height: 0,
+})
+
+let gameState: any = {};
+
+const engine = new GameEngine(gameSettings.value, (state) => {
+		gameState = state;
+	},
+	(state) => {
+		if (state.player_bottom.active){
+			state.player_bottom.isBot = true;
+		}
+		if (state.player_top.active){
+			state.player_top.isBot = true;
+		}
+		if (state.player_left.active){
+			state.player_left.isBot = true;
+		}
+		if (state.player_right.active){
+			state.player_right.isBot = true;
+		}
 	}
-	
-	gameGraphics.updateSize(screen, canvasParentId);
-	
-	switch (status.value){
-		case gameStatus.STARTED:
-			gameEngine.gameTick(optionsList.value, utils, screen, ball, player);
-		
-			if (gameEngine.isGameOver(player.value, optionsList.value)){
-				reset();
-				start();
-			}
-			gameGraphics.drawGame(ctx, screen.value, theme.value, optionsList.value, player.value, ball.value);
+);
 
-			break ;
-		case gameStatus.ON_HOLD:
-		case gameStatus.GAMEOVER:
-			changeGameStatus(gameStatus.STARTED);
-			break ;
+const graphic = new GraphicEngine('previewCanvasDiv', theme.value, () => gameState, (ctx, screen) => {
+	screenSize.value.width = screen.width;
+	screenSize.value.height = screen.height;
+
+	switch (gameState.status) {
+		case gameStatusType.GAMEOVER:
+			engine.restart(gameSettings.value);
+		case gameStatusType.ON_HOLD:
+			engine.changeGameStatus(gameStatusType.STARTED);
+		case gameStatusType.STARTED:
+			graphic.drawGame(ctx);
 	}
+});
 
-	window.requestAnimationFrame(game);
-}
+onMounted(async () => {
+	engine.start()
+	graphic.start();
 
-const canvasParentId = 'canvasDiv';
+	watch(gameSettings.value, () => engine.restart(gameSettings.value));
+})
 
-setPlayer(PlayerPosition.LEFT, true, true);
-setPlayer(PlayerPosition.RIGHT, true, true);
-
-onMounted(() => {
-	gameGraphics.updateSize(screen, canvasParentId);
-	gameGraphics.loadTheme(theme.value);
-	reset();
-	start();
-	window.requestAnimationFrame(game);
+onBeforeRouteLeave(() => {
+	engine.stop();
+	graphic.stop();
 })
 
 </script>
 
 <template>
-	<div id="canvasDiv" class="w-full h-full">
+	<div id="previewCanvasDiv" class="w-full h-full">
+		
 		<client-only placeholder="loading...">
-			<canvas class="bg-white border border-text" ref="canvas" :width="screen.width" :height="screen.height"></canvas>
+			<canvas class="bg-white border border-text" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
 		</client-only>
 	</div>
 </template>

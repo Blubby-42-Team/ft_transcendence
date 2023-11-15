@@ -1,135 +1,7 @@
-function loadTexture(text: gameTexture){
-	if (text.type === 'image'){
-		text.image = new Image();
-		text.image.src = text.imageSrc;
-	}
-}
-
-function loadTheme(theme: gameTheme2){
-	for (const textKey in theme){
-		loadTexture((theme as any)[textKey]);
-	}
-}
-
-function drawScore(
-	ctx: CanvasRenderingContext2D,
-	gameState: gameStateType,
-	screen: screenData,
-	fontColor: string,
-){
-	ctx.fillStyle = fontColor;
-	ctx.font = `${4 * screen.delta.y}px Arial`;
-	const test = 2 * screen.delta.y
-	if (gameState.player_bottom.active){
-		ctx.fillText(`${gameState.player_bottom.score}`, screen.width * 0.48, screen.height * 0.59);
-	}
-	if (gameState.player_top.active){
-		ctx.fillText(`${gameState.player_top.score}`, screen.width * 0.48, screen.height * 0.459);
-	}
-	if (gameState.player_left.active){
-		ctx.fillText(`${gameState.player_left.score}`, screen.width * 0.42, screen.height * 0.525);
-	}
-	if (gameState.player_right.active){
-		ctx.fillText(`${gameState.player_right.score}`, screen.width * 0.54, screen.height * 0.525);
-	}
-}
-
-function drawRectTexture(
-	ctx: CanvasRenderingContext2D,
-	x: number,
-	y: number,
-	w: number,
-	l: number,
-	text: gameTexture,
-){
-	ctx.beginPath();
-	if (text.type === 'color'){
-		ctx.fillStyle = text.color;
-		ctx.rect(x, y, w, l);
-	}
-	else if (text.type === 'image'){
-		if (!text.image){
-			return ;
-		}
-		ctx.drawImage(text.image, x, y, w, l);
-	}
-	ctx.fill();
-}
-
-function drawGameElement(
-	ctx: CanvasRenderingContext2D,
-	text: gameTexture,
-	rec: Rectangle,
-	screen: screenData,
-){
-	drawRectTexture(
-		ctx,
-		screen.width / 2 + (rec.center.x - rec.width_d_2) * screen.delta.x,
-		screen.height / 2 + (rec.center.y - rec.height_d_2) * screen.delta.y,
-		rec.width_d_2 * 2 * screen.delta.x,
-		rec.height_d_2 * 2 * screen.delta.x,
-		text,
-	);
-}
-
-function drawGame(
-	ctx: CanvasRenderingContext2D,
-	gameState: gameStateType,
-	screen: screenData,
-	theme: gameTheme2,
-){
-	// Draw Background
-	drawRectTexture(ctx, 0, 0, screen.width, screen.height, theme.background)
-
-	// Draw Ball
-	drawGameElement(ctx, theme.ball, gameState.ball, screen);
-
-	drawScore(ctx, gameState, screen, theme.fontColor);
-	
-	// Draw Players
-	if (gameState.player_left.active && !gameState.player_left.eleminated){
-		drawGameElement(ctx, theme.player_left, gameState.player_left as Rectangle, screen);
-	}
-	if (gameState.player_right.active && !gameState.player_right.eleminated){
-		drawGameElement(ctx, theme.player_right, gameState.player_right as Rectangle, screen);
-	}
-	if (gameState.player_top.active && !gameState.player_top.eleminated){
-		drawGameElement(ctx, theme.player_top, gameState.player_top as Rectangle, screen);
-	}
-	if (gameState.player_bottom.active && !gameState.player_bottom.eleminated){
-		drawGameElement(ctx, theme.player_bottom, gameState.player_bottom as Rectangle, screen);
-	}
-
-	// Draw Obstacles
-	for (const obstacleKey in gameState.obstacles){
-		drawGameElement(ctx, (theme as any)?.[obstacleKey] ?? { type: 'color', color: 'purple' }, gameState.obstacles[obstacleKey], screen);
-	}
-}
-
-function updateSize(gameState: gameStateType, screen: screenData, canvasParentId: string) {
-	const canvas = document.getElementById(canvasParentId);
-	if (!canvas){
-		return ;
-	}
-	if (canvas.offsetHeight >= gameState.gameArea.height_d_2 / gameState.gameArea.width_d_2 * canvas.offsetWidth) {
-		screen.width = canvas.offsetWidth - 2;
-		screen.height = canvas.offsetWidth * gameState.gameArea.height_d_2 / gameState.gameArea.width_d_2 - 2;
-	}
-	else {
-		screen.width = canvas.offsetHeight * gameState.gameArea.width_d_2 / gameState.gameArea.height_d_2 - 2;
-		screen.height = canvas.offsetHeight - 2;
-	}
-	screen.delta.x = screen.width / ((gameState.gameArea.width_d_2 - gameState.ball.width_d_2 * 2) * 2);
-	screen.delta.y = screen.height / ((gameState.gameArea.height_d_2 - gameState.ball.height_d_2 * 2) * 2);
-}
-
-let continueLoop = true;
-
-function start(canvasParentId: string, theme: gameTheme2, state: Ref<gameStateType>, onLoop: (ctx: CanvasRenderingContext2D, screen: screenData, gameState: gameStateType) => void){
-	console.log('Graphic Engine Start')
-	continueLoop = true;
-
-	let screen: screenData = {
+export class GraphicEngine {
+	public continueLoop = false;
+	public state: gameStateType;
+	public screen: screenData = {
 		delta: {
 			x: 0,
 			y: 0,
@@ -138,32 +10,172 @@ function start(canvasParentId: string, theme: gameTheme2, state: Ref<gameStateTy
 		height: 0,
 	}
 
-	loadTheme(theme);
-
-	function loop(){
-		let ctx = document.querySelector("canvas")?.getContext("2d");
-		if (!ctx){
-			window.requestAnimationFrame(loop);
-			return ;
-		}
-
-		updateSize(state.value, screen, canvasParentId);
-		onLoop(ctx, screen, state.value);
-
-		if (continueLoop){
-			window.requestAnimationFrame(loop);
+	constructor(
+		public canvasParentId: string,
+		public theme: gameTheme,
+		public getState: () => gameStateType,
+		public onLoop: (ctx: CanvasRenderingContext2D, screen: screenData, gameState: gameStateType) => void
+	){
+		this.state = this.getState();
+		for (const textKey in theme){
+			this.loadTexture((theme as any)[textKey]);
 		}
 	}
-	window.requestAnimationFrame(loop);
-}
 
-function stop(){
-	continueLoop = false;
-	console.log('Graphic Engine Stop')
-}
+	private updateSize() {
+		const canvas = document.getElementById(this.canvasParentId);
+		if (!canvas){
+			return ;
+		}
+		if (canvas.offsetHeight >= this.state.gameArea.height_d_2 / this.state.gameArea.width_d_2 * canvas.offsetWidth) {
+			this.screen.width = canvas.offsetWidth - 2;
+			this.screen.height = canvas.offsetWidth * this.state.gameArea.height_d_2 / this.state.gameArea.width_d_2 - 2;
+		}
+		else {
+			this.screen.width = canvas.offsetHeight * this.state.gameArea.width_d_2 / this.state.gameArea.height_d_2 - 2;
+			this.screen.height = canvas.offsetHeight - 2;
+		}
+		this.screen.delta.x = this.screen.width / (this.state.gameArea.width_d_2 * 2);
+		this.screen.delta.y = this.screen.height / (this.state.gameArea.height_d_2 * 2);
+	}
 
-export default {
-	drawGame,
-	start,
-	stop,
+	public start(){
+		console.log('Graphic Engine Start')
+		this.continueLoop = true;
+
+		const tis = this;
+
+		function loop(){
+			let ctx = document.querySelector("canvas")?.getContext("2d");
+			tis.state = tis.getState();
+	
+			if (!ctx || !tis.state){
+				window.requestAnimationFrame(loop);
+				return ;
+			}
+	
+			tis.updateSize();
+			tis.onLoop(ctx, tis.screen, tis.state);
+	
+			if (tis.continueLoop){
+				window.requestAnimationFrame(loop);
+			}
+		}
+
+		window.requestAnimationFrame(loop);
+	}
+
+	public stop(){
+		this.continueLoop = false;
+		console.log('Graphic Engine Stop')
+	}
+
+	public drawGameOver(
+		ctx: CanvasRenderingContext2D,
+		player: number,
+	){
+		// Draw Background
+		this.drawRectTexture(ctx, 0, 0, screen.width, screen.height, this.theme.background)
+	
+		ctx.fillStyle = this.theme.fontColor;
+		ctx.font = `${this.screen.delta.x * 100}px Arial`;
+		ctx.fillText(`   GAME OVER`, this.screen.delta.x * 100, this.screen.delta.x * 310);
+		ctx.fillText(`   PLAYER ${player} WINS!`, this.screen.delta.x * 100, this.screen.delta.x * 410);
+	}
+
+	public drawGame(
+		ctx: CanvasRenderingContext2D,
+	){
+		// Draw Background
+		this.drawRectTexture(ctx, 0, 0, screen.width, screen.height, this.theme.background)
+	
+		// Draw Ball
+		this.drawGameElement(ctx, this.theme.ball, this.state.ball);
+	
+		this.drawScore(ctx);
+		
+		// Draw Players
+		if (this.state.player_left.active && !this.state.player_left.eleminated){
+			this.drawGameElement(ctx, this.theme.player_left, this.state.player_left as Rectangle);
+		}
+		if (this.state.player_right.active && !this.state.player_right.eleminated){
+			this.drawGameElement(ctx, this.theme.player_right, this.state.player_right as Rectangle);
+		}
+		if (this.state.player_top.active && !this.state.player_top.eleminated){
+			this.drawGameElement(ctx, this.theme.player_top, this.state.player_top as Rectangle);
+		}
+		if (this.state.player_bottom.active && !this.state.player_bottom.eleminated){
+			this.drawGameElement(ctx, this.theme.player_bottom, this.state.player_bottom as Rectangle);
+		}
+	
+		// Draw Obstacles
+		for (const obstacleKey in this.state.obstacles){
+			if (!this.state.obstacles[obstacleKey].hidden){
+				this.drawGameElement(ctx, (this.theme as any)?.[obstacleKey] ?? { type: 'color', color: 'purple' }, this.state.obstacles[obstacleKey]);
+			}
+		}
+	}
+
+	private loadTexture(text: gameTexture){
+		if (text.type === 'image'){
+			text.image = new Image();
+			text.image.src = text.imageSrc;
+		}
+	}
+	
+	private drawScore(
+		ctx: CanvasRenderingContext2D,
+	){
+		ctx.fillStyle = this.theme.fontColor;
+		ctx.font = `${4 * this.screen.delta.y}px Arial`;
+		if (this.state.player_bottom.active){
+			ctx.fillText(`${this.state.player_bottom.score}`, screen.width * 0.48, screen.height * 0.59);
+		}
+		if (this.state.player_top.active){
+			ctx.fillText(`${this.state.player_top.score}`, screen.width * 0.48, screen.height * 0.459);
+		}
+		if (this.state.player_left.active){
+			ctx.fillText(`${this.state.player_left.score}`, screen.width * 0.42, screen.height * 0.525);
+		}
+		if (this.state.player_right.active){
+			ctx.fillText(`${this.state.player_right.score}`, screen.width * 0.54, screen.height * 0.525);
+		}
+	}
+	
+	private drawRectTexture(
+		ctx: CanvasRenderingContext2D,
+		x: number,
+		y: number,
+		w: number,
+		l: number,
+		text: gameTexture,
+	){
+		ctx.beginPath();
+		if (text.type === 'color'){
+			ctx.fillStyle = text.color;
+			ctx.rect(x, y, w, l);
+		}
+		else if (text.type === 'image'){
+			if (!text.image){
+				return ;
+			}
+			ctx.drawImage(text.image, x, y, w, l);
+		}
+		ctx.fill();
+	}
+	
+	private drawGameElement(
+		ctx: CanvasRenderingContext2D,
+		text: gameTexture,
+		rec: Rectangle,
+	){
+		this.drawRectTexture(
+			ctx,
+			this.screen.width / 2 + (rec.center.x - rec.width_d_2) * this.screen.delta.x,
+			this.screen.height / 2 + (rec.center.y - rec.height_d_2) * this.screen.delta.y,
+			rec.width_d_2 * 2 * this.screen.delta.x,
+			rec.height_d_2 * 2 * this.screen.delta.x,
+			text,
+		);
+	}
 }

@@ -8,10 +8,14 @@ export default defineNuxtConfig({
 		strict: true
 	},
 	imports: {
-		dirs: ['stores/**'],
+		dirs: [
+			'stores/**',
+			'../libs/types/**',
+			'../libs/game/**',
+		],
 	},
 	devServer: {
-		port: 3000,
+		port: 4000,
 	},
 	devtools: { enabled: false },
 	modules: [
