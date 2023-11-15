@@ -31,9 +31,9 @@ function updateRandomizer() {
 }
 
 const difficulties = [
-	{ name:'easy', icon: 'material-symbols:sentiment-neutral' },
-	{ name:'hard', icon: 'material-symbols:sentiment-dissatisfied' },
-	{ name:'crazy', icon: 'material-symbols:sentiment-extremely-dissatisfied' },
+	{ name: BotDifficulty2.NORMAL, icon: 'material-symbols:sentiment-neutral' },
+	{ name: BotDifficulty2.HARD, icon: 'material-symbols:sentiment-dissatisfied' },
+	{ name: BotDifficulty2.CRAZY, icon: 'material-symbols:sentiment-extremely-dissatisfied' },
 ]
 
 </script>
@@ -68,7 +68,7 @@ const difficulties = [
 				<Icon v-else name="material-symbols:check-box-outline-blank" class="w-full h-full"/>
 			</GenericButton>
 			
-			<!-- <div class="flex items-center h-full col-span-2">Bot Difficulty</div>
+			<div class="flex items-center h-full col-span-2">Bot Difficulty</div>
 			<template v-for="difficulty in difficulties">
 				<GenericButton :buttonStyle="1" class="w-full h-12"
 					:disabled="!isHost || gameSettings.numPlayer !== 1"
@@ -77,7 +77,7 @@ const difficulties = [
 				>
 					<Icon :name="difficulty.icon" class="w-full h-full"/>
 				</GenericButton>
-			</template> -->
+			</template>
 		</div>
 		
 		<div class="p-5">

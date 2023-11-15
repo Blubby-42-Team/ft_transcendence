@@ -58,7 +58,7 @@ onBeforeRouteLeave(() => {
 	document.removeEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.removeEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
 
-	stop();
+	stopGameEngine();
 	gameGraphics.stop();
 })
 

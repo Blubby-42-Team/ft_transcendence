@@ -163,11 +163,11 @@ function updatePoints(gamestate: gameStateType, doesIntersect: Direction){
 	else if (gamestate.player_left.active && gamestate.player_right.active){
 		if (doesIntersect === Direction.LEFT){
 			gamestate.player_right.score += 1;
-			gamestate.status = gameStatusType.ON_HOLD;
+			resetRound(gamestate);
 		}
 		else if (doesIntersect === Direction.RIGHT){
 			gamestate.player_left.score += 1;
-			gamestate.status = gameStatusType.ON_HOLD;
+			resetRound(gamestate);
 		}
 	}
 }
@@ -270,18 +270,16 @@ function movePlayer(player: Rectangle & gamePlayer2, axis: Axis, delta: number, 
 	}
 }
 
-const aispeed = 0.6;
-
 function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<gameSettingsType>){
 	if (gamestate.player_left.active && !gamestate.player_left.eleminated){
 		if (gamestate.player_left.isBot){
 			const newPosition = gamestate.ball.center.y - gamestate.player_left.center.y + gamestate.ball.height_d_2 * 2;
-			if (Math.abs(newPosition) > aispeed){
+			if (Math.abs(newPosition) > gamestate.aispeed){
 				if (newPosition < 0){
-					movePlayer(gamestate.player_left, Axis.Y, -aispeed, Direction.BOTTOM, gamestate);
+					movePlayer(gamestate.player_left, Axis.Y, -gamestate.aispeed, Direction.BOTTOM, gamestate);
 				}
 				else {
-					movePlayer(gamestate.player_left, Axis.Y, aispeed, Direction.TOP, gamestate);
+					movePlayer(gamestate.player_left, Axis.Y, gamestate.aispeed, Direction.TOP, gamestate);
 				}
 			}
 		}
@@ -297,12 +295,12 @@ function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<game
 	if (gamestate.player_right.active && !gamestate.player_right.eleminated){
 		if (gamestate.player_right.isBot){
 			const newPosition = gamestate.ball.center.y - gamestate.player_right.center.y - gamestate.ball.height_d_2 * 2;
-			if (Math.abs(newPosition) > aispeed){
+			if (Math.abs(newPosition) > gamestate.aispeed){
 				if (newPosition < 0){
-					movePlayer(gamestate.player_right, Axis.Y, -aispeed, Direction.BOTTOM, gamestate);
+					movePlayer(gamestate.player_right, Axis.Y, -gamestate.aispeed, Direction.BOTTOM, gamestate);
 				}
 				else {
-					movePlayer(gamestate.player_right, Axis.Y, aispeed, Direction.TOP, gamestate);
+					movePlayer(gamestate.player_right, Axis.Y, gamestate.aispeed, Direction.TOP, gamestate);
 				}
 			}
 		}
@@ -318,12 +316,12 @@ function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<game
 	if (gamestate.player_top.active && !gamestate.player_top.eleminated){
 		if (gamestate.player_top.isBot){
 			const newPosition = gamestate.ball.center.x - gamestate.player_top.center.x + gamestate.ball.width_d_2 * 2;
-			if (Math.abs(newPosition) > aispeed){
+			if (Math.abs(newPosition) > gamestate.aispeed){
 				if (newPosition < 0){
-					movePlayer(gamestate.player_top, Axis.X, -aispeed, Direction.LEFT, gamestate);
+					movePlayer(gamestate.player_top, Axis.X, -gamestate.aispeed, Direction.LEFT, gamestate);
 				}
 				else {
-					movePlayer(gamestate.player_top, Axis.X, aispeed, Direction.RIGHT, gamestate);
+					movePlayer(gamestate.player_top, Axis.X, gamestate.aispeed, Direction.RIGHT, gamestate);
 				}
 			}
 		}
@@ -339,12 +337,12 @@ function moveAllPlayers(gamestate: gameStateType, gameSettings: ComputedRef<game
 	if (gamestate.player_bottom.active && !gamestate.player_bottom.eleminated){
 		if (gamestate.player_bottom.isBot){
 			const newPosition = gamestate.ball.center.x - gamestate.player_bottom.center.x - gamestate.ball.width_d_2 * 2;
-			if (Math.abs(newPosition) > aispeed){
+			if (Math.abs(newPosition) > gamestate.aispeed){
 				if (newPosition < 0){
-					movePlayer(gamestate.player_bottom, Axis.X, -aispeed, Direction.LEFT, gamestate);
+					movePlayer(gamestate.player_bottom, Axis.X, -gamestate.aispeed, Direction.LEFT, gamestate);
 				}
 				else {
-					movePlayer(gamestate.player_bottom, Axis.X, aispeed, Direction.RIGHT, gamestate);
+					movePlayer(gamestate.player_bottom, Axis.X, gamestate.aispeed, Direction.RIGHT, gamestate);
 				}
 			}
 		}
@@ -391,9 +389,7 @@ async function start(
 					}
 					else if (new Date() > datewip){
 						needsSleep = true;
-						gamestate = getNewStateWithGameSettings();
-						editLocalState(gamestate);
-						gamestate.status = gameStatusType.ON_HOLD;
+						restart();
 					}
 					break ;
 			}
@@ -407,6 +403,13 @@ async function start(
 		console.log('Game Engine Stop');
 	}
 
+	function restart() {
+		console.log('restart')
+		gamestate = getNewStateWithGameSettings();
+		editLocalState(gamestate);
+		gamestate.status = gameStatusType.ON_HOLD;
+	}
+
 	function stop() {
 		continueLoop = false;
 	}
@@ -416,7 +419,7 @@ async function start(
 	}
 	
 	loop();
-	return { stop, changeGameStatus };
+	return { stop, restart, changeGameStatus };
 }
 
 export default {

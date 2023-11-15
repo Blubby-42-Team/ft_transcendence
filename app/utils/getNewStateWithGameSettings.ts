@@ -1,7 +1,8 @@
-import { Direction } from "#imports";
+import { BotDifficulty2, Direction } from "#imports";
 
 const gameState4PlayersDefault: gameStateType = {
 	status:					gameStatusType.ON_HOLD,
+	aispeed:				0.1,
 	gameArea: 				{	center: {	x: 0,	y: 0,		},	height_d_2: 30,		width_d_2: 30,	},
 	ball: 					{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
 	player_top: 			{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -22,6 +23,7 @@ const gameState4PlayersDefault: gameStateType = {
 
 const gameState2PlayersDefault: gameStateType = {
 	status:				gameStatusType.ON_HOLD,
+	aispeed:			0.1,
 	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 25,		width_d_2: 35,	},
 	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
 	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -37,11 +39,19 @@ const gameState2PlayersDefault: gameStateType = {
 
 export function getNewAngleForBall(dir: Direction = Direction.NONE) {
 	switch (dir) {
-		case Direction.TOP:		return (1/2 + 1/4) * Math.PI;
-		case Direction.BOTTOM:	return (3/2 + 1/4) * Math.PI;
-		case Direction.LEFT:	return (  1 + 1/4) * Math.PI;
+		case Direction.TOP:		return (1/2 + 1/16) * Math.PI;
+		case Direction.BOTTOM:	return (3/2 + 1/16) * Math.PI;
+		case Direction.LEFT:	return (  1 + 1/16) * Math.PI;
 		case Direction.NONE:
-		case Direction.RIGHT:	return (  0 + 1/4) * Math.PI;
+		case Direction.RIGHT:	return (  0 + 1/16) * Math.PI;
+	}
+}
+
+export function getSpeedForDifficulty(difficulty: BotDifficulty2) {
+	switch (difficulty) {
+		case BotDifficulty2.NORMAL:		return 0.2;
+		case BotDifficulty2.HARD:		return 0.4;
+		case BotDifficulty2.CRAZY:		return 0.6;
 	}
 }
 
@@ -71,6 +81,7 @@ export function getNewStateWithGameSettings(): gameStateType {
 	base.ball.width_d_2 = gameSettings.value.ballSize;
 
 	base.ball.direction = getNewAngleForBall();
+	base.aispeed = getSpeedForDifficulty(gameSettings.value.mode);
 
 	return base;
 }

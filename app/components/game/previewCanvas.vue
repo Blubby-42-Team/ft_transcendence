@@ -2,7 +2,7 @@
 import { gameStatusType } from '#imports';
 import { getNewStateWithGameSettings } from '~/utils/getNewStateWithGameSettings';
 
-const { theme } = useGame2Store()
+const { theme, gameSettings } = useGame2Store()
 
 const screenSize = ref({
 	width: 0,
@@ -13,8 +13,9 @@ let gameState: Ref<gameStateType> = ref(getNewStateWithGameSettings());
 let stopGameEngine: () => void = () => {};
 
 onMounted(async () => {
-	const { stop, changeGameStatus } = await gameEngine.start((newState) => {
+	const { stop, restart, changeGameStatus } = await gameEngine.start((newState) => {
 			gameState.value = newState;
+			console.log(newState.status)
 		},
 		(state) => {
 			if (state.player_bottom.active){
@@ -33,18 +34,19 @@ onMounted(async () => {
 	);
 	stopGameEngine = stop;
 
+	watch(gameSettings.value, restart);
+
 	gameGraphics.start('previewCanvasDiv', theme.value, gameState, (ctx, screen) => {
 		screenSize.value.width = screen.width;
 		screenSize.value.height = screen.height;
 
 		switch (gameState.value.status) {
-			case gameStatusType.ON_HOLD:
 			case gameStatusType.GAMEOVER:
+				restart();
+			case gameStatusType.ON_HOLD:
 				changeGameStatus(gameStatusType.STARTED);
-				break ;
 			case gameStatusType.STARTED:
 				gameGraphics.drawGame(ctx, gameState.value, screen, theme.value);
-				break ;
 		}
  	});
 })
