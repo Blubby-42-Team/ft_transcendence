@@ -6,10 +6,12 @@ import { PassportModule } from '@nestjs/passport';
 import { FortyTwoStrategy } from './auth42/auth42.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserModule } from 'src/model/user/user.module';
 
 @Module({
 	imports: [
-	PassportModule.register({ defaultStrategy: '42' }),
+		UserModule,
+		PassportModule.register({ defaultStrategy: '42' }),
 		JwtModule.registerAsync({
 			inject: [ConfigService],
 			useFactory: (ConfigService: ConfigService) => {

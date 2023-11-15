@@ -1,6 +1,7 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, Exclusion, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty } from 'class-validator';
+import { Column, Entity, Exclusion, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { IsNotEmpty, IsNumber, IsEnum} from 'class-validator';
+import { UserRoleType } from "src/auth/auth.class";
 
 // export class
 
@@ -11,19 +12,31 @@ export class User {
 		Object.assign(this, partial);
 	}
 
-	@PrimaryGeneratedColumn()
+	@PrimaryColumn()
+	@IsNotEmpty()
+	@IsNumber()
 	id: number;
+
+	@Column()
+	@IsNotEmpty()
+	login: string;
 
 	@Column()
 	@IsNotEmpty()
 	displayName: string;
 
-	@Column()
-	@Exclude({ toPlainOnly: true})
+	@Column({type: 'enum', enum: UserRoleType, default: UserRoleType.User})
 	@IsNotEmpty()
-	passwordHash: string;
+	@IsEnum(UserRoleType)
+	role: UserRoleType;
 
 	@Column()
 	@IsNotEmpty()
-	role: number;
+	@Exclude({ toPlainOnly: true})
+	accessToken: string;
+
+	@Column()
+	@IsNotEmpty()
+	@Exclude({ toPlainOnly: true})
+	refreshToken: string;
 }
