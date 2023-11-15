@@ -31,7 +31,7 @@ export class GameEngine extends Controller {
 					break ;
 				case gameStatusType.STARTED: 
 					this.moveAllPlayers(this.gamestate);
-					this.moveBall(this.gamestate);
+					this.moveBall();
 					break ;
 				case gameStatusType.GAMEOVER:
 					if (this.needsSleep){
@@ -113,7 +113,7 @@ export class GameEngine extends Controller {
 	private calcutateNewBallDirectionAfterHittingPlayer(
 		ball: Rectangle & { speed: number, direction: number },
 		player: Rectangle,
-		direction: Direction.LEFT | Direction.RIGHT | Direction.TOP | Direction.BOTTOM,
+		direction: Exclude<Direction, Direction.NONE>,
 	){
 		ball.direction = (() => {
 			switch (direction) {
@@ -126,15 +126,14 @@ export class GameEngine extends Controller {
 	}
 
 	private calcutateNewBallDirectionAfterHittingObstacle(
-		ball: Rectangle & { speed: number, direction: number },
-		direction: Direction.LEFT | Direction.RIGHT | Direction.TOP | Direction.BOTTOM,
+		direction: Exclude<Direction, Direction.NONE>,
 	){
-		ball.direction = (() => {
+		this.gamestate.ball.direction = (() => {
 			switch (direction) {
-				case Direction.RIGHT:	return Math.PI - ball.direction;
-				case Direction.LEFT:	return Math.PI - ball.direction;
-				case Direction.TOP:		return 2 * Math.PI - ball.direction;
-				case Direction.BOTTOM:	return 2 * Math.PI - ball.direction;
+				case Direction.RIGHT:	return Math.PI - this.gamestate.ball.direction;
+				case Direction.LEFT:	return Math.PI - this.gamestate.ball.direction;
+				case Direction.TOP:		return 2 * Math.PI - this.gamestate.ball.direction;
+				case Direction.BOTTOM:	return 2 * Math.PI - this.gamestate.ball.direction;
 			}
 		})();
 	}
@@ -151,14 +150,14 @@ export class GameEngine extends Controller {
 		}
 		if (gamestate.player_right.active){
 			gamestate.player_right.eleminated = false;
-			if (gamestate.obstacles.hasOwnProperty('player4RightElim')){
+			if (gamestate.obstacles?.player4RightElim){
 				gamestate.obstacles.player4RightElim.hidden = true;
 			}
 		}
 		if (gamestate.player_left.active){
 			gamestate.player_left.eleminated = false;
-			if (gamestate.obstacles.hasOwnProperty('player4LeftElim')){
-				gamestate.obstacles.player4RightElim.hidden = true;
+			if (gamestate.obstacles?.player4LeftElim){
+				gamestate.obstacles.player4LeftElim.hidden = true;
 			}
 		}
 	}
@@ -205,80 +204,53 @@ export class GameEngine extends Controller {
 		}
 	}
 
-	private moveBall(gamestate: gameStateType){
+	private checkBallHitPlayer(
+		player: (Rectangle & gamePlayer) | { active: false; },
+		direction: Exclude<Direction, Direction.NONE>,
+		axis: Axis,
+	){
+		if (player.active){
+			const doesIntersect = this.getIntersection(this.gamestate.ball, player, axis);
+			if (doesIntersect === direction){
+				this.calcutateNewBallDirectionAfterHittingPlayer(this.gamestate.ball, player, doesIntersect);
+			}
+		}
+	}
+
+	private moveBall(){
 		{
-			const gameArea: Rectangle = {
-				center: {
-					x: gamestate.gameArea.center.x,
-					y: gamestate.gameArea.center.y
-				},
-				width_d_2: gamestate.gameArea.width_d_2 + gamestate.ball.width_d_2 * 2,
-				height_d_2: gamestate.gameArea.height_d_2 + gamestate.ball.height_d_2 * 2
-			};
-			const doesIntersect = this.getIntersection(gamestate.ball, gameArea, Axis.Y);
+			const gameArea = JSON.parse(JSON.stringify(this.gamestate.gameArea));
+			gameArea.width_d_2 += this.gamestate.ball.width_d_2 * 2;
+			gameArea.height_d_2 += this.gamestate.ball.height_d_2 * 2;
+
+			const doesIntersect = this.getIntersection(this.gamestate.ball, gameArea, Axis.Y);
 			if (doesIntersect !== Direction.NONE){
-				gamestate.ball.center.x = 0;
-				gamestate.ball.center.y = 0;
-				gamestate.ball.speed = 0.5;
-				this.updatePoints(gamestate, doesIntersect);
+				this.gamestate.ball.center.x = 0;
+				this.gamestate.ball.center.y = 0;
+				this.gamestate.ball.speed = 0.5;
+				this.updatePoints(this.gamestate, doesIntersect);
 				return ;
 			}
 		}
 	
-		gamestate.ball.speed += 0.01;
+		this.gamestate.ball.speed += 0.01;
 	
-		for (const obstacleKey in gamestate.obstacles){
-			if (gamestate.obstacles[obstacleKey].hidden){
+		for (const obstacleKey in this.gamestate.obstacles){
+			if (this.gamestate.obstacles[obstacleKey].hidden){
 				continue ;
 			}
-			const doesIntersect = this.getIntersection(gamestate.ball, gamestate.obstacles[obstacleKey], Axis.X);
+			const doesIntersect = this.getIntersection(this.gamestate.ball, this.gamestate.obstacles[obstacleKey], Axis.X);
 			if (doesIntersect !== Direction.NONE){
-				this.calcutateNewBallDirectionAfterHittingObstacle(gamestate.ball, doesIntersect);
-				gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
-				gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
-				return ;
+				this.calcutateNewBallDirectionAfterHittingObstacle(doesIntersect);
 			}
 		}
+		this.checkBallHitPlayer(this.gamestate.player_bottom, Direction.TOP, Axis.X);
+		this.checkBallHitPlayer(this.gamestate.player_top, Direction.BOTTOM, Axis.X);
+		this.checkBallHitPlayer(this.gamestate.player_left, Direction.LEFT, Axis.Y);
+		this.checkBallHitPlayer(this.gamestate.player_right, Direction.RIGHT, Axis.Y);
 		
-		if (gamestate.player_bottom.active){
-			const doesIntersect = this.getIntersection(gamestate.ball, gamestate.player_bottom, Axis.X);
-			if (doesIntersect === Direction.TOP){
-				this.calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_bottom, doesIntersect);
-				gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
-				gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
-				return ;
-			}
-		}
-		if (gamestate.player_top.active){
-			const doesIntersect = this.getIntersection(gamestate.ball, gamestate.player_top, Axis.X);
-			if (doesIntersect === Direction.BOTTOM){
-				this.calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_top, doesIntersect);
-				gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
-				gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
-				return ;
-			}
-		}
-		if (gamestate.player_left.active){
-			const doesIntersect = this.getIntersection(gamestate.ball, gamestate.player_left, Axis.Y);
-			if (doesIntersect === Direction.LEFT){
-				this.calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_left, doesIntersect);
-				gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
-				gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
-				return ;
-			}
-		}
-		if (gamestate.player_right.active){
-			const doesIntersect = this.getIntersection(gamestate.ball, gamestate.player_right, Axis.Y);
-			if (doesIntersect === Direction.RIGHT){
-				this.calcutateNewBallDirectionAfterHittingPlayer(gamestate.ball, gamestate.player_right, doesIntersect);
-				gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
-				gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
-				return ;
-			}
-		}
-		
-		gamestate.ball.center.x += Math.cos(gamestate.ball.direction) * gamestate.ball.speed;
-		gamestate.ball.center.y += Math.sin(gamestate.ball.direction) * gamestate.ball.speed;
+		this.gamestate.ball.center.x += Math.cos(this.gamestate.ball.direction) * this.gamestate.ball.speed;
+		this.gamestate.ball.center.y += Math.sin(this.gamestate.ball.direction) * this.gamestate.ball.speed;
 	}
 
 	private movePlayer(player: Rectangle & gamePlayer, axis: Axis, delta: number, blockIfDirectionIs: Direction, gamestate: gameStateType){
