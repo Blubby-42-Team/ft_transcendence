@@ -5,6 +5,9 @@ import { getNewStateWithGameSettings } from './getNewStateWithGameSettings';
 const updatePerSeconds = 60
 const millisecondsPerUpdate = 1000/updatePerSeconds
 
+const speedAcceleration = 0.0005;
+const initialBallSpeed = 0.25;
+
 export class GameEngine extends Controller {
 	private gamestate: gameStateType;
 	private continueLoop = false;
@@ -55,7 +58,7 @@ export class GameEngine extends Controller {
 	}
 
 	// Checks if the moving Rectangle does not intersect with the static Rectangle on its way to newPos.
-	private intersects(moving_rec: Rectangle, static_rec: Rectangle, new_pos_for_moving_rec: Coordinates): Direction {
+	private intersects(moving_rec: Rectangle, static_rec: Rectangle, new_pos_for_moving_rec: Coordinates, inside: boolean = false): Direction {
 		const width_large_rec = static_rec.width_d_2 + moving_rec.width_d_2;
 		const height_large_rec = static_rec.height_d_2 + moving_rec.height_d_2;
 
@@ -64,7 +67,7 @@ export class GameEngine extends Controller {
 		const bottomLeft    = { x: static_rec.center.x - width_large_rec, y: static_rec.center.y - height_large_rec };
 		const bottomRight   = { x: static_rec.center.x + width_large_rec, y: static_rec.center.y - height_large_rec };
 	
-		if (moving_rec.center.x < new_pos_for_moving_rec.x){
+		if ((!inside && moving_rec.center.x < new_pos_for_moving_rec.x) || (inside && moving_rec.center.x > new_pos_for_moving_rec.x)){
 			if (this.doSegmentsIntersect(moving_rec.center, new_pos_for_moving_rec, bottomLeft, topLeft)){
 				return Direction.LEFT;
 			}
@@ -75,7 +78,7 @@ export class GameEngine extends Controller {
 			}
 		
 		}
-		if (moving_rec.center.y > new_pos_for_moving_rec.y){
+		if ((!inside && moving_rec.center.y > new_pos_for_moving_rec.y) || (inside && moving_rec.center.y < new_pos_for_moving_rec.y)){
 			if (this.doSegmentsIntersect(moving_rec.center, new_pos_for_moving_rec, topLeft, topRight)){
 				return Direction.TOP;
 			}
@@ -87,8 +90,7 @@ export class GameEngine extends Controller {
 		}
 		return Direction.NONE;
 	}
-	
-	
+
 	// Helper function to check if two line segments intersect
 	private doSegmentsIntersect(a: Coordinates, b: Coordinates, c: Coordinates, d: Coordinates): boolean {
 		const ccw = (p1: Coordinates, p2: Coordinates, p3: Coordinates) =>
@@ -106,10 +108,10 @@ export class GameEngine extends Controller {
 	){
 		ball.direction = (() => {
 			switch (direction) {
-				case Direction.RIGHT:	return Math.PI * (2 / 2 - (ball.center.y - player.center.y)/(4 * (ball.height_d_2 + player.height_d_2)));
-				case Direction.LEFT:	return Math.PI * (0 / 2 + (ball.center.y - player.center.y)/(4 * (ball.height_d_2 + player.height_d_2)));
-				case Direction.TOP:		return Math.PI * (3 / 2 + (ball.center.x - player.center.x)/(4 * (ball.width_d_2 + player.width_d_2)));
-				case Direction.BOTTOM:	return Math.PI * (1 / 2 - (ball.center.x - player.center.x)/(4 * (ball.width_d_2 + player.width_d_2)));
+				case Direction.RIGHT:	return Math.PI * (0 / 2 + (ball.center.y - player.center.y)/(4 * (ball.height_d_2 + player.height_d_2)));
+				case Direction.LEFT:	return Math.PI * (2 / 2 - (ball.center.y - player.center.y)/(4 * (ball.height_d_2 + player.height_d_2)));
+				case Direction.TOP:		return Math.PI * (1 / 2 - (ball.center.x - player.center.x)/(4 * (ball.width_d_2 + player.width_d_2)));
+				case Direction.BOTTOM:	return Math.PI * (3 / 2 + (ball.center.x - player.center.x)/(4 * (ball.width_d_2 + player.width_d_2)));
 			};
 		})();
 	}
@@ -156,10 +158,10 @@ export class GameEngine extends Controller {
 	private updatePoints(doesIntersect: Direction){
 		if (this.gamestate.player_left.active && this.gamestate.player_right.active && this.gamestate.player_top.active && this.gamestate.player_bottom.active){
 			switch (doesIntersect) {
-				case Direction.BOTTOM:	this.gamestate.player_bottom.eleminated	= true; this.gamestate.obstacles.player4BottomElim.hidden = false; break;
-				case Direction.TOP:		this.gamestate.player_top.eleminated	= true; this.gamestate.obstacles.player4TopElim.hidden = false; break;
-				case Direction.LEFT:	this.gamestate.player_right.eleminated	= true; this.gamestate.obstacles.player4RightElim.hidden = false; break;
-				case Direction.RIGHT:	this.gamestate.player_left.eleminated	= true; this.gamestate.obstacles.player4LeftElim.hidden = false; break;
+				case Direction.TOP:		this.gamestate.player_bottom.eleminated	= true; this.gamestate.obstacles.player4BottomElim.hidden = false; break;
+				case Direction.BOTTOM:	this.gamestate.player_top.eleminated	= true; this.gamestate.obstacles.player4TopElim.hidden = false; break;
+				case Direction.RIGHT:	this.gamestate.player_right.eleminated	= true; this.gamestate.obstacles.player4RightElim.hidden = false; break;
+				case Direction.LEFT:	this.gamestate.player_left.eleminated	= true; this.gamestate.obstacles.player4LeftElim.hidden = false; break;
 			}
 			if (this.gamestate.player_bottom.eleminated && this.gamestate.player_top.eleminated && this.gamestate.player_left.eleminated){
 				this.gamestate.player_right.score += 1;
@@ -195,19 +197,6 @@ export class GameEngine extends Controller {
 		}
 	}
 
-	private checkBallHitPlayer(
-		player: (Rectangle & gamePlayer) | { active: false; },
-		direction: Exclude<Direction, Direction.NONE>,
-		newPos: Coordinates,
-	){
-		if (player.active && !player.eleminated){
-			const doesIntersect = this.intersects(this.gamestate.ball, player, newPos);
-			if (doesIntersect === direction){
-				this.calcutateNewBallDirectionAfterHittingPlayer(this.gamestate.ball, player, doesIntersect);
-			}
-		}
-	}
-
 	private moveBall(){
 		const newPos: Coordinates = {
 			x: this.gamestate.ball.center.x + Math.cos(this.gamestate.ball.direction) * this.gamestate.ball.speed,
@@ -219,17 +208,17 @@ export class GameEngine extends Controller {
 			gameArea.width_d_2 += this.gamestate.ball.width_d_2 * 2;
 			gameArea.height_d_2 += this.gamestate.ball.height_d_2 * 2;
 
-			const doesIntersect = this.intersects(this.gamestate.ball, gameArea, newPos);
+			const doesIntersect = this.intersects(this.gamestate.ball, gameArea, newPos, true);
 			if (doesIntersect !== Direction.NONE){
 				this.gamestate.ball.center.x = 0;
 				this.gamestate.ball.center.y = 0;
-				this.gamestate.ball.speed = 0.5;
+				this.gamestate.ball.speed = initialBallSpeed;
 				this.updatePoints(doesIntersect);
 				return ;
 			}
 		}
 	
-		this.gamestate.ball.speed += 0.01;
+		this.gamestate.ball.speed += speedAcceleration;
 	
 		for (const obstacleKey in this.gamestate.obstacles){
 			if (this.gamestate.obstacles[obstacleKey].hidden){
@@ -240,10 +229,21 @@ export class GameEngine extends Controller {
 				this.calcutateNewBallDirectionAfterHittingObstacle(doesIntersect);
 			}
 		}
-		this.checkBallHitPlayer(this.gamestate.player_bottom, Direction.TOP, newPos);
-		this.checkBallHitPlayer(this.gamestate.player_top, Direction.BOTTOM, newPos);
-		this.checkBallHitPlayer(this.gamestate.player_left, Direction.LEFT, newPos);
-		this.checkBallHitPlayer(this.gamestate.player_right, Direction.RIGHT, newPos);
+		const players = [
+			this.gamestate.player_bottom,
+			this.gamestate.player_top,
+			this.gamestate.player_right,
+			this.gamestate.player_left,
+		]
+		for (const player of players){
+			if (player.active && !player.eleminated){
+				const doesIntersect = this.intersects(this.gamestate.ball, player, newPos);
+				if (doesIntersect !== Direction.NONE){
+					this.calcutateNewBallDirectionAfterHittingPlayer(this.gamestate.ball, player, doesIntersect);
+					return ;
+				}
+			}
+		}
 		
 		this.gamestate.ball.center.x += Math.cos(this.gamestate.ball.direction) * this.gamestate.ball.speed;
 		this.gamestate.ball.center.y += Math.sin(this.gamestate.ball.direction) * this.gamestate.ball.speed;

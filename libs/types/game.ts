@@ -84,7 +84,7 @@ export type gameStateType = {
 	aispeed:			number,
 	playerspeed:		number,
 	gameArea:			Rectangle,
-	ball:				Rectangle & { speed: number, direction: number },
+	ball:				Rectangle & { speed: number, acceleration: number, direction: number },
 	player_top:			Rectangle & gamePlayer | { active: false },
 	player_bottom:		Rectangle & gamePlayer | { active: false },
 	player_left:		Rectangle & gamePlayer | { active: false },
@@ -93,10 +93,12 @@ export type gameStateType = {
 }
 
 export type gameSettingsType = {
-	maxPoint:	number,
-	numPlayer:	number,
-	ballSize:	number,
-	padSize:	number,
-	mode:		BotDifficulty,
-	randomizer:	boolean,
+	maxPoint:			number,
+	numPlayer:			number,
+	ballSize:			number,
+	padSize:			number,
+	mode:				BotDifficulty,
+	randomizer:			boolean,
+	speedAcceleration:	number,
+	initialBallSpeed:	number,
 }
