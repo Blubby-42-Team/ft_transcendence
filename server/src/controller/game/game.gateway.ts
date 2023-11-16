@@ -6,7 +6,7 @@ import { validate } from 'class-validator';
 import { BadRequestException, Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsBadRequestExceptionFilter } from './game.exception.filter';
 import { plainToClass } from 'class-transformer';
-import { GameService } from './game.service';
+import { GameService } from '../../service/game/game.service';
 
 @WebSocketGateway({
 	namespace: 'game',

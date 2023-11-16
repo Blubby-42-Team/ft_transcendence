@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Auth42Controller } from './auth42/auth42.controller';
 import { Auth42Service } from './auth42/auth42.service';
-import { PassportModule } from '@nestjs/passport';
+import { AuthGuard, PassportModule } from '@nestjs/passport';
 import { FortyTwoStrategy } from './auth42/auth42.strategy';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserModule } from 'src/model/user/user.module';
+import { ModelUserModule } from 'src/model/user/user.module';
 
 @Module({
 	imports: [
-		UserModule,
+		ModelUserModule,
 		PassportModule.register({ defaultStrategy: '42' }),
 		JwtModule.registerAsync({
 			inject: [ConfigService],
@@ -23,7 +23,8 @@ import { UserModule } from 'src/model/user/user.module';
 			},
 		}),
 	],	
-	providers: [AuthService, Auth42Service, FortyTwoStrategy],
-	controllers: [Auth42Controller]
+	providers: [AuthService, Auth42Service, FortyTwoStrategy, JwtService],
+	controllers: [Auth42Controller],
+	exports: [AuthService, Auth42Service, FortyTwoStrategy, JwtService],
 })
 export class AuthModule {}

@@ -1,11 +1,14 @@
+/*
+https://docs.nestjs.com/modules
+*/
+
 import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user.model';
+import { ModelUserService } from './user.service';
+import { PostgresUserModule } from 'src/service/postgres/user/user.module';
 
 @Module({
-	providers: [UserService],
-	imports: [TypeOrmModule.forFeature([User])],
-	exports: [UserService],
+	imports: [PostgresUserModule],
+	providers: [ModelUserService],
+	exports: [ModelUserService]
 })
-export class UserModule {}
+export class ModelUserModule {}

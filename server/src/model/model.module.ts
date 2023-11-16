@@ -1,7 +1,13 @@
+/*
+https://docs.nestjs.com/modules
+*/
+
 import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
+import { ModelUserModule } from './user/user.module';
 
 @Module({
-  imports: [UserModule]
+	imports: [ModelUserModule],
+	controllers: [],
+	providers: [],
 })
-export class ModelModule {}
+export class ModelModule { }

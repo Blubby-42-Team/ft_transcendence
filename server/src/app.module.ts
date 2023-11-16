@@ -1,25 +1,16 @@
-import { PostgresModule } from './service/postgres/postgres.module'
-import { AdminModule } from './admin/admin.module';
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { GameService } from './game/game.service';
-import { GameController } from './game/game.controller';
-import { GameModule } from './game/game.module';
-import { AdminGateway } from './admin/admin.gateway';
-import { ServiceModule } from './service/service.module';
+import { ControllerModule } from './controller/controller.module';
 import { ModelModule } from './model/model.module';
+import { Module } from '@nestjs/common';
+import { ServiceModule } from './service/service.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
 @Module({
 	imports: [
-		PostgresModule,
-		AdminModule,
-		GameModule,
-		ServiceModule,
+		ControllerModule,
 		ModelModule,
+		ServiceModule,
 		AuthModule,
 		ConfigModule.forRoot({
 			envFilePath: '.env',
@@ -57,15 +48,6 @@ import * as Joi from 'joi';
 				abortEarly: true,
 			},
 		}),
-	],
-	controllers: [
-		AppController,
-		GameController,
-	],
-	providers: [
-		GameService,
-		AppService,
-		AdminGateway
 	],
 })
 export class AppModule { }
