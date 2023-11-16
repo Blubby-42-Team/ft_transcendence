@@ -3,8 +3,6 @@ import { Column, Entity, Exclusion, PrimaryColumn, PrimaryGeneratedColumn } from
 import { IsNotEmpty, IsNumber, IsEnum} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 
-// export class
-
 @Entity()
 export class User {
 

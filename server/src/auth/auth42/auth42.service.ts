@@ -1,23 +1,20 @@
 import { Injectable, Controller } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { classToPlain, instanceToPlain } from 'class-transformer';
-import { User } from 'src/model/user/user.model';
-import { UserService } from '../../model/user/user.service';
+import { User } from 'src/model/user/user.class';
+import { ModelUserModule } from '../../model/user/user.module';
+import { ModelUserService } from '../../model/user/user.service';
 
 @Injectable()
 export class Auth42Service {
 
 	constructor(
 		private jwtService: JwtService,
-		private userService: UserService,
+		private modelUserService: ModelUserService
 	) {}
 
-	async singIn (user: User) : Promise<string> {
-		//TODO get the user data from the stragety and store in db
+	async storeUser(user: User) {
+		this.modelUserService.addUser(user);
+	}
 
-		await this.userService.createUser(user);
-		
-		const plainUser = instanceToPlain(user);
-		return await this.jwtService.signAsync(plainUser);
-	};
 }

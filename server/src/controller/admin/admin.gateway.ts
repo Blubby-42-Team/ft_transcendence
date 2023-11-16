@@ -24,9 +24,4 @@ export class AdminGateway {
 		});
 		console.log(`Listen WS: $url$port `)
 	}
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-	log("testsafd")
-    return 'Hello world!';
-  }
 }

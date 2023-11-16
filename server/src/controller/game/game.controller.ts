@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
-import { GameService } from './game.service';
-import { GameGateway } from './game.gateway';
+import { GameService } from '../../service/game/game.service';
 import { GameOptDto, GameRoomIdDto } from '@shared/dto/game.dto';
 import { get } from 'http';
+import { GameGateway } from './game.gateway';
 
 @Controller('game')
 export class GameController {
