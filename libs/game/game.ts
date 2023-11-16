@@ -117,11 +117,11 @@ export class GameEngine extends Controller {
 	){
 		ball.direction = (() => {
 			switch (direction) {
-				case Direction.RIGHT:	return Math.PI - (ball.center.y - player.center.y)/(ball.height_d_2 + player.height_d_2) * Math.PI/4;
-				case Direction.LEFT:	return 0 + (ball.center.y - player.center.y)/(ball.height_d_2 + player.height_d_2) * Math.PI/4;
-				case Direction.TOP:		return Math.PI * 3/2 + (ball.center.x - player.center.x)/(ball.width_d_2 + player.width_d_2) * Math.PI/4;
-				case Direction.BOTTOM:	return Math.PI / 2 - (ball.center.x - player.center.x)/(ball.width_d_2 + player.width_d_2) * Math.PI/4;;
-			}
+				case Direction.RIGHT:	return Math.PI * (2 / 2 - (ball.center.y - player.center.y)/(4 * (ball.height_d_2 + player.height_d_2)));
+				case Direction.LEFT:	return Math.PI * (0 / 2 + (ball.center.y - player.center.y)/(4 * (ball.height_d_2 + player.height_d_2)));
+				case Direction.TOP:		return Math.PI * (3 / 2 + (ball.center.x - player.center.x)/(4 * (ball.width_d_2 + player.width_d_2)));
+				case Direction.BOTTOM:	return Math.PI * (1 / 2 - (ball.center.x - player.center.x)/(4 * (ball.width_d_2 + player.width_d_2)));
+			};
 		})();
 	}
 
@@ -130,10 +130,12 @@ export class GameEngine extends Controller {
 	){
 		this.gamestate.ball.direction = (() => {
 			switch (direction) {
-				case Direction.RIGHT:	return Math.PI - this.gamestate.ball.direction;
-				case Direction.LEFT:	return Math.PI - this.gamestate.ball.direction;
-				case Direction.TOP:		return 2 * Math.PI - this.gamestate.ball.direction;
-				case Direction.BOTTOM:	return 2 * Math.PI - this.gamestate.ball.direction;
+				case Direction.RIGHT:
+				case Direction.LEFT:
+					return Math.PI - this.gamestate.ball.direction;
+				case Direction.TOP:
+				case Direction.BOTTOM:
+					return 2 * Math.PI - this.gamestate.ball.direction;
 			}
 		})();
 	}
