@@ -1,6 +1,5 @@
 <script setup lang='ts'>
 const theme = useState('theme');
-const themeIndex = useState('themeIndex');
 
 </script>
 	
