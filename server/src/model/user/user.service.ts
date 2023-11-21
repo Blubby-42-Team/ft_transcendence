@@ -51,6 +51,15 @@ export class ModelUserService {
 		}
 		else {
 			this.logger.debug(`User ${user.displayName} found in database, update it`)
+			/**
+			 * Check if the user role in the database is the same as the user role in the token,
+			 * if not, keep the role in the database
+			 */
+			if (checkUserExist.role !== user.role) {
+				this.logger.warn(`User ${user.displayName} has the ${checkUserExist.role} role in the database, but ${user.role} in the token.`)
+				this.logger.warn(`Keep the ${checkUserExist.role} role in the database`)
+				user.role = checkUserExist.role;
+			}
 			await this.postgresUserService.updateUser(checkUserExist.id, user);
 			return await this.postgresUserService.getUserById(checkUserExist.id);
 		}
