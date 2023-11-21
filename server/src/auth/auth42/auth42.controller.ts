@@ -26,6 +26,7 @@ export class Auth42Controller {
 	@Get('callback')
 	@UseGuards(Auth42Guard)
 	async auth42Callback(@Req() req, @Res() res: Response) {
+		//TODO move this in a service
 		const user = new User(req.user);
 		
 		this.logger.log(`User ${user.displayName} logged in`);

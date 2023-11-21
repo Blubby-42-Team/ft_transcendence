@@ -9,7 +9,6 @@ export class Auth42Service {
 
 	constructor(
 		private modelUserService: ModelUserService,
-		private modelUser42Service: ModelUser42Service,
 	) {}
 
 	async storeUser(user: User) {
