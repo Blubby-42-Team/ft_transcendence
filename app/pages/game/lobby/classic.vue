@@ -11,6 +11,7 @@ onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 </script>
 
 <template>
-	<PlayClassic/>
+	<div class="h-full">
+		Classic
+	</div>
 </template>
-

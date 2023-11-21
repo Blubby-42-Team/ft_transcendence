@@ -11,5 +11,7 @@ onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 </script>
 
 <template>
-	<PlayRandom/>
+	<div class="h-full">
+		Random
+	</div>
 </template>
