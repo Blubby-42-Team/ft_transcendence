@@ -45,14 +45,14 @@ const graphic = new GraphicEngine('previewCanvasDiv', theme.value, () => gameSta
 
 onMounted(async () => {
 	engine.start()
-	// graphic.start();
+	graphic.start();
 
 	watch(gameSettings.value, () => engine.restart(gameSettings.value));
 })
 
 onBeforeRouteLeave(() => {
 	engine.stop();
-	// graphic.stop();
+	graphic.stop();
 })
 
 </script>

@@ -2,6 +2,13 @@
 
 const { gameSettings } = useGame2Store()
 
+const props = defineProps({
+	preview: {
+		type: Boolean,
+		default: true,		
+	},
+})
+
 const isHost = ref(false)
 
 function updatePadSize(delta: number){
@@ -81,7 +88,9 @@ const difficulties = [
 		</div>
 		
 		<div class="p-5">
-			<GamePreviewCanvas/>
+			<template v-if="props.preview">
+				<GamePreviewCanvas/>
+			</template>
 		</div>
 
 		<div class="w-full p-2">
