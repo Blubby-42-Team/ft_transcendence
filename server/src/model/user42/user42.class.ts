@@ -2,12 +2,11 @@ import { Exclude } from "class-transformer";
 import { Column, Entity, Exclusion, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty, IsNumber, IsEnum, IsObject} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
-import { User42 } from "../user42/user42.class";
 
 @Entity()
-export class User {
+export class User42 {
 
-	constructor(partial: Partial<User>) {
+	constructor(partial: Partial<User42>) {
 		Object.assign(this, partial);
 	}
 
@@ -18,19 +17,17 @@ export class User {
 
 	@Column()
 	@IsNotEmpty()
-	displayName: string;
+	login: string;
 
-	@Column({type: 'enum', enum: UserRoleType, default: UserRoleType.User})
+	@Column()
 	@IsNotEmpty()
-	@IsEnum(UserRoleType)
-	role: UserRoleType;
+	@Exclude({ toPlainOnly: true})
+	accessToken: string;
 
-	/**
-	 * User42 data
-	 */
-	@OneToOne(type => User42)
-	@JoinColumn()
+	@Column()
 	@IsNotEmpty()
-	user42: User42;
+	@Exclude({ toPlainOnly: true})
+	refreshToken: string;
+
+	//TODO add 42 api user id
 }
-

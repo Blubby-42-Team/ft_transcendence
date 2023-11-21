@@ -19,7 +19,8 @@ export class PostgresUserService {
 	}
 
 	async updateUser(user: User) {
-		return this.userRepository.update(user.id, user);
+		const userDto = this.userRepository.create(user);
+		return this.userRepository.update(userDto.id, userDto);
 	}
 }
 

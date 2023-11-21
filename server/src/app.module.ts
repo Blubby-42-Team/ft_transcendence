@@ -1,3 +1,4 @@
+import { PostgresUser42Module } from './service/postgres/user42/user42.module';
 import { ControllerModule } from './controller/controller.module';
 import { ModelModule } from './model/model.module';
 import { Module } from '@nestjs/common';
@@ -8,6 +9,7 @@ import * as Joi from 'joi';
 
 @Module({
 	imports: [
+		PostgresUser42Module,
 		ControllerModule,
 		ModelModule,
 		ServiceModule,

@@ -19,19 +19,21 @@ export class ModelUserService {
 	 * Add or update user in database
 	 * @returns 
 	 */
-	async addUser(user: User): Promise<User | UpdateResult> {
+	async addUser(user: User): Promise<User> {
 		const checkUserExist = await this.postgresUserService.getUserById(user.id);
-		this.logger.debug(`Try to store userDto: ${JSON.stringify(user)}`);
 		if (!checkUserExist) {
-			return this.postgresUserService.addUser(user);
+			this.logger.debug(`User ${user.displayName} not found in database, add it`)
+			return await this.postgresUserService.addUser(user);
 		}
 		else {
-			return this.postgresUserService.updateUser(user);
+			this.logger.debug(`User ${user.displayName} found in database, update it`)
+			await this.postgresUserService.updateUser(user);
+			return await this.postgresUserService.getUserById(checkUserExist.id);
 		}
 	}
 
 	async updateUser(user: User) {
-		return this.postgresUserService.updateUser(user);
+		return await this.postgresUserService.updateUser(user);
 	}
 }
 

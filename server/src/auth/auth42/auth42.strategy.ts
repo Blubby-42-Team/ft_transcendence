@@ -7,6 +7,7 @@ import { log } from 'console';
 import { doesNotMatch } from 'assert';
 import { User } from 'src/model/user/user.class';
 import { UserRoleType } from '../auth.class';
+import { User42 } from 'src/model/user42/user42.class';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -41,14 +42,20 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	 * This function is called when the user is successfully logged in with 42
 	 */
 	async validate(accessToken, refreshToken, profile, cb): Promise<User> {
-		const user = new User({
+
+		const user42 = new User42({
+			login: profile.username,
 			accessToken: accessToken,
 			refreshToken: refreshToken,
-			login: profile.username,
+		});
+
+		const user = new User({
 			displayName: profile.displayName,
 			id: profile.id,
 			role: UserRoleType.User,
+			user42: user42,
 		});
+
 		cb(null, user)
 		return user;
 	}
