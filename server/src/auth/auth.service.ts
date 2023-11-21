@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/model/user/user.class';
 import { instanceToPlain } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
+import { ModelUserService } from 'src/model/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
 	constructor(
 		private jtwService: JwtService,
 		private readonly configService: ConfigService,
+		private readonly modelUserService: ModelUserService,
 	) {
 	}
 	async generateUserToken(user: User) : Promise<string> {

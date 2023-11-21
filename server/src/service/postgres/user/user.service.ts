@@ -2,6 +2,7 @@ import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../model/user/user.class';
 import { Repository } from 'typeorm';
+import { UserRoleType } from 'src/auth/auth.class';
 
 @Injectable()
 export class PostgresUserService {
@@ -47,6 +48,17 @@ export class PostgresUserService {
 		`)
 		.then((res): User => {
 			return res[0];
+		})
+
+		return userQuery;
+	}
+
+	async getUserRoleById(id: number): Promise<string> {
+		const userQuery = await this.userRepository.query(`
+			SELECT "role" FROM "user" WHERE id = '${id}'
+		`)
+		.then((res): string => {
+			return res[0].role;
 		})
 
 		return userQuery;

@@ -30,6 +30,7 @@ export class User {
 	 */
 	@OneToOne(type => User42)
 	@JoinColumn()
+	@Exclude({ toPlainOnly: true})
 	@IsNotEmpty()
 	user42: User42;
 }

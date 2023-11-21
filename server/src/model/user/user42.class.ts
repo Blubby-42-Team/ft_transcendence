@@ -13,6 +13,7 @@ export class User42 {
 	@PrimaryColumn()
 	@IsNotEmpty()
 	@IsNumber()
+	@Exclude({ toPlainOnly: true})
 	id: number;
 
 	@Column()

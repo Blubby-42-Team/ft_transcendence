@@ -19,11 +19,13 @@ export class ModelUser42Service {
 	}
 
 	/**
-	 * Add or update user in database
+	 * Add or update user in database.
 	 * @requires User
 	 * @returns 
 	 */
 	async addUser42(user: User42): Promise<User42> {
+
+		// First get user42 from database with 42 id
 		const checkUserExist = await this.postgresUser42Service.getUser42ById(user.id);
 		if (!checkUserExist) {
 			this.logger.debug(`User42 ${user.login} not found in database, add it`)

@@ -17,7 +17,7 @@ export class ModelUserService {
 		return await this.postgresUserService.getUserById(id);
 	}
 
-	async addUser(user: User){
+	async addUser(user: User): Promise<User> {
 		await this.modelUser42Service.addUser42(user.user42)
 		.catch((err) => {
 			this.logger.error(err);
@@ -30,7 +30,11 @@ export class ModelUserService {
 			throw new BadRequestException(err);
 		});
 
-		return userdb.id;
+		return userdb;
+	}
+
+	async getUserRoleById(id: number): Promise<string> {
+		return await this.postgresUserService.getUserRoleById(id);
 	}
 
 	/**
@@ -38,6 +42,8 @@ export class ModelUserService {
 	 * @returns 
 	 */
 	async addUserPong(user: User): Promise<User> {
+
+		// First get user from database with 42 id
 		const checkUserExist = await this.postgresUserService.getUserBy42Id(user.user42.id);
 		if (!checkUserExist) {
 			this.logger.debug(`User ${user.displayName} not found in database, add it`)
