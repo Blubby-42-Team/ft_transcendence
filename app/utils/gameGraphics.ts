@@ -126,19 +126,24 @@ export class GraphicEngine {
 	private drawScore(
 		ctx: CanvasRenderingContext2D,
 	){
+		const halfWidth = this.screen.width / 2;
+		const halfHeight = this.screen.width / 2;
+		const deltaX = this.screen.delta.x;
+		const deltaY = this.screen.delta.y;
+
 		ctx.fillStyle = this.theme.fontColor;
 		ctx.font = `${4 * this.screen.delta.y}px Arial`;
 		if (this.state.player_bottom.active){
-			ctx.fillText(`${this.state.player_bottom.score}`, screen.width * 0.48, screen.height * 0.59);
+			ctx.fillText(`${this.state.player_bottom.score}`,	halfWidth + -1 * deltaX,	halfHeight + 5 * deltaY,	4 * deltaX);
 		}
 		if (this.state.player_top.active){
-			ctx.fillText(`${this.state.player_top.score}`, screen.width * 0.48, screen.height * 0.459);
+			ctx.fillText(`${this.state.player_top.score}`,		halfWidth + -1 * deltaX,	halfHeight + -3 * deltaY,	4 * deltaX);
 		}
 		if (this.state.player_left.active){
-			ctx.fillText(`${this.state.player_left.score}`, screen.width * 0.42, screen.height * 0.525);
+			ctx.fillText(`${this.state.player_left.score}`,		halfWidth + -5 * deltaX,	halfHeight + 1 * deltaY,	4 * deltaX);
 		}
 		if (this.state.player_right.active){
-			ctx.fillText(`${this.state.player_right.score}`, screen.width * 0.54, screen.height * 0.525);
+			ctx.fillText(`${this.state.player_right.score}`,	halfWidth + 3 * deltaX,		halfHeight + 1 * deltaY,	4 * deltaX);
 		}
 	}
 	
@@ -174,7 +179,7 @@ export class GraphicEngine {
 			this.screen.width / 2 + (rec.center.x - rec.width_d_2) * this.screen.delta.x,
 			this.screen.height / 2 + (rec.center.y - rec.height_d_2) * this.screen.delta.y,
 			rec.width_d_2 * 2 * this.screen.delta.x,
-			rec.height_d_2 * 2 * this.screen.delta.x,
+			rec.height_d_2 * 2 * this.screen.delta.y,
 			text,
 		);
 	}
