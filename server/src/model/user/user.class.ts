@@ -2,7 +2,7 @@ import { Exclude } from "class-transformer";
 import { Column, Entity, Exclusion, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty, IsNumber, IsEnum, IsObject} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
-import { User42 } from "../user42/user42.class";
+import { User42 } from "./user42.class";
 
 @Entity()
 export class User {

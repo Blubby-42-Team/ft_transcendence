@@ -5,7 +5,7 @@ https://docs.nestjs.com/modules
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User42 } from 'src/model/user42/user42.class';
+import { User42 } from 'src/model/user/user42.class';
 import { PostgresUser42Service } from './user42.service';
 
 @Module({

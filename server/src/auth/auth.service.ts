@@ -14,7 +14,7 @@ export class AuthService {
 		private readonly configService: ConfigService,
 	) {
 	}
-	async generateUserToken (user: User) : Promise<string> {
+	async generateUserToken(user: User) : Promise<string> {
 		const plainUser = instanceToPlain(user);
 		return await this.jtwService.signAsync(plainUser, {
 			secret: this.configService.get<string>('JWT_SECRET'),

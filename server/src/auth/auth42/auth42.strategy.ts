@@ -7,7 +7,7 @@ import { log } from 'console';
 import { doesNotMatch } from 'assert';
 import { User } from 'src/model/user/user.class';
 import { UserRoleType } from '../auth.class';
-import { User42 } from 'src/model/user42/user42.class';
+import { User42 } from 'src/model/user/user42.class';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {

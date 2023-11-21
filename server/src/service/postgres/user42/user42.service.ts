@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User42 } from 'src/model/user42/user42.class';
+import { User42 } from 'src/model/user/user42.class';
 import { Repository } from 'typeorm';
 
 @Injectable()
