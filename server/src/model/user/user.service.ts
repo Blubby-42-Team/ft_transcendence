@@ -18,8 +18,18 @@ export class ModelUserService {
 	}
 
 	async addUser(user: User){
-		const userdb = await this.addUserPong(user);
-		await this.modelUser42Service.addUser42(userdb.user42);
+		await this.modelUser42Service.addUser42(user.user42)
+		.catch((err) => {
+			this.logger.error(err);
+			throw new BadRequestException(err);
+		});
+
+		const userdb = await this.addUserPong(user)
+		.catch((err) => {
+			this.logger.error(err);
+			throw new BadRequestException(err);
+		});
+
 		return userdb.id;
 	}
 
@@ -28,20 +38,16 @@ export class ModelUserService {
 	 * @returns 
 	 */
 	async addUserPong(user: User): Promise<User> {
-		const checkUserExist = await this.postgresUserService.getUserById(user.id);
+		const checkUserExist = await this.postgresUserService.getUserBy42Id(user.user42.id);
 		if (!checkUserExist) {
 			this.logger.debug(`User ${user.displayName} not found in database, add it`)
 			return await this.postgresUserService.addUser(user);
 		}
 		else {
 			this.logger.debug(`User ${user.displayName} found in database, update it`)
-			await this.postgresUserService.updateUser(user);
+			await this.postgresUserService.updateUser(checkUserExist.id, user);
 			return await this.postgresUserService.getUserById(checkUserExist.id);
 		}
-	}
-
-	async updateUser(user: User) {
-		return await this.postgresUserService.updateUser(user);
 	}
 }
 

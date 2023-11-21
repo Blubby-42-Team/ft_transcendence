@@ -10,7 +10,7 @@ export class User42 {
 		Object.assign(this, partial);
 	}
 
-	@PrimaryGeneratedColumn()
+	@PrimaryColumn()
 	@IsNotEmpty()
 	@IsNumber()
 	id: number;
@@ -28,6 +28,4 @@ export class User42 {
 	@IsNotEmpty()
 	@Exclude({ toPlainOnly: true})
 	refreshToken: string;
-
-	//TODO add 42 api user id
 }

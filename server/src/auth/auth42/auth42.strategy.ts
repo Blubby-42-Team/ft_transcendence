@@ -44,6 +44,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	async validate(accessToken, refreshToken, profile, cb): Promise<User> {
 
 		const user42 = new User42({
+			id: profile.id,
 			login: profile.username,
 			accessToken: accessToken,
 			refreshToken: refreshToken,
@@ -51,7 +52,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 
 		const user = new User({
 			displayName: profile.displayName,
-			id: profile.id,
 			role: UserRoleType.User,
 			user42: user42,
 		});
