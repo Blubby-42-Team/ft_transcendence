@@ -3,6 +3,7 @@
 definePageMeta({
 	name: 'Lobby Random',
 	pageTransition: false,
+	layout: 'lobby',
 })
 const { setPageData } = usePageStore();
 onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
@@ -10,7 +11,5 @@ onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 </script>
 
 <template>
-	<PlayLobby>
-		<PlayRandom/>
-    </PlayLobby>
+	<PlayRandom/>
 </template>
