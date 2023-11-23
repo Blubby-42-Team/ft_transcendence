@@ -32,6 +32,7 @@ import * as Joi from 'joi';
 				POSTGRES_PORT: Joi.number().default(5432),
 				POSTGRES_USER: Joi.string().default('test'),
 				POSTGRES_PASSWORD: Joi.string().default('test'),
+				POSTGRES_DB: Joi.string().required(),
 
 				/**
 				 * 42 API configuration
