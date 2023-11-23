@@ -4,21 +4,25 @@ import { Auth42Guard } from './auth42.guard';
 import { log } from 'console';
 import { Auth42Service } from './auth42.service';
 import { Response } from 'express';
-import { User } from 'src/model/user/user.model';
+import { User } from 'src/model/user/user.class';
+import { Roles } from '../role.decorator';
+import { UserRoleType } from '../auth.class';
 
 @Controller('auth42')
 export class Auth42Controller {
 	constructor(
-		private auth42Service: Auth42Service,
+		private authService: AuthService,
+		private Auth42Service: Auth42Service,
 	) {}
 
 	private readonly logger = new Logger(Auth42Controller.name);
 
+	@Roles([UserRoleType.Guest])
 	@Get('login')
 	@UseGuards(Auth42Guard)
-	auth42Login () {
-	}
+	auth42Login () {}
 
+	@Roles([UserRoleType.Guest])
 	@Get('callback')
 	@UseGuards(Auth42Guard)
 	async auth42Callback(@Req() req, @Res() res: Response) {
@@ -26,7 +30,9 @@ export class Auth42Controller {
 		
 		this.logger.log(`User ${user.displayName} logged in`);
 
-		const token = await this.auth42Service.singIn(user);
+		await this.Auth42Service.storeUser(user);
+
+		const token = await this.authService.generateUserToken(user);
 		res.cookie('token', token, { httpOnly: true });
 		res.status(HttpStatus.OK).json(token);
 	}

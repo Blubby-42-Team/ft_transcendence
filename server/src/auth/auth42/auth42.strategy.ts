@@ -5,7 +5,7 @@ import { Auth42Service } from './auth42.service';
 import { ConfigService } from '@nestjs/config';
 import { log } from 'console';
 import { doesNotMatch } from 'assert';
-import { User } from 'src/model/user/user.model';
+import { User } from 'src/model/user/user.class';
 import { UserRoleType } from '../auth.class';
 
 @Injectable()

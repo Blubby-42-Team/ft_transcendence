@@ -11,7 +11,9 @@ const theme = useState('theme');
 		<div class="grid grid-rows-[4em,auto,min-content] h-screen overflow-hidden">
 			<LayoutHeader/>
 			<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 scrollbar-thumb-rounded-full scrollbar-track">
-				<slot />
+				<PlayLobby>
+					<slot />
+				</PlayLobby>
 			</div>
 			<LayoutFooter/>
 		</div>

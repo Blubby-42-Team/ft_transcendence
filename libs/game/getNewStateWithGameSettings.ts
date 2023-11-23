@@ -5,7 +5,7 @@ const gameState4PlayersDefault: gameStateType = {
 	aispeed:				0.1,
 	playerspeed:			0.5,
 	gameArea: 				{	center: {	x: 0,	y: 0,		},	height_d_2: 30,		width_d_2: 30,	},
-	ball: 					{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
+	ball: 					{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 0,		acceleration: 0, direction: Math.PI / 4	},
 	player_top: 			{	center: {	x: 0,	y: -25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_bottom:			{	center: {	x: 0,	y: 25,		},	height_d_2: 1,		width_d_2: 5,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_left:			{	center: {	x: -25,	y: 0,		},	height_d_2: 5,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
@@ -27,7 +27,7 @@ const gameState2PlayersDefault: gameStateType = {
 	aispeed:			0.1,
 	playerspeed:		0.5,
 	gameArea:			{	center: {	x: 0,	y: 0,		},	height_d_2: 25,		width_d_2: 35,	},
-	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 1, direction: Math.PI / 4	},
+	ball:				{	center: {	x: 0,	y: 0,		},	height_d_2: 1,		width_d_2: 1,	speed: 0,		acceleration: 0, direction: Math.PI / 4	},
 	player_left:		{	center: {	x: -25,	y: 0,		},	height_d_2: 10,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_right:		{	center: {	x: 25,	y: 0,		},	height_d_2: 5,		width_d_2: 1,	active: true,	eleminated: false,	isBot: false,	score: 0	},
 	player_top:			{	active: false,	},
@@ -82,7 +82,8 @@ export function getNewStateWithGameSettings(
 
 	base.ball.height_d_2 = gameSettings.ballSize;
 	base.ball.width_d_2 = gameSettings.ballSize;
-
+	base.ball.speed = gameSettings.initialBallSpeed;
+	base.ball.acceleration = gameSettings.speedAcceleration;
 	base.ball.direction = getNewAngleForBall();
 	base.aispeed = getSpeedForDifficulty(gameSettings.mode);
 

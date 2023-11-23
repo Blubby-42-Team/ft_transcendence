@@ -18,8 +18,7 @@ export const useTournamentListStore = defineStore('tournamentList', {
 			{	id: "6",	name: 'Pong Challengers \'23',		attendance: 0,		maxAttendance: 4	},
 			{	id: "7",	name: 'Ping Pong Internationale',	attendance: 0,		maxAttendance: 4	},
 			{	id: "8",	name: 'Olympic Pong Games',			attendance: 0,		maxAttendance: 8	},
-			{	id: "9",	name: 'Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup Pong Super Cup ',				attendance: 4,		maxAttendance: 8	},
-			{	id: "10",	name: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',				attendance: 2,		maxAttendance: 8	},
+			{	id: "9",	name: 'Pong World Cup',				attendance: 0,		maxAttendance: 8	},
 		]
 	}),
 	getters: {
