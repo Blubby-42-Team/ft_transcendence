@@ -194,6 +194,9 @@ export class GameEngine extends Controller {
 				this.gamestate.player_left.score += 1;
 				this.resetRound();
 			}
+			if (this.gamestate.player_left.score >= this.gameSettings.maxPoint || this.gamestate.player_right.score >= this.gameSettings.maxPoint){
+				this.gamestate.status = gameStatusType.GAMEOVER;
+			}
 		}
 	}
 
