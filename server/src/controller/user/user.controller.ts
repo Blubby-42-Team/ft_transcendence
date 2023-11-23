@@ -1,8 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { DTO_getUserById } from './user.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserService } from './user.service';
+import { log } from 'console';
 
 @Controller('user')
 export class UserController {
@@ -11,9 +12,11 @@ export class UserController {
 		private readonly userService: UserService,
 	) {}
 
-	@Get()
-	async getUserById(@Query() query: DTO_getUserById) {
-		return await this.userService.getUserById(query.id);
+	@Roles([UserRoleType.Admin])
+	@Get('/:id')
+	async getUserById(@Param() params: DTO_getUserById) {
+		log(`Get user by id ${params.id}`);
+		return await this.userService.getUserById(params.id);
 	}
 
 }

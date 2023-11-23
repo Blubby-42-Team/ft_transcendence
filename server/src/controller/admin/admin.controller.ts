@@ -9,6 +9,7 @@ import { UserRoleType } from 'src/auth/auth.class';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Auth42Guard } from 'src/auth/auth42/auth42.guard';
 import { Roles } from 'src/auth/role.decorator';
+import { roomType } from 'src/model/game/game.class';
 import { User } from 'src/model/user/user.class';
 import { ModelUserService } from 'src/model/user/user.service';
 
@@ -25,6 +26,7 @@ export class AdminController {
 	@Redirect('https://admin.socket.io/')
 	redirectToAdminSocket() {}
 
+	@Roles([UserRoleType.Admin, UserRoleType.Guest])
 	@Get('test')
 	test () {
 		return 'test'

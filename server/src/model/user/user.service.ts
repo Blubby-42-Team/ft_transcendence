@@ -2,11 +2,13 @@ import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { Repository, UpdateResult } from 'typeorm';
 import { User } from './user.class';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
+import { ModelUser42Service } from './user42.service';
 
 @Injectable()
 export class ModelUserService {
 	constructor (
 		private readonly postgresUserService: PostgresUserService,
+		private readonly modelUser42Service: ModelUser42Service,
 	) {}
 	
 	private readonly logger = new Logger(ModelUserService.name);
@@ -15,23 +17,52 @@ export class ModelUserService {
 		return await this.postgresUserService.getUserById(id);
 	}
 
+	async addUser(user: User): Promise<User> {
+		await this.modelUser42Service.addUser42(user.user42)
+		.catch((err) => {
+			this.logger.error(err);
+			throw new BadRequestException(err);
+		});
+
+		const userdb = await this.addUserPong(user)
+		.catch((err) => {
+			this.logger.error(err);
+			throw new BadRequestException(err);
+		});
+
+		return userdb;
+	}
+
+	async getUserRoleById(id: number): Promise<string> {
+		return await this.postgresUserService.getUserRoleById(id);
+	}
+
 	/**
 	 * Add or update user in database
 	 * @returns 
 	 */
-	async addUser(user: User): Promise<User | UpdateResult> {
-		const checkUserExist = await this.postgresUserService.getUserById(user.id);
-		this.logger.debug(`Try to store userDto: ${JSON.stringify(user)}`);
+	async addUserPong(user: User): Promise<User> {
+
+		// First get user from database with 42 id
+		const checkUserExist = await this.postgresUserService.getUserBy42Id(user.user42.id);
 		if (!checkUserExist) {
-			return this.postgresUserService.addUser(user);
+			this.logger.debug(`User ${user.displayName} not found in database, add it`)
+			return await this.postgresUserService.addUser(user);
 		}
 		else {
-			return this.postgresUserService.updateUser(user);
+			this.logger.debug(`User ${user.displayName} found in database, update it`)
+			/**
+			 * Check if the user role in the database is the same as the user role in the token,
+			 * if not, keep the role in the database
+			 */
+			if (checkUserExist.role !== user.role) {
+				this.logger.warn(`User ${user.displayName} has the ${checkUserExist.role} role in the database, but ${user.role} in the token.`)
+				this.logger.warn(`Keep the ${checkUserExist.role} role in the database`)
+				user.role = checkUserExist.role;
+			}
+			await this.postgresUserService.updateUser(checkUserExist.id, user);
+			return await this.postgresUserService.getUserById(checkUserExist.id);
 		}
-	}
-
-	async updateUser(user: User) {
-		return this.postgresUserService.updateUser(user);
 	}
 }
 

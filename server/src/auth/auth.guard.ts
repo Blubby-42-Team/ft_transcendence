@@ -26,7 +26,12 @@ export class AuthGuard implements CanActivate {
 			throw new BadRequestException('No roles defined for this route');
 		}
 
+		/**
+		 * Check if the controller role is public
+		 * If yes, print a warning
+		 */
 		if (allowRoles.includes(UserRoleType.Guest)) {
+			this.logger.warn(`The controller ${context.getClass().name} has route /${context.getHandler().name} public, please check if it's normal`)
 			return true;
 		}
 
@@ -61,7 +66,7 @@ export class AuthGuard implements CanActivate {
 		return true;
 	}
 
-	private getAuthorizationToken(req: Request): string {
+	private getAuthorizationToken(req: any): string {
 		try {
 			return req.cookies['token'];
 		} catch (error) {

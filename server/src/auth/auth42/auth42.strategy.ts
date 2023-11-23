@@ -7,6 +7,7 @@ import { log } from 'console';
 import { doesNotMatch } from 'assert';
 import { User } from 'src/model/user/user.class';
 import { UserRoleType } from '../auth.class';
+import { User42 } from 'src/model/user/user42.class';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -22,18 +23,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 			clientID: configService.get<string>('API42_APP_ID'),
 			clientSecret: configService.get<string>('API42_APP_SECRET'),
 			callbackURL: configService.get<string>('API42_APP_REDIRECT'),
-			//TODO check if this is needed https://www.passportjs.org/packages/passport-42/
-			// profileFields: {
-			// 	'id': (obj) => { return String(obj.id); },
-			// 	'username': 'login',
-			// 	'displayName': 'displayname',
-			// 	'name.familyName': 'last_name',
-			// 	'name.givenName': 'first_name',
-			// 	'profileUrl': 'url',
-			// 	'emails.0.value': 'email',
-			// 	'phoneNumbers.0.value': 'phone',
-			// 	'photos.0.value': 'image_url'
-			// }
 		});
 	}
 
@@ -41,14 +30,21 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	 * This function is called when the user is successfully logged in with 42
 	 */
 	async validate(accessToken, refreshToken, profile, cb): Promise<User> {
-		const user = new User({
+
+		const user42 = new User42({
+			// Use the 42 id as the user42 id
+			id: profile.id,
+			login: profile.username,
 			accessToken: accessToken,
 			refreshToken: refreshToken,
-			login: profile.username,
-			displayName: profile.displayName,
-			id: profile.id,
-			role: UserRoleType.User,
 		});
+
+		const user = new User({
+			displayName: profile.displayName,
+			role: UserRoleType.User,
+			user42: user42,
+		});
+
 		cb(null, user)
 		return user;
 	}

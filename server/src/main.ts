@@ -7,6 +7,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { UserRoleType } from './auth/auth.class';
 import { Roles } from './auth/role.decorator';
 import { JwtService } from '@nestjs/jwt';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
 	await tracer.start();
@@ -26,9 +27,12 @@ async function bootstrap() {
 
 	const reflector = app.get(Reflector);
 	const jwtService = app.get(JwtService);
+
 	app.useGlobalGuards(new AuthGuard(reflector, jwtService));
 
 	app.useGlobalInterceptors(new ClassSerializerInterceptor(new Reflector()))
+
+	app.use(cookieParser());
 
 	await app.listen(
 		configService.get<number>('PORT'),
