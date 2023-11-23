@@ -50,7 +50,7 @@ onMounted(async () => {
 	graphic.start();
 })
 
-onBeforeRouteLeave(() => {
+onUnmounted(() => {
 	document.removeEventListener("keydown", (e) => (controller?.[e.key] ?? emptyFunction)(true));
 	document.removeEventListener("keyup",   (e) => (controller?.[e.key] ?? emptyFunction)(false));
 	

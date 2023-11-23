@@ -57,7 +57,7 @@ onMounted(async () => {
 	watch(gameSettings.value, () => engine.restart(gameSettings.value));
 })
 
-onBeforeRouteLeave(() => {
+onUnmounted(() => {
 	engine.stop();
 	graphic.stop();
 })
