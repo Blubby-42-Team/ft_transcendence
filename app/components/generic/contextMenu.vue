@@ -32,7 +32,7 @@ function open(event: MouseEvent) {
 		}
 	
 		// Adjust if the modal overflows the bottom of the screen
-		if (position.value.y > window.innerHeight / 2){
+		if (position.value.y > window.innerHeight - modal.value.clientHeight){
 			position.value.y = position.value.y - modal.value.clientHeight;
 		}
 	})
@@ -42,7 +42,6 @@ defineExpose({
 	open,
 	close,
 })
-
 
 onClickOutside(modal, () => {
 	if (isOpen.value) {
@@ -56,7 +55,7 @@ onClickOutside(modal, () => {
 	<TransitionFade>
 		<template v-if="isOpen">
 			<div ref="modal"
-				class="absolute z-50 p-2 bg-red-400 w-max"
+				class="absolute z-50 w-max h-max"
 				:style="{
 					left: `${position.x}px`,
 					top:  `${position.y}px`,
