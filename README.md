@@ -19,18 +19,3 @@ Dont forget to restart your terminal and now you can install node v18.
 ```sh
 nvm install v18
 ```
-
-## Install python with pyenv
-
-Install pyenv and read carefully the end message of the installer.
-
-```sh
-curl https://pyenv.run | bash
-
-```
-
-And install python 3.11
-
-```sh
-pyenv install 3.11
-```
