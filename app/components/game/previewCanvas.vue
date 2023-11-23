@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 import { gameStatusType } from '#imports';
 
+const props = defineProps({
+	uniqueToken: {
+		type: String,
+		required: true,
+	}
+})
+
 const { theme, gameSettings } = useGame2Store()
 
 const screenSize = ref({
@@ -29,7 +36,7 @@ const engine = new GameEngine(gameSettings.value, (state) => {
 	}
 );
 
-const graphic = new GraphicEngine('previewCanvasDiv', theme.value, () => gameState, (ctx, screen) => {
+const graphic = new GraphicEngine(props.uniqueToken, theme.value, () => gameState, (ctx, screen) => {
 	screenSize.value.width = screen.width;
 	screenSize.value.height = screen.height;
 
@@ -58,8 +65,7 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-	<div id="previewCanvasDiv" class="w-full h-full">
-		
+	<div :id="props.uniqueToken" class="w-full h-full">
 		<client-only placeholder="loading...">
 			<canvas class="bg-white border border-text" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
 		</client-only>

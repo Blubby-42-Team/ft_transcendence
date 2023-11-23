@@ -14,7 +14,7 @@ onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 	<div class="grid h-full grid-cols-[max-content_repeat(1,auto)]">
 		<PlaySettings :preview="false"/>
 		<div class="flex w-full h-full p-5 overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 scrollbar-thumb-rounded-full scrollbar-track">
-			<GamePreviewCanvas/>
+			<GamePreviewCanvas uniqueToken="previewLocal"/>
 		</div>
 	</div>
 </template>

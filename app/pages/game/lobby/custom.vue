@@ -8,7 +8,7 @@ definePageMeta({
 const { setPageData } = usePageStore();
 onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
 
-let isFront = useState(() => [
+let isFront = ref([
 	{ type: CardType.PLAYER },
 	{ type: CardType.ADD },
 	{ type: CardType.ADD },

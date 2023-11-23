@@ -85,7 +85,7 @@ const difficulties = [
 		
 		<div class="p-5">
 			<template v-if="props.preview">
-				<GamePreviewCanvas/>
+				<GamePreviewCanvas uniqueToken="previewSettings"/>
 			</template>
 		</div>
 
