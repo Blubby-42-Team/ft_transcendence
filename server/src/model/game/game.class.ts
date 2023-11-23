@@ -1,64 +1,29 @@
-export class PlayerInfoType {
-	player_id: string;
-	player_sessions_token: string;
-}
+import { Direction, gameSettingsType } from '@shared/types/game'
+import { GameEngine } from '@shared/game/game';
 
-export class roomType {
+export class GameInstance {
 
-	constructor(roomId: string, ownerPlayerId: string) {
-		this.status = false;
-		this.playerInfo = {
-			Top: {
-				player_id: '',
-				player_sessions_token: '',
-			},
-			Bottom: {
-				player_id: '',
-				player_sessions_token: '',
-			},
-			Left: {
-				player_id: '',
-				player_sessions_token: '',
-			},
-			Right: {
-				player_id: '',
-				player_sessions_token: '',
-			},
-		};
-		this.controller = {
-			playerTopMoveLeft:		false,
-			playerTopMoveRight:		false,
-			playerBottomMoveLeft:	false,
-			playerBottomMoveRight:	false,
-			playerLeftMoveUp:		false,
-			playerLeftMoveDown:		false,
-			playerRightMoveUp:		false,
-			playerRightMoveDown:	false,
-			startRound:				false,
-		};
+	constructor (room_id: string, owner_id: string, gameSettings: gameSettingsType) {
+		this.room_id = room_id;
+		this.gameSettings = gameSettings;
+		this.game = new GameEngine(gameSettings);
 	}
 
-	status: boolean;
+	private room_id: string;
+	private owner_id: string;
 
-	playerInfo: {
-		Top: PlayerInfoType,
-		Bottom: PlayerInfoType,
-		Left: PlayerInfoType,
-		Right: PlayerInfoType,
+	player: {
+		[key: string]: Direction;
+	} = {};
+
+	private game: GameEngine;
+
+	private gameSettings: gameSettingsType;
+
+	static async startRoom(roomName: string, opt: any, io: any) {
+
 	}
 
-	controller: {
-		playerTopMoveLeft:		boolean,
-		playerTopMoveRight:		boolean,
-		playerBottomMoveLeft:	boolean,
-		playerBottomMoveRight:	boolean,
-		playerLeftMoveUp:		boolean,
-		playerLeftMoveDown:		boolean,
-		playerRightMoveUp:		boolean,
-		playerRightMoveDown:	boolean,
-		startRound:				boolean,
+	static async stopRoom(roomName: string) {
 	}
-
-	invitedPlayers: Array<string>;
-	ownerPlayerId: string;
 }

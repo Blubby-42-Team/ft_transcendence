@@ -38,7 +38,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// Inject the server instance
 	@WebSocketServer()
-	server: Server;
+	readonly server: Server;
 
 	@SubscribeMessage('joinRoom')
 	async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() req: JoinGameRoomRequestDto): Promise<AcknowledgmentWsDto> {
@@ -65,7 +65,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move')
-	async gameMove(@MessageBody('move') direction: ) {
+	async gameMove(@MessageBody('move') direction: any /**TODO use dto */) {
 
 		// this.gameSErvice.movePlayer(id, direction, room);//TODO 
 		this.logger.log(`Client send move ${JSON.stringify(direction)}`);
