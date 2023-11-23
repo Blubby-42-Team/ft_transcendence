@@ -1,12 +1,12 @@
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException, WsResponse } from '@nestjs/websockets';
-import { log } from 'console';
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
 import {AcknowledgmentWsDto, JoinGameRoomRequestDto} from '@shared/dto/ws.dto'
 import { validate } from 'class-validator';
-import { BadRequestException, Logger, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Logger, UseFilters } from '@nestjs/common';
 import { WsBadRequestExceptionFilter } from './game.exception.filter';
 import { plainToClass } from 'class-transformer';
 import { GameService } from '../../service/game/game.service';
+
 
 @WebSocketGateway({
 	namespace: 'game',
@@ -65,7 +65,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('move')
-	async gameMove() {
-		this.logger.log(`Client send move`);
+	async gameMove(@MessageBody('move') direction: ) {
+
+		// this.gameSErvice.movePlayer(id, direction, room);//TODO 
+		this.logger.log(`Client send move ${JSON.stringify(direction)}`);
 	}
 }
