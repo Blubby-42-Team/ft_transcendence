@@ -1,4 +1,4 @@
-import { BadRequestException, CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRoleType } from './auth.class';
 import { Roles } from './role.decorator';
@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
 
 		if (!allowRoles) {
 			this.logger.error('No roles defined for this route');
-			throw new BadRequestException('No roles defined for this route');
+			throw new InternalServerErrorException('No roles defined for this route');
 		}
 
 		/**
@@ -44,7 +44,7 @@ export class AuthGuard implements CanActivate {
 
 		if (!token) {
 			this.logger.error('No token provided');
-			throw new BadRequestException('No token provided');
+			throw new UnauthorizedException('No token provided');
 		}
 
 		let user: User;
@@ -54,13 +54,13 @@ export class AuthGuard implements CanActivate {
 			user = await this.jwtService.verifyAsync<User>(token)
 		} catch (error) {
 			this.logger.error(`User ${user.displayName}:${user.role} as an invalid token`, error);
-			throw new BadRequestException(`User ${user.displayName}:${user.role} as an invalid token`);
+			throw new UnauthorizedException(`User ${user.displayName}:${user.role} as an invalid token`);
 		}
 
 		// Check if the user has the right role
 		if (!allowRoles.includes(user.role)) {
 			this.logger.error(`User ${user.displayName}:${user.role} does not have the right role`);
-			throw new BadRequestException(`User ${user.displayName}:${user.role} does not have the right role`);
+			throw new UnauthorizedException(`User ${user.displayName}:${user.role} does not have the right role`);
 		}
 
 		return true;
@@ -71,7 +71,7 @@ export class AuthGuard implements CanActivate {
 			return req.cookies['token'];
 		} catch (error) {
 			this.logger.error('No token provided');
-			throw new BadRequestException('No token provided');
+			throw new UnauthorizedException('No token provided');
 		}
 	}
 }
