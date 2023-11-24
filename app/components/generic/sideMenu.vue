@@ -22,7 +22,6 @@ function open() { isOpen.value = true; updateSize()  }
 function close(){ isOpen.value = false; }
 
 function updateSize(){
-	console.log('updateSize', menuRef.value, props.options.reference.value)
 	if (!menuRef.value || !props.options.reference.value)
 		return;
 	

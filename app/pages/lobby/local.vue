@@ -4,14 +4,13 @@ import { ESelectedLobby } from '~/stores/page';
 
 definePageMeta({
 	name: 'Lobby Local',
-	pageTransition: false,
 	layout: 'lobby',
 })
 
 
 onMounted(() => {
 	const { setPageDataLobby } = usePageStore();
-	setPageDataLobby(EPageCategories.GAME, "Play a Game", ESelectedLobby.Classic);
+	setPageDataLobby(EPageCategories.GAME, "Play a Game", ESelectedLobby.Local);
 })
 
 

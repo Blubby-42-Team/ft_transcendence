@@ -12,7 +12,7 @@ enum EType {
 
 type TSidebarCategory = { type: EType.CATEGORY, categoryType: EPageCategories, path: string, icon: string } | { type: Exclude<EType, EType.CATEGORY> }
 
-const categories: Array<TSidebarCategory> = [
+const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/lobby',			icon: 'material-symbols:stadia-controller'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	path: '/tournament',	icon: 'material-symbols:trophy'	},
@@ -22,7 +22,11 @@ const categories: Array<TSidebarCategory> = [
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.FRIENDS, 		path: '/friends',		icon: 'material-symbols:group'	},
 	{	type: EType.SEPARATOR_BOTTOM																						},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.SETTINGS, 	path: '/settings',		icon: 'material-symbols:settings'	},
-];
+]);
+
+watch(selectedCategory, (newValue) => {
+	console.log(newValue)
+})
 
 </script>
 

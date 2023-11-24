@@ -3,7 +3,6 @@ import { ESelectedLobby } from '~/stores/page';
 
 definePageMeta({
 	name: 'Lobby Custom',
-	pageTransition: false,
 	layout: 'lobby',
 })
 

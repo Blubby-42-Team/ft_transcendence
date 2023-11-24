@@ -3,12 +3,11 @@ import { ESelectedLobby } from '~/stores/page';
 
 definePageMeta({
 	name: 'Lobby Random',
-	pageTransition: false,
 	layout: 'lobby',
 })
 
+const { setPageDataLobby } = usePageStore();
 onMounted(() => {
-	const { setPageDataLobby } = usePageStore();
 	setPageDataLobby(EPageCategories.GAME, "Play a Game", ESelectedLobby.Random);
 })
 

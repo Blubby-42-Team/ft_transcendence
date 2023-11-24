@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import { ESelectedLobby } from '~/stores/page';
 
-
 definePageMeta({
 	name: 'Lobby Classic',
-	pageTransition: false,
 	layout: 'lobby',
 })
 
