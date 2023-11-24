@@ -39,6 +39,12 @@ export const usePageStore = defineStore('page', {
 			this._selectedCategory = newCategory;
 			this._title = newTitle;
 		},
+		setPageDataLobby(newCategory: EPageCategories, newTitle: string, newLobby: ESelectedLobby){
+			console.log('setPageData')
+			this._selectedCategory = newCategory;
+			this._title = newTitle;
+			this._selectedLobby = newLobby;
+		},
 		setSelectedCategory(newCategory: EPageCategories){
 			console.log('setSelectedCategory')
 			this._selectedCategory = newCategory;
