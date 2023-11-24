@@ -1,7 +1,5 @@
 <script setup lang="ts">
-
 import { EPageCategories } from '@/stores/page'
-
 const { selectedCategory } = usePageStore();
 
 enum EType {
@@ -14,7 +12,7 @@ type TSidebarCategory = { type: EType.CATEGORY, categoryType: EPageCategories, p
 
 const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/lobby',			icon: 'material-symbols:stadia-controller'	},
+	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/game',			icon: 'material-symbols:stadia-controller'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	path: '/tournament',	icon: 'material-symbols:trophy'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.WATCH, 		path: '/watch',			icon: 'material-symbols:visibility'	},
 	{	type: EType.SEPARATOR_BAR,																							},

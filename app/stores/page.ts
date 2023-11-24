@@ -31,7 +31,7 @@ export const usePageStore = defineStore('page', {
 		selectedCategory:	(state) => computed(() => state._selectedCategory),
 		title:				(state) => computed(() => state._title),
 		selectedLobby:		(state) => computed(() => state._selectedLobby),
-		lobby:				(state) => computed(() => state._lobby),
+		lobby:				(state) => state._lobby,
 	},
 	actions: {
 		setPageData(newCategory: EPageCategories, newTitle: string){

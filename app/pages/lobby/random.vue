@@ -11,7 +11,6 @@ onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, "Play a Game", ESelectedLobby.Random);
 })
 
-
 </script>
 
 <template>
