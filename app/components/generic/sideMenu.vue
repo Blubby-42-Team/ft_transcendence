@@ -1,50 +1,51 @@
 <script setup lang="ts">
 
 const props = defineProps({
-	direction: {
-		type: String as PropType<'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal'>,
+	options: {
+		type: Object as PropType<{
+			direction: 'left' | 'right' | 'top' | 'bottom' | 'vertical' | 'horizontal',
+			reference: Ref<HTMLElement | undefined>,
+		}>,
 		required: true,
 	},
 })
 
-const isOpen = ref(false);
-const menuRef	= ref<HTMLInputElement>()
-const buttonRef	= ref<HTMLInputElement>()
-const position = ref({
+const isOpen		= ref(false);
+const isVertical	= ref(true);
+const menuRef		= ref<HTMLInputElement>()
+const position		= ref({
 	x: 0,
 	y: 0,
-	width: 0,
 })
+
+function open() { isOpen.value = true; updateSize()  }
+function close(){ isOpen.value = false; }
 
 function updateSize(){
-	console.log('updateSize')
-	if (!menuRef.value || !buttonRef.value)
+	console.log('updateSize', menuRef.value, props.options.reference.value)
+	if (!menuRef.value || !props.options.reference.value)
 		return;
 	
-	const { top, left, width, height } = buttonRef.value.getBoundingClientRect();
+	const { top, left, width, height } = props.options.reference.value.getBoundingClientRect();
+	const { width: menuWidth, height: menuHeight } = props.options.reference.value.getBoundingClientRect();
 
-	position.value.x		= left;
-	position.value.y		= top + height;
-	position.value.width	= width;
+	console.log(props.options.direction)
+
+	switch (props.options.direction) {
+		case 'bottom':
+			console.log('bottom')
+			position.value.x		= left;
+			position.value.y		= top + height;
+			break;
+		case 'top':
+			console.log('top')
+			position.value.x		= left;
+			position.value.y		= top + height + menuHeight;
+			break;	
+		default:
+			break;
+	}
 }
-function close(){ isOpen.value = false; }
-function open() {
-	isOpen.value = true;
-		
-	nextTick(updateSize);
-}
-
-// This watch doesnt work. It doesnt update the size of the menu when the button is clicked.
-watchEffect(() => {
-  if (buttonRef.value) {
-    updateSize();
-  }
-});
-
-defineExpose({
-	open,
-	close,
-})
 
 onClickOutside(menuRef, () => {
 	if (isOpen.value) {
@@ -52,26 +53,34 @@ onClickOutside(menuRef, () => {
 	}
 })
 
+onMounted(() => {
+	const resizeObserver = new ResizeObserver(updateSize);
+	if (!props.options.reference.value){
+		return;
+	}
+	resizeObserver.observe(props.options.reference.value);
+});
+
+defineExpose({
+	open,
+	close,
+})
+
 </script>
 
 <template>
-	<div ref="buttonRef">
-		<slot name="buttontest" />
-		<TransitionExpand>
-			<template v-if="isOpen">
-				<div class="absolute z-50 bg-red-700 w-max h-max" ref="menuRef">
-					<div class="h-max"
-						:style="{
-							width: `${position.width}px`,
-							left: `${position.x}px`,
-							top:  `${position.y}px`,
-						}"
-					>
-						<slot name="contenttest"/>
-					</div>
+	<TransitionExpand>
+		<template v-if="isOpen">
+			<div class="absolute z-50 bg-red-700 w-max h-max" ref="menuRef">
+				<div class="h-max w-max"
+					:style="{
+						left: `${position.x}px`,
+						top:  `${position.y}px`,
+					}"
+				>
+					<slot/>
 				</div>
-			</template>
-		</TransitionExpand>
-
-	</div>
+			</div>
+		</template>
+	</TransitionExpand>
 </template>
