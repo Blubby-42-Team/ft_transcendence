@@ -19,18 +19,21 @@ const position = ref({
 	width: 0,
 })
 
+function updateSize(){
+	if (!menu.value || !props.reference)
+		return;
+	
+	const { top, left, width, height } = props.reference.getBoundingClientRect();
+
+	position.value.x		= left;
+	position.value.y		= top + height;
+	position.value.width	= width;
+}
 function close(){ isOpen.value = false; }
 function open() {
 	isOpen.value = true;
 		
-	nextTick(() => {
-		if (!menu.value || !props.reference)
-			return;
-
-		position.value.x		= props.reference.clientLeft;
-		position.value.y		= props.reference.clientTop;
-		position.value.width	= props.reference.clientWidth;
-	})
+	nextTick(updateSize);
 }
 
 defineExpose({
@@ -47,18 +50,21 @@ onClickOutside(menu, () => {
 </script>
 
 <template>
-	<TransitionFade>
+	<TransitionExpand
+		
+	>
 		<template v-if="isOpen">
-			<div ref="menu"
-				class="absolute z-50 bg-red-700 h-max"
-				:style="{
-					width: `${props.reference?.clientWidth ?? 100}px`,
-					left: `${position.x}px`,
-					top:  `${position.y}px`,
-				}"
-			>
-				<slot/>
+			<div class="absolute z-50 bg-red-700 w-max h-max" ref="menu">
+				<div class="h-max"
+					:style="{
+						width: `${position.width}px`,
+						left: `${position.x}px`,
+						top:  `${position.y}px`,
+					}"
+				>
+					<slot/>
+				</div>
 			</div>
 		</template>
-	</TransitionFade>
+	</TransitionExpand>
 </template>
