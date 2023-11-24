@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
-import { EPageCategories } from '@/stores/page'
+import { EPageCategories, ESelectedLobby } from '@/stores/page'
 
-const { selectedCategory } = usePageStore();
+const { selectedCategory, lobby, selectedLobby } = usePageStore();
 
 enum EType {
 	CATEGORY			= 0,
@@ -12,17 +12,27 @@ enum EType {
 
 type TSidebarCategory = { type: EType.CATEGORY, categoryType: EPageCategories, path: string, icon: string } | { type: Exclude<EType, EType.CATEGORY> }
 
-const categories: Array<TSidebarCategory> = [
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/game',			icon: 'material-symbols:stadia-controller'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	 path: '/tournament',	icon: 'material-symbols:trophy'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.WATCH, 		path: '/watch',			icon: 'material-symbols:visibility'	},
-	{	type: EType.SEPARATOR_BAR,																							},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.MESSAGES, 	path: '/messages',		icon: 'material-symbols:chat'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.FRIENDS, 		path: '/friends',		icon: 'material-symbols:group'	},
-	{	type: EType.SEPARATOR_BOTTOM																						},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.SETTINGS, 	path: '/settings',		icon: 'material-symbols:settings'	},
-]
+
+let categories = getCategories();
+
+watch(selectedLobby, () => {
+	console.log('hello')
+	// categories = getCategories();
+})
+
+function getCategories(): Array<TSidebarCategory>{
+	return [
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: (lobby.value.find((elem) => elem.id === selectedLobby.value)?.path ?? '/'),	icon: 'material-symbols:stadia-controller'	},
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	path: '/tournament',	icon: 'material-symbols:trophy'	},
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.WATCH, 		path: '/watch',			icon: 'material-symbols:visibility'	},
+		{	type: EType.SEPARATOR_BAR,																							},
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.MESSAGES, 	path: '/messages',		icon: 'material-symbols:chat'	},
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.FRIENDS, 		path: '/friends',		icon: 'material-symbols:group'	},
+		{	type: EType.SEPARATOR_BOTTOM																						},
+		{	type: EType.CATEGORY,				categoryType: EPageCategories.SETTINGS, 	path: '/settings',		icon: 'material-symbols:settings'	},
+	]
+}
 
 </script>
 
@@ -32,8 +42,9 @@ const categories: Array<TSidebarCategory> = [
 			<template v-if="category.type == EType.CATEGORY">
 				<NuxtLink :to="category.path"
 					class="self-center w-10 h-10 m-2 text-center border-2 border-transparent rounded"
-					:class="(selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
-						? 'text-accent-color hover:border-accent-color' : 'hover:border-text-light')"
+					:class="css.has({
+						'text-accent-color hover:border-accent-color || hover:border-text-light': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
+					})"
 				>
 					<Icon :name="category.icon" class="w-full h-full"/>
 				</NuxtLink>

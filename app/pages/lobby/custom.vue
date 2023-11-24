@@ -1,12 +1,16 @@
 <script lang="ts" setup>
+import { ESelectedLobby } from '~/stores/page';
 
 definePageMeta({
 	name: 'Lobby Custom',
 	pageTransition: false,
 	layout: 'lobby',
 })
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
+const { setPageData, setSelectedLobby } = usePageStore();
+onMounted(() => {
+	setPageData(EPageCategories.GAME, "Play a Game");
+	setSelectedLobby(ESelectedLobby.Custom);
+})
 
 let isFront = ref([
 	{ type: CardType.PLAYER },

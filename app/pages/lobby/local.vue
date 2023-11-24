@@ -1,12 +1,17 @@
 <script lang="ts" setup>
+import { ESelectedLobby } from '~/stores/page';
+
 
 definePageMeta({
 	name: 'Lobby Local',
 	pageTransition: false,
 	layout: 'lobby',
 })
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.GAME, "Play a Game"); })
+const { setPageData, setSelectedLobby } = usePageStore();
+onMounted(() => {
+	setPageData(EPageCategories.GAME, "Play a Game");
+	setSelectedLobby(ESelectedLobby.Local);
+})
 
 </script>
 
