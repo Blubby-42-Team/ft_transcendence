@@ -22,10 +22,6 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.SETTINGS, 	path: '/settings',		icon: 'material-symbols:settings'	},
 ]);
 
-watch(selectedCategory, (newValue) => {
-	console.log(newValue)
-})
-
 </script>
 
 <template>

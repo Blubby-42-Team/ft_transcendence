@@ -8,12 +8,11 @@ const theme = useState('theme');
 		:class="theme ? theme : 'theme-dark-blue'"
 	>
 		<LayoutSidebar/>
-		<div class="grid grid-rows-[4em,auto,min-content] h-screen overflow-hidden">
-			<LayoutHeader/>
+		<LayoutHeader/>
+		<div class="grid grid-rows-[auto] h-screen overflow-hidden">
 			<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 scrollbar-thumb-rounded-full scrollbar-track">
 				<slot />
 			</div>
-			<LayoutFooter/>
 		</div>
 	</div>
 </template>
