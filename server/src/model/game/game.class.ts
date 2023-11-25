@@ -1,7 +1,10 @@
 import { Direction, gameSettingsType, gameStateType } from '@shared/types/game'
 import { GameEngine } from '@shared/game/game';
+import { Logger } from '@nestjs/common';
 
 export class LobbyInstance {
+
+	private readonly logger: undefined | Logger;
 
 	constructor (room_id: string, owner_id: number, updateState: (state: gameStateType) => void ) {
 
@@ -10,6 +13,8 @@ export class LobbyInstance {
 		this.gameSettings = undefined;
 		this.game = undefined;
 		this.slots = 1;
+
+		this.logger = new Logger(this.room_id)
 
 		this.players[owner_id] = {
 			dir: this.getDirectionBySlot(this.slots),
@@ -65,10 +70,12 @@ export class LobbyInstance {
 	 */
 	addPlayerToLobby(userId: number) {
 		if (this.players[userId] !== undefined) {
+			this.logger.warn(`User ${userId} is already in the lobby`);
 			return;//TODO throw error
 		}
 
 		if (this.slots === 4) {
+			this.logger.error(`Lobby ${this.room_id} is full`);
 			return;//TODO throw error
 		}
 
@@ -82,6 +89,8 @@ export class LobbyInstance {
 		}
 
 		//TODO emit new state to the lobby
+		this.logger.log(`User ${userId} added to the lobby`);
+		return;
 	}
 
 	/**
@@ -89,6 +98,7 @@ export class LobbyInstance {
 	 */
 	removePlayerFromLobby(userId: number) {
 		if (this.players[userId] === undefined) {
+			this.logger.warn(`User ${userId} is not in the lobby`);
 			return;//TODO throw error
 		}
 
@@ -97,10 +107,12 @@ export class LobbyInstance {
 		this.removePlayerFromWhiteList(userId);
 
 		if (this.players[userId].isConnected) {
+			this.logger.warn(`User ${userId} is connected to the WS room, disconnect him`);
 			//TODO emit and disconnect player from the WS room
 		}
 
 		delete this.players[userId];
+		this.logger.log(`User ${userId} removed from the lobby`);
 	}
 
 	/**
@@ -108,6 +120,7 @@ export class LobbyInstance {
 	 */
 	onPlayerWsConnect(userId: number, wsId: string) {
 		if (this.players[userId] === undefined) {
+			this.logger.warn(`User ${userId} is not in the lobby`);
 			return;//TODO throw error
 		}
 
@@ -115,6 +128,7 @@ export class LobbyInstance {
 		this.players[userId].isConnected = true;
 
 		//TODO emit new state to the lobby
+		this.logger.log(`User ${userId} connected to the WS room [${this.room_id}]`);
 	}
 
 	/**
@@ -122,6 +136,7 @@ export class LobbyInstance {
 	 */
 	onPlayerWsDisconnect(userId: number) {
 		if (this.players[userId] === undefined) {
+			this.logger.warn(`User ${userId} is not in the lobby`);
 			return;//TODO throw error
 		}
 
@@ -135,12 +150,14 @@ export class LobbyInstance {
 	 */
 	onPlayerReady(userId: number) {
 		if (this.players[userId] === undefined) {
+			this.logger.warn(`User ${userId} is not in the lobby`);
 			return;//TODO throw error
 		}
 
 		this.players[userId].ready = true;
 
 		//TODO emit new state to the lobby
+		this.logger.log(`User ${userId} is ready`);
 	}
 
 	/**
@@ -148,12 +165,14 @@ export class LobbyInstance {
 	 */
 	onPlayerNotReady(userId: number) {
 		if (this.players[userId] === undefined) {
+			this.logger.warn(`User ${userId} is not in the lobby`);
 			return;//TODO throw error
 		}
 
 		this.players[userId].ready = false;
 
 		//TODO emit new state to the lobby
+		this.logger.log(`User ${userId} is not ready`);
 	}
 
 	/**
@@ -169,10 +188,12 @@ export class LobbyInstance {
 	 */
 	addPlayerToWhiteList(userId: number) {
 		if (this.isInWhiteList(userId)) {
+			this.logger.warn(`User ${userId} is already in the white list`);
 			return;//TODO throw error
 		}
 
 		this.whiteList.push(userId);
+		this.logger.log(`User ${userId} added to the white list`);
 	}
 
 	/**
@@ -180,10 +201,13 @@ export class LobbyInstance {
 	 */
 	removePlayerFromWhiteList(userId: number) {
 		if (!this.isInWhiteList(userId)) {
+			this.logger.warn(`User ${userId} is not in the white list`);
 			return;//TODO throw error
 		}
 
 		this.whiteList = this.whiteList.filter((id) => id !== userId);
+		this.logger.log(`User ${userId} removed from the white list`);
+		//TODO emit new state to the lobby
 	}
 
 	private getDirectionBySlot(slot: number): Direction {

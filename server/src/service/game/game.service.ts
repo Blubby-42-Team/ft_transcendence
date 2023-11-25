@@ -3,12 +3,17 @@ import { GameOptDto } from '@shared/dto/game.dto';
 import { Server } from 'socket.io';
 import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
+import { AuthService } from 'src/auth/auth.service';
+import { validate } from 'class-validator';
+import { JoinGameRoomRequestDto } from '@shared/dto/ws.dto';
+import { User } from 'src/model/user/user.class';
 
 @Injectable()
 export class GameService {
 
 	constructor (
 		private readonly emitGAteway: EmitGateway,
+		private readonly authService: AuthService,
 	) {}
 
 	private readonly logger = new Logger(GameService.name);
@@ -61,17 +66,34 @@ export class GameService {
 	async addPlayerToWhiteList(roomId: string, userId: number) {
 	}
 
-	async addPlayerToLobby(roomId: string, userId: number) {
+	async addPlayerToLobby(req: JoinGameRoomRequestDto) {
+
+		const user = await this.getJwtUser(req);
+		if (user === undefined) {
+			return;//TODO throw error
+		}
+
+		// Check if lobby exist
+		if (this.lobbys[req.game_room_id] === undefined) {
+			return;//TODO throw error
+		}
+
+		const lobby = this.lobbys[req.game_room_id];
+
 		//TODO check if user is already in a lobby by checking users map
-		if (this.users[userId] !== undefined) {
+		if (this.users[user.id] !== undefined) {
 			return;//TODO throw error
 		}
-		
+
 		//TODO check if user is in the lobby whitelist
-		if (!this.lobbys[roomId].isInWhiteList(userId)) {
+		if (!lobby.isInWhiteList(user.id)) {
 			return;//TODO throw error
 		}
-		//TODO check if lobby is full
+
+		//TODO check if we can add player
+		if (!lobby.addPlayerToLobby(user.id)) {
+			return;//TODO throw error
+		}
 
 		//TODO add user to lobby and connect him to the WS room
 	}
@@ -119,5 +141,13 @@ export class GameService {
 		counter += 1;
 		}
 		return result;
+	}
+
+	async getJwtUser(jwt: JoinGameRoomRequestDto) : Promise<User | undefined> {
+
+		const check = this.authService.validateJwtAndGetUserPayload(jwt.auth_token);
+		if (check === undefined) {
+			return undefined;
+		}
 	}
 }

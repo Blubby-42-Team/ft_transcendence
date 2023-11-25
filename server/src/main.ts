@@ -30,7 +30,7 @@ async function bootstrap() {
 
 	app.useGlobalGuards(new AuthGuard(reflector, jwtService));
 
-	app.useGlobalInterceptors(new ClassSerializerInterceptor(new Reflector()))
+	// app.useGlobalInterceptors(new ClassSerializerInterceptor(new Reflector()))
 
 	app.use(cookieParser());
 
