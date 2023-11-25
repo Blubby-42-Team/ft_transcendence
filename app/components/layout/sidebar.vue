@@ -25,13 +25,13 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 </script>
 
 <template>
-	<div class="flex flex-col h-full p-2 overflow-hidden text-pink-500 bg-pink-500">
+	<div class="flex flex-col h-full p-2 overflow-hidden text-text-light bg-first">
 		<template v-for="category in categories">
 			<template v-if="category.type === EType.CATEGORY">
 				<NuxtLink :to="category.path"
 					class="self-center w-10 h-10 m-2 text-center border-2 border-transparent rounded"
 					:class="css.has({
-						'text-pink-500 hover:border-pink-500 || hover:border-pink-500': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
+						'text-accent hover:border-accent || hover:border-text-light': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
 					})"
 				>
 					<Icon :name="category.icon" class="w-full h-full"/>
@@ -39,7 +39,7 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 			</template>
 			<template v-else-if="category.type == EType.SEPARATOR_BAR">
 				<!-- Separator with bar to distingate Categories -->
-				<div class="mt-5 mb-5 border-t-2 border-pink-500"></div>
+				<div class="mt-5 mb-5 border-t-2 border-text-light"></div>
 			</template>
 			<template v-else-if="category.type == EType.SEPARATOR_BOTTOM">
 				<!-- Separator to between icons at the top and the bottom -->

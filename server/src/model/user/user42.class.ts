@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, Exclusion, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Exclusion, JoinColumn, OneToOne, firstColumn, firstGeneratedColumn } from "typeorm";
 import { IsNotEmpty, IsNumber, IsEnum, IsObject} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 
@@ -10,7 +10,7 @@ export class User42 {
 		Object.assign(this, partial);
 	}
 
-	@PrimaryColumn()
+	@firstColumn()
 	@IsNotEmpty()
 	@IsNumber()
 	@Exclude({ toPlainOnly: true})

@@ -7,7 +7,7 @@ const isFriendsOpen		= useState('isFriendsOpen');
 </script>
 
 <template>
-	<div class="h-full overflow-x-hidden bg-pink-500 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-pink-500 scrollbar-thumb-rounded-none scrollbar-track">
+	<div class="h-full overflow-x-hidden bg-background1 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first scrollbar-thumb-rounded-none scrollbar-track">
 		<!-- Friends Hiding Button -->
 		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
 			@click="() => { isChatsOpen = !isChatsOpen }"
@@ -16,17 +16,17 @@ const isFriendsOpen		= useState('isFriendsOpen');
 			<div class="pl-2">Chats</div>
 		</GenericButton>
 
-		<div class="border-b-[1px] border-pink-500"></div>
+		<div class="border-b-[1px] border-text"></div>
 
 		<!-- Friends List -->
 		<TransitionExpand>
 			<template v-if="isChatsOpen">
-				<div class="p-1">
+				<div class="">
 					<template v-for="i in 10">
-						<GenericButton class="w-full h-10 mb-2 rounded place-content-start" :buttonStyle="2"
+						<GenericButton class="w-full p-1 place-content-start" :buttonStyle="2"
 							@click="() => isGroupSelected = false"
 						>
-							<GenericProfilePicture class="w-10 h-10 bg-pink-500" imageSrc="/amogus.png"/>
+							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
 							<div class="pl-2">Chats {{ i }}</div>
 						</GenericButton>
 					</template>
@@ -36,7 +36,7 @@ const isFriendsOpen		= useState('isFriendsOpen');
 
 		<TransitionExpand>
 			<template v-if="isChatsOpen">
-				<div class="pb-4 border-b-[1px] border-pink-500"></div>
+				<div class="pb-4 border-b-[1px] border-text"></div>
 			</template>
 		</TransitionExpand>
 		
@@ -48,17 +48,17 @@ const isFriendsOpen		= useState('isFriendsOpen');
 			<div class="pl-2">Groups</div>
 		</GenericButton>
 
-		<div class="border-b-[1px] border-pink-500"></div>
+		<div class="border-b-[1px] border-text"></div>
 
 		<!-- Groups List -->
 		<TransitionExpand>
 			<template v-if="isGroupsOpen">
-				<div class="p-1">
+				<div class="">
 					<template v-for="i in 10">
-						<GenericButton class="w-full h-10 mb-2 rounded place-content-start" :buttonStyle="2"
+						<GenericButton class="w-full p-1 place-content-start" :buttonStyle="2"
 							@click="() => isGroupSelected = true"
 						>
-							<GenericProfilePicture class="w-10 h-10 bg-pink-500" imageSrc="/amogus.png"/>
+							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
 							<div class="pl-2">Group {{ i }}</div>
 						</GenericButton>
 					</template>
@@ -68,7 +68,7 @@ const isFriendsOpen		= useState('isFriendsOpen');
 		
 		<TransitionExpand>
 			<template v-if="isGroupsOpen">
-				<div class="pb-4 border-b-[1px] border-pink-500"></div>
+				<div class="pb-4 border-b-[1px] border-text"></div>
 			</template>
 		</TransitionExpand>
 		
@@ -82,17 +82,17 @@ const isFriendsOpen		= useState('isFriendsOpen');
 			<div class="pl-2">Friends</div>
 		</GenericButton>
 
-		<div class="border-b-[1px] border-pink-500"></div>
+		<div class="border-b-[1px] border-text"></div>
 
 		<!-- Friends List -->
 		<TransitionExpand>
 			<template v-if="isFriendsOpen">
-				<div class="p-1">
+				<div class="">
 					<template v-for="i in 10">
-						<GenericButton class="w-full h-10 mb-2 rounded place-content-start" :buttonStyle="2"
+						<GenericButton class="w-full p-1 place-content-start" :buttonStyle="2"
 							@click="() => isGroupSelected = false"
 						>
-							<GenericProfilePicture class="w-10 h-10 bg-pink-500" imageSrc="/amogus.png"/>
+							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
 							<div class="pl-2">Friend {{ i }}</div>
 						</GenericButton>
 					</template>

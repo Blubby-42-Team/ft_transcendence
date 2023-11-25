@@ -12,10 +12,12 @@ const isFriendsOpen		= useState('isFriendsOpen',		() => true);
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-1 overflow-hidden" :class="isGroupSelected ? 'grid-cols-[16em,1fr,auto]' : 'grid-cols-[16em,1fr]'">
+	<div class="grid h-full grid-rows-1 overflow-hidden" :class="isGroupSelected ? 'grid-cols-[16em,1fr,3px,auto]' : 'grid-cols-[16em,1fr]'">
 		<MessageSelectingChannelList/>
 
 		<MessageChannel :id="0"/>
+
+		<br>
 
 		<template v-if="isGroupSelected">
 			<MessageGroupChannelMemberList/>
