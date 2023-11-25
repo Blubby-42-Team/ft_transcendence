@@ -6,6 +6,7 @@ onMounted(() => { setPageData(EPageCategories.SETTINGS, "Settings"); })
 
 const themes = [
 	'theme-dark',
+	'theme-light',
 	'theme-dark-blue',
 	'theme-light-blue',
 ];

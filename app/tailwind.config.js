@@ -53,6 +53,16 @@ export default {
 				'background2':		'#121317',
 				'liveGameColor':	'#DC1B1B',
 			},
+			'theme-light': {
+				'text':				'#000000',
+				'text-dark':		'#000000',
+				'text-light':		'#FFFFFF',
+				'accent-color':		'#ECBC42',
+				'primary-color':	'#2F356D',
+				'background1':		'#FFFFFF',
+				'background2':		'#E4E4E4',
+				'liveGameColor':	'#DC1B1B',
+			},
 		}),
 	],
 }
