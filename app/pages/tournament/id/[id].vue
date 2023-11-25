@@ -36,7 +36,7 @@ function deleteTournament(){
 				Delete Event
 			</GenericButton>
 		</div>
-		<div class="flex h-0 mt-5 mb-5 border-2 border-text bg-text"></div>
+		<div class="flex h-0 mt-5 mb-5 border-2 border-pink-500 bg-pink-500"></div>
 		<TournamentPreview/>
 	</div>
 </template>

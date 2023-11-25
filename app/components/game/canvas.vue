@@ -63,7 +63,7 @@ onUnmounted(() => {
 <template>
 	<div id="canvasDiv" class="w-full h-full">
 		<client-only placeholder="loading...">
-			<canvas class="bg-white border border-text" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
+			<canvas class="bg-white border border-pink-500" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
 		</client-only>
 	</div>
 </template>

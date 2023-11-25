@@ -15,20 +15,20 @@ const props = defineProps({
 	<div class="relative w-full h-full">
 		<transition name="flip" mode="in-out">
 			<div v-if="props.type === CardType.EMPTY" class="absolute w-full h-full align-top card">
-				<div class="w-full h-full overflow-hidden border-4 bg-background3 rounded-2xl border-color2">
-					<Icon name="material-symbols:account-circle" class="w-full h-full text-color3"/>
+				<div class="w-full h-full overflow-hidden border-4 bg-pink-500 rounded-2xl border-pink-500">
+					<Icon name="material-symbols:account-circle" class="w-full h-full text-pink-500"/>
 				</div>
 			</div>
 			<div v-else-if="props.type === CardType.ADD" class="absolute w-full h-full align-top card">
-				<GenericButton class="w-full h-full overflow-hidden border-4 bg-background3 hover:bg-color2 rounded-2xl border-color2">
-					<Icon name="material-symbols:add" class="w-full h-full text-color3"/>
+				<GenericButton class="w-full h-full overflow-hidden border-4 bg-pink-500 hover:bg-pink-500 rounded-2xl border-pink-500">
+					<Icon name="material-symbols:add" class="w-full h-full text-pink-500"/>
 				</GenericButton>
 			</div>
 			<div v-else-if="props.type === CardType.PLAYER" class="absolute w-full h-full align-top card">
-				<div class="w-full h-full overflow-hidden border-4 bg-gradient-to-bl from-yellow-400 via-accent-color to-yellow-400 rounded-2xl border-color2">
+				<div class="w-full h-full overflow-hidden border-4 bg-gradient-to-bl from-yellow-400 via-pink-500 to-yellow-400 rounded-2xl border-pink-500">
 					<div class="h-full w-full p-2 bg-gradient-to-tl grid from-yellow-600 via-transparent to-yellow-600 grid-rows-[9rem_max-content_repeat(4,auto)] rounded-xl justify-items-center">
 						<GenericProfilePicture imageSrc="/amogus.png" class="w-32 h-32"/>
-						<div class="flex w-full pt-2 overflow-hidden text-2xl font-bold truncate text-background2">James Milwaukee</div>
+						<div class="flex w-full pt-2 overflow-hidden text-2xl font-bold truncate text-pink-500">James Milwaukee</div>
 					</div>
 				</div>
 			</div>

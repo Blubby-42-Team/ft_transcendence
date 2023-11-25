@@ -35,13 +35,13 @@ const sideMenu = {
 		</div>
 		<GenericSideMenu ref="testRef" :options="sideMenu" direction="top">
 			<div class="w-full">
-				<div class="flex flex-col w-full px-2 py-4 text-sm border-4 rounded-lg shadow-lg border-color3 text-text bg-color2">
+				<div class="flex flex-col w-full px-2 py-4 text-sm border-4 rounded-lg shadow-lg border-pink-500 text-pink-500 bg-pink-500">
 					<!-- <GenericProfilePicture imageSrc="/amogus.png"/> -->
 					<div class="w-full p-2 mt-3 text-base">James Milwaukee</div>
-					<hr class="my-3 border-color3" />
+					<hr class="my-3 border-pink-500" />
 					<template v-for="elem in test">
 						<template v-if="elem">
-							<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-accent-color hover:text-color2">
+							<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-pink-500 hover:text-pink-500">
 								<div class="w-5">
 									<Icon :name="elem.icon" class="w-4 h-4"/>
 								</div>
@@ -49,7 +49,7 @@ const sideMenu = {
 							</button>
 						</template>
 						<template v-else>
-							<hr class="my-3 border-color3" />
+							<hr class="my-3 border-pink-500" />
 						</template>
 					</template>
 				</div>

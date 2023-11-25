@@ -7,7 +7,7 @@ const { members } = useChannelStore()
 <template>
 	<template v-if="isMembersOpen">
 		<div class="grid h-full grid-rows-[max-content,auto]" :class="(isMembersOpen ? 'w-60' : 'w-14')">
-			<div class="flex p-2 bg-color1">
+			<div class="flex p-2 bg-pink-500">
 				<div class="flex self-center mr-auto text-3xl place-items-center">Members</div>
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mr-0"
 					@click="() => { isMembersOpen = !isMembersOpen }"
@@ -16,7 +16,7 @@ const { members } = useChannelStore()
 				</GenericButton>
 			</div>
 	
-			<div class="overflow-x-hidden bg-color2 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-text scrollbar-thumb-rounded-none scrollbar-track">
+			<div class="overflow-x-hidden bg-pink-500 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-pink-500 scrollbar-thumb-rounded-none scrollbar-track">
 				<template v-for="member in members">
 					<GenericButton class="w-full p-1" :buttonStyle="2">
 						<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
