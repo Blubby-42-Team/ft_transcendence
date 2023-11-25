@@ -5,11 +5,6 @@ import { UserRoleType } from "src/auth/auth.class";
 
 @Entity()
 export class User42 {
-
-	constructor(partial: Partial<User42>) {
-		Object.assign(this, partial);
-	}
-
 	@PrimaryColumn()
 	@IsNotEmpty()
 	@IsNumber()

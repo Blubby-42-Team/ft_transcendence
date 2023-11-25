@@ -3,6 +3,8 @@ import { Repository, UpdateResult } from 'typeorm';
 import { User } from './user.class';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 import { ModelUser42Service } from './user42.service';
+import { validate } from 'class-validator';
+import { UserRoleType } from 'src/auth/auth.class';
 
 @Injectable()
 export class ModelUserService {
@@ -17,24 +19,50 @@ export class ModelUserService {
 		return await this.postgresUserService.getUserById(id);
 	}
 
-	async addUser(user: User): Promise<User> {
-		await this.modelUser42Service.addUser42(user.user42)
-		.catch((err) => {
-			this.logger.error(err);
-			throw new BadRequestException(err);
-		});
+	/**
+	 * Create or update user with 42 data in database
+	 * @param id42 id of 42 user
+	 * @param login42 login of 42 user
+	 * @param displayName42 display name of 42 user
+	 * @param accessToken42 access token of 42 user
+	 * @param refreshToken42 refresh token of 42 user
+	 * @param userRolse user role, default is UserRoleType.User
+	 * @returns id of user in database
+	 */
+	async addUserWith42data(
+		id42: number,
+		login42: string,
+		displayName42: string,
+		accessToken42: string,
+		refreshToken42: string,
+		userRolse: UserRoleType = UserRoleType.User,
+	): Promise<number> {
+		// First get user from database with 42 id
+		const userDb = await this.postgresUserService.getUserBy42Id(id42);
+		if (!userDb) {
+			this.logger.debug(`User ${login42} not found in database, add it`)
+			return await this.postgresUserService.createUserWith42Data(
+				id42,
+				login42,
+				displayName42,
+				accessToken42,
+				refreshToken42,
+			);
+		}
+		else {
+			this.logger.debug(`User ${displayName42} found in database, update it`)
+			await this.postgresUserService.updateUserWith42Data(
+				userDb.id,
+				displayName42,
+				UserRoleType.User,
+				id42,
+				login42,
+				accessToken42,
+				refreshToken42,
+			);
+			return await this.postgresUserService.getUserById(userDb.id);
+		}
 
-		const userdb = await this.addUserPong(user)
-		.catch((err) => {
-			this.logger.error(err);
-			throw new BadRequestException(err);
-		});
-
-		return userdb;
-	}
-
-	async getUserRoleById(id: number): Promise<string> {
-		return await this.postgresUserService.getUserRoleById(id);
 	}
 
 	/**
@@ -42,27 +70,6 @@ export class ModelUserService {
 	 * @returns 
 	 */
 	async addUserPong(user: User): Promise<User> {
-
-		// First get user from database with 42 id
-		const checkUserExist = await this.postgresUserService.getUserBy42Id(user.user42.id);
-		if (!checkUserExist) {
-			this.logger.debug(`User ${user.displayName} not found in database, add it`)
-			return await this.postgresUserService.addUser(user);
-		}
-		else {
-			this.logger.debug(`User ${user.displayName} found in database, update it`)
-			/**
-			 * Check if the user role in the database is the same as the user role in the token,
-			 * if not, keep the role in the database
-			 */
-			if (checkUserExist.role !== user.role) {
-				this.logger.warn(`User ${user.displayName} has the ${checkUserExist.role} role in the database, but ${user.role} in the token.`)
-				this.logger.warn(`Keep the ${checkUserExist.role} role in the database`)
-				user.role = checkUserExist.role;
-			}
-			await this.postgresUserService.updateUser(checkUserExist.id, user);
-			return await this.postgresUserService.getUserById(checkUserExist.id);
-		}
 	}
 }
 

@@ -1,15 +1,11 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, Exclusion, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty, IsNumber, IsEnum, IsObject} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsEnum, IsObject, ValidateNested} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 import { User42 } from "./user42.class";
 
 @Entity()
 export class User {
-
-	constructor(partial: Partial<User>) {
-		Object.assign(this, partial);
-	}
 
 	@PrimaryGeneratedColumn()
 	@IsNotEmpty()
@@ -32,6 +28,7 @@ export class User {
 	@JoinColumn()
 	@Exclude({ toPlainOnly: true})
 	@IsNotEmpty()
+	@ValidateNested()
 	user42: User42;
 }
 

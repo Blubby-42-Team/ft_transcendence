@@ -19,26 +19,42 @@ export class ModelUser42Service {
 	}
 
 	/**
-	 * Add or update user in database.
-	 * @requires User
-	 * @returns 
+	 * Add user42 in database and return its id
+	 * @param id42 42 user id
+	 * @param login42 42 user login
+	 * @param accessToken42 42 user access token
+	 * @param refreshToken42 42 user refresh token
+	 * @returns 42 user id from database
 	 */
-	async addUser42(user: User42): Promise<User42> {
+	async addUser42(
+		id42: number,
+		login42: string,
+		accessToken42: string,
+		refreshToken42: string,
+	): Promise<number> {
 
 		// First get user42 from database with 42 id
-		const checkUserExist = await this.postgresUser42Service.getUser42ById(user.id);
+		const checkUserExist = await this.postgresUser42Service.getUser42ById(id42);
 		if (!checkUserExist) {
-			this.logger.debug(`User42 ${user.login} not found in database, add it`)
-			return await this.postgresUser42Service.addUser42(user);
+			this.logger.debug(`User42 ${login42} not found in database, add it`)
+			return await this.postgresUser42Service.addUser42(
+				id42,
+				login42,
+				accessToken42,
+				refreshToken42,
+			);
 		}
 		else {
-			this.logger.debug(`User42 ${user.login} found in database, update it`)
-			await this.postgresUser42Service.updateUser42(user.id, user)
-			.catch((err) => {
+			this.logger.debug(`User42 ${login42} found in database, update it`)
+			return await this.postgresUser42Service.updateUser42(
+				id42,
+				login42,
+				accessToken42,
+				refreshToken42,
+			).catch((err) => {
 				this.logger.error(err);
 				throw new BadRequestException(err);
 			});
-			return await this.postgresUser42Service.getUser42ById(checkUserExist.id);
 		}
 	}
 }
