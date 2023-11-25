@@ -43,6 +43,16 @@ export default {
 				'accent-color':		'#B58C1D',
 				'liveGameColor':	'#DC1B1B',
 			},
+			'theme-dark': {
+				'text':				'#FFFFFF',
+				'text-dark':		'#000000',
+				'text-light':		'#FFFFFF',
+				'accent-color':		'#ECBC42',
+				'primary-color':	'#2F356D',
+				'background1':		'#333641',
+				'background2':		'#121317',
+				'liveGameColor':	'#DC1B1B',
+			},
 		}),
 	],
 }
