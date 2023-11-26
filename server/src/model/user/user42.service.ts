@@ -13,7 +13,7 @@ export class ModelUser42Service {
 	private readonly logger = new Logger(ModelUser42Service.name);
 
 	async getUserById(id: number): Promise<User42> {
-		return await this.postgresUser42Service.getUser42ById(id);
+		return await this.postgresUser42Service.getUser42By42Id(id);
 	}
 
 	/**
@@ -32,11 +32,11 @@ export class ModelUser42Service {
 	): Promise<number> {
 
 		// First get user42 from database with 42 id
-		return this.postgresUser42Service.getUser42ById(id42)
+		return this.postgresUser42Service.getUser42By42Id(id42)
 		.then ((res: User42) => {
 			this.logger.debug(`User42 ${login42} found in database, update it`)
 
-			return this.postgresUser42Service.updateUser42(
+			this.postgresUser42Service.updateUser42(
 				id42,
 				login42,
 				accessToken42,
@@ -46,6 +46,7 @@ export class ModelUser42Service {
 				this.logger.error(err);
 				throw new BadRequestException(err);
 			});
+			return id42;
 		})
 		.catch((err) => {
 			if (err instanceof NotFoundException) {

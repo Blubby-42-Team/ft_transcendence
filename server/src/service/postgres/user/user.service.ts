@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException, NotFoundException, InternalServerErrorException, BadGatewayException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../model/user/user.class';
 import { Repository } from 'typeorm';
@@ -12,34 +12,35 @@ export class PostgresUserService {
 
 	constructor (
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
-		@InjectRepository(User42) private readonly user42Repository: Repository<User42>,
 	) {}
 	
 	/**
 	 * Get user by id
-	 * @param id id of user
-	 * @returns user
-	 * @throws NotFoundException if user not found
-	 * @throws InternalServerErrorException if db error
+	 * @param userId id of user
+	 * @returns `Promise` user
+	 * @throws `NotFoundException` if user not found
+	 * @throws `InternalServerErrorException` if db error
 	 */
-	async getUserById(id: number): Promise<User> {
+	async getUserById(userId: number): Promise<User> {
 		return this.userRepository.query(`
-			SELECT * FROM "user" WHERE id = '${id}'
-		`)
+			SELECT * FROM "user" WHERE id = $1`,
+			[userId]
+			
+			)
 		.then((res): User => {
 			if (res.length === 0) {
-				this.logger.debug(`Failed to get user by id ${id}: not found`);
-				throw new NotFoundException(`Failed to get user by id ${id}: not found`);
+				this.logger.debug(`Failed to get user by id ${userId}: not found`);
+				throw new NotFoundException(`Failed to get user by id ${userId}: not found`);
 			}
 			if (res.length > 1) {
-				this.logger.debug(`Failed to get user by id ${id}: too many results`);
-				throw new InternalServerErrorException(`Failed to get user by id ${id}: too many results`);
+				this.logger.debug(`Failed to get user by id ${userId}: too many results`);
+				throw new InternalServerErrorException(`Failed to get user by id ${userId}: too many results`);
 			}
 			return res[0];
 		})
 		.catch((err) => {
-			this.logger.debug(`Failed to get user by id ${id}: ${err}`);
-			throw new InternalServerErrorException(`Failed to get user by id ${id}`);
+			this.logger.debug(`Failed to get user by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by id ${userId}`);
 		});
 	}
 
@@ -48,9 +49,9 @@ export class PostgresUserService {
 	 * @param idUser id of user to update 
 	 * @param displayNameUser dipaly name of user
 	 * @param roleUser role of user
-	 * @returns 'ok' if success
-	 * @throws NotFoundException if user not found
-	 * @throws InternalServerErrorException if db error
+	 * @returns `Promise` 'ok' if success
+	 * @throws `NotFoundException` if user not found
+	 * @throws `InternalServerErrorException` if db error
 	 */
 	async updateUser (
 		idUser: number,
@@ -77,14 +78,15 @@ export class PostgresUserService {
 	/**
 	 * Get user by 42 id
 	 * @param id42 id of 42 user
-	 * @returns user
-	 * @throws NotFoundException if user not found
-	 * @throws InternalServerErrorException if db error
+	 * @returns `Promise` user
+	 * @throws `NotFoundException` if user not found
+	 * @throws `InternalServerErrorException` if db error
 	 */
 	async getUserBy42Id(id42: number): Promise<User> {
 		return this.userRepository.query(`
-			SELECT * FROM "user" WHERE "user42Id" = '${id42}'
-		`)
+			SELECT * FROM "user" WHERE "user42Id" = $1`,
+			[id42]
+		)
 		.catch((err) => {
 			this.logger.debug(`Failed to get user by 42 id ${id42}: ${err}`);
 			throw new InternalServerErrorException(`Failed to get user by 42 id ${id42}`);
@@ -102,18 +104,25 @@ export class PostgresUserService {
 		})
 	}
 
-	async getUserRoleById(id: number): Promise<string> {
+	/**
+	 * Get user roles by id
+	 * @param userId id of user
+	 * @returns `Promise` user roles
+	 * @throws `NotFoundException` if user not found
+	 */
+	async getUserRoleById(userId: number): Promise<string> {
 		return this.userRepository.query(`
-			SELECT "role" FROM "user" WHERE id = '${id}'
-		`)
+			SELECT "role" FROM "user" WHERE id = $1`,
+			[userId]
+		)
 		.catch((err) => {
-			this.logger.debug(`Failed to get user role by id ${id}: ${err}`);
-			throw new InternalServerErrorException(`Failed to get user role by id ${id}`);
+			this.logger.debug(`Failed to get user role by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user role by id ${userId}`);
 		})
 		.then((res): string => {
 			if (res.length === 0) {
-				this.logger.debug(`Failed to get user role by id ${id}: not found`);
-				throw new NotFoundException(`Failed to get user role by id ${id}: not found`);
+				this.logger.debug(`Failed to get user role by id ${userId}: not found`);
+				throw new NotFoundException(`Failed to get user role by id ${userId}: not found`);
 			}
 			return res[0].role;
 		})
@@ -126,7 +135,7 @@ export class PostgresUserService {
 	 * @param displayName42 display name of 42 user
 	 * @param accessToken42 access token of 42 user
 	 * @param refreshToken42 refresh token of 42 user
-	 * @returns id of user in database
+	 * @returns `Promise` id of user in database
 	 */
 	async createUserWith42Data(
 		id42: number,
