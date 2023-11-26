@@ -24,9 +24,12 @@ export class PostgresUserService {
 	async getUserById(userId: number): Promise<User> {
 		return this.userRepository.query(`
 			SELECT * FROM "user" WHERE id = $1`,
-			[userId]
-			
-			)
+			[userId],
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by id ${userId}`);
+		})
 		.then((res): User => {
 			if (res.length === 0) {
 				this.logger.debug(`Failed to get user by id ${userId}: not found`);
@@ -38,10 +41,7 @@ export class PostgresUserService {
 			}
 			return res[0];
 		})
-		.catch((err) => {
-			this.logger.debug(`Failed to get user by id ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to get user by id ${userId}`);
-		});
+
 	}
 
 	/**
