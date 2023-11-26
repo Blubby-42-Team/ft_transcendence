@@ -4,7 +4,6 @@ import { Server } from 'socket.io';
 import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
-import { validate } from 'class-validator';
 import { JoinGameRoomRequestDto } from '@shared/dto/ws.dto';
 import { User } from 'src/model/user/user.class';
 
@@ -90,10 +89,10 @@ export class GameService {
 			return;//TODO throw error
 		}
 
-		//TODO check if we can add player
-		if (!lobby.addPlayerToLobby(user.id)) {
-			return;//TODO throw error
-		}
+		// //TODO check if we can add player
+		// if (!lobby.addPlayerToLobby(user.id)) {
+		// 	return;//TODO throw error
+		// }
 
 		//TODO add user to lobby and connect him to the WS room
 	}

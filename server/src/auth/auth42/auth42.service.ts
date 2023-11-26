@@ -27,15 +27,12 @@ export class Auth42Service {
 		refreshToken42: string,
 		res: Response,
 	) {
-		this.modelUserService.addUserWith42data(
+		return await this.modelUserService.addOrUpdateUserWith42data(
 			id42,
 			login42,
 			displayName42,
 			accessToken42,
 			refreshToken42,
-		).catch((err) => {
-			this.logger.error(err);
-			throw err;
-		});
+		)
 	}
 }

@@ -1,9 +1,7 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { Repository, UpdateResult } from 'typeorm';
+import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
 import { User42 } from './user42.class';
 import { PostgresUser42Service } from 'src/service/postgres/user42/user42.service';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
-import { User } from './user.class';
 
 @Injectable()
 export class ModelUser42Service {
@@ -26,7 +24,7 @@ export class ModelUser42Service {
 	 * @param refreshToken42 42 user refresh token
 	 * @returns 42 user id from database
 	 */
-	async addUser42(
+	async addOrUpdateUser42(
 		id42: number,
 		login42: string,
 		accessToken42: string,
@@ -34,28 +32,35 @@ export class ModelUser42Service {
 	): Promise<number> {
 
 		// First get user42 from database with 42 id
-		const checkUserExist = await this.postgresUser42Service.getUser42ById(id42);
-		if (!checkUserExist) {
-			this.logger.debug(`User42 ${login42} not found in database, add it`)
-			return await this.postgresUser42Service.addUser42(
-				id42,
-				login42,
-				accessToken42,
-				refreshToken42,
-			);
-		}
-		else {
+		return this.postgresUser42Service.getUser42ById(id42)
+		.then ((res: User42) => {
 			this.logger.debug(`User42 ${login42} found in database, update it`)
-			return await this.postgresUser42Service.updateUser42(
+
+			return this.postgresUser42Service.updateUser42(
 				id42,
 				login42,
 				accessToken42,
 				refreshToken42,
-			).catch((err) => {
+			)
+			.catch((err) => {
 				this.logger.error(err);
 				throw new BadRequestException(err);
 			});
-		}
+		})
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`User42 ${login42} not found in database, add it`)
+
+				return this.postgresUser42Service.addUser42(
+					id42,
+					login42,
+					accessToken42,
+					refreshToken42,
+				);
+			}
+
+			throw err;
+		});
 	}
 }
 

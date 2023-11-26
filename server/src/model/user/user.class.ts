@@ -24,11 +24,14 @@ export class User {
 	/**
 	 * User42 data
 	 */
-	@OneToOne(type => User42)
+	@OneToOne(type => User42,
+	{
+		cascade: true,
+		eager: true,
+	})
 	@JoinColumn()
 	@Exclude({ toPlainOnly: true})
 	@IsNotEmpty()
 	@ValidateNested()
 	user42: User42;
 }
-

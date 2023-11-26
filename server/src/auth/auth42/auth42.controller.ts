@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, HttpStatus, Logger, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, HttpStatus, InternalServerErrorException, Logger, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { Auth42Guard } from './auth42.guard';
 import { Auth42Service } from './auth42.service';
@@ -46,14 +46,18 @@ export class Auth42Controller {
 			throw new BadRequestException(`42 Authentication failed, invalid user recieved!`);
 		});
 
-		this.Auth42Service.storeUser(
+		await this.Auth42Service.storeUser(
 			user42?.id42,
 			user42?.login,
 			user42?.displayName,
 			user42?.accessToken,
 			user42?.refreshToken,
 			res,
-		)
+		);
+		return res.status(HttpStatus.OK).json({
+			statusCode: HttpStatus.OK,
+			message: '42 Authentication successful',
+		});
 	}
 }
 

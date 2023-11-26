@@ -40,7 +40,7 @@ export class GameController {
 
 		// TODO start room later
 		// NOTE: Dont run this with await, it need to be run in background
-		this.gameService.startRoom(body.game_room_id, body, this.gameGateway.server);
+		// this.gameService.startRoom(body.game_room_id, body, this.gameGateway.server);
 		return "ok";
 	}
 }
