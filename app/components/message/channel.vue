@@ -12,32 +12,27 @@ defineProps({
 
 const { messages } = useChannelStore()
 
-const selectedChannelName	= useState('selectedChannelName');
-
 const myId = "2"
 
 </script>
 
 <template>
-	<div class="grid grid-rows-[max_contents,1px,max_contents]">
-		<div class="h-16 p-2 text-lg bg-first text-text-light">
-			<div class="flex items-center justify-center h-full ">
-				{{ selectedChannelName }}
-			</div>
-		</div>
-		<div class="flex flex-col-reverse overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first overscroll-y-contain">
-			<template v-for="message in messages">
-				<div class="inline-grid grid-rows-[auto,2em] p-5"
+	<div class="grid h-full grid-rows-[auto_max-content]">
+		<div class="block overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-red-600 overscroll-y-contain">
+			<div class="flex flex-col-reverse flex-wrap">
+				<template v-for="message in messages">
+					<div class="inline-grid grid-rows-[auto,2em] p-5"
 					:class="message.senderId == myId ? 'grid-cols-[auto,70%,4em]' : 'grid-cols-[4em,70%,auto]'"
-				>
-					<template v-if="message.senderId == myId">
-						<MessageMe :message="message"/>
-					</template>
-					<template v-else>
-						<MessageOther :message="message"/>
-					</template>
-				</div>
-			</template>
+					>
+						<template v-if="message.senderId == myId">
+							<MessageMe :message="message"/>
+						</template>
+						<template v-else>
+							<MessageOther :message="message"/>
+						</template>
+					</div>
+				</template>
+			</div>
 		</div>
 		<div class="w-full p-5 grid grid-cols-[auto,3em] gap-2">
 			<div class="pt-2 pb-1 pl-2 pr-0 bg-background1 rounded-2xl">

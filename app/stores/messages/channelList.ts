@@ -36,11 +36,6 @@ export const useChannelListStore = defineStore('channelList', {
 			{	id: 3,		type: ChannelType.Chat,		name: 'Chats 3'		},
 			{	id: 4,		type: ChannelType.Chat,		name: 'Chats 4'		},
 			{	id: 5,		type: ChannelType.Chat,		name: 'Chats 5'		},
-			{	id: 6,		type: ChannelType.Chat,		name: 'Chats 6'		},
-			{	id: 7,		type: ChannelType.Chat,		name: 'Chats 7'		},
-			{	id: 8,		type: ChannelType.Chat,		name: 'Chats 8'		},
-			{	id: 9,		type: ChannelType.Chat,		name: 'Chats 9'		},
-			{	id: 10,		type: ChannelType.Chat,		name: 'Chats 10'	},
 			{	id: 11,		type: ChannelType.Friend,	name: 'Friend 1'	},
 			{	id: 12,		type: ChannelType.Friend,	name: 'Friend 2'	},
 			{	id: 13,		type: ChannelType.Friend,	name: 'Friend 3'	},
@@ -61,6 +56,16 @@ export const useChannelListStore = defineStore('channelList', {
 			{	id: 28,		type: ChannelType.Group,	name: 'Group 8'		},
 			{	id: 29,		type: ChannelType.Group,	name: 'Group 9'		},
 			{	id: 30,		type: ChannelType.Group,	name: 'Group 10'	},
+			{	id: 41,		type: ChannelType.Group,	name: 'Group 21'	},
+			{	id: 42,		type: ChannelType.Group,	name: 'Group 22'	},
+			{	id: 43,		type: ChannelType.Group,	name: 'Group 23'	},
+			{	id: 44,		type: ChannelType.Group,	name: 'Group 24'	},
+			{	id: 45,		type: ChannelType.Group,	name: 'Group 25'	},
+			{	id: 46,		type: ChannelType.Group,	name: 'Group 26'	},
+			{	id: 47,		type: ChannelType.Group,	name: 'Group 27'	},
+			{	id: 48,		type: ChannelType.Group,	name: 'Group 28'	},
+			{	id: 49,		type: ChannelType.Group,	name: 'Group 29'	},
+			{	id: 40,		type: ChannelType.Group,	name: 'Group 20'	},
 		],
 		_channelType: [
 			{
@@ -95,6 +100,7 @@ export const useChannelListStore = defineStore('channelList', {
 		isSideMenuOpen:			(state) => computed(() => state._isSideMenuOpen),
 		selectedChannel:		(state) => computed(() => state._channels.find((channel) => channel.id === state._selectedChannel)),
 		selectedChannelType:	(state) => computed(() => state._channelType.find((type) => type.type === (state._channels.find((channel) => channel.id === state._selectedChannel)?.type))),
+		selectedChannelMenu:	(state) => computed(() => state._selectedChannelMenu),
 	},
 	actions: {
 		updateSelectedChannel(id: number) {

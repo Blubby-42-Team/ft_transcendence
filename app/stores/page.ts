@@ -35,26 +35,21 @@ export const usePageStore = defineStore('page', {
 	},
 	actions: {
 		setPageData(newCategory: EPageCategories, newTitle: string){
-			console.log('setPageData')
 			this._selectedCategory = newCategory;
 			this._title = newTitle;
 		},
 		setPageDataLobby(newCategory: EPageCategories, newTitle: string, newLobby: ESelectedLobby){
-			console.log('setPageData')
 			this._selectedCategory = newCategory;
 			this._title = newTitle;
 			this._selectedLobby = newLobby;
 		},
 		setSelectedCategory(newCategory: EPageCategories){
-			console.log('setSelectedCategory')
 			this._selectedCategory = newCategory;
 		},
 		setTitle(newTitle: string){
-			console.log('setTitle')
 			this._title = newTitle;
 		},
 		setSelectedLobby(newLobby: ESelectedLobby){
-			console.log('setSelectedLobby')
 			this._selectedLobby = newLobby;
 		},
 	}
