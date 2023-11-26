@@ -1,17 +1,18 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRoleType } from './auth.class';
+import { UserAuthTokenDto, UserRoleType } from './auth.class';
 import { Roles } from './role.decorator';
 import { log } from 'console';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/model/user/user.class';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
-		private readonly jwtService: JwtService,
+		private readonly authService: AuthService,
 	) { }
 
 	private readonly logger = new Logger(AuthGuard.name);
@@ -47,15 +48,8 @@ export class AuthGuard implements CanActivate {
 			throw new UnauthorizedException('No token provided');
 		}
 
-		let user: User;
-
 		// Decode the token
-		try {
-			user = await this.jwtService.verifyAsync<User>(token)
-		} catch (error) {
-			this.logger.error(`User ${user.displayName}:${user.role} as an invalid token`, error);
-			throw new UnauthorizedException(`User ${user.displayName}:${user.role} as an invalid token`);
-		}
+		const user: UserAuthTokenDto = await this.authService.validateJwtAndGetPayload(token);
 
 		// Check if the user has the right role
 		if (!allowRoles.includes(user.role)) {
@@ -68,7 +62,7 @@ export class AuthGuard implements CanActivate {
 
 	private getAuthorizationToken(req: any): string {
 		try {
-			return req.cookies['token'];
+			return req.cookies['user_auth'];
 		} catch (error) {
 			this.logger.error('No token provided');
 			throw new UnauthorizedException('No token provided');

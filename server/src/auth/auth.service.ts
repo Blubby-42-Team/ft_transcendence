@@ -1,11 +1,12 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UserRoleType } from './auth.class';
+import { UserRoleType, UserAuthTokenDto } from './auth.class';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/model/user/user.class';
 import { instanceToPlain } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
 import { ModelUserService } from 'src/model/user/user.service';
+import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -19,37 +20,56 @@ export class AuthService {
 
 	private readonly logger = new Logger(AuthService.name);
 
-	async generateUserToken(user: User) : Promise<string> {
-		const plainUser = instanceToPlain(user);
-		return await this.jtwService.signAsync(plainUser, {
+	async generateUserToken(
+		userId: number,
+		user42DisplayName: string,
+		userRole: UserRoleType,
+		user42Login: string,
+		user42Id: number,
+	) : Promise<string> {
+		const payload = new UserAuthTokenDto();
+		payload.userId = userId;
+		payload.role = userRole;
+		payload.displayName = user42DisplayName;
+		payload.id42 = user42Id;
+		payload.login42 = user42Login;
+
+		const payloadPlain = instanceToPlain(payload);
+
+		return await this.jtwService.signAsync(
+			payloadPlain,
+			{
 			secret: this.configService.get<string>('JWT_SECRET'),
 		});
 	};
 
-	async validateJwtAndGetPayload(jwt: string) : Promise<Object | undefined> {
-		try {
-			const payload = await this.jtwService.verifyAsync(jwt, {
+	async validateJwtAndGetPayload(jwt: string) : Promise<UserAuthTokenDto> {
+			return this.jtwService.verifyAsync<UserAuthTokenDto>(jwt, {
 				secret: this.configService.get<string>('JWT_SECRET'),
-			});
-			return payload;
-		} catch (e) {
-			this.logger.warn(`Invalid jwt: ${jwt}`);
-			this.logger.warn(`Error: ${e}`);
-			return undefined;
-		}
-	}
+			})
+			.catch((e) => {
+				this.logger.warn(`Invalid jwt: ${jwt}`);
+				this.logger.warn(`Error: ${e}`);
+				throw new UnauthorizedException('Invalid jwt signature');
+			})
+			.then( async (payload) => {
+				let userAuthToken = new UserAuthTokenDto();
+				userAuthToken.userId = payload?.userId;
+				userAuthToken.role = payload?.role;
+				userAuthToken.displayName = payload?.displayName;
+				userAuthToken.id42 = payload?.id42;
+				userAuthToken.login42 = payload?.login42;
 
-	async validateJwtAndGetUserPayload(jwt: string) : Promise<User | undefined> {
-		try {
-			const payload = await this.jtwService.verifyAsync<User>(jwt, {
-				secret: this.configService.get<string>('JWT_SECRET'),
-			});
-			return payload;
-		} catch (e) {
-			this.logger.warn(`Invalid jwt: ${jwt}`);
-			this.logger.warn(`Error: ${e}`);
-			return undefined;
-		}
+				await validateOrReject(userAuthToken)
+				.catch((e) => {
+					this.logger.warn(`Invalid jwt: ${jwt}`);
+					this.logger.warn(`Error: ${e}`);
+					throw new UnauthorizedException('Invalid jwt payload');
+				})
+
+				return userAuthToken;
+			})
+
 	}
 }
 
