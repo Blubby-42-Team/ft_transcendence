@@ -40,16 +40,6 @@ export class ModelUserService {
 		.then (async (res: User) => {
 			this.logger.debug(`User ${res.displayName} found in database, update it`)
 
-			/**
-			 * //TODO @Matthew-Dreemurr only update user roles with new method (like updateUserRoles)
-			 */
-
-			//check if user role is admin
-			if (res.role === UserRoleType.Admin) {
-				this.logger.warn(`User ${res.displayName} is ${res.role} in the db, keep it ${res.role}`)
-				userRole = UserRoleType.Admin;
-			}
-
 			await this.postgresUserService.updateUser(
 				res.id,
 				res.displayName,
