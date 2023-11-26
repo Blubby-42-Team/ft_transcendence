@@ -9,10 +9,8 @@ const theme = useState('theme');
 	>
 		<LayoutSidebar/>
 		<LayoutHeader/>
-		<div class="grid grid-rows-[auto] h-screen overflow-hidden">
-			<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first scrollbar-thumb-rounded-full scrollbar-track">
-				<slot />
-			</div>
+		<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first scrollbar-thumb-rounded-full scrollbar-track">
+			<slot />
 		</div>
 	</div>
 </template>

@@ -1,104 +1,51 @@
 <script lang="ts" setup>
-const isGroupSelected	= useState('isGroupSelected');
-const isGroupsOpen		= useState('isGroupsOpen');
-const isChatsOpen		= useState('isChatsOpen');
-const isFriendsOpen		= useState('isFriendsOpen');
+
+const isSideMenuOpen		= useState('isSideMenuOpen');
+const hasSideMenu			= useState('hasSideMenu');
+const selectedChannelName	= useState('selectedChannelName');
+const channelTypes			= useState('channels')
 
 </script>
 
 <template>
-	<div class="h-full overflow-x-hidden bg-background1 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first scrollbar-thumb-rounded-none scrollbar-track">
-		<!-- Friends Hiding Button -->
-		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
-			@click="() => { isChatsOpen = !isChatsOpen }"
-		>
-			<Icon name="material-symbols:person" class="w-10 h-10"/>
-			<div class="pl-2">Chats</div>
-		</GenericButton>
-
-		<div class="border-b-[1px] border-text"></div>
-
-		<!-- Friends List -->
-		<TransitionExpand>
-			<template v-if="isChatsOpen">
-				<div class="">
-					<template v-for="i in 10">
-						<GenericButton class="w-full p-1 place-content-start" :buttonStyle="2"
-							@click="() => isGroupSelected = false"
-						>
-							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
-							<div class="pl-2">Chats {{ i }}</div>
-						</GenericButton>
+	<div class="grid h-full grid-rows-[max-content_auto] bg-background1">
+		<div class="h-16 bg-first"></div>
+		<div class="top-0 h-auto overflow-x-hidden scrollbar scrollbar-w-0">
+			<template v-for="channeltype in channelTypes">			
+				<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
+					@click="() => { channeltype.open = !channeltype.open }"
+				>
+					<Icon :name="channeltype.icon" class="w-10 h-10"/>
+					<div class="pl-2">{{ channeltype.name }}</div>
+				</GenericButton>
+	
+				<div class="border-b-[1px] border-background2"></div>
+	
+				<TransitionExpand>
+					<template v-if="channeltype.open">
+						<div>
+							<template v-for="channel in channeltype.channels">
+								<GenericButton class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
+									@click="() => {
+										hasSideMenu = channeltype.hasSideMenu;
+										selectedChannelName = channel;
+									}"
+								>
+									<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
+									<div class="pl-2">{{ channel }}</div>
+								</GenericButton>
+							</template>
+						</div>
 					</template>
-				</div>
-			</template>
-		</TransitionExpand>
-
-		<TransitionExpand>
-			<template v-if="isChatsOpen">
-				<div class="pb-4 border-b-[1px] border-text"></div>
-			</template>
-		</TransitionExpand>
-		
-		<!-- Groups Hiding Button -->
-		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
-			@click="() => { isGroupsOpen = !isGroupsOpen }"
-		>
-			<Icon name="material-symbols:groups" class="w-10 h-10"/>
-			<div class="pl-2">Groups</div>
-		</GenericButton>
-
-		<div class="border-b-[1px] border-text"></div>
-
-		<!-- Groups List -->
-		<TransitionExpand>
-			<template v-if="isGroupsOpen">
-				<div class="">
-					<template v-for="i in 10">
-						<GenericButton class="w-full p-1 place-content-start" :buttonStyle="2"
-							@click="() => isGroupSelected = true"
-						>
-							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
-							<div class="pl-2">Group {{ i }}</div>
-						</GenericButton>
+				</TransitionExpand>
+	
+				<TransitionExpand>
+					<template v-if="channeltype.hasBottom && channeltype.open">
+						<div class="pb-4 border-b-[1px] border-background2"></div>
 					</template>
-				</div>
+				</TransitionExpand>
 			</template>
-		</TransitionExpand>
-		
-		<TransitionExpand>
-			<template v-if="isGroupsOpen">
-				<div class="pb-4 border-b-[1px] border-text"></div>
-			</template>
-		</TransitionExpand>
-		
-
-
-		<!-- Friends Hiding Button -->
-		<GenericButton class="w-full h-12 text-lg place-content-start" :buttonStyle="2"
-			@click="() => { isFriendsOpen = !isFriendsOpen }"
-		>
-			<Icon name="material-symbols:person" class="w-10 h-10"/>
-			<div class="pl-2">Friends</div>
-		</GenericButton>
-
-		<div class="border-b-[1px] border-text"></div>
-
-		<!-- Friends List -->
-		<TransitionExpand>
-			<template v-if="isFriendsOpen">
-				<div class="">
-					<template v-for="i in 10">
-						<GenericButton class="w-full p-1 place-content-start" :buttonStyle="2"
-							@click="() => isGroupSelected = false"
-						>
-							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
-							<div class="pl-2">Friend {{ i }}</div>
-						</GenericButton>
-					</template>
-				</div>
-			</template>
-		</TransitionExpand>
+		</div>
 	</div>
 </template>
 

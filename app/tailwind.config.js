@@ -28,11 +28,11 @@ export default {
 				'button-dis':		'#0D1027',
 				'button-sel':		'#ECBC42',
 				'button-sel-dis':	'#876100',
-				'background1':		'#2e3035',
-				'background2':		'#2b2d31',
+				'background1':		'#2b2d31',
+				'background2':		'#383a40',
 				'liveGame':			'#DC1B1B',
 
-			},
+			},	
 			'theme-light': {
 				'text':				'#000000',
 				'text-dark':		'#000000',
