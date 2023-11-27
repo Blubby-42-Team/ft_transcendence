@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { gameStatusType } from '#imports';
 
-const { theme, gameSettings } = useGame2Store()
+const { theme, gameSettings } = useGameStore()
 
 const screenSize = ref({
 	width: 0,

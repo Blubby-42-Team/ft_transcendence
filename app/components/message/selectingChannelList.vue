@@ -10,6 +10,7 @@ const { channels, channelType, updateSelectedChannel, selectedChannel } = useCha
 		<div class="top-0 h-auto overflow-x-hidden scrollbar scrollbar-w-0">
 			<template v-for="ctype in channelType">			
 				<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
+					:selected="ctype.type === selectedChannel?.type"
 					@click="() => { ctype.open = !ctype.open }"
 				>
 					<Icon :name="ctype.icon" class="w-10 h-10"/>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const { gameSettings } = useGame2Store()
+const { gameSettings } = useGameStore()
 
 const props = defineProps({
 	preview: {

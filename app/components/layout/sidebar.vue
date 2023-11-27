@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { EPageCategories } from '@/stores/page'
-const { selectedCategory } = usePageStore();
+const { selectedCategory, selectedLobby, lobby } = usePageStore();
 
 enum EType {
 	CATEGORY			= 0,
@@ -9,6 +9,8 @@ enum EType {
 };
 
 type TSidebarCategory = { type: EType.CATEGORY, categoryType: EPageCategories, path: string, icon: string } | { type: Exclude<EType, EType.CATEGORY> }
+
+
 
 const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
@@ -22,16 +24,23 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.SETTINGS, 	path: '/settings',		icon: 'material-symbols:settings'	},
 ]);
 
+let pathLobby = ref('/lobby/classic');
+
+watch(selectedLobby, () => {
+	pathLobby.value =  lobby.find((elem) => elem.id === selectedLobby.value)?.path ?? '/lobby/classic';
+	console.log('newPAth', pathLobby.value)
+})
+
 </script>
 
 <template>
 	<div class="flex flex-col h-full p-2 overflow-hidden text-text-light bg-color1">
 		<template v-for="category in categories">
 			<template v-if="category.type === EType.CATEGORY">
-				<NuxtLink :to="category.path"
+				<NuxtLink :to="(category.categoryType !== EPageCategories.GAME ? category.path : pathLobby)"
 					class="self-center w-10 h-10 m-2 text-center border-2 border-transparent rounded"
 					:class="css.has({
-						'text-accent hover:border-accent || hover:border-text-light': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
+						'text-accent1 hover:border-accent1 || hover:border-text-light': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
 					})"
 				>
 					<Icon :name="category.icon" class="w-full h-full"/>

@@ -8,7 +8,7 @@ const props = defineProps({
 	}
 })
 
-const { theme, gameSettings } = useGame2Store()
+const { theme, gameSettings } = useGameStore()
 
 const screenSize = ref({
 	width: 0,

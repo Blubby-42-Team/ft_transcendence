@@ -4,18 +4,15 @@ const theme = useState('theme');
 </script>
 	
 <template>
-	<div class="h-screen bg-pink-500 text-pink-500 grid grid-cols-[4rem,auto]"
-		:class="theme ? theme : 'theme-dark-blue'"
+	<div class="h-screen bg-background2 text-text grid grid-cols-[4rem,auto]"
+		:class="theme ? theme : 'theme-light'"
 	>
 		<LayoutSidebar/>
-		<div class="grid grid-rows-[4em,auto,min-content] h-screen overflow-hidden">
-			<LayoutHeader/>
-			<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-pink-500 scrollbar-thumb-rounded-full scrollbar-track">
-				<PlayLobby>
-					<slot />
-				</PlayLobby>
-			</div>
-			<LayoutFooter/>
+		<LayoutHeader/>
+		<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">
+			<PlayLobby>
+				<slot />
+			</PlayLobby>
 		</div>
 	</div>
 </template>
