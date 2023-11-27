@@ -1,3 +1,4 @@
+import { AuthController } from './auth.controller';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Auth42Controller } from './auth42/auth42.controller';
@@ -22,9 +23,10 @@ import { ModelUserModule } from 'src/model/user/user.module';
 				}
 			},
 		}),
-	],	
+	],
 	providers: [AuthService, Auth42Service, FortyTwoStrategy, JwtService],
-	controllers: [Auth42Controller],
+	controllers: [
+		AuthController, Auth42Controller],
 	exports: [AuthService, Auth42Service, FortyTwoStrategy, JwtService],
 })
-export class AuthModule {}
+export class AuthModule { }

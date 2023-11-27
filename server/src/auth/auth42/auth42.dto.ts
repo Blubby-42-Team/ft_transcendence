@@ -1,25 +1,20 @@
+import { IsNotEmpty, IsNumber } from "class-validator";
 import { Exclude } from "class-transformer";
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { IsNotEmpty, IsNumber} from 'class-validator';
 
-@Entity()
-export class User42 {
-	@PrimaryColumn()
+export class User42Dto {
 	@IsNotEmpty()
 	@IsNumber()
-	@Exclude({ toPlainOnly: true})
-	id: number;
+	id42: number;
 
-	@Column()
 	@IsNotEmpty()
 	login: string;
 
-	@Column()
+	displayName: string;
+
 	@IsNotEmpty()
 	@Exclude({ toPlainOnly: true})
 	accessToken: string;
 
-	@Column()
 	@IsNotEmpty()
 	@Exclude({ toPlainOnly: true})
 	refreshToken: string;

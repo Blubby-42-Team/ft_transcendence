@@ -2,15 +2,9 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller, Redirect, Get, Post, ClassSerializerInterceptor, Body, UseInterceptors, UseGuards} from '@nestjs/common';
-import { instanceToPlain, plainToClass } from 'class-transformer';
-import { log } from 'console';
+import { Controller, Redirect, Get} from '@nestjs/common';
 import { UserRoleType } from 'src/auth/auth.class';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Auth42Guard } from 'src/auth/auth42/auth42.guard';
 import { Roles } from 'src/auth/role.decorator';
-import { roomType } from 'src/model/game/game.class';
-import { User } from 'src/model/user/user.class';
 import { ModelUserService } from 'src/model/user/user.service';
 
 // @UseInterceptors(ClassSerializerInterceptor)

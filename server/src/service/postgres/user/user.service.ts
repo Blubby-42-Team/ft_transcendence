@@ -1,67 +1,164 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../model/user/user.class';
 import { Repository } from 'typeorm';
 import { UserRoleType } from 'src/auth/auth.class';
+import { User42 } from 'src/model/user/user42.class';
 
 @Injectable()
 export class PostgresUserService {
+
+	private readonly logger = new Logger(PostgresUserService.name);
+
 	constructor (
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
 	) {}
 	
-	async getUserById(id: number): Promise<User> {
-		const userQuery = await this.userRepository.query(`
-			SELECT * FROM "user" WHERE id = '${id}'
-		`)
+	/**
+	 * Get user by id
+	 * @param userId id of user
+	 * @returns `Promise` user
+	 * @throws `NotFoundException` if user not found
+	 * @throws `InternalServerErrorException` if db error
+	 */
+	async getUserById(userId: number): Promise<User> {
+		return this.userRepository.query(`
+			SELECT * FROM "user" WHERE id = $1`,
+			[userId],
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by id ${userId}`);
+		})
 		.then((res): User => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get user by id ${userId}: not found`);
+				throw new NotFoundException(`Failed to get user by id ${userId}: not found`);
+			}
+			if (res.length > 1) {
+				this.logger.debug(`Failed to get user by id ${userId}: too many results`);
+				throw new InternalServerErrorException(`Failed to get user by id ${userId}: too many results`);
+			}
 			return res[0];
 		})
 
-		return userQuery;
 	}
 
-	async addUser(user: User): Promise<User> {
-		const userDto = this.userRepository.create(user);
-		return this.userRepository.save(userDto);
+	/**
+	 * Update user in database
+	 * @param idUser id of user to update 
+	 * @param displayNameUser dipaly name of user
+	 * @param roleUser role of user
+	 * @returns `Promise` 'ok' if success
+	 * @throws `NotFoundException` if user not found
+	 * @throws `InternalServerErrorException` if db error
+	 */
+	async updateUser (
+		idUser: number,
+		displayNameUser: string,
+		roleUser: UserRoleType,
+	) {
+		return this.userRepository.update(idUser, {
+			displayName: displayNameUser,
+			role: roleUser,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update User ${idUser}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update User ${idUser}`);
+		})
+		.then((res)=> {
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update User ${idUser}: ${res}`);
+				throw new NotFoundException(`Failed to update User ${idUser}`);
+			}
+			return 'ok';
+		})
 	}
 
-	async updateUser(id: number, user: User) {
-		const userDto = this.userRepository.create(user);
-		return this.userRepository.update(id, userDto);
-	}
-
-	async getUserBy42Login(login: string): Promise<User> {
-		const userQuery = await this.userRepository.query(`
-			SELECT * FROM "user" WHERE "user42Id" = (SELECT id FROM "user42" WHERE login = '${login}')
-		`)
+	/**
+	 * Get user by 42 id
+	 * @param id42 id of 42 user
+	 * @returns `Promise` user
+	 * @throws `NotFoundException` if user not found
+	 * @throws `InternalServerErrorException` if db error
+	 */
+	async getUserBy42Id(id42: number): Promise<User> {
+		return this.userRepository.query(`
+			SELECT * FROM "user" WHERE "user42Id" = $1`,
+			[id42]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user by 42 id ${id42}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by 42 id ${id42}`);
+		})
 		.then((res): User => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get user by 42 id ${id42}: not found`);
+				throw new NotFoundException(`Failed to get user by 42 id ${id42}: not found`);
+			}
+			if (res.length > 1) {
+				this.logger.debug(`Failed to get user by 42 id ${id42}: too many results`);
+				throw new InternalServerErrorException(`Failed to get user by 42 id ${id42}: too many results`);
+			}
 			return res[0];
 		})
-
-		return userQuery;
 	}
 
-	async getUserBy42Id(id: number): Promise<User> {
-		const userQuery = await this.userRepository.query(`
-			SELECT * FROM "user" WHERE "user42Id" = '${id}'
-		`)
-		.then((res): User => {
-			return res[0];
+	/**
+	 * Get user roles by id
+	 * @param userId id of user
+	 * @returns `Promise` user roles
+	 * @throws `NotFoundException` if user not found
+	 */
+	async getUserRoleById(userId: number): Promise<string> {
+		return this.userRepository.query(`
+			SELECT "role" FROM "user" WHERE id = $1`,
+			[userId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user role by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user role by id ${userId}`);
 		})
-
-		return userQuery;
-	}
-
-	async getUserRoleById(id: number): Promise<string> {
-		const userQuery = await this.userRepository.query(`
-			SELECT "role" FROM "user" WHERE id = '${id}'
-		`)
 		.then((res): string => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get user role by id ${userId}: not found`);
+				throw new NotFoundException(`Failed to get user role by id ${userId}: not found`);
+			}
 			return res[0].role;
 		})
+	}
 
-		return userQuery;
+	/**
+	 * Create user with 42 data in database
+	 * @param id42 id of 42 user
+	 * @param login42 login of 42 user
+	 * @param displayName42 display name of 42 user
+	 * @param accessToken42 access token of 42 user
+	 * @param refreshToken42 refresh token of 42 user
+	 * @returns `Promise` id of user in database
+	 */
+	async createUserWith42Data(
+		id42: number,
+		login42: string,
+		displayName42: string,
+		accessToken42: string,
+		refreshToken42: string,
+	): Promise<number> {
+		const user42 = new User42();
+		user42.id = id42;
+		user42.login = login42;
+		user42.accessToken = accessToken42;
+		user42.refreshToken = refreshToken42;
+
+		const user = new User();
+		user.displayName = displayName42;
+		user.role = UserRoleType.User;
+		user.user42 = user42;
+
+		return this.userRepository.save(user)
+		.then((res: User): number=> {
+			return res.id;
+		})
 	}
 }
 
