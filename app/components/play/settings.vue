@@ -42,8 +42,7 @@ const difficulties = [
 </script>
 
 <template>
-	<div class="grid grid-rows-[max-content_max-content_auto_max-content] border-r-4 w-96 bg-pink-500 border-pink-500">
-		<div class="w-full p-2 text-3xl text-center bg-pink-500">Settings</div>
+	<div class="grid grid-rows-[max-content_auto_max-content] w-96 bg-background1">
 		<div class="grid grid-cols-[auto,5rem,3rem,3rem,3rem] p-1 gap-1 w-full">
 			<div class="flex items-center h-full col-span-2">Number of Players</div>
 			<GenericButton :buttonStyle="1" :disabled="!isHost" :selected="gameSettings.numPlayer === 1" class="w-full h-12" @click="() => gameSettings.numPlayer = 1"><Icon name="material-symbols:looks-one" class="w-full h-full"/></GenericButton>

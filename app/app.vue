@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 const { selectedChannelType, selectedChannel, isSideMenuOpen } = useChannelListStore()
-const { selectedCategory } = usePageStore()
+const { selectedCategory, selectedLobby } = usePageStore()
 
 </script>
 

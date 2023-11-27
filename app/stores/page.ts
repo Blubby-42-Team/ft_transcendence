@@ -20,10 +20,10 @@ export const usePageStore = defineStore('page', {
 		_selectedCategory: EPageCategories.NONE,
 		_selectedLobby: ESelectedLobby.Local,
 		_lobby: [
-			{ id: ESelectedLobby.Local,		name: 'Local',		path: '/lobby/local'},
 			{ id: ESelectedLobby.Classic,	name: 'Classic',	path: '/lobby/classic'},
 			{ id: ESelectedLobby.Random,	name: 'Random',		path: '/lobby/random'},
-			{ id: ESelectedLobby.Custom,	name: 'Custom',		path: '/lobby/Custom'},
+			{ id: ESelectedLobby.Custom,	name: 'Custom',		path: '/lobby/custom'},
+			{ id: ESelectedLobby.Local,		name: 'Local',		path: '/lobby/local'},
 		]
 	}),
 	getters: {
