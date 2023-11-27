@@ -7,9 +7,7 @@ definePageMeta({
 })
 
 const { setPageDataLobby } = usePageStore();
-onMounted(() => {
-	setPageDataLobby(EPageCategories.GAME, "Play a Game", ESelectedLobby.Local);
-})
+onMounted(() => { setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Local); })
 
 </script>
 

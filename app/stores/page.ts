@@ -18,7 +18,6 @@ export enum ESelectedLobby {
 export const usePageStore = defineStore('page', {
 	state: () => ({
 		_selectedCategory: EPageCategories.NONE,
-		_title: "",
 		_selectedLobby: ESelectedLobby.Local,
 		_lobby: [
 			{ id: ESelectedLobby.Local,		name: 'Local',		path: '/lobby/local'},
@@ -29,7 +28,6 @@ export const usePageStore = defineStore('page', {
 	}),
 	getters: {
 		selectedCategory:	(state) => computed(() => state._selectedCategory),
-		title:				(state) => computed(() => state._title),
 		selectedLobby:		(state) => computed(() => state._selectedLobby),
 		lobby:				(state) => state._lobby,
 	},
@@ -37,21 +35,15 @@ export const usePageStore = defineStore('page', {
 		setPageData(newCategory: EPageCategories, newTitle: string){
 			console.log('setPageData')
 			this._selectedCategory = newCategory;
-			this._title = newTitle;
 		},
-		setPageDataLobby(newCategory: EPageCategories, newTitle: string, newLobby: ESelectedLobby){
+		setPageDataLobby(newCategory: EPageCategories, newLobby: ESelectedLobby){
 			console.log('setPageData')
 			this._selectedCategory = newCategory;
-			this._title = newTitle;
 			this._selectedLobby = newLobby;
 		},
 		setSelectedCategory(newCategory: EPageCategories){
 			console.log('setSelectedCategory')
 			this._selectedCategory = newCategory;
-		},
-		setTitle(newTitle: string){
-			console.log('setTitle')
-			this._title = newTitle;
 		},
 		setSelectedLobby(newLobby: ESelectedLobby){
 			console.log('setSelectedLobby')

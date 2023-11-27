@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 definePageMeta({name: 'Friends'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.FRIENDS, "My Friends"); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.FRIENDS); })
 
 const testRef		= ref()
 const testButton	= ref<HTMLElement>()
@@ -35,7 +35,7 @@ const sideMenu = {
 		</div>
 		<GenericSideMenu ref="testRef" :options="sideMenu" direction="top">
 			<div class="w-full">
-				<div class="flex flex-col w-full px-2 py-4 text-sm border-4 rounded-lg shadow-lg border-pink-500 text-pink-500 bg-pink-500">
+				<div class="flex flex-col w-full px-2 py-4 text-sm text-pink-500 bg-pink-500 border-4 border-pink-500 rounded-lg shadow-lg">
 					<!-- <GenericProfilePicture imageSrc="/amogus.png"/> -->
 					<div class="w-full p-2 mt-3 text-base">James Milwaukee</div>
 					<hr class="my-3 border-pink-500" />
