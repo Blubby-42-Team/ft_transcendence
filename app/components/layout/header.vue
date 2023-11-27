@@ -5,7 +5,7 @@ const viewnotificationRef = ref();
 </script>
 
 <template>
-	<div class="absolute right-0 z-20 flex h-16 p-3 bg-first rounded-bl-xl">
+	<div class="absolute right-0 z-20 flex h-16 p-3 bg-color1 rounded-bl-xl">
 		<GenericButton class="self-center w-12 h-12 mr-2 rounded-full" :buttonStyle="1" :disabled="false" :selected="false"
 			@click="viewnotificationRef?.open"
 		>

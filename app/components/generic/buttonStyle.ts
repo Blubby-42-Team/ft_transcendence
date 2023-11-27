@@ -2,15 +2,15 @@ export function getStyle(style: number) {
 	switch (style){
 		case 1:
 			return {
-				normal: "text-text-light rounded hover:bg-button-hover",
-				unselected: "bg-button disabled:bg-button-dis disabled:hover:bg-button-dis",
-				selected: "bg-button-sel disabled:bg-button-sel-dis disabled:hover:bg-button-sel-dis",
+				normal: "text-text-light rounded hover:bg-color2",
+				unselected: "bg-color1 disabled:bg-color3 disabled:hover:bg-color3",
+				selected: "bg-accent1 disabled:bg-accent2 disabled:hover:bg-accent2",
 			};
 		case 2:
 			return {
-				normal: "text-text hover:text-text-light hover:bg-button-hover",
-				unselected: " disabled:bg-button-dis disabled:hover:bg-button-dis",
-				selected: "bg-button-sel disabled:bg-button-sel-dis disabled:hover:bg-button-sel-dis",
+				normal: "text-text hover:text-text-light hover:bg-color2",
+				unselected: "disabled:bg-color3 disabled:hover:bg-color3",
+				selected: "bg-accent1 disabled:bg-accent2 disabled:hover:bg-accent2",
 			};
 		case 0:
 		default:

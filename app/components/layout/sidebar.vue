@@ -25,7 +25,7 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 </script>
 
 <template>
-	<div class="flex flex-col h-full p-2 overflow-hidden text-text-light bg-first">
+	<div class="flex flex-col h-full p-2 overflow-hidden text-text-light bg-color1">
 		<template v-for="category in categories">
 			<template v-if="category.type === EType.CATEGORY">
 				<NuxtLink :to="category.path"

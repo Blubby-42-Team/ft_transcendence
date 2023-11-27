@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 
-const { channels, channelType, updateSelectedChannel } = useChannelListStore()
+const { channels, channelType, updateSelectedChannel, selectedChannel } = useChannelListStore()
 
 </script>
 
 <template>
 	<div class="grid h-full grid-rows-[max-content_auto] bg-background1">
-		<div class="h-16 bg-first"></div>
+		<div class="h-16 bg-color1"></div>
 		<div class="top-0 h-auto overflow-x-hidden scrollbar scrollbar-w-0">
 			<template v-for="ctype in channelType">			
 				<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
@@ -23,6 +23,7 @@ const { channels, channelType, updateSelectedChannel } = useChannelListStore()
 						<div>
 							<template v-for="channel in channels.filter((elem) => elem.type === ctype.type)">
 								<GenericButton class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
+									:selected="channel.id === selectedChannel?.id"
 									@click="() => updateSelectedChannel(channel.id)"
 								>
 									<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
