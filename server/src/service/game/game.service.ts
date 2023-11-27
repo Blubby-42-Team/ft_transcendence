@@ -1,46 +1,136 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameOptDto } from '@shared/dto/game.dto';
 import { Server } from 'socket.io';
-import { roomType } from '../../model/game/game.class';
+import { LobbyInstance } from '../../model/game/game.class';
+import { EmitGateway } from './emit.gateway';
+import { AuthService } from 'src/auth/auth.service';
+import { JoinGameRoomRequestDto } from '@shared/dto/ws.dto';
+import { User } from 'src/model/user/user.class';
 
 @Injectable()
 export class GameService {
 
+	constructor (
+		private readonly emitGAteway: EmitGateway,
+		private readonly authService: AuthService,
+	) {}
+
 	private readonly logger = new Logger(GameService.name);
 
-	rooms : { [key: string]: roomType} = {};
+	private lobbys: {
+		[key: string]: LobbyInstance;
+	} = {};
 
-	users: { [key: string]: {
-		room: string,
-	} } = {};
-
-	async startRoom(roomName: string, opt: GameOptDto, io: Server) {
-		this.rooms[roomName].status = true;
-
-		const id = this.makeid(5);
-
-		console.log(`${id} room ${roomName} started`);
-
-		//infinit loop
-		
-		while(this.rooms[roomName].status) {
-
-			await new Promise(resolve => setTimeout(resolve, 1000));
+	private users: {
+		[key: number]: {
+			lobby: string,
+			room_id: string,
+			// isConnected: boolean,
 		}
+	} = {};
+
+	/**
+	 * //TODO :
+	 *          - [ ] owner_id
+	 *          - [ ] room_id
+	 */
+	async createLobby(userId: number) {
+		//TODO generate unique 
+		const id = this.generateUniqueRoomId(5);
+
+		//TODO create default game settings
 
 	}
 
-	async stopRoom(roomName: string) {
-		this.rooms[roomName].status = false;
-		console.log(`room ${roomName} stopped`);
+	async deleteLobby(roomId: string) {
+		if (this.lobbys[roomId] === undefined) {
+			return;//TODO throw error
+		}
+
+		this.lobbys[roomId].closeLobby();
+		delete this.lobbys[roomId];
 	}
 
 	/**
-	 *  //TODO remove
-	 * @param length 
-	 * @returns 
+	 * //TODO :
+	 *         - [ ] game_id
+	 * 
 	 */
-	private makeid(length) {
+	async startGame(roomName: string, opt: GameOptDto, io: Server) {
+	}
+
+	async stopGame(roomName: string) {
+	}
+
+	async addPlayerToWhiteList(roomId: string, userId: number) {
+	}
+
+	async addPlayerToLobby(req: JoinGameRoomRequestDto) {
+
+		// const user = await this.getJwtUser(req);
+		// if (user === undefined) {
+			// return;//TODO throw error
+		// }
+
+		// Check if lobby exist
+		if (this.lobbys[req.game_room_id] === undefined) {
+			return;//TODO throw error
+		}
+
+		const lobby = this.lobbys[req.game_room_id];
+
+		//TODO check if user is already in a lobby by checking users map
+		// if (this.users[user.id] !== undefined) {
+			// return;//TODO throw error
+		// }
+
+		//TODO check if user is in the lobby whitelist
+		// if (!lobby.isInWhiteList(user.id)) {
+			// return;//TODO throw error
+		// }
+
+		// //TODO check if we can add player
+		// if (!lobby.addPlayerToLobby(user.id)) {
+		// 	return;//TODO throw error
+		// }
+
+		//TODO add user to lobby and connect him to the WS room
+	}
+
+	async removePlayerFromLobby(roomId: string ,userId: number): Promise<void> {
+		if (this.lobbys[roomId] === undefined) {
+			return;//TODO throw error
+		}
+
+		if (this.users[userId] === undefined) {
+			return;//TODO throw error
+		};
+
+		/**
+		 * If the user is the owner of the lobby, delete the lobby
+		 */
+		if (this.lobbys[roomId].getOwnerID() === userId) {
+			this.deleteLobby(roomId);
+			return;
+		}
+
+		//TODO remove user from lobby and disconnect him from the WS room
+		this.lobbys[roomId].removePlayerFromLobby(userId);
+		//TODO update users map
+		delete this.users[userId];
+	}
+	
+	
+	async reconnectPlayerToRoom(userId: number) {
+	}
+
+	test(){
+		this.logger.log('test');
+		this.emitGAteway.server.emit('test', 'test');
+	}
+
+	private generateUniqueRoomId(length) {
+		//TODO check if id is unique in the lobbys map
 		let result = '';
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		const charactersLength = characters.length;
@@ -52,76 +142,11 @@ export class GameService {
 		return result;
 	}
 
-	async createRoom(userId: string) {
-		//TODO generate room id and store in db
+	// async getJwtUser(jwt: JoinGameRoomRequestDto) : Promise<User | undefined> {
 
-		const roomId = this.makeid(5);
-
-		this.rooms[roomId]
-		this.rooms[roomId].ownerPlayerId = userId;
-
-		this.users[userId] = {
-			room: roomId,
-		}
-
-		return roomId;
-	}
-
-	addPlayerToRoom(roomName: string, userId: string) {
-		if (this.users[userId]) {
-			console.log(`user ${userId} already in room ${this.users[userId].room}`);
-			return;
-		}
-
-
-		this.users[userId] = {
-			room: roomName,
-		}
-
-		// this.rooms[roomName]
-	}
-
-	removePlayerFromRoom(userId: string) {
-		if (!this.users[userId]) {
-			console.log(`user ${userId} not in any room`);
-			return;
-		}
-
-		const roomName = this.users[userId].room;
-		//TODO @mkoyamba remove player from active room
-		delete this.users[userId];
-	}
-	
-	disconnectPlayerFromRoom(userId: string) {
-		if (!this.users[userId]) {
-			console.log(`user ${userId} not in any room`);
-			return;
-		}
-
-		if (!this.rooms[this.users[userId].room]) {
-			console.log(`room ${this.users[userId].room} not found`);
-			return;
-		}
-
-		const room = this.rooms[this.users[userId].room];
-
-		for (const key in room.playerInfo) {
-			if (room.playerInfo[key].id === userId) {
-				room.playerInfo[key].status = false;
-				console.log(`user ${userId} disconnected from room ${this.users[userId].room}`);
-				return;
-			}
-		}
-
-	}
-	
-	reconnectPlayerToRoom(userId: string) {
-		if (!this.users[userId]) {
-			console.log(`user ${userId} not in any room`);
-			return;
-		}
-		return this.users[userId].room;
-	}
-
-	
+	// 	const check = this.authService.validateJwtAndGetUserPayload(jwt.auth_token);
+	// 	if (check === undefined) {
+	// 		return undefined;
+	// 	}
+	// }
 }

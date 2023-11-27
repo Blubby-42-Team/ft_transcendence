@@ -10,6 +10,7 @@ import { Socket } from 'socket.io';
  */
 @Catch(BadRequestException)
 export class WsBadRequestExceptionFilter extends BaseWsExceptionFilter {
+
 	catch(exception: BadRequestException, host: ArgumentsHost) {
 		//TODO LOG
 
@@ -36,5 +37,6 @@ export class WsBadRequestExceptionFilter extends BaseWsExceptionFilter {
 		const client : Socket = host.switchToWs().getClient();
 		// Emit the error to the client
 		client.emit('error', { status: 'error', error: errType , message: errMessage});
+		return 
 	}
 }

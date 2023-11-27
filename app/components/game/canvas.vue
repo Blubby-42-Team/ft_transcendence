@@ -16,14 +16,14 @@ const engine = new GameEngine(gameSettings.value, (state) => {
 
 const emptyFunction = (status: boolean) => {};
 const controller: gameControllerType = {
-	w:			(status: boolean) => engine.move(Direction.LEFT,	Direction.TOP,		status),
-	s:			(status: boolean) => engine.move(Direction.LEFT,	Direction.BOTTOM,	status),
-	ArrowUp:	(status: boolean) => engine.move(Direction.RIGHT,	Direction.TOP,		status),
-	ArrowDown:	(status: boolean) => engine.move(Direction.RIGHT,	Direction.BOTTOM,	status),
-	c:			(status: boolean) => engine.move(Direction.BOTTOM,	Direction.LEFT,		status),
-	v:			(status: boolean) => engine.move(Direction.BOTTOM,	Direction.RIGHT,	status),
-	u:			(status: boolean) => engine.move(Direction.TOP,		Direction.LEFT,		status),
-	i:			(status: boolean) => engine.move(Direction.TOP,		Direction.RIGHT,	status),
+	w:			(status: boolean) => engine.move(Direction.LEFT,	true,	status),
+	s:			(status: boolean) => engine.move(Direction.LEFT,	false,	status),
+	ArrowUp:	(status: boolean) => engine.move(Direction.RIGHT,	true,	status),
+	ArrowDown:	(status: boolean) => engine.move(Direction.RIGHT,	false,	status),
+	c:			(status: boolean) => engine.move(Direction.BOTTOM,	true,	status),
+	v:			(status: boolean) => engine.move(Direction.BOTTOM,	false,	status),
+	u:			(status: boolean) => engine.move(Direction.TOP,		true,	status),
+	i:			(status: boolean) => engine.move(Direction.TOP,		false,	status),
 	' ':		(status: boolean) => engine.startRound(status),
 }
 
