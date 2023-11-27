@@ -1,41 +1,38 @@
 <script lang="ts" setup>
-const isMembersOpen		= useState('isMembersOpen');
-const { members } = useChannelStore()
+const { members }		= useChannelStore()
+
+const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListStore()
 
 </script>
 
 <template>
-	<template v-if="isMembersOpen">
-		<div class="grid h-full grid-rows-[max-content,auto]" :class="(isMembersOpen ? 'w-60' : 'w-14')">
-			<div class="flex p-2 bg-color1">
-				<div class="flex self-center mr-auto text-3xl place-items-center">Members</div>
+	<div>
+		<template v-if="selectedChannelType?.hasSideMenu">
+			<div class="absolute top-0 h-16 p-2 right-[7.25rem] bg-first z-20 rounded-bl-xl">
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mr-0"
-					@click="() => { isMembersOpen = !isMembersOpen }"
+					@click="toggleSideMenu"
 				>
 					<Icon name="material-symbols:menu" class="w-full h-full"/>
 				</GenericButton>
 			</div>
-	
-			<div class="overflow-x-hidden bg-color2 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-text scrollbar-thumb-rounded-none scrollbar-track">
-				<template v-for="member in members">
-					<GenericButton class="w-full p-1" :buttonStyle="2">
-						<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
-						<div class="self-center pl-2">
-							{{ member.name }}
-						</div>
-						<div class="mr-auto"></div>
-					</GenericButton>
-				</template>
+		</template>
+		<template v-if="selectedChannelType?.hasSideMenu && isSideMenuOpen">
+			<div class="grid h-full grid-rows-[4rem,auto]" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
+				<div class="bg-first"></div>
+				<div class="overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">
+					<template v-for="member in members">
+						<GenericButton class="w-full p-1" :buttonStyle="2">
+							<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
+							<div class="self-center pl-2">
+								{{ member.name }}
+							</div>
+							<div class="mr-auto"></div>
+						</GenericButton>
+					</template>
+				</div>
 			</div>
-		</div>
-	</template>
-	<template v-else>
-		<GenericButton :buttonStyle="1" class="w-12 h-12 mt-2 mr-2"
-			@click="() => { isMembersOpen = !isMembersOpen }"
-		>
-			<Icon name="material-symbols:menu" class="w-full h-full"/>
-		</GenericButton>
-	</template>
+		</template>
+	</div>
 </template>
 
 

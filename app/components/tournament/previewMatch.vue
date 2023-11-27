@@ -20,7 +20,7 @@ const matchPreviewModalRef = ref()
 	>
 		<div class="grid grid-rows-[1fr,auto,auto,1fr] grid-flow-col grid-cols-[1.5em,auto,1.5em] row-span-2 w-60 ltr-grid">
 			<div/>
-			<div class="border-text"
+			<div class="border-pink-500"
 				:class="match.player1?.id !== undefined && match.player2?.id !== undefined ? '' : 'border-b-2'"
 			/>
 			<div/>
@@ -35,19 +35,19 @@ const matchPreviewModalRef = ref()
 			<div class="min-h-[1rem]"></div>
 			<template v-if="position === 'top'">
 				<div class=""></div>
-				<div class="border-b-2 border-text"></div>
-				<div class="border-r-2 border-text"></div>
-				<div class="border-r-2 border-text"></div>
+				<div class="border-b-2 border-pink-500"></div>
+				<div class="border-r-2 border-pink-500"></div>
+				<div class="border-r-2 border-pink-500"></div>
 			</template>
 			<template v-else-if="position === 'bottom'">
-				<div class="border-r-2 border-text"></div>
-				<div class="border-b-2 border-r-2 border-text"></div>
+				<div class="border-r-2 border-pink-500"></div>
+				<div class="border-b-2 border-r-2 border-pink-500"></div>
 				<div class=""></div>
 				<div class=""></div>
 			</template>
 			<template v-else-if="position === 'middle'">
 				<div class=""></div>
-				<div class="border-b-2 border-text"></div>
+				<div class="border-b-2 border-pink-500"></div>
 				<div class=""></div>
 				<div class=""></div>
 			</template>

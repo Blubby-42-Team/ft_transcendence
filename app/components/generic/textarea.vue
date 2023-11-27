@@ -26,7 +26,7 @@ function changeRows(event: any) {
 			@input="changeRows"
 			ref="textarea"
 			:rows="rowsHeight"
-			class="w-full h-auto overflow-y-scroll resize-none bg-color2 scrollbar-none rounded-xl"
+			class="w-full h-auto overflow-y-scroll resize-none bg-pink-500 scrollbar-none rounded-xl"
 		></textarea>
 	</div>
 </template>

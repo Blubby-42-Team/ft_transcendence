@@ -7,7 +7,8 @@ const props = defineProps({
 	}
 })
 
-let isOpen = ref(props.show);
+const isOpen = ref(props.show);
+const modal = ref<HTMLInputElement>()
 
 function open() { isOpen.value = true; }
 function close(){ isOpen.value = false; }
@@ -16,8 +17,6 @@ defineExpose({
 	open,
 	close,
 })
-
-const modal = ref(null)
 
 onClickOutside(modal, close)
 

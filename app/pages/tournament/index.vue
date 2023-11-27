@@ -19,10 +19,10 @@ onMounted(() => { setPageData(EPageCategories.TOURNAMENT, "Tournaments"); })
 			</GenericNuxtLink>
 		</div>
 
-		<div class="flex mt-5 mb-5 border-2 border-text"></div>
+		<div class="flex mt-5 mb-5 border-2 border-pink-500"></div>
 		
 		<template v-if="tournaments.length > 0">
-			<div class="block w-full max-h-[70vh] overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color3 scrollbar-thumb-rounded-none scrollbar-track">
+			<div class="block w-full max-h-[70vh] overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-pink-500 scrollbar-thumb-rounded-none scrollbar-track">
 				<TournamentList/>
 			</div>
 		</template>

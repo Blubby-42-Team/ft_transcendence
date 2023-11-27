@@ -10,7 +10,7 @@ const { match } = defineProps({
 </script>
 
 <template>
-	<div class="bg-background2 border-4 border-background1 rounded-2xl grid grid-cols-[max-content_max-content_max-content] overflow-hidden gap-3 p-5">
+	<div class="bg-pink-500 border-4 border-pink-500 rounded-2xl grid grid-cols-[max-content_max-content_max-content] overflow-hidden gap-3 p-5">
 		<div class="flex flex-col items-center p-2">
 			<GenericProfilePicture imageSrc="/amogus.png"/>
 			<div class="pt-2 text-xl">James</div>

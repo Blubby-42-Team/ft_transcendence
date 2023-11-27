@@ -18,7 +18,7 @@ const { gameList } = useGameListStore();
 				Delete Event
 			</GenericButton>
 		</div>
-		<div class="flex mt-5 mb-5 border-2 border-text"></div>
+		<div class="flex mt-5 mb-5 border-2 border-pink-500"></div>
 		<div>
 			<div>{{ route.params.id }}</div>
 		</div>
