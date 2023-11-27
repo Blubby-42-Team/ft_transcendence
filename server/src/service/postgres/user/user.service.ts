@@ -4,6 +4,9 @@ import { User } from '../../../model/user/user.class';
 import { Repository } from 'typeorm';
 import { UserRoleType } from 'src/auth/auth.class';
 import { User42 } from 'src/model/user/user42.class';
+import { Settings } from 'src/model/settings/settings.class';
+import { ETheme } from '@shared/types/settings';
+import { Stats } from 'src/model/stats/stats.class';
 
 @Injectable()
 export class PostgresUserService {
@@ -59,7 +62,7 @@ export class PostgresUserService {
 		roleUser: UserRoleType,
 	) {
 		return this.userRepository.update(idUser, {
-			displayName: displayNameUser,
+			display_name: displayNameUser,
 			role: roleUser,
 		})
 		.catch((err) => {
@@ -150,10 +153,29 @@ export class PostgresUserService {
 		user42.accessToken = accessToken42;
 		user42.refreshToken = refreshToken42;
 
+		const settings = new Settings();
+		settings.theme = ETheme.Light;
+		settings.sound = true;
+
+		const stats = new Stats();
+		stats.played_matchs = 0;
+		stats.classic_match_won = 0;
+		stats.classic_match_lost = 0;
+		stats.classic_match_points_won = 0;
+		stats.classic_match_points_lost = 0;
+		stats.classic_mmr = 0;
+		stats.random_match_won = 0;
+		stats.random_match_lost = 0;
+		stats.random_match_points_won = 0;
+		stats.random_match_points_lost = 0;
+		stats.random_mmr = 0;
+
 		const user = new User();
-		user.displayName = displayName42;
+		user.display_name = displayName42;
 		user.role = UserRoleType.User;
 		user.user42 = user42;
+		user.settings = settings;
+		user.stats = stats;
 
 		return this.userRepository.save(user)
 		.then((res: User): number=> {

@@ -38,11 +38,11 @@ export class ModelUserService {
 		// First get user from database with 42 id
 		return await this.postgresUserService.getUserBy42Id(id42)
 		.then (async (res: User) => {
-			this.logger.debug(`User ${res.displayName} found in database, update it`)
+			this.logger.debug(`User ${res.display_name} found in database, update it`)
 
 			await this.postgresUserService.updateUser(
 				res.id,
-				res.displayName,
+				res.display_name,
 				userRole,
 			);
 

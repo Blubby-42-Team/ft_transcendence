@@ -3,6 +3,8 @@ import { Column, Entity, Exclusion, JoinColumn, OneToOne, PrimaryColumn, Primary
 import { IsNotEmpty, IsNumber, IsEnum, IsObject, ValidateNested} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 import { User42 } from "./user42.class";
+import { Settings } from "../settings/settings.class";
+import { Stats } from "../stats/stats.class";
 
 @Entity()
 export class User {
@@ -14,7 +16,7 @@ export class User {
 
 	@Column()
 	@IsNotEmpty()
-	displayName: string;
+	display_name: string;
 
 	@Column({type: 'enum', enum: UserRoleType, default: UserRoleType.User})
 	@IsNotEmpty()
@@ -34,4 +36,33 @@ export class User {
 	@IsNotEmpty()
 	@ValidateNested()
 	user42: User42;
+
+	/**
+	 * Settings data
+	 */
+	@OneToOne(type => Settings,
+		{
+			cascade: true,
+			eager: true,
+		})
+		@JoinColumn()
+		@Exclude({ toPlainOnly: true})
+		@IsNotEmpty()
+		@ValidateNested()
+		settings: Settings;
+	
+
+	/**
+	 * Stats data
+	 */
+	@OneToOne(type => Stats,
+		{
+			cascade: true,
+			eager: true,
+		})
+		@JoinColumn()
+		@Exclude({ toPlainOnly: true})
+		@IsNotEmpty()
+		@ValidateNested()
+		stats: Stats;
 }

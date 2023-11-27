@@ -12,11 +12,10 @@ export class UserController {
 		private readonly userService: UserService,
 	) {}
 
-	@Roles([UserRoleType.User, UserRoleType.Admin])
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
 	@Get('/:id')
 	async getUserById(@Param() params: DTO_getUserById) {
 		log(`Get user by id ${params.id}`);
 		return await this.userService.getUserById(params.id);
 	}
-
 }
