@@ -1,19 +1,15 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
-import tracer from './tracer';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from './auth/auth.guard';
-import { UserRoleType } from './auth/auth.class';
-import { Roles } from './auth/role.decorator';
-import { JwtService } from '@nestjs/jwt';
 import * as cookieParser from 'cookie-parser';
 import { AuthService } from './auth/auth.service';
 
 async function bootstrap() {
-	await tracer.start();
+	// await tracer.start();
 
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, {cors: true});
 
 	const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
@@ -22,8 +18,8 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
 	app.enableCors({
-		origin: ["http://localhost:3000", "https://admin.socket.io"],
-		credentials: true
+		origin: configService.get<string>('CORS_ORIGINS'),
+		credentials: true,
 	});
 
 	const reflector = app.get(Reflector);

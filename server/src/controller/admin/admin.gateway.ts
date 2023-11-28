@@ -6,8 +6,7 @@ import { log } from 'console';
 @WebSocketGateway({
 	undefined,
 	cors: {
-		origin: ['https://admin.socket.io', 'http://localhost:3000'],
-		credentials: true
+		origin: '*',
 	},
 })
 
@@ -20,8 +19,6 @@ export class AdminGateway {
 		instrument(this.server, {
 			auth: false,
 			mode: "development",
-			// namespaceName: "game_admin"
 		});
-		console.log(`Listen WS: $url$port `)
 	}
 }
