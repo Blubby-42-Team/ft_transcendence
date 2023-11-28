@@ -1,0 +1,6 @@
+-- SQLBook: Markup
+Drop db
+-- SQLBook: Code
+DROP SCHEMA public CASCADE
+
+CREATE SCHEMA public
