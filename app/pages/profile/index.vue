@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 definePageMeta({name: 'My Profil'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.NONE, "My Profile"); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 
 
 </script>

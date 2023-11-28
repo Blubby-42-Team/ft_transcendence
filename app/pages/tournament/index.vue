@@ -3,8 +3,8 @@
 const { tournaments } = useTournamentListStore();
 
 definePageMeta({name: 'Tournaments'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.TOURNAMENT, "Tournaments"); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.TOURNAMENT); })
 
 </script>
 

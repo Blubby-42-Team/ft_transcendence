@@ -2,7 +2,7 @@
 const route = useRoute()
 const { tournaments, del } = useTournamentListStore();
 
-const { setSelectedCategory, setTitle } = usePageStore();
+const { setSelectedCategory } = usePageStore();
 
 definePageMeta({name: 'Tournament'})
 
@@ -13,7 +13,6 @@ if (tournament === undefined){
 
 onMounted(() => {
 	setSelectedCategory(EPageCategories.TOURNAMENT);
-	setTitle(tournament ? tournament.name : "Tournament");
 })
 
 function deleteTournament(){
@@ -36,7 +35,7 @@ function deleteTournament(){
 				Delete Event
 			</GenericButton>
 		</div>
-		<div class="flex h-0 mt-5 mb-5 border-2 border-pink-500 bg-pink-500"></div>
+		<div class="flex h-0 mt-5 mb-5 bg-pink-500 border-2 border-pink-500"></div>
 		<TournamentPreview/>
 	</div>
 </template>

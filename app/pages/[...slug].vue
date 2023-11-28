@@ -2,8 +2,8 @@
 // This is a catch all file: all path undefined go here (Page Not Found)
 
 definePageMeta({name: 'Not Found'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.NONE, ""); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 
 </script>
 

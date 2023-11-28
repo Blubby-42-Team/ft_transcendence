@@ -6,10 +6,10 @@ const { lobby, selectedLobby } = usePageStore();
 	
 <template>
 	<div class="grid h-full grid-rows-[4rem_auto]">
-		<div class="grid h-16 grid-cols-4 gap-1 p-1 bg-pink-500">
+		<div class="grid h-16 grid-cols-[repeat(4,1fr)_8rem] gap-1 p-1 bg-color1">
 			<template v-for="elem in lobby">
 				<GenericNuxtLink :button-style="1"
-					class="rounded-md bg-pink-500 bg-opacity-20"
+					class="rounded-md bg-color2 bg-opacity-20"
 					:class="css.has({
 						'bg-opacity-80': elem.id === selectedLobby,
 					})"	

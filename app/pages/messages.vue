@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 definePageMeta({name: 'Message'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.MESSAGES, "My Message"); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.MESSAGES); })
 
 const { isSideMenuOpen } = useChannelListStore();
 

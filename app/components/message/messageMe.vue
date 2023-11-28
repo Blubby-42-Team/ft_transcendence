@@ -15,7 +15,7 @@ const { messages, getMessagePlayer } = useChannelStore()
 
 <template>
 	<br/>
-	<div class="flex float-right h-full p-2 break-all bg-button-hover rounded-tl-2xl text-text-light rounded-tr-2xl rounded-bl-2xl">
+	<div class="flex float-right h-full p-2 break-all bg-color2 rounded-tl-2xl text-text-light rounded-tr-2xl rounded-bl-2xl">
 		{{ props.message.message }}
 	</div>
 	<div class="flex flex-col row-span-2">

@@ -8,7 +8,7 @@ const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListSt
 <template>
 	<div>
 		<template v-if="selectedChannelType?.hasSideMenu">
-			<div class="absolute top-0 h-16 p-2 right-[7.25rem] bg-first z-20 rounded-bl-xl">
+			<div class="absolute top-0 h-16 p-2 right-[7.25rem] bg-color1 z-20 rounded-bl-xl">
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mr-0"
 					@click="toggleSideMenu"
 				>
@@ -18,7 +18,7 @@ const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListSt
 		</template>
 		<template v-if="selectedChannelType?.hasSideMenu && isSideMenuOpen">
 			<div class="grid h-full grid-rows-[4rem,auto]" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
-				<div class="bg-first"></div>
+				<div class="bg-color1"></div>
 				<div class="overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">
 					<template v-for="member in members">
 						<GenericButton class="w-full p-1" :buttonStyle="2">
