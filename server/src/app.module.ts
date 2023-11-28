@@ -24,6 +24,7 @@ import * as Joi from 'joi';
 				SERVER_PROTOCOL: Joi.string().default('http'),
 				SERVER_HOST: Joi.string().default('localhost'),
 				PORT: Joi.number().default(3000),
+				CORS_ORIGINS: Joi.string().required(),
 
 				/**
 				 * Postgres configuration
@@ -40,7 +41,7 @@ import * as Joi from 'joi';
 				API42_URL: Joi.string().default('https://api.intra.42.fr'),
 				API42_APP_ID: Joi.string().required(),
 				API42_APP_SECRET: Joi.string().required(),
-				API42_APP_REDIRECT: Joi.string().default(`http://localhost:3000/auth/42/callback`),
+				API42_APP_REDIRECT: Joi.string().required(),
 
 				/**
 				 * JWT configuration

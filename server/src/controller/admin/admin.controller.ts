@@ -16,7 +16,7 @@ export class AdminController {
 	) {}
 	
 	@Get('ws')
-	@Roles([UserRoleType.Admin])
+	@Roles([UserRoleType.Admin, UserRoleType.Guest])
 	@Redirect('https://admin.socket.io/')
 	redirectToAdminSocket() {}
 

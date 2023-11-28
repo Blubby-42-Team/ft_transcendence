@@ -5,9 +5,8 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 @WebSocketGateway({
 	namespace: 'game',
 	cors: {
-		origin: ['https://admin.socket.io', 'http://localhost:3000'],
-		credentials: true
-	},
+		origin: '*',
+	}
 })
 export class EmitGateway {
 	@WebSocketServer()

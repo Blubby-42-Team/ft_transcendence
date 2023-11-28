@@ -11,8 +11,7 @@ import { WsBadRequestExceptionFilter } from './game.exception.filter';
 @WebSocketGateway({
 	namespace: 'game',
 	cors: {
-		origin: ['https://admin.socket.io', 'http://localhost:3000'],
-		credentials: true
+		origin: '*',
 	},
 })
 
@@ -30,12 +29,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	handleConnection(client: Socket, ...args: any[]) {
 		// this.gameService.reconnectPlayerToRoom(client.id);
 		this.logger.log(`Client ${client.id} connected`);
+		return 'urmom';
 	}
 	
 	// When a client disconnect from the server
 	handleDisconnect(client: Socket) {
 		// this.gameService.removePlayerFromRoom(client.id);
 		this.logger.log(`Client ${client.id} disconnected`);
+		return 'urmom the sequel'; 
 	}
 
 	// Inject the server instance
@@ -45,18 +46,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('joinRoom')
 	async joinRoom(@ConnectedSocket() client: Socket, @MessageBody() req: JoinGameRoomRequestDto): Promise<AcknowledgmentWsDto> {
 		
-		const joinGameRoomRequestDto = plainToClass(JoinGameRoomRequestDto, req);
-		const errors = await validate(joinGameRoomRequestDto);
-		if (errors.length > 0) {
-			this.logger.warn(`Client ${client.id} send invalid joinRoom request`);
-			return new AcknowledgmentWsDto('error', JSON.stringify(errors));
-		}
-
-		//TODO Check jwt and make a decorator to check and return user id
-
-		await this.gameService.addPlayerToLobby
-
-		const room = joinGameRoomRequestDto.game_room_id;
+		const room = '0000';
 		client.join(room);
 
 		this.logger.log(`Client ${client.id} joined room ${room}`);
@@ -69,18 +59,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('move')
 	async gameMove(@MessageBody('move') direction: any /**TODO use dto */) {
-
-		// this.gameSErvice.movePlayer(id, direction, room);//TODO 
-		this.logger.log(`Client send move ${JSON.stringify(direction)}`);
 	}
 
 	@SubscribeMessage('test')
 	async test(@ConnectedSocket() client: Socket, @MessageBody() req: any) {
-		this.logger.log(`Client ${client.id} send test ${JSON.stringify(req)}`);
-		// this.server.emit('test', 'test');
-		// throw new WsException(new AcknowledgmentWsDto('error', 'test'));
-		// throw new WsException('Errtest');
-		throw new BadGatewayException('test');
-		return new AcknowledgmentWsDto('ok', 'ok');
 	}
 }
