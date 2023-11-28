@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+const { start } = useLocalLobbyStore();
 const { gameSettings } = useGameStore()
 
 const props = defineProps({
@@ -89,7 +90,7 @@ const difficulties = [
 		</div>
 
 		<div class="w-full p-2">
-			<GenericButton :button-style="1" class="flex w-full p-2" @click="() => isHost = !isHost">Play</GenericButton>
+			<PlayLobbyPlayButton/>
 		</div>
 	</div>
 </template>
