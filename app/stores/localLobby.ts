@@ -16,8 +16,8 @@ export const useLocalLobbyStore = defineStore('localLobby', {
 		_players: [
 			{ id: undefined,	type: CardType.PLAYER	},
 			{ id: undefined,	type: CardType.EMPTY	},
-			{ id: undefined,	type: CardType.COMING	},
-			{ id: undefined,	type: CardType.COMING	},
+			{ id: undefined,	type: CardType.COMING1	},
+			{ id: undefined,	type: CardType.COMING1	},
 		] as Array<testPlayerCard>,
 		_sequence: LobbyStartingSequence.NOT_STARTED,
 		_timeRemaining: 6,
@@ -38,21 +38,31 @@ export const useLocalLobbyStore = defineStore('localLobby', {
 						this._players[i].type = CardType.EMPTY;
 					}
 					else {
-						this._players[i].type = CardType.COMING;
+						this._players[i].type = CardType.COMING1;
 					}
 				}
 			}
-		},
+		},	
 		async start() {
 			this._sequence = LobbyStartingSequence.STARTING;
-			console.log('start');
 			while (this._timeRemaining > 0 && this._sequence === LobbyStartingSequence.STARTING) {
 				this._timeRemaining -= 1;
 				if (this._timeRemaining === 0){
 					this._sequence = LobbyStartingSequence.STARTED;
 				}
-				console.log('time: ', this._timeRemaining);
 				await new Promise((r) => setTimeout(r, 1000));
+			}
+			if (this._sequence == LobbyStartingSequence.STARTED){
+				for (let i = 1; i < this._players.length; i++){
+					if (this._players[i].type === CardType.EMPTY){
+						this._players[i].type = CardType.PLAYER;
+					}
+					else if (this._players[i].type === CardType.COMING1){
+						this._players[i].type = CardType.COMING2;
+					}
+					console.log(this._players)
+					await new Promise((r) => setTimeout(r, 300));
+				}
 			}
 		},
 		cancel() {

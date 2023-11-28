@@ -15,8 +15,8 @@ export class FrontLobbyMatchMakingInstance {
 	public players: Array<testPlayerCard> = [
 		{ id: undefined,	type: CardType.PLAYER	},
 		{ id: undefined,	type: CardType.EMPTY	},
-		{ id: undefined,	type: CardType.COMING	},
-		{ id: undefined,	type: CardType.COMING	},
+		{ id: undefined,	type: CardType.COMING1	},
+		{ id: undefined,	type: CardType.COMING1	},
 	]
 	public sequence = LobbyStartingSequence.NOT_STARTED;
 	public timeRemaining = 5;

@@ -13,6 +13,9 @@ onMounted(() => {
 	reset(1);
 })
 
+onUnmounted(() => {
+	reset(1);
+})
 
 </script>
 

@@ -6,23 +6,30 @@ definePageMeta({
 })
 
 const { setPageDataLobby } = usePageStore();
-onMounted(() => { setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Classic); })
+const { players, reset } = useLocalLobbyStore();
 
-let isFront = ref([
-	{ type: CardType.PLAYER },
-	{ type: CardType.EMPTY },
-	{ type: CardType.COMING },
-	{ type: CardType.COMING },
-]);
+onMounted(() => {
+	setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Classic);
+	reset(1);
+})
+
+onUnmounted(() => {
+	reset(1);
+})
 
 </script>
 
 <template>
-	<div class="grid h-full grid-cols-[repeat(4,1fr)] w-full">
-		<template v-for="el of isFront">
+	<div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
+		<template v-for="el of players">
 			<div class="p-2">
-				<PlayLobbyCard :type="el.type" @click="() => el.type = CardType.PLAYER"/>
+				<PlayLobbyCard :type="el.type"/>
 			</div>
 		</template>
+		<br>
+		<div class="w-full col-span-2 p-2">
+			<PlayLobbyPlayButton/>
+		</div>
+		<br>
 	</div>
 </template>
