@@ -26,7 +26,8 @@ export class PostgresSettingsService {
 			SELECT s.*
 			FROM public.user as u
 			LEFT JOIN public.settings AS s
-			ON u.id = $1`,
+			ON u."settingsId" = s.id
+			WHERE u.id = $1`,
 			[userId],
 		)
 		.catch((err) => {

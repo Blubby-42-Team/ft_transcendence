@@ -26,7 +26,8 @@ export class PostgresStatsService {
 			SELECT s.*
 			FROM public.user as u
 			LEFT JOIN public.stats AS s
-			ON u.id = $1`,
+			ON u."statsId" = s.id
+			WHERE u.id = $1`,
 			[userId],
 		)
 		.catch((err) => {

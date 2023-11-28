@@ -72,5 +72,8 @@ export class User {
 		stats: Stats;
 
 	@OneToMany(type => History, (history) => history.player)
-	history: History;
+	history: History[];
+
+	@OneToMany(type => History, (history) => history.opp)
+	historyOpponent: History[];
 }

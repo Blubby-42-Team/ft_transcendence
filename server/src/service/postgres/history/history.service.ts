@@ -24,7 +24,15 @@ export class PostgresHistoryService {
 	 * @throws `InternalServerErrorException` if db error
 	 */
 	async getHistoryByUserId(userId: number): Promise<History> {
-		return new History
+		return this.historyRepository.query(`
+			SELECT * FROM "history"
+			WHERE "playerId" = $1`,
+			[userId],
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get stats by userId ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get stats by user id ${userId}`);
+		})
 	}
 
 	async addHistory(
@@ -39,16 +47,23 @@ export class PostgresHistoryService {
 		const player = new User()
 		player.id = userId
 
+		const opponent = new User()
+		opponent.id = opp_id
+
 		const match = new History;
 		match.date = date;
 		match.player = player
 		match.duration = duration;
 		match.game_type = game_type;
-		match.opp_id = opp_id;
+		match.opp = opponent;
 		match.opp_score = opp_score;
 		match.player_score = player_score;
 		
 		return this.historyRepository.save(match)
+		.catch((err) => {
+			throw new InternalServerErrorException("Could not add match history");
+			this.logger.debug("Could not add match history");
+		})
 		.then((res) => {
 			return res.id;
 		})

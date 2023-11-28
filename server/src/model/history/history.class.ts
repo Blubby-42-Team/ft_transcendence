@@ -12,10 +12,11 @@ export class History {
 	@IsNumber()
 	id: number;
 
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	opp_id: number;
+	@ManyToOne(type => User, (user) => user.history)
+	player: User;
+
+	@ManyToOne(type => User, (user) => user.historyOpponent)
+	opp: User;
 
 	@Column({type: 'enum', enum: EGameType, default: EGameType.Classic})
 	@IsNotEmpty()
@@ -42,8 +43,6 @@ export class History {
 	@IsNumber()
 	duration: number;
 
-	@ManyToOne(type => User, (user) => user.history)
-	player: User;
 }
 
 
