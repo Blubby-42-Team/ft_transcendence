@@ -5,6 +5,7 @@ import { Settings } from 'src/model/settings/settings.class';
 import { Stats } from 'src/model/stats/stats.class';
 import { User } from 'src/model/user/user.class';
 import { User42 } from 'src/model/user/user42.class';
+import { History } from 'src/model/history/history.class';
 
 @Module({
 	imports: [
@@ -26,6 +27,7 @@ import { User42 } from 'src/model/user/user42.class';
 						User42,
 						Settings,
 						Stats,
+						History,
 					],
 				}
 			},

@@ -1,10 +1,11 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, Exclusion, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Exclusion, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty, IsNumber, IsEnum, IsObject, ValidateNested, IsString} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 import { User42 } from "./user42.class";
 import { Settings } from "../settings/settings.class";
 import { Stats } from "../stats/stats.class";
+import { History } from "../history/history.class";
 
 @Entity()
 export class User {
@@ -69,4 +70,7 @@ export class User {
 		@IsNotEmpty()
 		@ValidateNested()
 		stats: Stats;
+
+	@OneToMany(type => History, (history) => history.player)
+	history: History;
 }

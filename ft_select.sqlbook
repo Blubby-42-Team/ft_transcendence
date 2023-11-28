@@ -6,3 +6,6 @@ SELECT * FROM "user42"
 SELECT * FROM "stats"
 -- SQLBook: Code
 SELECT * FROM "settings"
+-- SQLBook: Code
+SELECT * FROM "history"
+WHERE "playerId" = 1
