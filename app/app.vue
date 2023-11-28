@@ -2,6 +2,7 @@
 
 const { selectedChannelType, selectedChannel, isSideMenuOpen } = useChannelListStore()
 const { selectedCategory, selectedLobby } = usePageStore()
+const { players, sequence, timeRemaining } = useLocalLobbyStore()
 
 </script>
 

@@ -1,43 +1,37 @@
 <script setup lang="ts">
 import { LobbyStartingSequence } from '#imports';
 
-const props = defineProps({
-	sequence: {
-		type: Number as PropType<LobbyStartingSequence>,
-    	required: true
-	},
-	timeRemaining: {
-		type: Number,
-    	required: true
-	},
-})
-
-const test2 = ref(false);
+const { timeRemaining, sequence, start, cancel } = useLocalLobbyStore();
 const hoverButton = ref(false);
 
 </script>
 
 <template>
-	<template v-if="!test2">
+	<template v-if="sequence === LobbyStartingSequence.NOT_STARTED">
 		<GenericButton class="w-full h-16" :buttonStyle="1"
-			@click="() => test2 = true"
+			@click="start"
 		>
 			Play
 		</GenericButton>
 	</template>
-	<template v-else>
-		<GenericButton class="w-full h-16 hover:bg-accent1 hover:bg-opacity-70" :buttonStyle="1"
+	<template v-else-if="sequence === LobbyStartingSequence.STARTING">
+		<GenericButton class="w-full h-16 text-black hover:bg-opacity-70" :buttonStyle="3"
 			:selected="true"
-			@mouseover="hoverButton = true"
-			@mouseleave="hoverButton = false"
-			@click="() => test2 = false"
+			@mouseover="hoverButton = false"
+			@mouseleave="hoverButton = true"
+			@click="cancel"
 		>
 			<template v-if="hoverButton">
-				Starting in {{ props.timeRemaining }}
+				Starting in {{ timeRemaining }}
 			</template>
-			<template>
-				Cancel
+			<template v-else>
+				Cancel ({{ timeRemaining }})
 			</template>
+		</GenericButton>
+	</template>
+	<template v-else-if="sequence === LobbyStartingSequence.STARTED">
+		<GenericButton class="w-full h-16 text-black" :buttonStyle="3" :selected="true" :disabled="true">
+			Starting...
 		</GenericButton>
 	</template>
 </template>
