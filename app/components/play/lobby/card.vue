@@ -32,6 +32,11 @@ const props = defineProps({
 					</div>
 				</div>
 			</div>
+			<div v-else-if="props.type === CardType.COMING" class="absolute w-full h-full align-top card">
+				<div class="w-full h-full overflow-hidden border-4 text-background2 bg-background1 border-background1 bg-opacity-80 rounded-2xl">
+					<Icon name="material-symbols:account-circle" class="w-full h-full"/>
+				</div>
+			</div>
 		</transition>
 	</div>
 </template>
