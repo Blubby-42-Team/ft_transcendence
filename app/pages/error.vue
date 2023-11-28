@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 definePageMeta({name: 'An Error Occured'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.NONE, ""); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 
 
 </script>

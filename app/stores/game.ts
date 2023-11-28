@@ -6,7 +6,7 @@ type gameStoreType = {
 	_gameSettings: gameSettingsType,
 };
 
-export const useGame2Store = defineStore('game', {
+export const useGameStore = defineStore('game', {
 	state: (): gameStoreType => ({
 		_theme: {
 			fontColor:			'white',

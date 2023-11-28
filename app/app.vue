@@ -1,3 +1,11 @@
+<script setup lang="ts">
+
+const { selectedChannelType, selectedChannel, isSideMenuOpen } = useChannelListStore()
+const { selectedCategory, selectedLobby } = usePageStore()
+
+</script>
+
+
 <template>
 	<NuxtLayout>
 		<NuxtPage :transition="{

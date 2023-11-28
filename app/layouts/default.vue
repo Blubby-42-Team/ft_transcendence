@@ -9,7 +9,7 @@ const theme = useState('theme');
 	>
 		<LayoutSidebar/>
 		<LayoutHeader/>
-		<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first scrollbar-thumb-rounded-full scrollbar-track">
+		<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">
 			<slot />
 		</div>
 	</div>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { gameStatusType } from '#imports';
 
-const { theme, gameSettings } = useGame2Store()
+const { theme, gameSettings } = useGameStore()
 
 const screenSize = ref({
 	width: 0,
@@ -63,7 +63,7 @@ onUnmounted(() => {
 <template>
 	<div id="canvasDiv" class="w-full h-full">
 		<client-only placeholder="loading...">
-			<canvas class="bg-white border border-pink-500" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
+			<canvas class="border bg-text border-text" ref="canvas" :width="screenSize.width" :height="screenSize.height"></canvas>
 		</client-only>
 	</div>
 </template>

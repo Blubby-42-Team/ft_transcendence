@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { EPageCategories } from '@/stores/page'
-const { selectedCategory } = usePageStore();
+const { selectedCategory, selectedLobby, lobby } = usePageStore();
 
 enum EType {
 	CATEGORY			= 0,
@@ -10,9 +10,11 @@ enum EType {
 
 type TSidebarCategory = { type: EType.CATEGORY, categoryType: EPageCategories, path: string, icon: string } | { type: Exclude<EType, EType.CATEGORY> }
 
+
+
 const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/game',			icon: 'material-symbols:stadia-controller'	},
+	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/lobby',			icon: 'material-symbols:stadia-controller'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	path: '/tournament',	icon: 'material-symbols:trophy'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.WATCH, 		path: '/watch',			icon: 'material-symbols:visibility'	},
 	{	type: EType.SEPARATOR_BAR,																							},
@@ -25,13 +27,13 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 </script>
 
 <template>
-	<div class="flex flex-col h-full p-2 overflow-hidden text-text-light bg-first">
+	<div class="flex flex-col h-full p-2 overflow-hidden text-text-light bg-color1">
 		<template v-for="category in categories">
 			<template v-if="category.type === EType.CATEGORY">
 				<NuxtLink :to="category.path"
 					class="self-center w-10 h-10 m-2 text-center border-2 border-transparent rounded"
 					:class="css.has({
-						'text-accent hover:border-accent || hover:border-text-light': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
+						'text-accent1 hover:border-accent1 || hover:border-text-light': selectedCategory === category.categoryType && selectedCategory !== EPageCategories.NONE
 					})"
 				>
 					<Icon :name="category.icon" class="w-full h-full"/>

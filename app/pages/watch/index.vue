@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 
 definePageMeta({name: 'Watch'})
-const { setPageData } = usePageStore();
+const { setSelectedCategory } = usePageStore();
 
-onMounted(() => { setPageData(EPageCategories.WATCH, "Match In Progress"); })
+onMounted(() => { setSelectedCategory(EPageCategories.WATCH); })
 
 const { gameList } = useGameListStore();
 

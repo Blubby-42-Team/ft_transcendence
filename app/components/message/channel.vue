@@ -11,8 +11,7 @@ defineProps({
 })
 
 const { messages } = useChannelStore()
-
-const selectedChannelName	= useState('selectedChannelName');
+const { selectedChannel  } = useChannelListStore()
 
 const myId = "2"
 
@@ -20,12 +19,12 @@ const myId = "2"
 
 <template>
 	<div class="grid grid-rows-[max_contents,1px,max_contents]">
-		<div class="h-16 p-2 text-lg bg-first text-text-light">
+		<div class="h-16 p-2 text-lg bg-color1 text-text-light">
 			<div class="flex items-center justify-center h-full ">
-				{{ selectedChannelName }}
+				{{ selectedChannel?.name }}
 			</div>
 		</div>
-		<div class="flex flex-col-reverse overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first overscroll-y-contain">
+		<div class="flex flex-col-reverse overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain">
 			<template v-for="message in messages">
 				<div class="inline-grid grid-rows-[auto,2em] p-5"
 					:class="message.senderId == myId ? 'grid-cols-[auto,70%,4em]' : 'grid-cols-[4em,70%,auto]'"
@@ -42,7 +41,7 @@ const myId = "2"
 		<div class="w-full p-5 grid grid-cols-[auto,3em] gap-2">
 			<div class="pt-2 pb-1 pl-2 pr-0 bg-background1 rounded-2xl">
 				<textarea ref="textarea" v-model="input"
-					class="self-center w-full overflow-x-hidden bg-transparent border-transparent border-none resize-none text-text max-h-60 focus-border-none form-pink-500area focus:ring-0 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-first overscroll-y-contain" 
+					class="self-center w-full overflow-x-hidden bg-transparent border-transparent border-none resize-none text-text max-h-60 focus-border-none form-pink-500area focus:ring-0 scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 overscroll-y-contain" 
 					placeholder="Send a Message"
 				/>
 			</div>

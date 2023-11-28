@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 definePageMeta({name: 'Settings'})
-const { setPageData } = usePageStore();
-onMounted(() => { setPageData(EPageCategories.SETTINGS, "Settings"); })
+const { setSelectedCategory } = usePageStore();
+onMounted(() => { setSelectedCategory(EPageCategories.SETTINGS); })
 
 const themes = [
 	'theme-dark',
