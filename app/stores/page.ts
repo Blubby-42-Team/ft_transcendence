@@ -32,22 +32,12 @@ export const usePageStore = defineStore('page', {
 		lobby:				(state) => state._lobby,
 	},
 	actions: {
-		setPageData(newCategory: EPageCategories, newTitle: string){
-			console.log('setPageData')
-			this._selectedCategory = newCategory;
-		},
 		setPageDataLobby(newCategory: EPageCategories, newLobby: ESelectedLobby){
-			console.log('setPageData')
 			this._selectedCategory = newCategory;
 			this._selectedLobby = newLobby;
 		},
 		setSelectedCategory(newCategory: EPageCategories){
-			console.log('setSelectedCategory')
 			this._selectedCategory = newCategory;
-		},
-		setSelectedLobby(newLobby: ESelectedLobby){
-			console.log('setSelectedLobby')
-			this._selectedLobby = newLobby;
 		},
 	}
 })
