@@ -1,3 +1,4 @@
+import { ModelGameModule } from './model/game/game.module';
 import { PostgresUser42Module } from './service/postgres/user42/user42.module';
 import { ControllerModule } from './controller/controller.module';
 import { ModelModule } from './model/model.module';
@@ -9,6 +10,7 @@ import * as Joi from 'joi';
 
 @Module({
 	imports: [
+		ModelGameModule,
 		PostgresUser42Module,
 		ControllerModule,
 		ModelModule,

@@ -8,7 +8,11 @@ import { ControllerGameModule } from './game/game.module';
 import { ControllerUserModule } from './user/user.module';
 
 @Module({
-    imports: [ControllerUserModule, ControllerAdminModule, ControllerGameModule],
+    imports: [
+		ControllerUserModule,
+		ControllerAdminModule,
+		ControllerGameModule
+	],
     controllers: [],
     providers: [],
 })

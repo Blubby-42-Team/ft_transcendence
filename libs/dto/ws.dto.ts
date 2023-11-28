@@ -2,7 +2,7 @@ import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolea
 
 export class AcknowledgmentWsDto {
 
-	constructor(status: 'ok' | 'error' | 'debug', message: string) {
+	constructor(status: 'ok' | 'error' | 'debug', message: unknown) {
 		this.status = status;
 		this.message = message;
 	}
@@ -12,7 +12,7 @@ export class AcknowledgmentWsDto {
 	status: 'ok' | 'error' | 'debug';
 
 	@IsString()
-	message: string;
+	message: unknown;
 }
 
 export class WsRequestDto {
