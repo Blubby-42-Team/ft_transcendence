@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, ParseIntPipe } from '@nestjs/common';
 import { DTO_getStatsByUserId, DTO_matchEnd } from './stats.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
@@ -20,49 +20,23 @@ export class StatsController {
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
-	@Patch('/:id')
-	async ClassicMatchEnd(
+	@Patch('/end/match/classic/:id')
+	async classicMatchEnd(
 		@Param() params: DTO_getStatsByUserId,
 		@Body() body: DTO_matchEnd,
 	) {
 		log(`Update stats by user id ${params.id}`);
-		await this.statsService.addPlayedMatch(params.id);
-		for(let i = 0; i < body.points_won; i++) {
-			await this.statsService.addClassicPointWon(params.id);
-		}
-		for(let i = 0; i < body.points_lost; i++) {
-			await this.statsService.addClassicPointLost(params.id);
-		}
-		if (body.game_won){
-			await this.statsService.addClassicWon(params.id);
-		}
-		else {
-			await this.statsService.addClassicLose(params.id);
-		}
-		//TODO Modify Classic MMR
+		await this.statsService.classicMatchEnd(params.id, body.points_won, body.points_lost)
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
-	@Patch('/:id')
-	async RandomMatchEnd(
+	@Patch('/end/match/random/:id')
+	async randomMatchEnd(
 		@Param() params: DTO_getStatsByUserId,
 		@Body() body: DTO_matchEnd,
 	) {
 		log(`Update stats by user id ${params.id}`);
-		await this.statsService.addPlayedMatch(params.id);
-		for(let i = 0; i < body.points_won; i++) {
-			await this.statsService.addRandomPointWon(params.id);
-		}
-		for(let i = 0; i < body.points_lost; i++) {
-			await this.statsService.addRandomPointLost(params.id);
-		}
-		if (body.game_won){
-			await this.statsService.addRandomWon(params.id);
-		}
-		else {
-			await this.statsService.addRandomLose(params.id);
-		}
-		//TODO Modify Random MMR
+		await this.statsService.randomMatchEnd(params.id, body.points_won, body.points_lost)
 	}
 
 }

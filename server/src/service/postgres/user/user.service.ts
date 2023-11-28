@@ -60,10 +60,12 @@ export class PostgresUserService {
 		idUser: number,
 		displayNameUser: string,
 		roleUser: UserRoleType,
+		profile_picture_user: string,
 	) {
 		return this.userRepository.update(idUser, {
 			display_name: displayNameUser,
 			role: roleUser,
+			profile_picture: profile_picture_user, 
 		})
 		.catch((err) => {
 			this.logger.debug(`Failed to update User ${idUser}: ${err}`);
@@ -173,6 +175,7 @@ export class PostgresUserService {
 		const user = new User();
 		user.display_name = displayName42;
 		user.role = UserRoleType.User;
+		user.profile_picture = 'TEMP';
 		user.user42 = user42;
 		user.settings = settings;
 		user.stats = stats;

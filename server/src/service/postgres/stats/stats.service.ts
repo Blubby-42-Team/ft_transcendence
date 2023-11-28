@@ -47,218 +47,164 @@ export class PostgresStatsService {
 	}
 	
 	async addPlayedMatch(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET played_matchs = played_matchs + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			played_matchs: old.played_matchs + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update played matchs of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update played matchs of ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update played matchs of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update played matchs of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addClassicWon(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET classic_match_won = classic_match_won + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			classic_match_won: old.classic_match_won + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update won matchs of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update won matchs of ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update won matchs of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update won matchs of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addClassicLose(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET classic_match_lost = classic_match_lost + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			classic_match_lost: old.classic_match_lost + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update lost matchs of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update lost matchs ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update lost matchs of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update lost matchs of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addClassicPointWon(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET classic_match_point_won = classic_match_point_won + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			classic_match_points_won: old.classic_match_points_won + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update won points of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update won points ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update won points of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update won points of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addClassicPointLost(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET classic_match_point_lost = classic_match_point_lost + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			classic_match_points_lost: old.classic_match_points_lost + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update lost points of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update lost points ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update lost points of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update lost points of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addRandomWon(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET random_match_won = random_match_won + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			random_match_won: old.random_match_won + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update won matchs of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update won matchs of ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update won matchs of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update won matchs of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addRandomLose(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET random_match_lost = random_match_lost + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			random_match_lost: old.random_match_lost + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update lost matchs of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update lost matchs ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update lost matchs of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update lost matchs of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addRandomPointWon(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET random_match_point_won = random_match_point_won + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			random_match_points_won: old.random_match_points_won + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update won points of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update won points ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update won points of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update won points of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 
 	async addRandomPointLost(userId: number) {
-		return this.statsRepository.query(`
-			UPDATE public.stats
-			SET random_match_point_lost = random_match_point_lost + 1
-			FROM public.user as u
-			WHERE u.id = $1`,
-			[userId],
-		)
-		.catch((err)=> {
-			this.logger.debug(`Failed to update stats by userId ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update stats by user id ${userId}`);
+		const old = await this.getStatsByUserId(userId)
+		return this.statsRepository.update(userId, {
+			random_match_points_lost: old.random_match_points_lost + 1,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update lost points of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update lost points ${userId}`);
 		})
 		.then((res) => {
-			if (res.length === 0) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: not found`);
-				throw new NotFoundException(`Failed to update stats by user id ${userId}: not found`);
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update lost points of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update lost points of ${userId}:`);
 			}
-			if (res.length > 1) {
-				this.logger.debug(`Failed to update stats by userId ${userId}: too many results`);
-				throw new InternalServerErrorException(`Failed to update stats by user id ${userId}: too many results`);
-			}
+			return 'ok';
 		})
 	}
 

@@ -14,47 +14,46 @@ export class StatsService {
 		return await this.modelStatsService.getStatsByUserId(userId);
 	}
 
-	async addPlayedMatch(userId: number) {
-		return await this.modelStatsService.addPlayedMatch(userId);
+	async classicMatchEnd(
+		userId: number,
+		pointsWon: number,
+		pointsLost: number)
+		{
+		await this.modelStatsService.addPlayedMatch(userId);
+		for(let i = 0; i < pointsWon; i++) {
+			await this.modelStatsService.addClassicPointWon(userId);
+		}
+		for(let i = 0; i < pointsLost; i++) {
+			await this.modelStatsService.addClassicPointLost(userId);
+		}
+		if (pointsWon > pointsLost){
+			await this.modelStatsService.addClassicWon(userId);
+		}
+		else {
+			await this.modelStatsService.addClassicLose(userId);
+		}
+		//TODO Modify Classic MMR
 	}
 
-	async addClassicWon(userId: number) {
-		return await this.modelStatsService.addClassicWon(userId);
-	}
-
-	async addClassicLose(userId: number) {
-		return await this.modelStatsService.addClassicLose(userId);
-	}
-
-	async addClassicPointWon(userId: number) {
-		return await this.modelStatsService.addClassicPointWon(userId);
-	}
-
-	async addClassicPointLost(userId: number) {
-		return await this.modelStatsService.addClassicPointLost(userId);
-	}
-
-	async addRandomWon(userId: number) {
-		return await this.modelStatsService.addRandomWon(userId);
-	}
-
-	async addRandomLose(userId: number) {
-		return await this.modelStatsService.addRandomLose(userId);
-	}
-
-	async addRandomPointWon(userId: number) {
-		return await this.modelStatsService.addRandomPointWon(userId);
-	}
-
-	async addRandomPointLost(userId: number) {
-		return await this.modelStatsService.addRandomPointLost(userId);
-	}
-
-	async ModifyClassicMMR(userId: number) {
-		return await this.modelStatsService.ModifyClassicMMR(userId);
-	}
-
-	async ModifyRandomMMR(userId: number) {
-		return await this.modelStatsService.ModifyRandomMMR(userId);
+	async randomMatchEnd(
+		userId: number,
+		pointsWon: number,
+		pointsLost: number)
+		{
+		await this.modelStatsService.addPlayedMatch(userId);
+		for(let i = 0; i < pointsWon; i++) {
+			await this.modelStatsService.addRandomPointWon(userId);
+		}
+		for(let i = 0; i < pointsLost; i++) {
+			await this.modelStatsService.addRandomPointLost(userId);
+		}
+		if (pointsWon > pointsLost){
+			await this.modelStatsService.addRandomWon(userId);
+		}
+		else {
+			await this.modelStatsService.addRandomLose(userId);
+		}
+		//TODO Modify Random MMR
 	}
 }
+

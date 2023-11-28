@@ -44,6 +44,7 @@ export class ModelUserService {
 				res.id,
 				res.display_name,
 				userRole,
+				res.profile_picture,
 			);
 
 			await this.modelUser42Service.addOrUpdateUser42(
