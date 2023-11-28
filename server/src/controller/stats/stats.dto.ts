@@ -13,4 +13,9 @@ export class DTO_matchEnd {
 	@IsNotEmpty()
 	@IsNumber()
 	points_lost: number;
+
+	@IsDefined()
+	@IsNotEmpty()
+	@IsNumber()
+	opp_mmr: number;
 }

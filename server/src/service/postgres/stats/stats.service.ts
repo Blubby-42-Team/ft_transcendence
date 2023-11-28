@@ -208,12 +208,44 @@ export class PostgresStatsService {
 		})
 	}
 
-	async ModifyClassicMMR(userId: number) {
-		//TODO faire le MMR classique
+	async ModifyClassicMMR(userId: number, score: number, oppMMR: number) {
+		const old = await this.getStatsByUserId(userId)
+
+		let newMMR = Math.max(old.classic_mmr + 32 * (score - 1/(1 + 10**((oppMMR - old.classic_mmr)/400))), 100)
+		return await this.statsRepository.update(userId, {
+			classic_mmr: Math.floor(newMMR),
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update classic Matchmaking Ranking of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update classic Matchmaking Ranking ${userId}`);
+		})
+		.then((res) => {
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update classic Matchmaking Ranking of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update classic Matchmaking Ranking of ${userId}:`);
+			}
+			return 'ok';
+		})
 	}
 
-	async ModifyRandomMMR(userId: number) {
-		//TODO faire le MMR Random
+	async ModifyRandomMMR(userId: number, score: number, oppMMR: number) {
+		const old = await this.getStatsByUserId(userId)
+
+		let newMMR = Math.max(old.random_mmr + 32 * (score - 1/(1 + 10**((oppMMR - old.random_mmr)/400))), 100)
+		return await this.statsRepository.update(userId, {
+			random_mmr: Math.floor(newMMR),
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update random Matchmaking Ranking of ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update random Matchmaking Ranking ${userId}`);
+		})
+		.then((res) => {
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update random Matchmaking Ranking of ${userId}: ${res}`);
+				throw new NotFoundException(`Failed to update random Matchmaking Ranking of ${userId}:`);
+			}
+			return 'ok';
+		})
 	}
 }
 

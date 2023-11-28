@@ -17,7 +17,8 @@ export class StatsService {
 	async classicMatchEnd(
 		userId: number,
 		pointsWon: number,
-		pointsLost: number)
+		pointsLost: number,
+		oppMMR: number)
 		{
 		await this.modelStatsService.addPlayedMatch(userId);
 		for(let i = 0; i < pointsWon; i++) {
@@ -28,17 +29,20 @@ export class StatsService {
 		}
 		if (pointsWon > pointsLost){
 			await this.modelStatsService.addClassicWon(userId);
+			await this.modelStatsService.ModifyClassicMMR(userId, 1, oppMMR);
 		}
 		else {
 			await this.modelStatsService.addClassicLose(userId);
+			await this.modelStatsService.ModifyClassicMMR(userId, 0, oppMMR);
 		}
-		//TODO Modify Classic MMR
+		return 'ok'
 	}
 
 	async randomMatchEnd(
 		userId: number,
 		pointsWon: number,
-		pointsLost: number)
+		pointsLost: number,
+		oppMMR: number)
 		{
 		await this.modelStatsService.addPlayedMatch(userId);
 		for(let i = 0; i < pointsWon; i++) {
@@ -49,11 +53,13 @@ export class StatsService {
 		}
 		if (pointsWon > pointsLost){
 			await this.modelStatsService.addRandomWon(userId);
+			await this.modelStatsService.ModifyRandomMMR(userId, 1, oppMMR);
 		}
 		else {
 			await this.modelStatsService.addRandomLose(userId);
+			await this.modelStatsService.ModifyRandomMMR(userId, 0, oppMMR);
 		}
-		//TODO Modify Random MMR
+		return 'ok'
 	}
 }
 

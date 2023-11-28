@@ -26,7 +26,7 @@ export class StatsController {
 		@Body() body: DTO_matchEnd,
 	) {
 		log(`Update stats by user id ${params.id}`);
-		await this.statsService.classicMatchEnd(params.id, body.points_won, body.points_lost)
+		return await this.statsService.classicMatchEnd(params.id, body.points_won, body.points_lost, body.opp_mmr)
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
@@ -36,7 +36,7 @@ export class StatsController {
 		@Body() body: DTO_matchEnd,
 	) {
 		log(`Update stats by user id ${params.id}`);
-		await this.statsService.randomMatchEnd(params.id, body.points_won, body.points_lost)
+		return await this.statsService.randomMatchEnd(params.id, body.points_won, body.points_lost, body.opp_mmr)
 	}
 
 }

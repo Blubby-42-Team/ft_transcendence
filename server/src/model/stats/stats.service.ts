@@ -50,11 +50,11 @@ export class ModelStatsService {
 		return await this.postgresStatsService.addRandomPointLost(userId);
 	}
 
-	async ModifyClassicMMR(userId: number) {
-		return await this.postgresStatsService.ModifyClassicMMR(userId);
+	async ModifyClassicMMR(userId: number, score: number, oppMMR: number) {
+		return await this.postgresStatsService.ModifyClassicMMR(userId, score, oppMMR);
 	}
 
-	async ModifyRandomMMR(userId: number) {
-		return await this.postgresStatsService.ModifyRandomMMR(userId);
+	async ModifyRandomMMR(userId: number, score: number, oppMMR: number) {
+		return await this.postgresStatsService.ModifyRandomMMR(userId, score, oppMMR);
 	}
 }
