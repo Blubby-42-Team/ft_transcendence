@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { User } from './user.class';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 import { ModelUser42Service } from './user42.service';
@@ -71,5 +71,52 @@ export class ModelUserService {
 			throw err;
 		})
 	}
+
+	async getFriendsById(id: number): Promise<User[]> {
+		return await this.postgresUserService.getFriendsById(id)
+	}
+
+	async addFriendById(id: number, friendId: number) {
+		if (id === friendId)
+			throw new NotFoundException('Cannot add yourself as a friend.');
+		const friends = await this.getFriendsById(id);
+		if (friends.length > 0) {
+			friends.forEach(user => {
+				if (user.id === friendId) {
+					this.logger.debug(`Friend ${friendId} is already in the friend list`)
+					throw new HttpException('Friendship already exists', HttpStatus.CONFLICT);
+				}
+			});
+		}
+		
+		return await this.postgresUserService.addFriendById(id, friendId)
+	}
+
+	async deleteFriendById(id: number, friendId: number) {
+		if (id === friendId)
+			throw new NotFoundException('Cannot delete yourself friendship, believe in yourself.');
+		return await this.postgresUserService.deleteFriendById(id, friendId)
+	}
+
+	async getWhitelistById(id: number): Promise<Array<{"id": number}>> {
+		return await this.postgresUserService.getWhitelistById(id)
+	}
+	
+	async addWhitelistById(id: number, whitelistId: number) {
+		if (id === whitelistId)
+			throw new NotFoundException('Cannot add yourself as a whitelist.');
+		const whitelist = await this.getWhitelistById(id);
+		if (whitelist.length > 0) {
+			whitelist.forEach(user => {
+				if (user.id === whitelistId) {
+					this.logger.debug(`Whitelist ${whitelistId} is already in the whitelist list`)
+					throw new HttpException('already in whitelist', HttpStatus.CONFLICT);
+				}
+			});
+		}
+		
+		return await this.postgresUserService.addWhitelistById(id, whitelistId)
+	}
+
 }
 

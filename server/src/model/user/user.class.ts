@@ -1,6 +1,6 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, Exclusion, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty, IsNumber, IsEnum, IsObject, ValidateNested, IsString} from 'class-validator';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { IsNotEmpty, IsNumber, IsEnum, ValidateNested} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 import { User42 } from "./user42.class";
 import { Settings } from "../settings/settings.class";
@@ -76,4 +76,20 @@ export class User {
 
 	@OneToMany(type => History, (history) => history.opp)
 	historyOpponent: History[];
+
+	@ManyToMany(type => User, {cascade: true})
+	@JoinTable({
+		name: 'custom_user_friends',
+		joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'friend_id', referencedColumnName: 'id' },
+	})
+  	friends: User[];
+
+	@ManyToMany(type => User, {cascade: true})
+	@JoinTable({
+		name: 'custom_user_whitelist',
+		joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'whitelist_id', referencedColumnName: 'id' },
+	})
+	whitelist: User[];
 }

@@ -185,5 +185,164 @@ export class PostgresUserService {
 			return res.id;
 		})
 	}
-}
 
+	async getFriendsById(userId: number) {
+		await this.getUserById(userId);
+		return this.userRepository.query(`
+			SELECT
+				f.id
+			FROM
+				"user" AS u
+			JOIN
+				custom_user_friends uf ON u.id = uf.user_id
+			JOIN
+				"user" f ON f.id = uf.friend_id
+			WHERE
+				u.id = $1`,
+			[userId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get friends by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get friends by id ${userId}`);
+		})
+	}
+
+	async addFriendById(id: number, friendId: number) {
+		const user = await this.getUserById(id);
+		const friend = await this.getUserById(friendId);
+
+		if (!user.friends) {
+			user.friends = [];
+			user.friends.push(friend);
+		}
+		else
+			user.friends.push(friend);
+
+		const add = new User
+		add.id = user.id
+		if (!friend.friends) {
+			friend.friends = [];
+			friend.friends.push(add);
+		}
+		else
+			friend.friends.push(add);
+		this.userRepository.save(friend)
+		.catch((err) => {
+			return err
+		});
+		this.userRepository.save(user)
+		.catch((err) => {
+			return err
+		});
+		return 'ok'
+	}
+
+	async deleteFriendById(id: number, friendId: number) {
+		await this.getUserById(id);
+		await this.getUserById(friendId);
+
+		this.userRepository.query(`
+			DELETE FROM custom_user_friends
+			WHERE custom_user_friends.user_id = $1
+			AND custom_user_friends.friend_id = $2`,
+			[id, friendId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to delete friend by id ${id}: ${err}`);
+			throw new InternalServerErrorException(`Failed to delete friend by id ${id}`);
+		})
+		return this.userRepository.query(`
+			DELETE FROM custom_user_friends
+			WHERE custom_user_friends.user_id = $2
+			AND custom_user_friends.friend_id = $1`,
+			[id, friendId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to delete friend by id ${id}: ${err}`);
+			throw new InternalServerErrorException(`Failed to delete friend by id ${id}`);
+		})
+		.then((res) => {
+			if (!res[1]) {
+				this.logger.debug(`Friendship with friend ${friendId}: not found`);
+				throw new NotFoundException(`Friendship with friend ${friendId}: not found`);
+			}
+			return 'ok';
+		})
+	}
+
+	async getWhitelistById(userId: number): Promise<Array<{"id": number}>> {
+		await this.getUserById(userId);
+		return this.userRepository.query(`
+			SELECT
+				w.id
+			FROM
+				"user" AS u
+			JOIN
+				custom_user_whitelist uw ON u.id = uw.user_id
+			JOIN
+				"user" w ON w.id = uw.whitelist_id
+			WHERE
+				u.id = $1`,
+			[userId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get whitelist by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get whitelist by id ${userId}`);
+		})
+		.then((res) => {
+			return res
+		})
+	}
+
+	async addWhitelistById(id: number, whitelistId: number) {
+		const user = await this.getUserById(id);
+		const protec = await this.getUserById(whitelistId);
+		let whitelist = await this.getWhitelistById(protec.id)
+		let reciprocity = false
+
+		if (whitelist) {
+			whitelist.forEach((whitelisted) => {
+				if (whitelisted.id === id) {
+					reciprocity = true;
+				}
+			});
+		}
+		if (!reciprocity) {
+			if (!user.whitelist) {
+				user.whitelist = [];
+				this.logger.debug("HERE")
+				user.whitelist.push(protec);
+			}
+			else
+				user.whitelist.push(protec);
+			this.userRepository.save(user)
+			.catch((err) => {
+				return err
+			})
+		}
+		else {
+			await this.addFriendById(id, whitelistId);
+			this.userRepository.save(whitelist)
+			.catch((err) => {
+				return err
+			})
+			this.userRepository.query(`
+				DELETE FROM custom_user_whitelist
+				WHERE custom_user_whitelist.user_id = $1
+				AND custom_user_whitelist.whitelist_id = $2`,
+				[id, whitelistId]
+			).catch((err) => {
+				return err
+			})
+			this.userRepository.query(`
+				DELETE FROM custom_user_whitelist
+				WHERE custom_user_whitelist.user_id = $2
+				AND custom_user_whitelist.whitelist_id = $1`,
+				[id, whitelistId]
+			).catch((err) => {
+				return err
+			})
+		}
+		return 'ok'
+	}
+}
