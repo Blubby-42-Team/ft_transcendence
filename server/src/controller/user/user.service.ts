@@ -31,4 +31,20 @@ export class UserService {
 	async addWhitelistById(id: number, whitelistId: number) {
 		return await this.modelUserService.addWhitelistById(id, whitelistId);
 	}
+
+	async getBlacklistById(id: number) {
+		return await this.modelUserService.getBlacklistById(id);
+	}
+
+	async isInBlacklistById(id: number, blacklistId: number) {
+		return await this.modelUserService.isInBlacklistById(id, blacklistId);
+	}
+
+	async addBlacklistById(id: number, blacklistId: number) {
+		return await this.modelUserService.addBlacklistById(id, blacklistId);
+	}
+
+	async deleteBlacklistById(id: number, blacklistId: number) {
+		return await this.modelUserService.deleteBlacklistById(id, blacklistId);
+	}
 }

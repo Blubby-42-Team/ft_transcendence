@@ -310,7 +310,6 @@ export class PostgresUserService {
 		if (!reciprocity) {
 			if (!user.whitelist) {
 				user.whitelist = [];
-				this.logger.debug("HERE")
 				user.whitelist.push(protec);
 			}
 			else
@@ -344,5 +343,69 @@ export class PostgresUserService {
 			})
 		}
 		return 'ok'
+	}
+
+	async getBlacklistById(userId: number): Promise<Array<{"id": number}>> {
+		await this.getUserById(userId);
+		return this.userRepository.query(`
+			SELECT
+				w.id
+			FROM
+				"user" AS u
+			JOIN
+				custom_user_blacklist uw ON u.id = uw.user_id
+			JOIN
+				"user" w ON w.id = uw.blacklist_id
+			WHERE
+				u.id = $1`,
+			[userId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get blacklist by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get blacklist by id ${userId}`);
+		})
+		.then((res) => {
+			return res
+		})
+	}
+
+	async addBlacklistById(id: number, blacklistId: number) {
+		const user = await this.getUserById(id);
+		const blacklist = await this.getUserById(blacklistId);
+
+		if (!user.blacklist) {
+			user.blacklist = [];
+			user.blacklist.push(blacklist);
+		}
+		else
+			user.blacklist.push(blacklist);
+		this.userRepository.save(user)
+		.catch((err) => {
+			return err
+		})
+		return 'ok'	
+	}
+
+	async deleteBlacklistById(id: number, blacklistId: number) {
+		await this.getUserById(id);
+		await this.getUserById(blacklistId);
+
+		this.userRepository.query(`
+			DELETE FROM custom_user_blacklist
+			WHERE custom_user_blacklist.user_id = $1
+			AND custom_user_blacklist.blacklist_id = $2`,
+			[id, blacklistId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to delete blacklist by id ${id}: ${err}`);
+			throw new InternalServerErrorException(`Failed to delete blacklist by id ${id}`);
+		})
+		.then((res) => {
+			if (!res[0]) {
+				this.logger.debug(`Blacklisted ${blacklistId}: not found`);
+				throw new NotFoundException(`Blacklisted ${blacklistId}: not found`);
+			}
+		})
+		return 'ok';
 	}
 }

@@ -52,4 +52,41 @@ export class UserController {
 		log(`Add whitelist to ${params.id} by id ${body.id}`);
 		return await this.userService.addWhitelistById(params.id, body.id);
 	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Get('/blacklist/:id')
+	async getBlacklistById(@Param() params: DTO_getUserById) {
+		log(`Get blacklist by id ${params.id}`);
+		return await this.userService.getBlacklistById(params.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Get('/blacklist/is_in/:id')
+	async IsInBlacklistById(
+			@Param() params: DTO_getUserById,
+			@Body() body: DTO_addFriendById,
+	) {
+		log(`Is ${body.id} in blacklist of ${params.id}`);
+		return await this.userService.isInBlacklistById(params.id, body.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Post('/blacklist/:id')
+	async addBlacklistlistById(
+		@Param() params: DTO_getUserById,
+		@Body() body: DTO_addFriendById,
+	) {
+		log(`Add blacklist to ${params.id} by id ${body.id}`);
+		return await this.userService.addBlacklistById(params.id, body.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Delete('/blacklist/:id')
+	async deleteBlacklistById(
+		@Param() params: DTO_getUserById,
+		@Body() body: DTO_addFriendById,
+	) {
+		log(`Delete blacklist to ${params.id} by id ${body.id}`);
+		return await this.userService.deleteBlacklistById(params.id, body.id);
+	}
 }

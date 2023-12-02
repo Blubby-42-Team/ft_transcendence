@@ -92,4 +92,12 @@ export class User {
 		inverseJoinColumn: { name: 'whitelist_id', referencedColumnName: 'id' },
 	})
 	whitelist: User[];
+
+	@ManyToMany(type => User, {cascade: true})
+	@JoinTable({
+		name: 'custom_user_blacklist',
+		joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'blacklist_id', referencedColumnName: 'id' },
+	})
+	blacklist: User[];
 }

@@ -105,6 +105,8 @@ export class ModelUserService {
 	async addWhitelistById(id: number, whitelistId: number) {
 		if (id === whitelistId)
 			throw new NotFoundException('Cannot add yourself as a whitelist.');
+		if (await this.isInBlacklistById(id, whitelistId))
+			throw new NotFoundException('Cannot add cause user is in blacklist.');
 		const whitelist = await this.getWhitelistById(id);
 		if (whitelist.length > 0) {
 			whitelist.forEach(user => {
@@ -118,5 +120,39 @@ export class ModelUserService {
 		return await this.postgresUserService.addWhitelistById(id, whitelistId)
 	}
 
+	async getBlacklistById(id: number): Promise<Array<{"id": number}>> {
+		return await this.postgresUserService.getBlacklistById(id)
+	}
+
+	async isInBlacklistById(id: number, blacklistId: number): Promise<Boolean> {
+		const blacklist = await this.getBlacklistById(id);
+		let is_in = false
+
+		blacklist.forEach(user => {
+			if (user.id === blacklistId) {
+				is_in = true;
+			}
+		});
+		return is_in;
+	}
+	
+	async addBlacklistById(id: number, blacklistId: number) {
+		if (id === blacklistId)
+			throw new NotFoundException('Cannot add yourself as a blacklist.');
+		const blacklist = await this.getBlacklistById(id);
+		if (blacklist.length > 0) {
+			blacklist.forEach(user => {
+				if (user.id === blacklistId) {
+					this.logger.debug(`blacklist ${blacklistId} is already in the blacklist list`)
+					throw new HttpException('already in blacklist', HttpStatus.CONFLICT);
+				}
+			});
+		}
+		return await this.postgresUserService.addBlacklistById(id, blacklistId)
+	}
+
+	async deleteBlacklistById(id: number, blacklistId: number) {
+		return await this.postgresUserService.deleteBlacklistById(id, blacklistId)
+	}
 }
 
