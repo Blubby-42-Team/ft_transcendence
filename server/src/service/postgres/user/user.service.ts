@@ -270,6 +270,20 @@ export class PostgresUserService {
 		})
 	}
 
+	async isInFriendById(id: number, friendId: number) {
+		const friends = await this.getFriendsById(id);
+		let is_in = false
+
+		friends.forEach(friend => {
+			if (friend.id === friendId) {
+				is_in = true;
+			}
+		});
+		if (!is_in)
+			throw new NotFoundException(friendId + ' is not a friend.')
+		return 'ok';
+	}
+
 	async getWhitelistById(userId: number): Promise<Array<{"id": number}>> {
 		await this.getUserById(userId);
 		return this.userRepository.query(`

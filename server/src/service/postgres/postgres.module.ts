@@ -6,6 +6,8 @@ import { Stats } from 'src/model/stats/stats.class';
 import { User } from 'src/model/user/user.class';
 import { User42 } from 'src/model/user/user42.class';
 import { History } from 'src/model/history/history.class';
+import { Messages } from 'src/model/messages/messages.class';
+import { Chat } from 'src/model/chat/chat.class';
 
 @Module({
 	imports: [
@@ -28,6 +30,8 @@ import { History } from 'src/model/history/history.class';
 						Settings,
 						Stats,
 						History,
+						Messages,
+						Chat,
 					],
 				}
 			},

@@ -6,6 +6,7 @@ import { User42 } from "./user42.class";
 import { Settings } from "../settings/settings.class";
 import { Stats } from "../stats/stats.class";
 import { History } from "../history/history.class";
+import { Messages } from "../messages/messages.class";
 
 @Entity()
 export class User {
@@ -46,36 +47,39 @@ export class User {
 	 * Settings data
 	 */
 	@OneToOne(type => Settings,
-		{
-			cascade: true,
-			eager: true,
-		})
-		@JoinColumn()
-		@Exclude({ toPlainOnly: true})
-		@IsNotEmpty()
-		@ValidateNested()
-		settings: Settings;
+	{
+		cascade: true,
+		eager: true,
+	})
+	@JoinColumn()
+	@Exclude({ toPlainOnly: true})
+	@IsNotEmpty()
+	@ValidateNested()
+	settings: Settings;
 	
 
 	/**
 	 * Stats data
 	 */
 	@OneToOne(type => Stats,
-		{
-			cascade: true,
-			eager: true,
-		})
-		@JoinColumn()
-		@Exclude({ toPlainOnly: true})
-		@IsNotEmpty()
-		@ValidateNested()
-		stats: Stats;
+	{
+		cascade: true,
+		eager: true,
+	})
+	@JoinColumn()
+	@Exclude({ toPlainOnly: true})
+	@IsNotEmpty()
+	@ValidateNested()
+	stats: Stats;
 
 	@OneToMany(type => History, (history) => history.player)
 	history: History[];
 
 	@OneToMany(type => History, (history) => history.opp)
 	historyOpponent: History[];
+
+	@OneToMany(type => Messages, (messages) => messages.user)
+	messages: Messages[];
 
 	@ManyToMany(type => User, {cascade: true})
 	@JoinTable({

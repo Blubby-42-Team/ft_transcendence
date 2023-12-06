@@ -9,9 +9,11 @@ import { ControllerUserModule } from './user/user.module';
 import { ControllerSettingsModule } from './settings/settings.module';
 import { ControllerStatsModule } from './stats/stats.module';
 import { ControllerHistoryModule } from './history/history.module';
+import { ControllerMessagesModule } from './messages/messages.module';
+import { ControllerChatModule } from './chat/chat.module'
 
 @Module({
-    imports: [ControllerUserModule, ControllerAdminModule, ControllerGameModule, ControllerSettingsModule, ControllerStatsModule, ControllerHistoryModule],
+    imports: [ControllerUserModule, ControllerAdminModule, ControllerGameModule, ControllerSettingsModule, ControllerStatsModule, ControllerHistoryModule, ControllerMessagesModule, ControllerChatModule],
     controllers: [],
     providers: [],
 })

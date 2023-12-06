@@ -98,6 +98,10 @@ export class ModelUserService {
 		return await this.postgresUserService.deleteFriendById(id, friendId)
 	}
 
+	async isInFriendById(id: number, friendId: number) {
+		return await this.postgresUserService.isInFriendById(id, friendId);
+	}
+
 	async getWhitelistById(id: number): Promise<Array<{"id": number}>> {
 		return await this.postgresUserService.getWhitelistById(id)
 	}
