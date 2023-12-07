@@ -1,9 +1,10 @@
-import { Injectable, Logger, NotFoundException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, InternalServerErrorException, UnauthorizedException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetadataAlreadyExistsError, Repository } from 'typeorm';
 import { User } from '../../../model/user/user.class';
 import { Chat } from '../../../model/chat/chat.class';
 import { EChatType } from '@shared/types/chat';
+import { PostgresUserService } from "../user/user.service"
 
 
 @Injectable()
@@ -13,7 +14,9 @@ export class PostgresChatService {
 
 	constructor (
 		@InjectRepository(Chat) private readonly chatRepository: Repository<Chat>,
-	) {}
+		@Inject(forwardRef(() => PostgresUserService))
+		private readonly postgresUserService: PostgresUserService,
+	  ) {}
 
 	async createChat(
 			user: User,
@@ -28,14 +31,12 @@ export class PostgresChatService {
 		chat.messages = [];
 		chat.chat_picture = 'DEFAULT';
 		
-		return this.chatRepository.save(chat)
+		await this.chatRepository.save(chat)
 		.catch((err) => {
 			this.logger.debug("Could not create");
 			throw new InternalServerErrorException("Could not create");
 		})
-		.then((res) => {
-			return 'ok';
-		})
+		return chat
 	}
 
 	async getChats(
@@ -65,35 +66,69 @@ export class PostgresChatService {
 
 	async getChatById(
 		chatId: number,
-		) {
+		userId: number,
+		): Promise<Chat> {
 		return await this.chatRepository.query(`
 			SELECT 
 			c.id AS chat_id,
 			c.name AS chat_name,
 			c.type AS chat_type,
-			json_agg(json_build_object(
+			c.chat_picture,
+			json_agg(DISTINCT json_build_object(
+				'userId', usr.id,
+				'userName', usr.display_name
+			)::jsonb) AS users,
+			json_agg(DISTINCT json_build_object(
 				'messageId', msg.id,
 				'userId', msg."userId",
-				'content', msg.content
-			)) AS messages
+				'content', msg.content,
+				'type', msg.type
+			)::jsonb) AS messages
 			FROM 
 				public.chat AS c
 			LEFT JOIN 
 				messages AS msg ON msg."chatId" = c.id
+			LEFT JOIN 
+				custom_users_chat AS cuc ON cuc.chat_id = c.id
+			LEFT JOIN 
+				public.user AS usr ON usr.id = cuc.user_id
 			WHERE 
 				c.id = $1
 			GROUP BY 
-				c.id, c.name, c.type;`,
+				c.id, c.name, c.type, c.chat_picture;`,
 			[chatId],
 		)
 		.catch((err) => {
 			this.logger.debug("Could not get chat: " + err);
 			throw new InternalServerErrorException("Could not get chat by id:" + err);
 		})
-		.then((res) => {
+		.then(async (res) => {
 			if (!res[0])
 				throw new NotFoundException(`No chat with id ${chatId}`)
-			return res[0];
+			let chat = new Chat;
+			chat.chat_picture = res[0].chat_picture;
+			chat.id = res[0].chat_id;
+			chat.messages = [];
+			for (const msg of res[0].messages) {
+				if (!(await this.postgresUserService.isInBlacklistById(userId, msg.userId)) && msg.type !== null) {
+					chat.messages.push(msg);
+				}
+			}
+			chat.name = res[0].chat_name;
+			chat.type = res[0].chat_type;
+			chat.users = [];
+			res[0].users.forEach((usr) => {
+				chat.users.push(usr)
+			})
+			if (chat.type === EChatType.friends) {
+				chat.users.forEach((usr: any) => {
+					if (usr.userId !== userId) {
+						console.log(usr)
+						chat.name = usr.userName;
+					}
+				})
+			}
+			return chat;
 		})
 	}
 

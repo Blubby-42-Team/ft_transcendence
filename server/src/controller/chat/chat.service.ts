@@ -47,7 +47,13 @@ export class ChatService {
 		friendId: number,
 		chatId: number,
 	) {
-
 		return await this.modelChatService.addInChat(userId, friendId, chatId);
+	}
+
+	async removeFromChat(
+		userId: number,
+		chatId: number,
+	) {
+		return await this.modelChatService.removeFromChat(userId, chatId);
 	}
 }

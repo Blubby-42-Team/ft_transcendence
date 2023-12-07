@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PostgresMessagesService } from 'src/service/postgres/messages/messages.service';
 import { EMsgType } from '@shared/types/messages';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
+import { UserRoleType } from 'src/auth/auth.class';
 
 @Injectable()
 export class ModelMessagesService {
@@ -21,7 +22,11 @@ export class ModelMessagesService {
 			content: string,
 		) {
 		const user = await this.postgresUserService.getUserById(userId);
-		const chat = await this.postgresChatService.getChatById(chatId);
+		if (type === EMsgType.sys && user.role !== UserRoleType.System) {
+			throw new UnauthorizedException('Not authorized to send a system message.')
+		}
+		const chat = await this.postgresChatService.getChatById(chatId, userId);
+		await this.postgresChatService.isInChat(userId, chatId);
 		return await this.postgresMessagesService.postMessage(user, chat, type, content);
 	}
 }

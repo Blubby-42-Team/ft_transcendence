@@ -1,6 +1,7 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from './user.class';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
+import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { ModelUser42Service } from './user42.service';
 import { UserRoleType } from 'src/auth/auth.class';
 
@@ -8,6 +9,7 @@ import { UserRoleType } from 'src/auth/auth.class';
 export class ModelUserService {
 	constructor (
 		private readonly postgresUserService: PostgresUserService,
+		private readonly postgresChatService: PostgresChatService,
 		private readonly modelUser42Service: ModelUser42Service,
 	) {}
 	
@@ -116,11 +118,10 @@ export class ModelUserService {
 			whitelist.forEach(user => {
 				if (user.id === whitelistId) {
 					this.logger.debug(`Whitelist ${whitelistId} is already in the whitelist list`)
-					throw new HttpException('already in whitelist', HttpStatus.CONFLICT);
+					throw new UnauthorizedException('Already in whitelist');
 				}
 			});
 		}
-		
 		return await this.postgresUserService.addWhitelistById(id, whitelistId)
 	}
 
@@ -142,16 +143,8 @@ export class ModelUserService {
 	
 	async addBlacklistById(id: number, blacklistId: number) {
 		if (id === blacklistId)
-			throw new NotFoundException('Cannot add yourself as a blacklist.');
+			throw new UnauthorizedException('Cannot add yourself as a blacklist.');
 		const blacklist = await this.getBlacklistById(id);
-		if (blacklist.length > 0) {
-			blacklist.forEach(user => {
-				if (user.id === blacklistId) {
-					this.logger.debug(`blacklist ${blacklistId} is already in the blacklist list`)
-					throw new HttpException('already in blacklist', HttpStatus.CONFLICT);
-				}
-			});
-		}
 		return await this.postgresUserService.addBlacklistById(id, blacklistId)
 	}
 

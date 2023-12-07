@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, InternalServerErrorException, UnauthorizedException, forwardRef, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../model/user/user.class';
 import { Repository } from 'typeorm';
@@ -7,6 +7,9 @@ import { User42 } from 'src/model/user/user42.class';
 import { Settings } from 'src/model/settings/settings.class';
 import { ETheme } from '@shared/types/settings';
 import { Stats } from 'src/model/stats/stats.class';
+import { PostgresChatService } from '../chat/chat.service';
+import { EChatType } from '@shared/types/chat';
+
 
 @Injectable()
 export class PostgresUserService {
@@ -15,7 +18,9 @@ export class PostgresUserService {
 
 	constructor (
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
-	) {}
+		@Inject(forwardRef(() => PostgresChatService))
+		private readonly postgresChatService: PostgresChatService,
+	  ) {}
 	
 	/**
 	 * Get user by id
@@ -234,6 +239,37 @@ export class PostgresUserService {
 		.catch((err) => {
 			return err
 		});
+		const chatList = await this.userRepository.query(`
+			SELECT DISTINCT cuc.chat_id
+			FROM custom_users_chat cuc
+			JOIN chat ON chat.id = cuc.chat_id
+			WHERE cuc.user_id IN ($1, $2)
+			AND cuc.chat_id IN (
+				SELECT chat_id
+				FROM custom_users_chat
+				WHERE user_id IN ($1, $2)
+				GROUP BY chat_id
+				HAVING COUNT(DISTINCT user_id) = $2
+			)
+			AND chat.type = 'friends';`,
+			[id, friendId]
+		)
+		.catch((err) => {
+			return err
+		});
+		let chat;
+		if (!chatList.length)
+			chat = await this.postgresChatService.createChat(await this.getUserById(id), EChatType.friends, 'friends')
+		else {
+			chat = chatList[0];
+			chat.type = EChatType.friends
+			this.userRepository.save(chat)
+			.catch((err) => {
+				throw err
+			});
+			return 'ok'
+		}
+		await this.postgresChatService.addInChat(friendId, chat.id)
 		return 'ok'
 	}
 
@@ -387,6 +423,12 @@ export class PostgresUserService {
 		const user = await this.getUserById(id);
 		const blacklist = await this.getUserById(blacklistId);
 
+		if (id === blacklistId)
+			throw new UnauthorizedException("Can't add yourself to the block list.")
+		if (await this.isInBlacklistById(id, blacklistId)) {
+			throw new UnauthorizedException("Already in block list.")
+		}
+
 		if (!user.blacklist) {
 			user.blacklist = [];
 			user.blacklist.push(blacklist);
@@ -396,6 +438,30 @@ export class PostgresUserService {
 		this.userRepository.save(user)
 		.catch((err) => {
 			return err
+		});
+		this.userRepository.query(`
+			DELETE FROM custom_user_friends
+			WHERE user_id = $1 AND friend_id = $2
+		`,
+		[id, blacklistId])
+		.catch((err) => {
+			return err
+		});
+		this.userRepository.query(`
+			DELETE FROM custom_user_friends
+			WHERE user_id = $2 AND friend_id = $1
+		`,
+		[id, blacklistId])
+		.catch((err) => {
+			return err
+		})
+		this.userRepository.query(`
+			DELETE FROM custom_user_whitelist
+			WHERE user_id = $1 AND whitelist_id = $2
+		`,
+		[id, blacklistId])
+		.catch((err) => {
+			return err
 		})
 		return 'ok'	
 	}
@@ -403,7 +469,8 @@ export class PostgresUserService {
 	async deleteBlacklistById(id: number, blacklistId: number) {
 		await this.getUserById(id);
 		await this.getUserById(blacklistId);
-
+		if (id === blacklistId)
+			throw new UnauthorizedException("Can't remove yourself to the block list.")
 		this.userRepository.query(`
 			DELETE FROM custom_user_blacklist
 			WHERE custom_user_blacklist.user_id = $1
@@ -421,5 +488,19 @@ export class PostgresUserService {
 			}
 		})
 		return 'ok';
+	}
+
+	async isInBlacklistById(id: number, blacklistId: number): Promise<Boolean> {
+		const blacklist = await this.getBlacklistById(id);
+		let is_in = false
+
+		if (blacklist.length === 0)
+			return is_in
+		blacklist.forEach(user => {
+			if (user.id === blacklistId) {
+				is_in = true;
+			}
+		});
+		return is_in;
 	}
 }
