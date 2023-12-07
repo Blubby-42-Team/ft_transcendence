@@ -122,10 +122,8 @@ export class PostgresChatService {
 			})
 			if (chat.type === EChatType.friends) {
 				chat.users.forEach((usr: any) => {
-					if (usr.userId !== userId) {
-						console.log(usr)
+					if (usr.userId !== userId)
 						chat.name = usr.userName;
-					}
 				})
 			}
 			return chat;
@@ -191,7 +189,6 @@ export class PostgresChatService {
 			WHERE cuc.user_id = $1 AND cuc.chat_id = $2`,
 		[userId, chatId],
 		)
-		console.log(res)
 		if (!res[0])
 			throw new NotFoundException('Not in chat');
 		else
@@ -230,7 +227,6 @@ export class PostgresChatService {
 			WHERE cuc.user_id = $1 AND cuc.chat_id = $2`,
 		[userId, chatId],
 		)
-		console.log(res)
 		if (!res[0])
 			throw new NotFoundException('Not in chat');
 		else
