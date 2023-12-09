@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { IsNotEmpty, IsNumber, IsString} from 'class-validator';
 import { EChatType } from "@shared/types/chat";
 import { User } from "../user/user.class";
@@ -19,6 +19,17 @@ export class Chat {
 		inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
 	})
   	users: User[];
+
+	@ManyToMany(type => User, {cascade: true})
+	@JoinTable({
+		name: 'custom_admins_chat',
+		joinColumn: { name: 'chat_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'admin_id', referencedColumnName: 'id' },
+	})
+	admins: User[];
+
+	@ManyToOne(type => User, (user) => user.owned_chat)
+	owner: User;
 	  
 	@Column({type: 'enum', enum: EChatType, default: EChatType.inactive})
 	@IsNotEmpty()

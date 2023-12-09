@@ -7,6 +7,7 @@ import { Settings } from "../settings/settings.class";
 import { Stats } from "../stats/stats.class";
 import { History } from "../history/history.class";
 import { Messages } from "../messages/messages.class";
+import { Chat } from "../chat/chat.class";
 
 @Entity()
 export class User {
@@ -80,6 +81,9 @@ export class User {
 
 	@OneToMany(type => Messages, (messages) => messages.user)
 	messages: Messages[];
+
+	@OneToMany(type => Chat, (chat) => chat.owner)
+	owned_chat: Chat[];
 
 	@ManyToMany(type => User, {cascade: true})
 	@JoinTable({

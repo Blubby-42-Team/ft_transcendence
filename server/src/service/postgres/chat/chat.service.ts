@@ -29,6 +29,9 @@ export class PostgresChatService {
 		chat.type = type;
 		chat.name = name;
 		chat.messages = [];
+		chat.owner = user;
+		chat.admins = [];
+		chat.admins.push(user);
 		chat.chat_picture = 'DEFAULT';
 		
 		await this.chatRepository.save(chat)
@@ -69,33 +72,42 @@ export class PostgresChatService {
 		userId: number,
 		): Promise<Chat> {
 		return await this.chatRepository.query(`
-			SELECT 
-			c.id AS chat_id,
-			c.name AS chat_name,
-			c.type AS chat_type,
-			c.chat_picture,
-			json_agg(DISTINCT json_build_object(
-				'userId', usr.id,
-				'userName', usr.display_name
-			)::jsonb) AS users,
-			json_agg(DISTINCT json_build_object(
-				'messageId', msg.id,
-				'userId', msg."userId",
-				'content', msg.content,
-				'type', msg.type
-			)::jsonb) AS messages
+			SELECT
+				c.id AS chat_id,
+				c.name AS chat_name,
+				c.type AS chat_type,
+				c.chat_picture,
+				c."ownerId" AS owner,
+				json_agg(DISTINCT json_build_object(
+					'userId', usr.id,
+					'userName', usr.display_name
+				)::jsonb) AS users,
+				json_agg(DISTINCT json_build_object(
+					'userId', usr_admin.id,
+					'userName', usr_admin.display_name
+				)::jsonb) AS admins,
+				json_agg(DISTINCT json_build_object(
+					'messageId', msg.id,
+					'userId', msg."userId",
+					'content', msg.content,
+					'type', msg.type
+				)::jsonb) AS messages
 			FROM 
 				public.chat AS c
 			LEFT JOIN 
 				messages AS msg ON msg."chatId" = c.id
-			LEFT JOIN 
+			LEFT JOIN
 				custom_users_chat AS cuc ON cuc.chat_id = c.id
+			LEFT JOIN
+				custom_admins_chat AS cac ON cac.chat_id = c.id
 			LEFT JOIN 
 				public.user AS usr ON usr.id = cuc.user_id
-			WHERE 
+			LEFT JOIN 
+				public.user AS usr_admin ON usr_admin.id = cac.admin_id
+			WHERE
 				c.id = $1
 			GROUP BY 
-				c.id, c.name, c.type, c.chat_picture;`,
+				c.id, c.name, c.type, c.chat_picture, c."ownerId"`,
 			[chatId],
 		)
 		.catch((err) => {
@@ -115,10 +127,15 @@ export class PostgresChatService {
 				}
 			}
 			chat.name = res[0].chat_name;
+			chat.owner = await this.postgresUserService.getUserById(res[0].owner);
 			chat.type = res[0].chat_type;
 			chat.users = [];
 			res[0].users.forEach((usr) => {
 				chat.users.push(usr)
+			})
+			chat.admins = [];
+			res[0].admins.forEach((usr) => {
+				chat.admins.push(usr)
 			})
 			if (chat.type === EChatType.friends) {
 				chat.users.forEach((usr: any) => {
@@ -126,6 +143,76 @@ export class PostgresChatService {
 						chat.name = usr.userName;
 				})
 			}
+			return chat;
+		})
+	}
+
+	async getChatByIdSystem(
+		chatId: number,
+		): Promise<Chat> {
+		return await this.chatRepository.query(`
+			SELECT
+				c.id AS chat_id,
+				c.name AS chat_name,
+				c.type AS chat_type,
+				c.chat_picture,
+				c."ownerId" AS owner,
+				json_agg(DISTINCT json_build_object(
+					'userId', usr.id,
+					'userName', usr.display_name
+				)::jsonb) AS users,
+				json_agg(DISTINCT json_build_object(
+					'userId', usr_admin.id,
+					'userName', usr_admin.display_name
+				)::jsonb) AS admins,
+				json_agg(DISTINCT json_build_object(
+					'messageId', msg.id,
+					'userId', msg."userId",
+					'content', msg.content,
+					'type', msg.type
+				)::jsonb) AS messages
+			FROM 
+				public.chat AS c
+			LEFT JOIN 
+				messages AS msg ON msg."chatId" = c.id
+			LEFT JOIN
+				custom_users_chat AS cuc ON cuc.chat_id = c.id
+			LEFT JOIN
+				custom_admins_chat AS cac ON cac.chat_id = c.id
+			LEFT JOIN 
+				public.user AS usr ON usr.id = cuc.user_id
+			LEFT JOIN 
+				public.user AS usr_admin ON usr_admin.id = cac.admin_id
+			WHERE
+				c.id = $1
+			GROUP BY 
+				c.id, c.name, c.type, c.chat_picture, c."ownerId"`,
+			[chatId],
+		)
+		.catch((err) => {
+			this.logger.debug("Could not get chat: " + err);
+			throw new InternalServerErrorException("Could not get chat by id:" + err);
+		})
+		.then(async (res) => {
+			if (!res[0])
+				throw new NotFoundException(`No chat with id ${chatId}`)
+			let chat = new Chat;
+			chat.chat_picture = res[0].chat_picture;
+			chat.id = res[0].chat_id;
+			chat.messages = [];
+			for (const msg of res[0].messages)
+				chat.messages.push(msg);
+			chat.name = res[0].chat_name;
+			chat.owner = await this.postgresUserService.getUserById(res[0].owner);
+			chat.type = res[0].chat_type;
+			chat.users = [];
+			res[0].users.forEach((usr) => {
+				chat.users.push(usr)
+			})
+			chat.admins = [];
+			res[0].admins.forEach((usr) => {
+				chat.admins.push(usr)
+			})
 			return chat;
 		})
 	}
@@ -232,5 +319,29 @@ export class PostgresChatService {
 		else
 			return 'ok'
 	}
+
+	async isAdmin(
+			userId: number,
+			chatId: number,
+	) {
+		let is_in = false;
+
+		let chat = await this.getChatByIdSystem(chatId);
+		let user = await this.postgresUserService.getUserById(userId);
+		chat.admins.forEach(usr => {
+			if (usr.id = user.id)
+				is_in = true;
+		});
+		return is_in;
+	}
+
+	async isOwner(
+		userId: number,
+		chatId: number,
+) {
+	let chat = await this.getChatByIdSystem(chatId);
+	let user = await this.postgresUserService.getUserById(userId);
+	return userId === chat.owner.id;
+}
 }
 
