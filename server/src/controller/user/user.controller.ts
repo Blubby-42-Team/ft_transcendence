@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { DTO_addFriendById, DTO_getUserById } from './user.dto';
+import { DTO_addFriendById, DTO_getBlacklistedUserById, DTO_getUserById } from './user.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserService } from './user.service';
@@ -61,13 +61,12 @@ export class UserController {
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
-	@Get('/blacklist/is_in/:id')
+	@Get('/blacklist/is_in/:id/:blacklistId')
 	async IsInBlacklistById(
-			@Param() params: DTO_getUserById,
-			@Body() body: DTO_addFriendById,
+			@Param() params: DTO_getBlacklistedUserById,
 	) {
-		log(`Is ${body.id} in blacklist of ${params.id}`);
-		return await this.userService.isInBlacklistById(params.id, body.id);
+		log(`Is ${params.id} in blacklist of ${params.id}`);
+		return await this.userService.isInBlacklistById(params.id, params.blacklistId);
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])

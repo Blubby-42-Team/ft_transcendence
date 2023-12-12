@@ -216,29 +216,20 @@ export class PostgresUserService {
 		const user = await this.getUserById(id);
 		const friend = await this.getUserById(friendId);
 
-		if (!user.friends) {
-			user.friends = [];
-			user.friends.push(friend);
-		}
-		else
-			user.friends.push(friend);
+		this.userRepository.query(`
+			INSERT INTO custom_user_friends (user_id, friend_id)
+			VALUES ($1, $2)
+			ON CONFLICT (user_id, friend_id) DO NOTHING;
+		`,
+		[id, friendId])
 
-		const add = new User
-		add.id = user.id
-		if (!friend.friends) {
-			friend.friends = [];
-			friend.friends.push(add);
-		}
-		else
-			friend.friends.push(add);
-		this.userRepository.save(friend)
-		.catch((err) => {
-			return err
-		});
-		this.userRepository.save(user)
-		.catch((err) => {
-			return err
-		});
+		this.userRepository.query(`
+			INSERT INTO custom_user_friends (user_id, friend_id)
+			VALUES ($2, $1)
+			ON CONFLICT (user_id, friend_id) DO NOTHING;
+		`,
+		[id, friendId])
+
 		const chatList = await this.userRepository.query(`
 			SELECT DISTINCT cuc.chat_id
 			FROM custom_users_chat cuc
@@ -251,19 +242,30 @@ export class PostgresUserService {
 				GROUP BY chat_id
 				HAVING COUNT(DISTINCT user_id) = $2
 			)
-			AND chat.type = 'friends';`,
+			AND chat.type = 'inactive';`,
 			[id, friendId]
 		)
 		.catch((err) => {
-			return err
+			throw err
 		});
+		console.log(chatList)
 		let chat;
-		if (!chatList.length)
+		if (!chatList)
 			chat = await this.postgresChatService.createChat(await this.getUserById(id), EChatType.friends, 'friends')
 		else {
-			chat = chatList[0];
-			chat.type = EChatType.friends
-			this.userRepository.save(chat)
+			this.userRepository.query(`
+				UPDATE chat
+				SET type = 'friends'
+				WHERE id IN (
+					SELECT cuc.chat_id
+					FROM custom_user_friends cuf
+					JOIN custom_users_chat cuc ON cuf.user_id = cuc.user_id
+					WHERE (cuf.user_id = $1 AND cuf.friend_id = $2)
+					OR (cuf.user_id = $2 AND cuf.friend_id = $1)
+					AND chat."type" = 'inactive'
+				);
+			`,
+			[id, friendId])
 			.catch((err) => {
 				throw err
 			});
@@ -287,7 +289,7 @@ export class PostgresUserService {
 			this.logger.debug(`Failed to delete friend by id ${id}: ${err}`);
 			throw new InternalServerErrorException(`Failed to delete friend by id ${id}`);
 		})
-		return this.userRepository.query(`
+		this.userRepository.query(`
 			DELETE FROM custom_user_friends
 			WHERE custom_user_friends.user_id = $2
 			AND custom_user_friends.friend_id = $1`,
@@ -297,13 +299,23 @@ export class PostgresUserService {
 			this.logger.debug(`Failed to delete friend by id ${id}: ${err}`);
 			throw new InternalServerErrorException(`Failed to delete friend by id ${id}`);
 		})
-		.then((res) => {
-			if (!res[1]) {
-				this.logger.debug(`Friendship with friend ${friendId}: not found`);
-				throw new NotFoundException(`Friendship with friend ${friendId}: not found`);
-			}
-			return 'ok';
+		this.userRepository.query(`
+			UPDATE chat
+			SET type = 'inactive'
+			WHERE id IN (
+				SELECT cuc.chat_id
+				FROM custom_user_friends cuf
+				JOIN custom_users_chat cuc ON cuf.user_id = cuc.user_id
+				WHERE (cuf.user_id = $1 AND cuf.friend_id = $2)
+				OR (cuf.user_id = $2 AND cuf.friend_id = $1)
+				AND chat."type" = 'friends'
+			);`,
+		[id, friendId])
+		.catch((err) => {
+			this.logger.debug(`Failed to delete friend by id ${id}: ${err}`);
+			throw new InternalServerErrorException(`Failed to delete friend by id ${id}`);
 		})
+		return 'ok'
 	}
 
 	async isInFriendById(id: number, friendId: number) {
@@ -358,23 +370,16 @@ export class PostgresUserService {
 			});
 		}
 		if (!reciprocity) {
-			if (!user.whitelist) {
-				user.whitelist = [];
-				user.whitelist.push(protec);
-			}
-			else
-				user.whitelist.push(protec);
-			this.userRepository.save(user)
-			.catch((err) => {
-				return err
-			})
+			this.userRepository.query(`
+			INSERT INTO custom_user_whitelist (user_id, whitelist_id)
+			VALUES ($1, $2)
+			ON CONFLICT (user_id, whitelist_id) DO NOTHING;
+			`,
+			[id, whitelistId])
+
 		}
 		else {
 			await this.addFriendById(id, whitelistId);
-			this.userRepository.save(whitelist)
-			.catch((err) => {
-				return err
-			})
 			this.userRepository.query(`
 				DELETE FROM custom_user_whitelist
 				WHERE custom_user_whitelist.user_id = $1
@@ -389,7 +394,7 @@ export class PostgresUserService {
 				AND custom_user_whitelist.whitelist_id = $1`,
 				[id, whitelistId]
 			).catch((err) => {
-				return err
+				throw err
 			})
 		}
 		return 'ok'

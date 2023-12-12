@@ -28,6 +28,14 @@ export class Chat {
 	})
 	admins: User[];
 
+	@ManyToMany(type => User, {cascade: true})
+	@JoinTable({
+		name: 'custom_blacklist_chat',
+		joinColumn: { name: 'chat_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'blacklist_id', referencedColumnName: 'id' },
+	})
+	blacklist: User[];
+
 	@ManyToOne(type => User, (user) => user.owned_chat)
 	owner: User;
 	  
