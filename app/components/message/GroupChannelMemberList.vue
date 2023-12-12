@@ -7,15 +7,17 @@ const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListSt
 
 <template>
 	<div>
-		<template v-if="selectedChannelType?.hasSideMenu">
-			<div class="absolute top-0 h-16 p-2 right-[7.25rem] bg-color1 rounded-bl-xl">
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mr-0"
-					@click="toggleSideMenu"
-				>
-					<Icon name="material-symbols:menu" class="w-full h-full"/>
-				</GenericButton>
-			</div>
-		</template>
+		<ClientOnly>
+			<teleport to="#additionalHeaderButton">
+				<template v-if="selectedChannelType?.hasSideMenu">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
+						@click="toggleSideMenu"
+					>
+						<Icon name="material-symbols:menu" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+			</teleport>
+		</ClientOnly>
 		<template v-if="selectedChannelType?.hasSideMenu && isSideMenuOpen">
 			<div class="grid h-full grid-rows-[4rem,auto]" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
 				<div class="bg-color1"></div>
