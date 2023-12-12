@@ -22,6 +22,8 @@ const viewProfile = ref()
 		<div class="mr-auto"></div>
 	</GenericButton>
 	<GenericContextMenu ref="viewProfile">
-		<div class="w-40 p-5 mt-5 bg-red-100 border-4 border-background2 rounded-2xl">Hell WOrld {{ props.member.name }}</div>
+		<div class="w-40 p-5 bg-red-500">
+			Hell WOrld {{ props.member.name }}
+		</div>
 	</GenericContextMenu>
 </template>
