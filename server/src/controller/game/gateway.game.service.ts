@@ -11,4 +11,12 @@ export class GatewayGameService {
 	constructor(
 		private readonly modelGameService: ModelGameService,
 	) {}
+
+	async createLobby(userId: number) {
+		return this.modelGameService.createLobby(userId);
+	}
+
+	async deleteLobby(roomId: string) {
+		return this.modelGameService.deleteLobby(roomId);
+	}
 }

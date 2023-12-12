@@ -7,7 +7,6 @@ import { GameGateway } from './game.gateway';
 import { GameController } from './game.controller';
 import { ModelGameModule } from 'src/model/game/game.module';
 import { GatewayGameService } from './gateway.game.service';
-import { ControllerGameService } from './game.service';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
@@ -18,7 +17,6 @@ import { AuthModule } from 'src/auth/auth.module';
 	controllers: [GameController],
 	providers: [
 		GatewayGameService,
-		ControllerGameService,
 		GameGateway,
 	],
 })

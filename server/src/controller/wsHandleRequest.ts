@@ -1,4 +1,4 @@
-import { BadGatewayException, BadRequestException, Logger } from "@nestjs/common";
+import { BadGatewayException, BadRequestException, HttpException, Logger } from "@nestjs/common";
 import { AcknowledgmentWsDto } from "@shared/dto/ws.dto";
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
@@ -30,7 +30,13 @@ export async function handleRequest<InputDTO extends object, OutputType>(
 	} catch (error) {
 
 		logger.error(error);
-		return new AcknowledgmentWsDto('error', error);
+
+		// Check if the error is a HttpException
+		if (error instanceof HttpException) {
+			return new AcknowledgmentWsDto<any>('error', error?.message ?? 'unknown error, check logs');
+		}
+
+		return new AcknowledgmentWsDto<any>('error', error);
 	}
 }
 

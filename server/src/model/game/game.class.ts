@@ -8,7 +8,6 @@ export class LobbyInstance {
 
 	constructor (room_id: string, owner_id: number, updateState: (state: gameStateType) => void ) {
 
-
 		this.room_id = room_id;
 		this.gameSettings = undefined;
 		this.game = undefined;
@@ -24,7 +23,6 @@ export class LobbyInstance {
 		}
 	}
 
-	private lobbyIsClosed: boolean = false;
 	private room_id: string;
 	private owner_id: number;
 
@@ -46,20 +44,21 @@ export class LobbyInstance {
 	private gameSettings: gameSettingsType | undefined;
 
 	async startGame(roomName: string, opt: any, io: any) {
-		if (this.game !== undefined) {
-			return;//TODO throw error
+		if (this.game === undefined) {
+			this.logger.error(`No game instance set for lobby ${this.room_id}`);
+			throw new Error(`No game instance set for lobby ${this.room_id}`);
 		}
 	}
 
 	async stopGame () {
 		if (this.game === undefined) {
-			return;//TODO throw error
+			this.logger.error(`No game instance to stop in lobby ${this.room_id}`);
+			throw new Error(`No game instance to stop in lobby ${this.room_id}`);
 		}
 		//TODO save game state to DB
 	}
 
 	async closeLobby() {
-		this.lobbyIsClosed = true;
 		//TODO emit to all players that the lobby is closed
 		//TODO disconnect all players from the WS room
 		//TODO stop game if it is running
@@ -71,12 +70,12 @@ export class LobbyInstance {
 	addPlayerToLobby(userId: number) {
 		if (this.players[userId] !== undefined) {
 			this.logger.warn(`User ${userId} is already in the lobby`);
-			return;//TODO throw error
+			throw new Error(`User ${userId} is already in the lobby`);
 		}
 
 		if (this.slots === 4) {
 			this.logger.error(`Lobby ${this.room_id} is full`);
-			return;//TODO throw error
+			throw new Error(`Lobby ${this.room_id} is full`);
 		}
 
 		this.slots++;
@@ -99,7 +98,7 @@ export class LobbyInstance {
 	removePlayerFromLobby(userId: number) {
 		if (this.players[userId] === undefined) {
 			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
+			throw new Error(`User ${userId} is not in the lobby`);
 		}
 
 		this.slots--;
@@ -113,6 +112,7 @@ export class LobbyInstance {
 
 		delete this.players[userId];
 		this.logger.log(`User ${userId} removed from the lobby`);
+		//TODO emit new state to the lobby
 	}
 
 	/**
