@@ -14,6 +14,7 @@ const { players, sequence, timeRemaining } = useLocalLobbyStore()
 			mode: 'out-in'
 		}"/>
 	</NuxtLayout>
+	<div id="modals"/>
 </template>
 
 <style>

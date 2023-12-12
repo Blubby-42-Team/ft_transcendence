@@ -8,7 +8,7 @@ const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListSt
 <template>
 	<div>
 		<template v-if="selectedChannelType?.hasSideMenu">
-			<div class="absolute top-0 h-16 p-2 right-[7.25rem] bg-color1 z-20 rounded-bl-xl">
+			<div class="absolute top-0 h-16 p-2 right-[7.25rem] bg-color1 rounded-bl-xl">
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mr-0"
 					@click="toggleSideMenu"
 				>

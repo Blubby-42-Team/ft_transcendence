@@ -70,7 +70,7 @@ defineExpose({
 <template>
 	<TransitionExpand>
 		<template v-if="isOpen">
-			<div class="absolute z-50 bg-red-700 w-max h-max" ref="menuRef">
+			<div class="absolute bg-red-700 w-max h-max" ref="menuRef">
 				<div class="h-max w-max"
 					:style="{
 						left: `${position.x}px`,

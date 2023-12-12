@@ -54,7 +54,7 @@ onClickOutside(menu, () => {
 	<teleport to='body'>
 		<TransitionFade>
 			<template v-if="isOpen">
-				<div ref="menu" class="absolute z-50 w-max h-max"
+				<div ref="menu" class="absolute w-max h-max"
 					:style="{
 						left: `${position.x}px`,
 						top:  `${position.y}px`,
