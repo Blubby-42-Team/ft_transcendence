@@ -24,12 +24,12 @@ const test: Array<{ text: string, icon: string } | undefined> = [
 		<div class="flex bg-blue-500 w-[22rem]">Hello</div>
 		<GenericSideMenu ref="testRef" direction="left" alignDirection="bottom">
 			<template #reference>
-				<div :buttonStyle="1"
-					class="flex w-32 p-5 bg-red-900 hover:bg-red-950 rounded-2xl"
+				<GenericButton :buttonStyle="1"
+					class="w-32 p-2"
 					ref="testButton"
 				>
 					Hello World
-				</div>
+				</GenericButton>
 			</template>
 			<template #thisContent>
 				<div class="w-full">
