@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolean} from 'class-validator'
 
-export class AcknowledgmentWsDto {
+export class AcknowledgmentWsDto<T> {
 
-	constructor(status: 'ok' | 'error' | 'debug', message: unknown) {
+	constructor(status: 'ok' | 'error' | 'debug', message: T) {
 		this.status = status;
 		this.message = message;
 	}
@@ -12,7 +12,7 @@ export class AcknowledgmentWsDto {
 	status: 'ok' | 'error' | 'debug';
 
 	@IsString()
-	message: unknown;
+	message: T;
 }
 
 export class WsRequestDto {
@@ -41,9 +41,15 @@ export class JoinGameRoomRequestDto extends WsRequestDto {
 	game_room_id: string;
 }
 
-export class JoinGameRoomResponseDto extends AcknowledgmentWsDto {
-
-	@IsNotEmpty()
-	@IsString()
-	game_room_id: GameRoomIdDto;
+export class createRoomRequestDto extends WsRequestDto {
 }
+
+export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
+
+export type joinGameResponse = {
+	game_room_id: string;
+};
+
+export type createGameRoomResponse = {
+	game_room_id: string;
+};

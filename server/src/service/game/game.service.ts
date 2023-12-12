@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GameOptDto } from '@shared/dto/game.dto';
 import { Server } from 'socket.io';
 import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
@@ -34,8 +33,8 @@ export class GameService {
 	async deleteLobby(roomId: string) {
 	}
 
-	async startGame(roomName: string, opt: GameOptDto, io: Server) {
-	}
+	// async startGame(roomName: string, opt: GameOptDto, io: Server) {
+	// }
 
 	async stopGame(roomName: string) {
 	}
