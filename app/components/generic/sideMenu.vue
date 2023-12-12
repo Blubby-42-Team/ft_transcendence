@@ -36,9 +36,9 @@ function startUpdateLoop(){
 				case 'bottom':
 				case 'top':
 					switch (props.alignDirection) {
-						case 'right':	position.value.x	= button.left; break;
-						case 'left':	position.value.x	= button.left + button.width - content.width; break;
-						case 'middle':	position.value.x	= button.left + button.width / 2 - content.width / 2; break;
+						case 'right':	position.value.x = (button.left < window.innerWidth - content.width ? button.left : window.innerWidth - content.width); break;
+						case 'left':	position.value.x = (button.left + button.width - content.width > 0 ? position.value.x = button.left + button.width - content.width : 0); break;
+						case 'middle':	position.value.x = button.left + button.width / 2 - content.width / 2; break;
 						default: break;
 					}
 					break;
@@ -46,9 +46,9 @@ function startUpdateLoop(){
 				case 'right':
 				case 'left':
 					switch (props.alignDirection) {
-						case 'bottom':	position.value.y	= button.top; break;
-						case 'top':		position.value.y	= button.top + button.height - content.height; break;
-						case 'middle':	position.value.y	= button.top + button.height / 2 - content.height / 2; break;
+						case 'bottom':	position.value.y = (button.top < window.innerHeight - content.height ? button.top : window.innerHeight - content.height); break;
+						case 'top':		position.value.y = (button.top + button.height - content.height > 0 ? position.value.x = button.top + button.height - content.height : 0); break;
+						case 'middle':	position.value.y = button.top + button.height / 2 - content.height / 2; break;
 						default: break;
 					}
 				default:
