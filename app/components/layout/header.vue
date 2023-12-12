@@ -24,7 +24,7 @@ const viewnotificationRef = ref();
 			<Icon name="material-symbols:notifications" class="w-full h-full"/>
 		</GenericButton>
 		<GenericContextMenu ref="viewnotificationRef">
-			<div class="w-40 p-5 border-4 border-background2 rounded-2xl bg-background1">Hell WOrld</div>
+			<div class="w-40 p-5 mt-5 bg-red-100 border-4 border-background2 rounded-2xl">Hell WOrld</div>
 		</GenericContextMenu>
 	</div>
 </template>
