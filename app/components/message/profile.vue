@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const test: Array<{ text: string, icon: string } | undefined> = [
+const test: Ref<Array<{ text: string, icon: string } | undefined>> = ref([
 	undefined,
 	{ text: 'Zoom',				icon: 'material-symbols:zoom-in' },
 	{ text: 'Zoom Out',			icon: 'material-symbols:zoom-out' },
@@ -9,7 +9,11 @@ const test: Array<{ text: string, icon: string } | undefined> = [
 	undefined,
 	{ text: 'Go Back',			icon: 'material-symbols:arrow-back' },
 	{ text: 'Add to Wallet',	icon: 'material-symbols:wallet' },
-]
+])
+
+function addNewElementInTest(){
+	test.value.push({ text: 'Hello', icon: 'material-symbols:zoom-in' })
+}
 
 </script>
 
@@ -20,7 +24,7 @@ const test: Array<{ text: string, icon: string } | undefined> = [
 			<div class="w-full p-2 mt-3 text-base">James Milwaukee</div>
 			<template v-for="elem in test">
 				<template v-if="elem">
-					<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-accent1 hover:text-text-dark">
+					<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-accent1 hover:text-text-dark" @click="addNewElementInTest">
 						<div class="w-5">
 							<Icon :name="elem.icon" class="w-4 h-4"/>
 						</div>
