@@ -95,16 +95,14 @@ function updateMenu(){
 </script>
 	
 <template>
-	<TransitionExpand>
-		<template v-if="isOpen">
-			<div class="absolute h-max w-max" ref="menuRef"
-				:style="{
-					left: `${position.x}px`,
-					top:  `${position.y}px`,
-				}"
-			>
-				<slot/>
-			</div>
-		</template>
-	</TransitionExpand>
+	<template v-if="isOpen">
+		<div class="absolute h-max w-max" ref="menuRef"
+			:style="{
+				left: `${position.x}px`,
+				top:  `${position.y}px`,
+			}"
+		>
+			<slot/>
+		</div>
+	</template>
 </template>
