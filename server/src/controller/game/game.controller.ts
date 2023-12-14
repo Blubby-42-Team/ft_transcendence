@@ -2,7 +2,6 @@ import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { GatewayGameService } from './gateway.game.service';
-import { GameRoomIdDto } from '@shared/dto/ws.dto';
 
 @Controller('game')
 export class GameController {
@@ -24,7 +23,7 @@ export class GameController {
 	@Roles([UserRoleType.Guest])
 	@Delete('/room/:id')
 	async deleteRoom(@Param('id') id: string) {
-		await this.gatewayGameService.deleteLobby(id);
+		// await this.gatewayGameService.deleteLobby(id);//TODO WIP
 		return 'ok'
 	}
 

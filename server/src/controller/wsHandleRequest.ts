@@ -18,9 +18,14 @@ export async function handleRequest<InputDTO extends object, OutputType>(
 			throw new BadRequestException('empty payload');
 		}
 
+		if (typeof req !== 'object') {
+			throw new BadRequestException(`invalid payload type: ${typeof req}, expected json`);
+		}
+
 		const dto = plainToInstance(dtoClass, req);
 		await validateOrReject(dto)
 		.catch(errors => {
+			logger.debug(`validation error: ${errors}`)
 			throw errors.map(error => Object.values(error.constraints)).join(', ');
 		});
 
