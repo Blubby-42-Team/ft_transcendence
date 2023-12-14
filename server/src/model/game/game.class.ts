@@ -9,6 +9,7 @@ export class LobbyInstance {
 	constructor (room_id: string, owner_id: number, updateState: (state: gameStateType) => void ) {
 
 		this.room_id = room_id;
+		this.owner_id = owner_id;
 		this.gameSettings = undefined;
 		this.game = undefined;
 		this.slots = 1;
@@ -23,8 +24,8 @@ export class LobbyInstance {
 		}
 	}
 
-	private room_id: string;
-	private owner_id: number;
+	readonly room_id: string;
+	readonly owner_id: number;
 
 	private slots: 1 | 2 | 3 | 4;
 
@@ -223,9 +224,5 @@ export class LobbyInstance {
 			default:
 				return Direction.NONE;
 		}
-	}
-
-	getOwnerID(): number {
-		return this.owner_id;
 	}
 }

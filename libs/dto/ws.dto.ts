@@ -44,6 +44,12 @@ export class JoinGameRoomRequestDto extends WsRequestDto {
 export class createRoomRequestDto extends WsRequestDto {
 }
 
+export class deleteGameRoomRequestDto extends WsRequestDto {
+	@IsNotEmpty()
+	@IsString()
+	game_room_id: string;
+}
+
 export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
 
 export type joinGameResponse = {
@@ -53,3 +59,5 @@ export type joinGameResponse = {
 export type createGameRoomResponse = {
 	game_room_id: string;
 };
+
+export type deleteGameRoomResponse = 'ok';

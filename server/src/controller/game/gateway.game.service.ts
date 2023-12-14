@@ -16,7 +16,7 @@ export class GatewayGameService {
 		return this.modelGameService.createLobby(userId);
 	}
 
-	async deleteLobby(roomId: string) {
-		return this.modelGameService.deleteLobby(roomId);
+	async deleteLobby(roomId: string, userId: number) {
+		return this.modelGameService.deleteLobby(roomId, userId);
 	}
 }

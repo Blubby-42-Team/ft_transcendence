@@ -37,9 +37,13 @@ export class GameService {
 
 	async createLobby(userId: number): Promise<string> {
 
-		if (this.getLobbyByUserId(userId) !== undefined) {
-			this.logger.debug('User already in lobby');
-			throw new BadRequestException('User already in lobby');
+		const checkIfHasLobby = this.getLobbyByUserId(userId);
+		if (checkIfHasLobby !== undefined) {
+			if (userId !== checkIfHasLobby.owner_id) {
+				return;
+			}
+				this.logger.debug(`User ${userId} allready own the lobby ${checkIfHasLobby.room_id}`);
+				throw new BadRequestException(`User ${userId} allready own the lobby ${checkIfHasLobby.room_id}`);
 		}
 
 		const newRoomId = this.generateUniqueRoomId(6);
@@ -54,7 +58,7 @@ export class GameService {
 		return newRoomId;
 	}
 
-	async deleteLobby(roomId: string) {
+	async deleteLobby(roomId: string, userId: number) {
 		this.logger.debug(`try deleteLobby ${roomId}`);
 		if (this.lobbys[roomId] === undefined) {
 			this.logger.debug('Room does not exist');
@@ -87,8 +91,18 @@ export class GameService {
 	async reconnectPlayerToRoom(userId: number) {
 	}
 
+	/**
+	 * 
+	 * @param roomId 
+	 * @returns return the lobby instance
+	 * @throws NotFoundException if the lobby does not exist
+	 */
 	getLobby(roomId: string): LobbyInstance | undefined{
-		return this.lobbys[roomId];
+		const lobby = this.lobbys[roomId];
+		if (lobby === undefined) {
+			throw new NotFoundException(`Lobby ${roomId} does not exist`);
+		}
+		return lobby;
 	}
 
 	getLobbyByUserId(userId: number): LobbyInstance | undefined {

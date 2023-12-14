@@ -1,6 +1,6 @@
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import {createGameRoomResponse, createRoomRequestDto} from '@shared/dto/ws.dto'
+import {createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse} from '@shared/dto/ws.dto'
 import { Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
@@ -48,6 +48,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				game_room_id: roomId
 			};
 
+		});
+	}
+
+	@SubscribeMessage('deleteRoom')
+	async deleteRoom(@MessageBody() req: any) {
+		return handleRequest(req, deleteGameRoomRequestDto, async (data): Promise<deleteGameRoomResponse> => {
+		
+			// TODO check if we can move this to the handleRequest
+			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
+			
+			await this.gatewayGameService.deleteLobby(data.game_room_id, user.userId);
+			return 'ok';
 		});
 	}
 
