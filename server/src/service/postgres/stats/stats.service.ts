@@ -248,5 +248,51 @@ export class PostgresStatsService {
 			return 'ok';
 		})
 	}
+
+	async getClassicRankByUserId(
+		userId: number,
+	) {
+		const res = await this.statsRepository.query(`
+		SELECT
+			ranking
+		FROM
+			(
+				SELECT
+					RANK() OVER (ORDER BY classic_mmr DESC) AS ranking,
+					u.id AS user_id
+				FROM
+					"user" u
+				JOIN
+					stats s ON u."statsId" = s.id
+			) AS user_ranking
+		WHERE
+			user_id = $1;
+		`,
+		[userId])
+		return res[0].ranking
+	}
+
+	async getRandomRankByUserId(
+		userId: number,
+	) {
+		const res = await this.statsRepository.query(`
+		SELECT
+			ranking
+		FROM
+			(
+				SELECT
+					RANK() OVER (ORDER BY random_mmr DESC) AS ranking,
+					u.id AS user_id
+				FROM
+					"user" u
+				JOIN
+					stats s ON u."statsId" = s.id
+			) AS user_ranking
+		WHERE
+			user_id = $1;
+		`,
+		[userId])
+		return res[0].ranking
+	}
 }
 

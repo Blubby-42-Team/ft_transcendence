@@ -180,7 +180,7 @@ export class PostgresUserService {
 		const user = new User();
 		user.display_name = displayName42;
 		user.role = UserRoleType.User;
-		user.profile_picture = 'TEMP';
+		user.profile_picture = 'TEMP'; //TODO @Matthew-Dreemurr
 		user.user42 = user42;
 		user.settings = settings;
 		user.stats = stats;
