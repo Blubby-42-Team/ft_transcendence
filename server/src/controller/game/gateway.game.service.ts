@@ -20,7 +20,23 @@ export class GatewayGameService {
 		return this.modelGameService.createLobby(userId);
 	}
 
-	async deleteLobby(roomId: string, userId: number) {
-		return this.modelGameService.deleteLobby(roomId, userId);
+	/**
+	 * Delete the lobby of the user
+	 * @param userId Id of the user
+	 * @returns
+	 * @throws NotFoundException if the user does not own a lobby
+	 */
+	async deleteMyLobby(userId: number) {
+		return this.modelGameService.deleteMyLobby(userId);
+	}
+
+	/**
+	 * Add in the new user in the white list of the owner lobby
+	 * @param ownerId Id of the owner of the lobby
+	 * @param userId Id of the user to add in the white list
+	 * @returns
+	 */
+	async addPlayerToMyWhiteList(ownerId: number, userId: number) {
+		return this.modelGameService.addPlayerToMyWhiteList(ownerId, userId);
 	}
 }

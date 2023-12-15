@@ -41,14 +41,14 @@ export class GameService {
 
 	async createLobby(userId: number): Promise<string> {
 
-		return await this.getLobbyByUserId(userId)
+		return await this.findUserInLobbys(userId)
 		.then((lobby) => {
 			if (lobby !== undefined) {
 				this.logger.debug(`User ${userId} allready own the lobby ${lobby.room_id}`);
 				throw new BadRequestException(`User ${userId} allready own the lobby ${lobby.room_id}`);
 			}
-			this.logger.error(`getLobbyByUserId return undefined?!`);
-			throw new BadGatewayException(`Create lobby failed!`);
+			this.logger.error(`getLobbyByUserId(${userId}) return undefined?!`);
+			throw new BadGatewayException(`Create lobby failed!, see logs or contact an admin`);
 		})
 		.catch((err) => {
 
@@ -72,12 +72,34 @@ export class GameService {
 
 	}
 
-	async deleteLobby(roomId: string, userId: number) {
+	/**
+	 * Delete a lobby and disconnect all players before
+	 * @param roomId Id of the lobby to delete
+	 * @throws NotFoundException if the lobby does not exist
+	 */
+	async disconnectAllPlayerAndDeleteLobby(roomId: string) {
+
 		this.logger.debug(`try deleteLobby ${roomId}`);
+
 		if (this.lobbys[roomId] === undefined) {
 			this.logger.debug('Room does not exist');
 			throw new NotFoundException('Room does not exist');
 		}
+
+		this.lobbys[roomId].closeLobby();//TODO
+
+
+		// Remove all players from the map
+		const players = this.lobbys[roomId].getPlayers();
+
+		for (const player_id of Object.keys(players)) {
+			if (this.users[player_id] === undefined) {
+				this.logger.error(`User ${player_id} is in the lobby ${roomId} but not in the user map!?`);
+				throw new BadGatewayException(`[${roomId}][${player_id}] Failed to delete lobby, see logs or contact an admin`);
+			}
+			delete this.users[player_id];
+		}
+
 		delete this.lobbys[roomId];
 		this.logger.debug(`deleteLobby ${roomId}`);
 	}
@@ -91,16 +113,16 @@ export class GameService {
 		// disconnect all players
 	}
 
-	async addPlayerToWhiteList(roomId: string, userId: number) {
+	async addPlayerToWhiteList(roomId: string, newUserId: number) {
 		const lobby = this.getLobby(roomId);
 
 		// check if the user is the owner of the lobby
-		if (lobby.owner_id !== userId) {
-			this.logger.debug(`User ${userId} is not the owner of lobby ${roomId}`);
-			throw new BadRequestException(`User ${userId} is not the owner of lobby ${roomId}`);
+		if (lobby.owner_id === newUserId) {
+			this.logger.debug(`User ${newUserId} is the owner of lobby ${roomId}`);
+			throw new BadRequestException(`User ${newUserId} is the owner of lobby ${roomId}`);
 		}
 
-		lobby.addPlayerToWhiteList(userId)
+		lobby.addPlayerToWhiteList(newUserId)
 	}
 
 	async removePlayerFromWhiteList(roomId: string, userId: number) {
@@ -116,7 +138,14 @@ export class GameService {
 	}
 
 	async addPlayerToLobby(roomId: string, userId: number) {
-		this.logger.debug(`addPlayerToLobby ${roomId} ${userId}`);
+		this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
+
+		// check if the user is already in a lobby
+		if (this.users[userId] !== undefined) {
+			this.logger.debug(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
+			throw new BadRequestException(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
+		}
+
 		const lobby = this.getLobby(roomId);
 		lobby.addPlayerToLobby(userId);
 		this.users[userId] = {
@@ -153,7 +182,7 @@ export class GameService {
 	 * @returns return the lobby instance
 	 * @throws NotFoundException if the user is not in a lobby
 	 */
-	async getLobbyByUserId(userId: number): Promise<LobbyInstance> {
+	async findUserInLobbys(userId: number): Promise<LobbyInstance> {
 		
 		// I use a user map that make the link between the user and the lobby
 		const user = this.users[userId];
@@ -187,6 +216,7 @@ export class GameService {
 	 * @returns return all lobbys public data
 	 */
 	async getAllLobbysPublicData() {
+
 		if (this.lobbys === undefined) {
 			return [];
 		}
@@ -203,7 +233,16 @@ export class GameService {
 			const lobbyPublicData = this.lobbys[lobbyId].getPublicData();
 			lobbysPublicData.push(lobbyPublicData);
 		}
-		return lobbysPublicData;
+
+		const playerPublicData = {};
+		for (const userId of Object.keys(this.users)) {
+			playerPublicData[userId] = this.users[userId].room_id;
+		}
+		
+		return {
+			lobbys: lobbysPublicData,
+			players: playerPublicData,
+		};
 	}
 
 	/**

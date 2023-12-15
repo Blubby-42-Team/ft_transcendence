@@ -206,7 +206,7 @@ export class LobbyInstance {
 	/**
 	 * Add a player to the white list
 	 * @param userId user id
-	 * @throws BadRequestException if the user is already in the white list
+	 * @throws BadRequestException if the user is already in the white list or if the user is the owner of the lobby
 	 */
 	addPlayerToWhiteList(userId: number) {
 		if (this.isInWhiteList(userId)) {
@@ -234,10 +234,16 @@ export class LobbyInstance {
 		//TODO emit new state to the lobby
 	}
 
+	/**
+	 * @returns return all players in the lobby or an empty array
+	 */
 	getPlayers() {
 		return this.players;
 	}
 
+	/**
+	 * @returns return the game settings or undefined
+	 */
 	getGameSettings() {
 		return this.gameSettings;
 	}

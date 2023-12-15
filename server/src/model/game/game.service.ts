@@ -22,22 +22,53 @@ export class ModelGameService {
 		return this.gameService.createLobby(userId);
 	}
 
-	async deleteLobby(roomId: string, userId: number) {
-		const checkLobby = this.gameService.getLobby(roomId);
+	async deleteMyLobby(userId: number) {
 
-		//TODO need to check, at the moment auth is not working
-		if (checkLobby.owner_id !== userId) {
-			this.logger.error(`User ${userId} is not the owner of lobby ${roomId}`);
-			throw new UnauthorizedException(`User ${userId} is not the owner of lobby ${roomId}`);
+		// Is in a lobby and is the owner
+		const userLobby = await this.gameService.findUserInLobbys(userId)
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`User ${userId} does not own a lobby, nothing to delete`);
+				throw new NotFoundException(`User ${userId} does not own a lobby, nothing to delete`);
+			}
+			throw err;
+		});
+
+		if (userLobby.owner_id !== userId) {
+			this.logger.error(`User ${userId} is not the owner of lobby ${userLobby.room_id}`);
+			throw new UnauthorizedException(`User ${userId} is not the owner of lobby ${userLobby.room_id}`);
 		}
-		return this.gameService.deleteLobby(roomId, userId);
+
+		return this.gameService.disconnectAllPlayerAndDeleteLobby(userLobby.room_id);
 	}
 
 	async getAllLobbysPublicData() {
 		return this.gameService.getAllLobbysPublicData();
 	}
 
-	async addPlayerToWhiteList(roomId: string, userId: number) {
-		return this.gameService.addPlayerToWhiteList(roomId, userId);
+	/**
+	 * Add in the new user in the white list of the owner lobby
+	 * @param ownerId Id of the owner of the lobby
+	 * @param userId Id of the user to add in the white list
+	 * @returns 
+	 * @throws NotFoundException if the owner does not own a lobby or if the user is the owner of the lobby
+	 */
+	async addPlayerToMyWhiteList(ownerId: number, userId: number) {
+
+		const userLobby = await this.gameService.findUserInLobbys(ownerId)
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`User ${ownerId} does not own a lobby`);
+				throw new NotFoundException(`User ${ownerId} does not own a lobby`);
+			}
+			throw err;
+		});
+
+		if (userLobby.owner_id !== ownerId) {
+			this.logger.error(`User ${ownerId} is not the owner of lobby ${userLobby.room_id}`);
+			throw new UnauthorizedException(`User ${ownerId} is not the owner of lobby ${userLobby.room_id}`);
+		}
+
+		return this.gameService.addPlayerToWhiteList(userLobby.room_id, userId);
 	}
 }
