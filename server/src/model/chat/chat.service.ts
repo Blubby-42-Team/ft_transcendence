@@ -1,9 +1,10 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { EChatType } from '@shared/types/chat';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 import { Chat } from './chat.class';
 import { User } from '../user/user.class';
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class ModelChatService {
@@ -22,6 +23,19 @@ export class ModelChatService {
 		const user = await this.postgresUserService.getUserById(userId);
 		return await this.postgresChatService.createChat(user, type, name);
 	}
+
+	async createChatProtected(
+		userId: number,
+		type: EChatType,
+		name: string,
+		password: string,
+	) {
+	const user = await this.postgresUserService.getUserById(userId);
+	const chat = await this.postgresChatService.createChat(user, type, name);
+	const hash = await this.hashPassword(password);
+	await this.postgresChatService.setPassword(chat.id, hash);
+	return chat;
+}
 
 	async getChats(
 		userId: number,
@@ -72,6 +86,51 @@ export class ModelChatService {
 		}
 		else
 			throw new UnauthorizedException("This user is banned from the chat.");
+	}
+
+	async joinChat (
+		userId: number,
+		chatId: number,
+	) {
+		await this.postgresUserService.getUserById(userId);
+		const chat = await this.postgresChatService.getChatByIdSystem(chatId);
+		if ((chat.type === EChatType.public) && !(await this.postgresChatService.isBan(userId, chatId)))
+			return await this.postgresChatService.addInChat(userId, chatId);
+		else if (await this.postgresChatService.isBan(userId, chatId))
+			throw new UnauthorizedException("You are banned from this chat.");
+		else
+			throw new UnauthorizedException("You are not allowed to join this chat.");
+	}
+
+	async joinChatProtected (
+		userId: number,
+		chatId: number,
+		password: string,
+	) {
+		await this.postgresUserService.getUserById(userId);
+		const chat = await this.postgresChatService.getChatByIdSystem(chatId);
+		if ((chat.type === EChatType.protected) && !(await this.postgresChatService.isBan(userId, chatId)))
+			if (await this.postgresChatService.isGoodPassword(chatId, password))
+				return await this.postgresChatService.addInChat(userId, chatId);
+			else
+				throw new UnauthorizedException("Wrong password.")
+		else if (await this.postgresChatService.isBan(userId, chatId))
+			throw new UnauthorizedException("You are banned from this chat.");
+		else
+			throw new UnauthorizedException("You are not allowed to join this chat.");
+	}
+
+	async setPassword (
+		userId: number,
+		chatId: number,
+		password: string,
+	) {
+		await this.postgresUserService.getUserById(userId);
+		await this.postgresChatService.getChatByIdSystem(chatId);
+		if (await this.postgresChatService.isOwner(userId, chatId))
+			return await this.postgresChatService.setPassword(chatId, password);
+		else
+			throw new UnauthorizedException("You are not allowed to change the password of this chat.");
 	}
 
 	async leaveChat(
@@ -199,7 +258,7 @@ export class ModelChatService {
 	) {
 		await this.postgresUserService.getUserById(userId);
 		const chat = await this.postgresChatService.getChatById(chatId, userId);
-		if (chat.type === EChatType.friends)
+		if (chat.type === EChatType.friends || chat.type === EChatType.inactive)
 			throw new UnauthorizedException("Can't delete a friends chat.")
 		if (!await this.postgresChatService.isInChat(userId, chatId))
 			throw new UnauthorizedException("You are not in this chat")
@@ -208,5 +267,41 @@ export class ModelChatService {
 		}
 		else
 			throw new UnauthorizedException("Not authorized to delete this chat.")
+	}
+
+	async changeType(
+		userId: number,
+		chatId: number,
+		password: string,
+	) {
+		await this.postgresUserService.getUserById(userId);
+		const chat = await this.postgresChatService.getChatByIdSystem(chatId);
+		if (chat.type !== EChatType.public && chat.type !== EChatType.protected)
+			throw new UnauthorizedException("You are not allowed to change the type of this chat.")
+		else if (await this.postgresChatService.isOwner(userId, chatId)) {
+			if (chat.type === EChatType.public) {
+				await this.postgresChatService.setPassword(chatId, password);
+				return await this.postgresChatService.changeChatType(chat, EChatType.protected)
+			}
+			else if (chat.type === EChatType.protected)
+				return await this.postgresChatService.changeChatType(chat, EChatType.public)
+		}
+		else
+			throw new UnauthorizedException("You are not the owner of this chat.")
+	}
+
+	async hashPassword(
+		password: string,
+	): Promise<string> {
+		try {
+			const saltRounds = 12;
+		
+			const hashedPassword = await bcrypt.hash(password, saltRounds);
+		
+			return hashedPassword;
+		} catch (err) {
+			// Gérer les erreurs
+			throw new Error("Error while hashing: " + err.message);
+		}
 	}
 }

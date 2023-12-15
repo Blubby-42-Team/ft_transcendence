@@ -14,6 +14,17 @@ export class DTO_chatFormat {
 	@IsString()
 	name: string;
 }
+export class DTO_protectedChatFormat {
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	name: string;
+
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	password: string;
+}
 export class DTO_chatRequest  extends dto.id() {
 	@IsDefined()
 	@IsEnum(EChatType)
@@ -82,4 +93,10 @@ export class DTO_unbanUser {
 	@IsNotEmpty()
 	@IsNumber()
 	chatId: number;
+}
+export class DTO_chatPassword {
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	password: string;
 }

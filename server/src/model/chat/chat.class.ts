@@ -54,4 +54,9 @@ export class Chat {
 	@IsNotEmpty()
 	@IsString()
 	name: string;
+
+	@Column()
+	@IsNotEmpty()
+	@IsString()
+	password: string;
 }

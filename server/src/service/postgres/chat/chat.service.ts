@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 import { User } from '../../../model/user/user.class';
 import { Chat } from '../../../model/chat/chat.class';
 import { EChatType } from '@shared/types/chat';
-import { PostgresUserService } from "../user/user.service"
+import { PostgresUserService } from "../user/user.service";
+import * as bcrypt from 'bcrypt'
 
 
 @Injectable()
@@ -34,6 +35,7 @@ export class PostgresChatService {
 		chat.admins.push(user);
 		chat.chat_picture = 'DEFAULT';
 		chat.blacklist = [];
+		chat.password = "default";
 		
 		await this.chatRepository.save(chat)
 		.catch((err) => {
@@ -516,5 +518,44 @@ export class PostgresChatService {
 		});
 		return is_in;
 	}
-}
 
+	async setPassword(
+		chatId: number,
+		password: string,
+	) {
+		return this.chatRepository.update(chatId, {
+			password: password
+		})
+		.catch((err) => {
+			this.logger.debug("Could not update chat: " + err);
+			throw new InternalServerErrorException("Could not update chat:" + err);
+		})
+		.then((res) => {
+			return res;
+		})
+	}
+
+	async getPassword(
+		chatId: number,
+	) {
+		const res = await this.chatRepository.query(`
+			SELECT chat.password
+			FROM chat
+			WHERE chat.id = $1
+		`,
+		[chatId]);
+		return res[0].password;
+	}
+
+	async isGoodPassword(
+		chatId: number,
+		password: string,
+	) {
+		const password_db = await this.getPassword(chatId);
+		console.log(password_db)
+		return await bcrypt.compare(password, password_db)
+		.catch(err => {
+			throw new InternalServerErrorException("Failed to compare passwords: " + err);
+		})
+	}
+}

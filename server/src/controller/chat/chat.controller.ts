@@ -1,9 +1,10 @@
 import { Controller, Param, Body, Post, Get, Patch, Delete } from '@nestjs/common';
-import { DTO_getUserById, DTO_chatFormat, DTO_chatRequest, DTO_chatAddUser, DTO_chatRemoveUser, DTO_chatAddAdmin, DTO_banUser, DTO_unbanUser, DTO_getChatById } from './chat.dto';
+import { DTO_getUserById, DTO_chatFormat, DTO_chatRequest, DTO_chatAddUser, DTO_chatRemoveUser, DTO_chatAddAdmin, DTO_banUser, DTO_unbanUser, DTO_getChatById, DTO_protectedChatFormat, DTO_chatPassword } from './chat.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { ChatService } from './chat.service';
 import { log } from 'console';
+import { EChatType } from '@shared/types/chat';
 
 @Controller('chat')
 export class ChatController {
@@ -20,6 +21,16 @@ export class ChatController {
 	) {
 		log(`Create chat by user id ${params.id}`);
 		return await this.chatService.createChat(params.id, body.type, body.name);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Post('/:id/protected')
+	async createChatProtected(
+		@Param() params: DTO_getUserById,
+		@Body() body: DTO_protectedChatFormat,
+	) {
+		log(`Create protected chat by user id ${params.id}`);
+		return await this.chatService.createChatProtected(params.id, EChatType.protected, body.name, body.password);
 	}
 	
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
@@ -135,5 +146,34 @@ export class ChatController {
 	) {
 		log(`delete chat ${body.id}`);
 		return await this.chatService.deleteChat(params.id, body.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/:id/join/:chatId')
+	async joinChat(
+		@Param() params: DTO_getChatById,
+	) {
+		log(`join chat ${params.chatId}`);
+		return await this.chatService.joinChat(params.id, params.chatId);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/:id/join_protected/:chatId')
+	async joinChatProtected(
+		@Param() params: DTO_getChatById,
+		@Body() body: DTO_chatPassword,
+	) {
+		log(`join chat ${params.chatId}`);
+		return await this.chatService.joinChatProtected(params.id, params.chatId, body.password);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/:id/change_type/:chatId')
+	async changeType(
+		@Param() params: DTO_getChatById,
+		@Body() body: DTO_chatPassword,
+	) {
+		log(`join chat ${params.chatId}`);
+		return await this.chatService.changeType(params.id, params.chatId, body.password);
 	}
 }

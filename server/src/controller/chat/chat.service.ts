@@ -14,9 +14,20 @@ export class ChatService {
 		type: EChatType,
 		name: string,
 		) {
-		if (type === EChatType.friends || type === EChatType.inactive)
+		if (type === EChatType.friends || type === EChatType.inactive || type === EChatType.protected)
 			throw new UnauthorizedException("Cannot create a chat of this type.");
 		return await this.modelChatService.createChat(userId, type, name);
+	}
+
+	async createChatProtected(
+		userId: number,
+		type: EChatType,
+		name: string,
+		password: string,
+		) {
+		if (type !== EChatType.protected)
+			throw new UnauthorizedException("Cannot create a chat of this type.");
+		return await this.modelChatService.createChatProtected(userId, type, name, password);
 	}
 
 	async getChats(
@@ -110,5 +121,36 @@ export class ChatService {
 		chatId: number,
 	) {
 		return await this.modelChatService.deleteChat(userId, chatId);
+	}
+
+	async joinChat(
+		userId: number,
+		chatId: number,
+	) {
+		return await this.modelChatService.joinChat(userId, chatId);
+	}
+
+	async joinChatProtected(
+		userId: number,
+		chatId: number,
+		password: string,
+	) {
+		return await this.modelChatService.joinChatProtected(userId, chatId, password);
+	}
+
+	async setPassword(
+		userId: number,
+		chatId: number,
+		password: string,
+	) {
+		return await this.modelChatService.setPassword(userId, chatId, password);
+	}
+
+	async changeType(
+		userId: number,
+		chatId: number,
+		password: string,
+	) {
+		return await this.modelChatService.changeType(userId, chatId, password);
 	}
 }
