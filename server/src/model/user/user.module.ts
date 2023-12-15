@@ -8,9 +8,10 @@ import { PostgresUserModule } from 'src/service/postgres/user/user.module';
 import { ModelUser42Service } from './user42.service';
 import { PostgresUser42Module } from 'src/service/postgres/user42/user42.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { PostgresChatModule } from 'src/service/postgres/chat/chat.module';
 
 @Module({
-	imports: [PostgresUserModule, PostgresUser42Module],
+	imports: [PostgresUserModule, PostgresUser42Module, PostgresChatModule],
 	providers: [ModelUserService, ModelUser42Service],
 	exports: [ModelUserService, ModelUser42Service]
 })

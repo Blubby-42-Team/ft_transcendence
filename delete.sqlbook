@@ -1,0 +1,9 @@
+-- SQLBook: Markup
+Drop db
+-- SQLBook: Code
+DROP SCHEMA public CASCADE
+
+CREATE SCHEMA public
+-- SQLBook: Code
+DELETE FROM "history"
+WHERE id > 0

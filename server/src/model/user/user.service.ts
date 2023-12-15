@@ -1,6 +1,7 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from './user.class';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
+import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { ModelUser42Service } from './user42.service';
 import { UserRoleType } from 'src/auth/auth.class';
 
@@ -8,6 +9,7 @@ import { UserRoleType } from 'src/auth/auth.class';
 export class ModelUserService {
 	constructor (
 		private readonly postgresUserService: PostgresUserService,
+		private readonly postgresChatService: PostgresChatService,
 		private readonly modelUser42Service: ModelUser42Service,
 	) {}
 	
@@ -38,12 +40,13 @@ export class ModelUserService {
 		// First get user from database with 42 id
 		return await this.postgresUserService.getUserBy42Id(id42)
 		.then (async (res: User) => {
-			this.logger.debug(`User ${res.displayName} found in database, update it`)
+			this.logger.debug(`User ${res.display_name} found in database, update it`)
 
 			await this.postgresUserService.updateUser(
 				res.id,
-				res.displayName,
+				res.display_name,
 				userRole,
+				res.profile_picture,
 			);
 
 			await this.modelUser42Service.addOrUpdateUser42(
@@ -69,6 +72,84 @@ export class ModelUserService {
 			}
 			throw err;
 		})
+	}
+
+	async getFriendsById(id: number): Promise<User[]> {
+		return await this.postgresUserService.getFriendsById(id)
+	}
+
+	async addFriendById(id: number, friendId: number) {
+		if (id === friendId)
+			throw new NotFoundException('Cannot add yourself as a friend.');
+		const friends = await this.getFriendsById(id);
+		if (friends.length > 0) {
+			friends.forEach(user => {
+				if (user.id === friendId) {
+					this.logger.debug(`Friend ${friendId} is already in the friend list`)
+					throw new HttpException('Friendship already exists', HttpStatus.CONFLICT);
+				}
+			});
+		}
+		
+		return await this.postgresUserService.addFriendById(id, friendId)
+	}
+
+	async deleteFriendById(id: number, friendId: number) {
+		if (id === friendId)
+			throw new NotFoundException('Cannot delete yourself friendship, believe in yourself.');
+		return await this.postgresUserService.deleteFriendById(id, friendId)
+	}
+
+	async isInFriendById(id: number, friendId: number) {
+		return await this.postgresUserService.isInFriendById(id, friendId);
+	}
+
+	async getWhitelistById(id: number): Promise<Array<{"id": number}>> {
+		return await this.postgresUserService.getWhitelistById(id)
+	}
+	
+	async addWhitelistById(id: number, whitelistId: number) {
+		if (id === whitelistId)
+			throw new NotFoundException('Cannot add yourself as a whitelist.');
+		if (await this.isInBlacklistById(id, whitelistId))
+			throw new NotFoundException('Cannot add cause user is in blacklist.');
+		const whitelist = await this.getWhitelistById(id);
+		if (whitelist.length > 0) {
+			whitelist.forEach(user => {
+				if (user.id === whitelistId) {
+					this.logger.debug(`Whitelist ${whitelistId} is already in the whitelist list`)
+					throw new UnauthorizedException('Already in whitelist');
+				}
+			});
+		}
+		return await this.postgresUserService.addWhitelistById(id, whitelistId)
+	}
+
+	async getBlacklistById(id: number): Promise<Array<{"id": number}>> {
+		return await this.postgresUserService.getBlacklistById(id)
+	}
+
+	async isInBlacklistById(id: number, blacklistId: number): Promise<Boolean> {
+		const blacklist = await this.getBlacklistById(id);
+		let is_in = false
+
+		blacklist.forEach(user => {
+			if (user.id === blacklistId) {
+				is_in = true;
+			}
+		});
+		return is_in;
+	}
+	
+	async addBlacklistById(id: number, blacklistId: number) {
+		if (id === blacklistId)
+			throw new UnauthorizedException('Cannot add yourself as a blacklist.');
+		const blacklist = await this.getBlacklistById(id);
+		return await this.postgresUserService.addBlacklistById(id, blacklistId)
+	}
+
+	async deleteBlacklistById(id: number, blacklistId: number) {
+		return await this.postgresUserService.deleteBlacklistById(id, blacklistId)
 	}
 }
 

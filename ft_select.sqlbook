@@ -1,0 +1,11 @@
+-- SQLBook: Code
+SELECT * FROM "user"
+-- SQLBook: Code
+SELECT * FROM "user42"
+-- SQLBook: Code
+SELECT * FROM "stats"
+-- SQLBook: Code
+SELECT * FROM "settings"
+-- SQLBook: Code
+SELECT * FROM "history"
+WHERE "playerId" = 1
