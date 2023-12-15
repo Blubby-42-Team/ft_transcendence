@@ -96,13 +96,15 @@ function updateMenu(){
 	
 <template>
 	<template v-if="isOpen">
-		<div class="absolute h-max w-max" ref="menuRef"
-			:style="{
-				left: `${position.x}px`,
-				top:  `${position.y}px`,
-			}"
-		>
-			<slot/>
-		</div>
+		<teleport to='#modals'>
+			<div class="absolute overflow-hidden h-max w-max" ref="menuRef"
+				:style="{
+					left: `${position.x}px`,
+					top:  `${position.y}px`,
+				}"
+			>
+				<slot/>
+			</div>
+		</teleport>
 	</template>
 </template>

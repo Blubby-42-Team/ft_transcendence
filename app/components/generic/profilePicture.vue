@@ -10,6 +10,6 @@ const props = defineProps({
 
 <template>
 	<div class="overflow-hidden rounded-full">
-		<img class="w-full h-full rounded-full" :src="props.imageSrc">
+		<img class="w-full h-full rounded-full pointer-events-none " :src="props.imageSrc">
 	</div>
 </template>
