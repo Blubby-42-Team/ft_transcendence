@@ -36,6 +36,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	readonly server: Server;
 
+	@SubscribeMessage('joinRoom')
+	async joinRoom(@MessageBody() req: any) {
+		return handleRequest(req, deleteGameRoomRequestDto, async (data): Promise<deleteGameRoomResponse> => {
+		
+			// TODO check if we can move this to the handleRequest
+			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
+			
+			await this.gatewayGameService.joinALobby(data.game_room_id, user.userId);
+			return 'ok';
+		});
+	}
+
 	@SubscribeMessage('createRoom')
 	async createRoom(@MessageBody() req: any) {
 		return handleRequest(req, createRoomRequestDto, async (data): Promise<createGameRoomResponse> => {

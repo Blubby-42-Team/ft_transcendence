@@ -9,6 +9,9 @@ import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
 import { JoinGameRoomRequestDto } from '@shared/dto/ws.dto';
 import { User } from 'src/model/user/user.class';
+import { ModelUserModule } from '../../model/user/user.module';
+import { ModelUserService } from 'src/model/user/user.service';
+import { log } from 'console';
 
 @Injectable()
 export class GameService {
@@ -16,6 +19,7 @@ export class GameService {
 	constructor (
 		private readonly emitGAteway: EmitGateway,
 		private readonly authService: AuthService,
+		private readonly modelUserService: ModelUserService,
 	) {}
 
 	private readonly logger = new Logger(GameService.name);
@@ -37,25 +41,35 @@ export class GameService {
 
 	async createLobby(userId: number): Promise<string> {
 
-		const checkIfHasLobby = this.getLobbyByUserId(userId);
-		if (checkIfHasLobby !== undefined) {
-			if (userId !== checkIfHasLobby.owner_id) {
-				return;
+		return await this.getLobbyByUserId(userId)
+		.then((lobby) => {
+			if (lobby !== undefined) {
+				this.logger.debug(`User ${userId} allready own the lobby ${lobby.room_id}`);
+				throw new BadRequestException(`User ${userId} allready own the lobby ${lobby.room_id}`);
 			}
-				this.logger.debug(`User ${userId} allready own the lobby ${checkIfHasLobby.room_id}`);
-				throw new BadRequestException(`User ${userId} allready own the lobby ${checkIfHasLobby.room_id}`);
-		}
+			this.logger.error(`getLobbyByUserId return undefined?!`);
+			throw new BadGatewayException(`Create lobby failed!`);
+		})
+		.catch((err) => {
 
-		const newRoomId = this.generateUniqueRoomId(6);
+			if ((err instanceof NotFoundException) === false) {
+				throw err;
+			}
 
-		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
-		this.lobbys[newRoomId] = newLobby;
+			this.logger.debug(`User ${userId} does not own a lobby, create one`);
 
-		this.users[userId] = {
-			room_id: newRoomId,
-		};
+			const newRoomId = this.generateUniqueRoomId(6);
 
-		return newRoomId;
+			const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
+			this.lobbys[newRoomId] = newLobby;
+
+			this.users[userId] = {
+				room_id: newRoomId,
+			};
+
+			return newRoomId;
+		});
+
 	}
 
 	async deleteLobby(roomId: string, userId: number) {
@@ -65,7 +79,6 @@ export class GameService {
 			throw new NotFoundException('Room does not exist');
 		}
 		delete this.lobbys[roomId];
-		this.lobbys[roomId] = undefined;
 		this.logger.debug(`deleteLobby ${roomId}`);
 	}
 
@@ -79,12 +92,41 @@ export class GameService {
 	}
 
 	async addPlayerToWhiteList(roomId: string, userId: number) {
+		const lobby = this.getLobby(roomId);
+
+		// check if the user is the owner of the lobby
+		if (lobby.owner_id !== userId) {
+			this.logger.debug(`User ${userId} is not the owner of lobby ${roomId}`);
+			throw new BadRequestException(`User ${userId} is not the owner of lobby ${roomId}`);
+		}
+
+		lobby.addPlayerToWhiteList(userId)
 	}
 
-	async addPlayerToLobby(req: JoinGameRoomRequestDto) {
+	async removePlayerFromWhiteList(roomId: string, userId: number) {
+		const lobby = this.getLobby(roomId);
+
+		// check if the user is the owner of the lobby
+		if (lobby.owner_id !== userId) {
+			this.logger.debug(`User ${userId} is not the owner of lobby ${roomId}`);
+			throw new BadRequestException(`User ${userId} is not the owner of lobby ${roomId}`);
+		}
+
+		lobby.removePlayerFromWhiteList(userId)
 	}
 
-	async removePlayerFromLobby(roomId: string ,userId: number): Promise<void> {
+	async addPlayerToLobby(roomId: string, userId: number) {
+		this.logger.debug(`addPlayerToLobby ${roomId} ${userId}`);
+		const lobby = this.getLobby(roomId);
+		lobby.addPlayerToLobby(userId);
+		this.users[userId] = {
+			room_id: roomId,
+		};
+		this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
+
+	}
+
+	async removePlayerFromLobby(roomId: string, userId: number): Promise<void> {
 	}
 	
 	
@@ -97,7 +139,7 @@ export class GameService {
 	 * @returns return the lobby instance
 	 * @throws NotFoundException if the lobby does not exist
 	 */
-	getLobby(roomId: string): LobbyInstance | undefined{
+	getLobby(roomId: string): LobbyInstance {
 		const lobby = this.lobbys[roomId];
 		if (lobby === undefined) {
 			throw new NotFoundException(`Lobby ${roomId} does not exist`);
@@ -105,14 +147,29 @@ export class GameService {
 		return lobby;
 	}
 
-	getLobbyByUserId(userId: number): LobbyInstance | undefined {
+	/**
+	 * try to find in which lobby the user is
+	 * @param userId user id
+	 * @returns return the lobby instance
+	 * @throws NotFoundException if the user is not in a lobby
+	 */
+	async getLobbyByUserId(userId: number): Promise<LobbyInstance> {
+		
+		// I use a user map that make the link between the user and the lobby
 		const user = this.users[userId];
 		if (user === undefined) {
-			return undefined;
+			this.logger.debug(`User ${userId} does not exist`);
+			throw new NotFoundException(`User ${userId} does not exist`);
 		}
+
 		return this.lobbys[user.room_id];
 	}
 
+	/**
+	 * Generate a random id
+	 * @param length Length of the id
+	 * @returns Random id
+	 */
 	private generateId(length): string {
 		let result = '';
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -123,6 +180,30 @@ export class GameService {
 			counter += 1;
 		}
 		return result;
+	}
+
+	/**
+	 * 
+	 * @returns return all lobbys public data
+	 */
+	async getAllLobbysPublicData() {
+		if (this.lobbys === undefined) {
+			return [];
+		}
+
+		if (Object.keys(this.lobbys).length === 0) {
+			return [];
+		}
+
+		const lobbysPublicData = [];
+		for (const lobbyId in this.lobbys) {
+			if (this.lobbys[lobbyId] === undefined) {
+				continue;
+			}
+			const lobbyPublicData = this.lobbys[lobbyId].getPublicData();
+			lobbysPublicData.push(lobbyPublicData);
+		}
+		return lobbysPublicData;
 	}
 
 	/**

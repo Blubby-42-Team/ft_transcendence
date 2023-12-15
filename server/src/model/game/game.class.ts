@@ -1,6 +1,6 @@
 import { Direction, gameSettingsType, gameStateType } from '@shared/types/game'
 import { GameEngine } from '@shared/game/game';
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 
 export class LobbyInstance {
 
@@ -14,7 +14,7 @@ export class LobbyInstance {
 		this.game = undefined;
 		this.slots = 1;
 
-		this.logger = new Logger(this.room_id)
+		this.logger = new Logger(`LobbyInstance: ${this.room_id}`)
 
 		this.players[owner_id] = {
 			dir: this.getDirectionBySlot(this.slots),
@@ -66,17 +66,27 @@ export class LobbyInstance {
 	}
 
 	/**
-	 * Add a player to the lobby and emit the new state to the lobby
+	 * try to add a player to the lobby and emit the new state to the lobby
+	 * check if the player is already in the lobby
+	 * check if the lobby is full
+	 * check if the player is in the white list
+	 * @param userId user id
+	 * @throws BadRequestException if the user is already in the lobby or the lobby is full
 	 */
 	addPlayerToLobby(userId: number) {
 		if (this.players[userId] !== undefined) {
-			this.logger.warn(`User ${userId} is already in the lobby`);
-			throw new Error(`User ${userId} is already in the lobby`);
+			this.logger.warn(`User ${userId} is already in the lobby ${this.room_id}`);
+			throw new BadRequestException(`User ${userId} is already in the lobby ${this.room_id}`);
 		}
 
 		if (this.slots === 4) {
 			this.logger.error(`Lobby ${this.room_id} is full`);
-			throw new Error(`Lobby ${this.room_id} is full`);
+			throw new BadRequestException(`Lobby ${this.room_id} is full`);
+		}
+
+		if (!this.isInWhiteList(userId)) {
+			this.logger.warn(`User ${userId} is not in the white list of lobby ${this.room_id}`);
+			throw new BadRequestException(`User ${userId} is not in the white list of lobby ${this.room_id}`);
 		}
 
 		this.slots++;
@@ -90,7 +100,6 @@ export class LobbyInstance {
 
 		//TODO emit new state to the lobby
 		this.logger.log(`User ${userId} added to the lobby`);
-		return;
 	}
 
 	/**
@@ -99,7 +108,17 @@ export class LobbyInstance {
 	removePlayerFromLobby(userId: number) {
 		if (this.players[userId] === undefined) {
 			this.logger.warn(`User ${userId} is not in the lobby`);
-			throw new Error(`User ${userId} is not in the lobby`);
+			throw new NotFoundException(`User ${userId} is not in the lobby`);
+		}
+
+		if (this.slots === 1) {
+			this.logger.error(`Lobby ${this.room_id} is empty`);
+			throw new BadRequestException(`Lobby ${this.room_id} is empty`);
+		}
+
+		if (userId === this.owner_id) {
+			this.logger.error(`User ${userId} is the owner of the lobby ${this.room_id}, can't remove him`);
+			throw new BadRequestException(`User ${userId} is the owner of the lobby ${this.room_id}, can't remove him`);
 		}
 
 		this.slots--;
@@ -186,11 +205,13 @@ export class LobbyInstance {
 
 	/**
 	 * Add a player to the white list
+	 * @param userId user id
+	 * @throws BadRequestException if the user is already in the white list
 	 */
 	addPlayerToWhiteList(userId: number) {
 		if (this.isInWhiteList(userId)) {
 			this.logger.warn(`User ${userId} is already in the white list`);
-			return;//TODO throw error
+			throw new BadRequestException(`User ${userId} is already in the white list`);
 		}
 
 		this.whiteList.push(userId);
@@ -199,16 +220,41 @@ export class LobbyInstance {
 
 	/**
 	 * Remove a player from the white list
+	 * @param userId user id
+	 * @throws BadRequestException if the user is not in the white list
 	 */
 	removePlayerFromWhiteList(userId: number) {
 		if (!this.isInWhiteList(userId)) {
 			this.logger.warn(`User ${userId} is not in the white list`);
-			return;//TODO throw error
+			throw new BadRequestException(`User ${userId} is not in the white list`);
 		}
 
 		this.whiteList = this.whiteList.filter((id) => id !== userId);
 		this.logger.log(`User ${userId} removed from the white list`);
 		//TODO emit new state to the lobby
+	}
+
+	getPlayers() {
+		return this.players;
+	}
+
+	getGameSettings() {
+		return this.gameSettings;
+	}
+
+	/**
+	 * 
+	 * @returns return all public data of the lobby
+	 */
+	getPublicData() {
+		return {
+			room_id: this.room_id,
+			owner_id: this.owner_id,
+			slots: this.slots,
+			players: this.players,
+			whiteList: this.whiteList,
+			gameSettings: this.gameSettings,
+		}
 	}
 
 	private getDirectionBySlot(slot: number): Direction {

@@ -12,6 +12,10 @@ export class GatewayGameService {
 		private readonly modelGameService: ModelGameService,
 	) {}
 
+	async joinALobby(roomId: string, userId: number) {
+		return this.modelGameService.joinALobby(roomId, userId);
+	}
+
 	async createLobby(userId: number) {
 		return this.modelGameService.createLobby(userId);
 	}
