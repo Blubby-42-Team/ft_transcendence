@@ -23,7 +23,7 @@ onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
 			</ClientOnly>
 		</div>
 		<div class="flex justify-center h-full p-5 overflow-hidden">
-			<div class="p-5 rounded-3xl bg-background1 w-[40rem] h-full">
+			<div class="p-5 rounded-3xl bg-background1 w-[60rem] h-full">
 				<HistoryList :numberOfElem="30"/>
 			</div>
 		</div>
