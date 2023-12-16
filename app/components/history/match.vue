@@ -2,6 +2,9 @@
 
 import { format } from 'date-fns'
 
+// TODO Deferinceate between if match is mine or other and remove hover effect if yes
+
+const personInteractionRef = ref();
 
 </script>
 
@@ -16,9 +19,16 @@ import { format } from 'date-fns'
 			<div class="text-9xl">8-10</div>
 			<div>{{ format(new Date(), "dd MMMM HH:MM") }}</div>
 		</div>
-		<button class="flex flex-col items-center p-2 hover:bg-color1 hover:bg-opacity-30 rounded-xl">
+		<button class="flex flex-col items-center p-2 hover:bg-color1 hover:bg-opacity-30 rounded-xl"
+			@click="personInteractionRef.open"
+		>
 			<GenericProfilePicture imageSrc="/amogus.png"/>
 			<div class="pt-2 text-xl">Karen69420</div>
+			<GenericContextMenu ref="personInteractionRef">
+				<div class="p-5 bg-red-500">
+					HEllo WOrld
+				</div>
+			</GenericContextMenu>
 		</button>
 
 		<div class="h-4 col-span-3"></div>
