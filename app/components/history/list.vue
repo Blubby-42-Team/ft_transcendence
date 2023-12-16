@@ -1,8 +1,5 @@
 <script lang="ts" setup>
 
-import { format } from 'date-fns'
-
-
 const props = defineProps({
 	numberOfElem: {
 		type: Number,

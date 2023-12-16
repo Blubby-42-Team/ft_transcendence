@@ -18,9 +18,7 @@ const openMatchHistoryPreview = ref();
 		<div class="flex items-center h-12 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30"><Icon name="material-symbols:trophy" class="w-10 h-10 text-text-custom"/></div>
 
 		<GenericModal ref="openMatchHistoryPreview">
-			<div class="w-40 h-40 bg-purple-700">
-				Hello WOrld
-			</div>
+			<HistoryMatch/>
 		</GenericModal>
 	</button>
 </template>
