@@ -47,19 +47,7 @@ const stats = {
 			</div>
 		</div>
 		<div class="h-full col-span-2 overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">
-			<div class="grid w-full grid-rows-[3rem] grid-cols-[2rem,auto,auto,auto,6rem]">
-				<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1"></div>
-				<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1">Date</div>
-				<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1">Adversary</div>
-				<div class="sticky top-0 flex items-center justify-center h-12 col-span-2 border-b border-text border-opacity-30 bg-background1">Score</div>
-				<template v-for="i in 10">
-					<div class="flex items-center justify-center h-12 overflow-hidden border-t whitespace-nowrap border-text border-opacity-30"><Icon name="material-symbols:shuffle" class="w-full h-full text-text-custom"/></div>
-					<div class="flex items-center justify-center h-12 px-5 overflow-hidden border-t whitespace-nowrap border-text border-opacity-30"><ClientOnly>{{ format(new Date(), "dd MMM HH:MM") }}</ClientOnly></div>
-					<div class="flex items-center h-12 px-5 overflow-hidden truncate border-t whitespace-nowrap border-text border-opacity-30">Karen69420</div>
-					<div class="flex items-center justify-end h-12 px-5 overflow-hidden truncate border-t whitespace-nowrap border-text border-opacity-30">3-10</div>
-					<div class="flex items-center h-12 overflow-hidden truncate border-t whitespace-nowrap border-text border-opacity-30"><Icon name="material-symbols:trophy" class="w-10 h-10 text-text-custom"/></div>
-				</template>
-			</div>
+			<HistoryList :numberOfElem="10"/>
 		</div>
 	</div>
 </template>

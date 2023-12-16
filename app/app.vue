@@ -12,16 +12,18 @@ const theme = useState('theme');
 <template>
 	<div class="w-screen h-screen" :class="theme ? theme : 'theme-light'">
 		<NuxtLayout>
-			<NuxtPage :transition="{
+			<!-- :transition="{
 				name: 'bounce',
 				mode: 'out-in'
-			}"/>
+			}" -->
+			<NuxtPage
+			/>
 		</NuxtLayout>
 		<div id="modals"/>
 	</div>
 </template>
 
-<style>
+<!-- <style>
 .bounce-enter-active,
 .bounce-leave-active {
 	transition: all 0.1s;
@@ -31,4 +33,4 @@ const theme = useState('theme');
 	opacity: 0;
 	filter: blur(1rem);
 }
-</style>
+</style> -->
