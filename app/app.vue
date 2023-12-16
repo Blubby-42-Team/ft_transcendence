@@ -4,17 +4,21 @@ const { selectedChannelType, selectedChannel, isSideMenuOpen } = useChannelListS
 const { selectedCategory, selectedLobby } = usePageStore()
 const { players, sequence, timeRemaining } = useLocalLobbyStore()
 
+const theme = useState('theme');
+
 </script>
 
 
 <template>
-	<NuxtLayout>
-		<NuxtPage :transition="{
-			name: 'bounce',
-			mode: 'out-in'
-		}"/>
-	</NuxtLayout>
-	<div id="modals"/>
+	<div class="w-screen h-screen" :class="theme ? theme : 'theme-light'">
+		<NuxtLayout>
+			<NuxtPage :transition="{
+				name: 'bounce',
+				mode: 'out-in'
+			}"/>
+		</NuxtLayout>
+		<div id="modals"/>
+	</div>
 </template>
 
 <style>
