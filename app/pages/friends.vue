@@ -4,6 +4,8 @@ definePageMeta({name: 'Friends'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.FRIENDS); })
 
+const openFindFriend = ref();
+
 </script>
 
 <template>
@@ -13,9 +15,13 @@ onMounted(() => { setSelectedCategory(EPageCategories.FRIENDS); })
 				<teleport to="#additionalHeaderButton">
 					<div class="mx-2 border border-text-light bg-text-light"></div>
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
+						@click="openFindFriend?.open"
 					>
-						<Icon name="material-symbols:refresh" class="w-full h-full"/>
+						<Icon name="material-symbols:search" class="w-full h-full"/>
 					</GenericButton>
+					<GenericModal ref="openFindFriend">
+						<FriendsFind/>
+					</GenericModal>
 				</teleport>
 			</ClientOnly>
 		</div>

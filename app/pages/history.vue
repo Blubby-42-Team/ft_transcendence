@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 
-import { format } from 'date-fns'
-
 definePageMeta({name: 'History'})
 const { setSelectedCategory } = usePageStore();
 
@@ -16,7 +14,7 @@ onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
 				<teleport to="#additionalHeaderButton">
 					<div class="mx-2 border border-text-light bg-text-light"></div>
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12">
-						<Icon name="material-symbols:search" class="w-full h-full"/>
+						<Icon name="material-symbols:refresh" class="w-full h-full"/>
 					</GenericButton>
 				</teleport>
 			</ClientOnly>
