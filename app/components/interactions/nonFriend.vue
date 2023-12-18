@@ -7,7 +7,7 @@ function openContextMenu() {
 </script>
 
 <template>
-	<div class="grid grid-cols-[3rem_auto] grid-rows-[3rem] overflow-hidden border-4 border-color1 bg-background2 rounded-2xl">
+	<div class="grid grid-cols-[3rem_auto] grid-rows-[3rem] overflow-hidden border-4 border-color1 bg-background2 rounded-2xl text-text">
 		<button class="w-full contents group"
 			@click="openContextMenu"
 		>
