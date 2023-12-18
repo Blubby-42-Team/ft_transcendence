@@ -9,7 +9,7 @@ const openMatchHistoryPreview = ref();
 
 <template>
 	<button class="contents group"
-		@click="openMatchHistoryPreview.open"
+		@click.stop="openMatchHistoryPreview.open"
 	>
 		<div class="flex items-center justify-center h-12 overflow-hidden border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30"><Icon name="material-symbols:shuffle" class="w-full h-full text-text-custom"/></div>
 		<div class="flex items-center justify-center h-12 px-5 overflow-hidden border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30"><ClientOnly>{{ format(new Date(), "dd MMM HH:MM") }}</ClientOnly></div>
