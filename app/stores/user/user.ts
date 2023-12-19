@@ -126,5 +126,30 @@ export const useUserStore = defineStore('user', {
 				return (stats !== null ? stats : statsPlaceHolder);
 			});
 		},
+
+		getHistory(userId: number){
+			if (this._history[userId] === undefined){
+				this._history[userId] = [];
+			}
+
+			api.fetchHistory(userId, (response) => {
+				for (let i = 0; i < 10; i++){
+					this._history[userId]?.push({
+						matchId: 45,
+						date: new Date,
+						duration: 100,
+						adversary: 3,
+						adversaryName: 'Jameskii',
+						score: 10,
+						scoreAdv: Math.floor(Math.random() * 10),
+					})
+				}
+			});
+			
+			return computed(() => {
+				const history = this._history[userId];
+				return (history !== null && history.length ? history : []);
+			});
+		},
 	},
 })

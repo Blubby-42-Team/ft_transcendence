@@ -7,10 +7,10 @@ const props = defineProps({
 	},
 });
 
-const { getUser, getStats } = useUserStore();
+const { getUser, getStats, getHistory } = useUserStore();
 const user = getUser(props.userId);
 const stats = getStats(props.userId);
-
+const history = getHistory(props.userId);
 
 </script>
 
@@ -35,7 +35,7 @@ const stats = getStats(props.userId);
 			</div>
 		</div>
 		<div class="h-full col-span-2 overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">
-			<HistoryList :numberOfElem="10"/>
+			<HistoryList :matchList="history"/>
 		</div>
 	</div>
 </template>
