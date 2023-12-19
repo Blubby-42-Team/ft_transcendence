@@ -3,7 +3,7 @@ export default {
 		userId: number,
 		callback: (response: any) => void,
 	){
-		return useFetch('http://localhost:3001/game/room', {
+		return useFetch(`${process.env.NUXT_BACK_URI}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('user fetched');
@@ -18,7 +18,7 @@ export default {
 		userId: number,
 		callback: (response: any) => void,
 	){
-		return useFetch('http://localhost:3001/game/room', {
+		return useFetch(`${process.env.NUXT_BACK_URI}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('stats fetched');
@@ -33,7 +33,7 @@ export default {
 		userId: number,
 		callback: (response: any) => void,
 	){
-		return useFetch('http://localhost:3001/game/room', {
+		return useFetch(`${process.env.NUXT_BACK_URI}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('history fetched');
