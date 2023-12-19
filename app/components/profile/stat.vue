@@ -3,7 +3,7 @@
 const props = defineProps({
 	name: {
 		type: String,
-		required: true
+		required: false,
 	},
 	stat: {
 		type: Object as PropType<{
@@ -21,7 +21,9 @@ const props = defineProps({
 
 <template>
 	<div class="grid grid-cols-[auto,auto]">
-		<div class="flex items-center justify-center h-16 col-span-2 mb-2 overflow-hidden text-2xl border-b whitespace-nowrap border-text">{{ props.name }}</div>
+		<template v-if="props.name">
+			<div class="flex items-center justify-center h-16 col-span-2 mb-2 overflow-hidden text-2xl border-b whitespace-nowrap border-text">{{ props.name }}</div>
+		</template>
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">Match Played</div>
 		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">{{ props.stat.matchPlayed }}</div>
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">Ranking</div>

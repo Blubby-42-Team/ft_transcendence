@@ -28,7 +28,7 @@ onUnmounted(() => {
 		</template>
 		<br>
 		<div class="w-full col-span-2 p-2">
-			<PlayLobbyPlayButton/>
+			<PlayLobbyPlayButtonMatchmaking/>
 		</div>
 		<br>
 	</div>

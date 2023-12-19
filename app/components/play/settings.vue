@@ -90,7 +90,7 @@ const difficulties = [
 		</div>
 
 		<div class="w-full p-2">
-			<PlayLobbyPlayButton/>
+			<PlayLobbyPlayButtonLobby/>
 		</div>
 	</div>
 </template>
