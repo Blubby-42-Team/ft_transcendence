@@ -7,22 +7,10 @@ const props = defineProps({
 	},
 });
 
-import { format } from 'date-fns'
+const { getUser, getStats } = useUserStore();
+const user = getUser(props.userId);
+const stats = getStats(props.userId);
 
-const stats = {
-	classic: {
-		matchPlayed: 42,
-		ranking: 872,
-		winrate: 76,
-		averagePointPerGame: 42,
-	},
-	random: {
-		matchPlayed: 1,
-		ranking: 423,
-		winrate: 0,
-		averagePointPerGame: 42,
-	},
-}
 
 </script>
 
@@ -33,11 +21,11 @@ const stats = {
 		</div>
 		<div class="grid grid-cols-[3rem,auto] grid-rows-5">
 			<div class="col-span-2"></div>
-			<div class="self-center col-span-2 p-2 text-4xl ">Jamie</div>
+			<div class="self-center col-span-2 p-2 text-4xl ">{{ user.name }}</div>
 			<div class="text-text-custom"><Icon name="material-symbols:person" class="w-full h-full"/></div>
-			<div class="self-center ">James Milwaukee</div>
+			<div class="self-center p-2">{{ user.fullName }}</div>
 			<div class="p-2 text-text-custom"><Icon name="42" class="w-full h-full"/></div>
-			<div class="self-center p-2 ">JMilwaukee</div>
+			<div class="self-center p-2 ">{{ user.login42 }}</div>
 		</div>
 		<div class="col-span-2 pb-5">
 			<div class="grid w-full grid-cols-[1fr,2rem,1fr] h-max">

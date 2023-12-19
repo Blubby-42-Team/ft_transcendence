@@ -6,12 +6,7 @@ const props = defineProps({
 		required: false,
 	},
 	stat: {
-		type: Object as PropType<{
-			matchPlayed: number;
-			ranking: number;
-			winrate: number;
-			averagePointPerGame: number;
-		}>,
+		type: Object as PropType<IModeStats>,
 		required: true
 	},
 });
@@ -27,9 +22,9 @@ const props = defineProps({
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">Match Played</div>
 		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">{{ props.stat.matchPlayed }}</div>
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">Ranking</div>
-		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">#1</div>
+		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">#{{ props.stat.ranking }}</div>
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">MMR</div>
-		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">{{ props.stat.ranking }}</div>
+		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">{{ props.stat.mmr }}</div>
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">Winrate</div>
 		<div class="flex items-center justify-end h-12 overflow-hidden whitespace-nowrap">{{ props.stat.winrate }}%</div>
 		<div class="flex items-center h-12 overflow-hidden whitespace-nowrap">Average Point</div>
