@@ -26,10 +26,10 @@ const openMatchHistoryPreview = ref();
 				{{ format(match.date, "dd MMM HH:MM") }}
 			</ClientOnly>
 		</div>
-		<div class="flex items-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
+		<div class="flex items-center justify-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
 			{{ match.adversaryName }}
 		</div>
-		<div class="flex items-center justify-end h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
+		<div class="flex items-center justify-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
 			{{ match.scoreAdv }}-{{ match.score }}
 		</div>
 		<div class="flex items-center h-12 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">

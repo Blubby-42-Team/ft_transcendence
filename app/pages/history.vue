@@ -2,8 +2,11 @@
 
 definePageMeta({name: 'History'})
 const { setSelectedCategory } = usePageStore();
-
 onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
+
+const { getHistory } = useUserStore();
+const history = getHistory(12);
+
 
 </script>
 
@@ -21,7 +24,7 @@ onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
 		</div>
 		<div class="flex justify-center h-full p-5 overflow-hidden">
 			<div class="p-5 rounded-3xl bg-background1 w-[60rem] h-full">
-				<HistoryList :numberOfElem="30"/>
+				<HistoryList :matchList="history"/>
 			</div>
 		</div>
 	</div>

@@ -20,7 +20,7 @@ function addNewElementInTest(){
 <template>
 	<div class="w-full">
 		<div class="flex flex-col w-full px-2 py-4 text-sm border-4 rounded-b-lg rounded-tl-lg shadow-lg border-color1 bg-background1">
-			<GenericProfilePicture imageSrc="/amogus.png" class="w-32 h-32"/>
+			<GenericProfilePicture imageSrc="/amogus.png" class="self-center w-32 h-32"/>
 			<div class="w-full p-2 mt-3 text-base">James Milwaukee</div>
 			<template v-for="elem in test">
 				<template v-if="elem">

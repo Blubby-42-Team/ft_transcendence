@@ -9,21 +9,9 @@ const props = defineProps({
 	},
 })
 
-
-const stats = {
-	classic: {
-		matchPlayed: 42,
-		ranking: 872,
-		winrate: 76,
-		averagePointPerGame: 42,
-	},
-	random: {
-		matchPlayed: 1,
-		ranking: 423,
-		winrate: 0,
-		averagePointPerGame: 42,
-	},
-}
+const { getUser, getStats, getHistory } = useUserStore();
+const user = getUser(42);
+const stats = getStats(42);
 
 </script>
 
@@ -41,13 +29,7 @@ const stats = {
 				</GenericButton>
 			</div>
 			<div v-else-if="props.type === CardType.PLAYER" class="absolute w-full h-full align-top card">
-				<div class="w-full h-full overflow-hidden border-4 bg-gradient-to-bl from-yellow-400 via-accent1 to-yellow-400 rounded-2xl border-accent1">
-					<div class="h-full w-full p-2 bg-gradient-to-tl grid from-yellow-600 via-transparent to-yellow-600 grid-rows-[9rem_max-content_repeat(4,auto)] rounded-xl justify-items-center">
-						<GenericProfilePicture imageSrc="/amogus.png" class="w-32 h-32"/>
-						<div class="flex justify-center w-full pt-2 overflow-hidden text-2xl font-bold truncate pb-7 text-text">James Milwaukee</div>
-						<ProfileStat class="w-full px-3 h-max" :stat="stats.classic"/>
-					</div>
-				</div>
+				<PlayLobbyPlayerCard/>
 			</div>
 			<div v-else-if="props.type === CardType.COMING1" class="absolute w-full h-full align-top card">
 				<div class="grid w-full h-full overflow-hidden border-4 rounded-2xl text-background2 bg-background1 border-background1 bg-opacity-80 place-content-center">

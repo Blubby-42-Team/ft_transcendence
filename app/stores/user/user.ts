@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', {
 					login42: 'jbond',
 					avatar: '/amogus.png',
 				};
-			})
+			});
 
 			return computed(() => {
 				const user = this._users[userId];
