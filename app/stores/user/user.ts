@@ -85,38 +85,43 @@ export const useUserStore = defineStore('user', {
 
 
 		fetchUser(id: number){
-			new Promise((r) => setTimeout(r, 1000)).then(() => {
-				this._users[id] = {
-					id: id,
-					name: 'James',
-					fullName: 'James Bond',
-					login42: 'jbond',
-					avatar: '/amogus.png',
-				};
-				console.log('user fetched');
-			});
+			return useFetch('http://localhost:3001', {
+				onResponse: ({ request, response, options }) => {
+					this._users[id] = {
+						id: id,
+						name: 'James',
+						fullName: 'James Bond',
+						login42: 'jbond',
+						avatar: '/amogus.png',
+					};
+					console.log('user fetched');
+				},
+			})
 		},
 
 		fetchStats(userId: number){
-			new Promise((r) => setTimeout(r, 1000)).then(() => {
-				this._stats[userId] = {
-					classic: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
-					},
-					random: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
-					},
-				};
-				console.log('stats fetched');
-			});
+			return useFetch('http://localhost:3001', {
+				onResponse: ({ request, response, options }) => {
+					console.log(response._data)
+					this._stats[userId] = {
+						classic: {
+							matchPlayed: Math.floor(Math.random() * 100),
+							ranking: Math.floor(Math.random() * 100),
+							mmr: Math.floor(Math.random() * 1000),
+							winrate: Math.floor(Math.random() * 100),
+							averagePointPerGame: Math.floor(Math.random() * 100),
+						},
+						random: {
+							matchPlayed: Math.floor(Math.random() * 100),
+							ranking: Math.floor(Math.random() * 100),
+							mmr: Math.floor(Math.random() * 1000),
+							winrate: Math.floor(Math.random() * 100),
+							averagePointPerGame: Math.floor(Math.random() * 100),
+						},
+					};
+					console.log('stats fetched');
+				},
+			})
 		},
 	},
 })
