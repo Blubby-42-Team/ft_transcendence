@@ -1,8 +1,28 @@
 <script setup lang="ts">
 import { LobbyStartingSequence } from '#imports';
 
-const { timeRemaining, sequence, start, cancel } = useLocalLobbyStore();
+const { timeRemaining, sequence, start: startLobby, cancel } = useLocalLobbyStore();
 const hoverButton = ref(false);
+const etc = ref(0);
+
+const dotdotdot = [
+	'.',
+	'..',
+	'...',
+]
+
+async function start(){
+	startLobby();
+	
+	etc.value = 0;
+	while(sequence.value === LobbyStartingSequence.STARTING){
+		etc.value++;
+		if(etc.value >= dotdotdot.length){
+			etc.value = 0;
+		}
+		await new Promise(resolve => setTimeout(resolve, 500));
+	}
+}
 
 </script>
 
@@ -22,10 +42,10 @@ const hoverButton = ref(false);
 			@click="cancel"
 		>
 			<template v-if="hoverButton">
-				Starting in {{ timeRemaining }}
+				Finding other players {{ dotdotdot[etc] }}
 			</template>
 			<template v-else>
-				Cancel ({{ timeRemaining }})
+				Cancel ({{ dotdotdot[etc] }})
 			</template>
 		</GenericButton>
 	</template>
