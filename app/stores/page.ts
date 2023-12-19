@@ -6,6 +6,7 @@ export enum EPageCategories {
 	FRIENDS		= 4,
 	MESSAGES	= 5,
 	SETTINGS	= 6,
+	HISTORY		= 7,
 };
 
 export enum ESelectedLobby {

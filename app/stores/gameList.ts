@@ -24,9 +24,7 @@ const players: Array<IPlayer> = [
 ]
 
 export const useGameListStore = defineStore('gameList', {
-	state: (): {
-		_gameList: Array<IGame>;
-	} => ({
+	state: () => ({
 		_gameList: [
 			{	id: '1',	player1: players[0], player2: players[1], player1score: 4, player2score: 2,	tournament: 'JamesTown Community Challenge'	},
 			{	id: '2',	player1: players[2], player2: players[3], player1score: 0, player2score: 0,	tournament: ''	},
@@ -52,7 +50,7 @@ export const useGameListStore = defineStore('gameList', {
 			{	id: '22',	player1: players[2], player2: players[3], player1score: 0, player2score: 0,	tournament: ''	},
 			{	id: '23',	player1: players[4], player2: players[5], player1score: 1, player2score: 0,	tournament: ''	},
 			{	id: '24',	player1: players[6], player2: players[7], player1score: 1, player2score: 1,	tournament: ''	},
-		]
+		] as Array<IGame>
 	}),
 	getters: {
 		gameList: (state): Array<IGame> => state._gameList,

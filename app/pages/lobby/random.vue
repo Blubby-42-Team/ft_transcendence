@@ -6,24 +6,29 @@ definePageMeta({
 })
 
 const { setPageDataLobby } = usePageStore();
-onMounted(() => { setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Random); })
+const { players, reset } = useLocalLobbyStore();
 
-const lobby = new FrontLobbyMatchMakingInstance(2);
+onMounted(() => {
+	setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Random);
+	reset(1);
+})
 
-const test = computed(() => lobby)
+onUnmounted(() => {
+	reset(1);
+})
 
 </script>
 
 <template>
 	<div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
-		<template v-for="el of lobby.players">
+		<template v-for="el of players">
 			<div class="p-2">
 				<PlayLobbyCard :type="el.type"/>
 			</div>
 		</template>
 		<br>
 		<div class="w-full col-span-2 p-2">
-			<PlayLobbyPlayButton :timeRemaining="test.timeRemaining" :sequence="test.sequence"/>
+			<PlayLobbyPlayButtonMatchmaking/>
 		</div>
 		<br>
 	</div>
