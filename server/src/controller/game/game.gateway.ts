@@ -15,7 +15,7 @@ import { handleRequest } from '../wsHandleRequest';
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
-	private readonly logger = new Logger(GameGateway.name);
+	readonly logger = new Logger(GameGateway.name);
 
 	constructor(
 		private readonly gatewayGameService: GatewayGameService,

@@ -2,8 +2,9 @@
 	Model Game Service
 */
 
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { GameService } from 'src/service/game/game.service';
+import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { GameService } from '../../service/game/game.service';
+
 
 @Injectable()
 export class ModelGameService {
@@ -18,8 +19,34 @@ export class ModelGameService {
 		return this.gameService.addPlayerToLobby(roomId, userId);
 	}
 
+	/**
+	 * Create a lobby for the user and check if the user is not allready in a lobby
+	 * or owned one
+	 * 
+	 * @param userId Id of the user that want to create a lobby
+	 * @returns return the room_id of the lobby
+	 * @throws BadRequestException if the user is allready in a lobby
+	 */
 	async createLobby(userId: number) {
-		return this.gameService.createLobby(userId);
+		return await this.gameService.findUserInLobbys(userId)
+		.then((lobby) => {
+			if (lobby !== undefined) {
+				this.logger.debug(`User ${userId} is allready in the lobby ${lobby.room_id}`);
+				throw new BadRequestException(`User ${userId} is allready the lobby ${lobby.room_id}`);
+			}
+			this.logger.error(`getLobbyByUserId(${userId}) return undefined?!`);
+			throw new BadGatewayException(`Create lobby failed!, see logs or contact an admin`);
+		})
+		.catch((err) => {
+
+			if ((err instanceof NotFoundException) === false) {
+				throw err;
+			}
+
+			this.logger.debug(`User ${userId} does not own a lobby, create one`);
+
+			return this.gameService.createLobby(userId)
+		});
 	}
 
 	async deleteMyLobby(userId: number) {

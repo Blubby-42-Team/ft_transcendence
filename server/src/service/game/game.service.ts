@@ -3,15 +3,10 @@
  */
 
 import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Server } from 'socket.io';
 import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
-import { JoinGameRoomRequestDto } from '@shared/dto/ws.dto';
-import { User } from 'src/model/user/user.class';
-import { ModelUserModule } from '../../model/user/user.module';
 import { ModelUserService } from 'src/model/user/user.service';
-import { log } from 'console';
 
 @Injectable()
 export class GameService {
@@ -39,37 +34,26 @@ export class GameService {
 		// TODO
 	}
 
+	/**
+	 * Try to create a lobby for the user
+	 * @param userId Id of the user
+	 * @returns Room id of the lobby
+	 * @throws BadGatewayException if we can't create a lobby
+	 */
 	async createLobby(userId: number): Promise<string> {
 
-		return await this.findUserInLobbys(userId)
-		.then((lobby) => {
-			if (lobby !== undefined) {
-				this.logger.debug(`User ${userId} allready own the lobby ${lobby.room_id}`);
-				throw new BadRequestException(`User ${userId} allready own the lobby ${lobby.room_id}`);
-			}
-			this.logger.error(`getLobbyByUserId(${userId}) return undefined?!`);
-			throw new BadGatewayException(`Create lobby failed!, see logs or contact an admin`);
-		})
-		.catch((err) => {
+		this.logger.debug(`User ${userId} does not own a lobby, create one`);
 
-			if ((err instanceof NotFoundException) === false) {
-				throw err;
-			}
+		const newRoomId = this.generateUniqueRoomId(6);
 
-			this.logger.debug(`User ${userId} does not own a lobby, create one`);
+		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
+		this.lobbys[newRoomId] = newLobby;
 
-			const newRoomId = this.generateUniqueRoomId(6);
+		this.users[userId] = {
+			room_id: newRoomId,
+		};
 
-			const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
-			this.lobbys[newRoomId] = newLobby;
-
-			this.users[userId] = {
-				room_id: newRoomId,
-			};
-
-			return newRoomId;
-		});
-
+		return newRoomId;
 	}
 
 	/**
@@ -258,7 +242,8 @@ export class GameService {
 		do {
 			// throw error if we can't generate unique room id after X tries
 			if (counter > 99) {
-				throw new BadGatewayException(`Could not generate unique room id after ${counter} tries`);
+				this.logger.error(`Could not generate unique room id after ${counter} tries`);
+				throw new BadGatewayException(`Could not generate unique room id after ${counter} tries, see logs or contact an admin`);
 			}
 			roomId = this.generateId(length);
 			counter += 1;
