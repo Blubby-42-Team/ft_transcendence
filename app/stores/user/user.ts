@@ -19,9 +19,27 @@ export type IStats = {
 	random: IModeStats,
 };
 
+export type IHistory = {
+	matchId: number,
+	date: Date,
+	duration: number,
+	adversary: number,
+	adversaryName: string,
+	score: number,
+	scoreAdv: number,
+
+	// TODO That would be nice to have
+	// players: Array<{
+	// 	id: number,
+	// 	name: string,
+	// 	score: number,
+	// }>,
+};
+
 type gameStoreType = {
 	_users: { [key: number]: IUser | null },
 	_stats: { [key: number]: IStats | null },
+	_history: { [key: number]: Array<IHistory> | null },
 };
 
 const userPlaceHolder = {
@@ -53,19 +71,28 @@ export const useUserStore = defineStore('user', {
 	state: (): gameStoreType => ({
 		_users: {},
 		_stats: {},
+		_history: {},
 	}),
 	getters: {
 	},
 	actions: {
-		getUser(id: number){
-			if (this._users[id] === undefined){
-				this._users[id] = null;
+		getUser(userId: number){
+			if (this._users[userId] === undefined){
+				this._users[userId] = null;
 			}
-			// TODO: fetch user from server
-			this.fetchUser(id);
+
+			api.fetchUser(userId, (response) => {
+				this._users[userId] = {
+					id: userId,
+					name: 'James',
+					fullName: 'James Bond',
+					login42: 'jbond',
+					avatar: '/amogus.png',
+				};
+			})
 
 			return computed(() => {
-				const user = this._users[id];
+				const user = this._users[userId];
 				return (user !== null ? user : userPlaceHolder);
 			});
 		},
@@ -74,54 +101,30 @@ export const useUserStore = defineStore('user', {
 			if (this._stats[userId] === undefined){
 				this._stats[userId] = null;
 			}
-			// TODO: fetch user from server
-			this.fetchStats(userId);
 
+			api.fetchStats(userId, (response) => {
+				this._stats[userId] = {
+					classic: {
+						matchPlayed: Math.floor(Math.random() * 100),
+						ranking: Math.floor(Math.random() * 100),
+						mmr: Math.floor(Math.random() * 1000),
+						winrate: Math.floor(Math.random() * 100),
+						averagePointPerGame: Math.floor(Math.random() * 100),
+					},
+					random: {
+						matchPlayed: Math.floor(Math.random() * 100),
+						ranking: Math.floor(Math.random() * 100),
+						mmr: Math.floor(Math.random() * 1000),
+						winrate: Math.floor(Math.random() * 100),
+						averagePointPerGame: Math.floor(Math.random() * 100),
+					},
+				};
+			});
+			
 			return computed(() => {
 				const stats = this._stats[userId];
 				return (stats !== null ? stats : statsPlaceHolder);
 			});
-		},
-
-
-		fetchUser(id: number){
-			return useFetch('http://localhost:3001', {
-				onResponse: ({ request, response, options }) => {
-					this._users[id] = {
-						id: id,
-						name: 'James',
-						fullName: 'James Bond',
-						login42: 'jbond',
-						avatar: '/amogus.png',
-					};
-					console.log('user fetched');
-				},
-			})
-		},
-
-		fetchStats(userId: number){
-			return useFetch('http://localhost:3001', {
-				onResponse: ({ request, response, options }) => {
-					console.log(response._data)
-					this._stats[userId] = {
-						classic: {
-							matchPlayed: Math.floor(Math.random() * 100),
-							ranking: Math.floor(Math.random() * 100),
-							mmr: Math.floor(Math.random() * 1000),
-							winrate: Math.floor(Math.random() * 100),
-							averagePointPerGame: Math.floor(Math.random() * 100),
-						},
-						random: {
-							matchPlayed: Math.floor(Math.random() * 100),
-							ranking: Math.floor(Math.random() * 100),
-							mmr: Math.floor(Math.random() * 1000),
-							winrate: Math.floor(Math.random() * 100),
-							averagePointPerGame: Math.floor(Math.random() * 100),
-						},
-					};
-					console.log('stats fetched');
-				},
-			})
 		},
 	},
 })
