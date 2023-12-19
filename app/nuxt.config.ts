@@ -28,8 +28,10 @@ export default defineNuxtConfig({
 		'nuxt-icon',
 	],
 	runtimeConfig: {
-		back: {
-			uri: '', // can be overridden by NUXT_API_SECRET environment variable
+		public: {
+			back: {
+				uri: 'http://localhost:3000', // can be overridden by NUXT_API_SECRET environment variable
+			}
 		}
 	},
 })

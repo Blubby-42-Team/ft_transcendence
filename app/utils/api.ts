@@ -3,7 +3,8 @@ export default {
 		userId: number,
 		callback: (response: any) => void,
 	){
-		return useFetch(`${process.env.NUXT_BACK_URI}/game/room`, {
+		const config = useRuntimeConfig()
+		return useFetch(`${config.public.back.uri}`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('user fetched');
@@ -18,7 +19,9 @@ export default {
 		userId: number,
 		callback: (response: any) => void,
 	){
-		return useFetch(`${process.env.NUXT_BACK_URI}/game/room`, {
+		const config = useRuntimeConfig()
+		console.log(config.public.back.uri)
+		return useFetch(`${config.public.back.uri}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('stats fetched');
@@ -33,7 +36,8 @@ export default {
 		userId: number,
 		callback: (response: any) => void,
 	){
-		return useFetch(`${process.env.NUXT_BACK_URI}/game/room`, {
+		const config = useRuntimeConfig()
+		return useFetch(`${config.public.back.uri}`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('history fetched');

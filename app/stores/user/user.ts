@@ -87,8 +87,12 @@ export const useUserStore = defineStore('user', {
 					name: 'James',
 					fullName: 'James Bond',
 					login42: 'jbond',
-					avatar: '/amogus.png',
+					avatar: '/themes/anime/astolfo.jpg',
 				};
+			});
+
+			api.fetchUser(userId, (response) => {
+				console.log(response);
 			});
 
 			return computed(() => {
