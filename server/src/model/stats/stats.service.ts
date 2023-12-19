@@ -10,8 +10,20 @@ export class ModelStatsService {
 	
 	private readonly logger = new Logger(ModelStatsService.name);
 
-	async getStatsByUserId(userId: number): Promise<Stats> {
-		return await this.postgresStatsService.getStatsByUserId(userId);
+	async getStatsByUserId(userId: number) {
+		const stats = await this.postgresStatsService.getStatsByUserId(userId);
+		return {
+			classic_match_played: stats.classic_match_won + stats.classic_match_lost,
+			classic_ranking: await this.postgresStatsService.getClassicRankByUserId(userId),
+			classic_mmr: stats.classic_mmr,
+			classic_winrate: (stats.classic_match_won / (stats.classic_match_won + stats.classic_match_lost)) * 100,
+			classic_average_point: stats.classic_match_points_won / (stats.classic_match_won + stats.classic_match_lost),
+			random_match_played: stats.random_match_won + stats.random_match_lost,
+			random_ranking: await this.postgresStatsService.getRandomRankByUserId(userId),
+			random_mmr: stats.random_mmr,
+			random_winrate: (stats.random_match_won / (stats.random_match_won + stats.random_match_lost)) * 100,
+			random_average_point: stats.random_match_points_won / (stats.random_match_won + stats.random_match_lost),
+		}
 	}
 
 	async addPlayedMatch(userId: number) {

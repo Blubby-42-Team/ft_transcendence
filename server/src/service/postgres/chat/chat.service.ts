@@ -33,7 +33,7 @@ export class PostgresChatService {
 		chat.owner = user;
 		chat.admins = [];
 		chat.admins.push(user);
-		chat.chat_picture = 'DEFAULT';
+		chat.chat_picture = 'DEFAULT'; //TODO
 		chat.blacklist = [];
 		chat.password = "default";
 		
@@ -130,53 +130,65 @@ export class PostgresChatService {
 		userId: number,
 		) {
 		return await this.chatRepository.query(`
-			SELECT
-				c.id AS chat_id,
-				c.name AS chat_name,
-				c.type AS chat_type,
-				c.chat_picture,
-				c."ownerId" AS owner,
-				json_agg(DISTINCT json_build_object(
-					'userId', usr.id,
-					'userName', usr.display_name,
-					'profile_picture', usr.profile_picture
-				)::jsonb) AS users,
-				json_agg(DISTINCT json_build_object(
-					'userId', usr_admin.id,
-					'userName', usr_admin.display_name,
-					'profile_picture', usr_admin.profile_picture
-				)::jsonb) AS admins,
-				json_agg(DISTINCT json_build_object(
-					'userId', usr_blacklist.id,
-					'userName', usr_blacklist.display_name,
-					'profile_picture', usr_blacklist.profile_picture
-				)::jsonb) AS blacklist,
-				json_agg(DISTINCT json_build_object(
-					'messageId', msg.id,
-					'userId', msg."userId",
-					'content', msg.content,
-					'type', msg.type
-				)::jsonb) AS messages
-			FROM 
-				public.chat AS c
-			LEFT JOIN 
-				messages AS msg ON msg."chatId" = c.id
-			LEFT JOIN
-				custom_users_chat AS cuc ON cuc.chat_id = c.id
-			LEFT JOIN
-				custom_admins_chat AS cac ON cac.chat_id = c.id
-			LEFT JOIN
-				custom_blacklist_chat AS cbc ON cbc.chat_id = c.id
-			LEFT JOIN 
-				public.user AS usr ON usr.id = cuc.user_id
-			LEFT JOIN 
-				public.user AS usr_admin ON usr_admin.id = cac.admin_id
-			LEFT JOIN 
-				public.user AS usr_blacklist ON usr_blacklist.id = cbc.blacklist_id
-			WHERE
-				c.id = $1
-			GROUP BY 
-				c.id, c.name, c.type, c.chat_picture, c."ownerId"`,
+		SELECT
+			c.id AS chat_id,
+			c.name AS chat_name,
+			c.type AS chat_type,
+			c.chat_picture,
+			c."ownerId" AS owner,
+			json_agg(DISTINCT json_build_object(
+				'userId', usr.id,
+				'userName', usr.display_name,
+				'profile_picture', usr.profile_picture
+			)::jsonb) AS users,
+			json_agg(DISTINCT json_build_object(
+				'userId', usr_admin.id,
+				'userName', usr_admin.display_name,
+				'profile_picture', usr_admin.profile_picture
+			)::jsonb) AS admins,
+			json_agg(DISTINCT json_build_object(
+				'userId', usr_blacklist.id,
+				'userName', usr_blacklist.display_name,
+				'profile_picture', usr_blacklist.profile_picture
+			)::jsonb) AS blacklist,
+			(
+				SELECT jsonb_agg(
+					json_build_object(
+						'messageId', msg.id,
+						'userId', msg."userId",
+						'content', msg.content,
+						'type', msg.type
+					) ORDER BY msg.id
+				)
+				FROM (
+					SELECT DISTINCT ON (m.id)
+						m.id,
+						m."userId",
+						m.content,
+						m.type
+					FROM messages m
+					WHERE m."chatId" = c.id
+					ORDER BY m.id, m."userId"
+				) AS msg
+			) AS messages
+		FROM 
+			public.chat AS c
+		LEFT JOIN 
+			custom_users_chat AS cuc ON cuc.chat_id = c.id
+		LEFT JOIN 
+			custom_admins_chat AS cac ON cac.chat_id = c.id
+		LEFT JOIN 
+			custom_blacklist_chat AS cbc ON cbc.chat_id = c.id
+		LEFT JOIN 
+			public.user AS usr ON usr.id = cuc.user_id
+		LEFT JOIN 
+			public.user AS usr_admin ON usr_admin.id = cac.admin_id
+		LEFT JOIN 
+			public.user AS usr_blacklist ON usr_blacklist.id = cbc.blacklist_id
+		WHERE
+			c.id = $1
+		GROUP BY 
+			c.id, c.name, c.type, c.chat_picture, c."ownerId";`,
 			[chatId],
 		)
 		.catch((err) => {

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { EChatType } from '@shared/types/chat';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
@@ -300,8 +300,7 @@ export class ModelChatService {
 		
 			return hashedPassword;
 		} catch (err) {
-			// Gérer les erreurs
-			throw new Error("Error while hashing: " + err.message);
+			throw new BadGatewayException("Error while hashing: " + err.message);
 		}
 	}
 }

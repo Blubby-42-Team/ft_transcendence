@@ -63,7 +63,6 @@ export class GameOptDto  {
 	@IsString()
 	game_room_id: string;
 
-	//TODO @mkoyamba: add game options
 	game_opt: {
 		padSize: number,
 		ballSize: number,
