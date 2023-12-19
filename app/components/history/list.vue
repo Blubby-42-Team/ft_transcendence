@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
 const props = defineProps({
-	numberOfElem: {
-		type: Number,
+	matchList: {
+		type: Array as PropType<IHistory[]>,
 		required: true,
 	},
 })
@@ -16,8 +16,8 @@ const props = defineProps({
 			<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1">Date</div>
 			<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1">Adversary</div>
 			<div class="sticky top-0 flex items-center justify-center h-12 col-span-2 border-b border-text border-opacity-30 bg-background1">Score</div>
-			<template v-for="i in props.numberOfElem">
-				<HistoryListElem/>
+			<template v-for="match in props.matchList">
+				<HistoryListElem :match="match"/>
 			</template>
 		</div>
 	</div>
