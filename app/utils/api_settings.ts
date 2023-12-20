@@ -1,7 +1,4 @@
-export enum ETheme {
-	Light = 'light',
-	Dark = 'dark'
-}
+import { ETheme } from '@shared/types/settings'
 
 export default {
 	fetchSettings(

@@ -1,8 +1,4 @@
-export enum EGameType {
-	Classic = 'classic',
-	Random = 'random',
-	Custom = 'custom',
-}
+import { EGameType } from '@shared/types/history'
 
 export default {
 	fetchHistory(
