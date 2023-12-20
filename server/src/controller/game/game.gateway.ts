@@ -36,6 +36,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	readonly server: Server;
 
+	// TODO #36 REWORK
+	// User should be allowed to join a room only if he is in the white list
+	// Only check if there is a client connected to the room
+	// If it's the case, disconnect the old client and connect the new one
 	@SubscribeMessage('joinRoom')
 	async joinRoom(@MessageBody() req: any) {
 		return handleRequest(req, JoinGameRoomRequestDto, async (data): Promise<joinGameResponse> => {

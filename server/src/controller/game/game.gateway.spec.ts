@@ -318,7 +318,7 @@ describe('GameGateway', () => {
 			));
 		});
 
-		it('should\'n allow to join a lobby when the user is allready in a lobby', async () => {
+		it('should\'n allow guest to join tiwce a lobby ', async () => {
 			/**
 			 * Create a lobby
 			 */
@@ -362,7 +362,7 @@ describe('GameGateway', () => {
 			expect(resJoin).toEqual(expectedResJoin2);
 		});
 
-		it('should\'n join a lobby when the user is not in the whitelist', async () => {
+		it('should\'n allow a guest to join a lobby whitout be in the whitelist', async () => {
 			/**
 			 * Create a lobby
 			 */
@@ -401,7 +401,7 @@ describe('GameGateway', () => {
 	
 		//TODO Check game mode, 2, 4 players
 
-		it('owner should be able to add 3 player to his lobby and player join', async () => {
+		it('owner should be able to add and join 3 player to his lobby', async () => {
 			/**
 			 * Make a lobby with 4 players
 			 */
@@ -452,7 +452,7 @@ describe('GameGateway', () => {
 			));
 		});
 
-		it('should\'n not join more than 4 player in the lobby', async () => {
+		it('should not join more than 4 player in the lobby', async () => {
 			/**
 			 * Make a lobby with 4 players
 			 */
