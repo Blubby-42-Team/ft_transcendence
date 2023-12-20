@@ -58,6 +58,101 @@ describe('GameGateway', () => {
 	let jwt_user4: string;
 	let jwt_user5: string;
 
+	/**
+	 * Create a lobby for the user
+	 * @param userJwt user jwt
+	 * @returns createGameRoomResponse aknowledgment
+	 * @warning This function call the gatewayGameService.createMyRoom but dont check the response
+	 * You should check the response in the test
+	 */
+	async function createMyRoom(userJwt: any) {
+		/**
+		 * Create a lobby
+		 */
+		const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
+
+		const reqCreate = new CreateGameRoomRequestDto();
+		reqCreate.auth_token = userJwt;
+
+		const resCreate = await gameGateway.createMyRoom(reqCreate);
+
+		console.debug(`res: ${JSON.stringify(resCreate)}`);
+
+		expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
+
+		return resCreate;
+	}
+
+	async function addPlayerToWhiteListAndCheck (userToAdd: number, roomOwnerJwt: any) {
+		/**
+		 * Add user to the whitelist
+		 */
+
+		const addPlayerToWhiteListSpy = jest.spyOn(gameGateway, 'addPlayerToWhiteList');
+
+		const reqAdd = new addPlayerToWhiteListRequestDto();
+		reqAdd.auth_token = roomOwnerJwt;
+		reqAdd.user_to_white_list = userToAdd;
+
+		const resAdd = await gameGateway.addPlayerToWhiteList(reqAdd);
+
+		console.debug(`res: ${JSON.stringify(resAdd)}`);
+
+		expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
+
+		return resAdd;
+
+		// const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
+		// expect(resAdd).toEqual(expectedResAdd);
+	}
+
+	/**
+	 * Try to join user to the lobby
+	 * @param userToJoinJwt user jwt
+	 * @param game_room_id lobby id to join
+	 * @returns joinGameResponse aknowledgment
+	 * @warning This function call the gatewayGameService.joinRoom but dont check the response
+	 * You should check the response in the test
+	 */
+	async function joinPlayerToLobby (userToJoinJwt: any, game_room_id: any,) {
+		/**
+		 * Join the lobby
+		 */
+
+		const joinLobbySpy = jest.spyOn(gameGateway, 'joinRoom');
+
+		const reqJoin = new JoinGameRoomRequestDto();
+		reqJoin.auth_token = userToJoinJwt;
+		reqJoin.game_room_id = game_room_id;
+
+		const resJoin = await gameGateway.joinRoom(reqJoin);
+
+		console.debug(`res: ${JSON.stringify(resJoin)}`);
+
+		expect(joinLobbySpy).toHaveBeenCalledWith(reqJoin);
+
+		return resJoin;
+
+		// const expectedResJoin = new AcknowledgmentWsDto<joinGameResponse>('ok', {
+		// 	game_room_id: game_room_id,
+		// });
+		// expect(resJoin).toEqual(expectedResJoin);
+	}
+
+	async function addPlayerToWhiteListJoinItAndCheck(
+		game_room_id: any,
+		userIdToAdd: number,
+		userToAddJwt: any,
+		roomOwnerJwt: any,
+		expectedWhiteListRes: any,
+		expectedJoinRes: any
+	) {
+		const resAdd = await addPlayerToWhiteListAndCheck(userIdToAdd, roomOwnerJwt);
+		expect(resAdd).toEqual(expectedWhiteListRes);
+
+		const resJoin = await joinPlayerToLobby(userToAddJwt, game_room_id);
+		expect(resJoin).toEqual(expectedJoinRes);
+	}
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -96,6 +191,7 @@ describe('GameGateway', () => {
 		jwt_user5 = jwt.sign(user5, secret)
 	});
 
+
 	it('should be defined', () => {
 		expect(gameGateway).toBeDefined();
 	});
@@ -119,143 +215,117 @@ describe('GameGateway', () => {
 	});
 
 	describe('createMyRoom', () => {
-		it('should call the gatewayGameService to create a lobby', async () => {
+		it('Should create a lobby for ownerUser', async () => {
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const req = new CreateGameRoomRequestDto();
-			req.auth_token = jwt_user1;
+			// Should create a lobby
+			const res = await createMyRoom(jwt_user1);
 
-			const res = await gameGateway.createMyRoom(req);
-
-			console.debug(`res: ${JSON.stringify(res)}`);
-
-			expect(createLobbySpy).toHaveBeenCalledTimes(1);
-			expect(createLobbySpy).toHaveBeenCalledWith(req);
-
-			const game_room_id = res?.message?.game_room_id;
-
+			// Should return a success acknowledgment
 			const expectedRes = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
-				game_room_id: game_room_id,
+				game_room_id: res?.message?.game_room_id,
 			});
 			expect(res).toEqual(expectedRes);
+			expect(createLobbySpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('should\'n create duplicate lobby when allredy have one', async () => {
+		it('Should not create duplicate lobby when ownerUser allready have one', async () => {
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const req = new CreateGameRoomRequestDto();
-			req.auth_token = jwt_user1;
+			// 1st call to create a lobby
+			const res1 = await createMyRoom(jwt_user1);
 
-			// 1st call 
-			const res1 = await gameGateway.createMyRoom(req);
-
-			console.debug(`res: ${JSON.stringify(res1)}`);
-
-			const game_room_id = res1?.message?.game_room_id;
-
-			// 1st call should return ok
+			// Should return a success acknowledgment
 			const expectedRes1 = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
-				game_room_id: game_room_id,
+				game_room_id: res1?.message?.game_room_id,
 			});
 			expect(res1).toEqual(expectedRes1);
 
-			// 2nd call
-			const res2 = await gameGateway.createMyRoom(req);
+			// 2nd call to create a lobby
+			const res2 = await createMyRoom(jwt_user1);
 
-			console.debug(`res: ${JSON.stringify(res2)}`);
-
-			expect(createLobbySpy).toHaveBeenCalledTimes(2);
-			expect(createLobbySpy).toHaveBeenCalledWith(req);
-
-			// 2nd call should return an error
-			const expectedRes2 = new AcknowledgmentWsDto<string>('error', `User ${user1.userId} is allready the lobby ${game_room_id}`);
+			// Should return an error
+			const expectedRes2 = new AcknowledgmentWsDto<string>('error', `User ${user1.userId} is allready in the lobby ${res1?.message?.game_room_id}`);
 			expect(res2).toEqual(expectedRes2);
+			expect(createLobbySpy).toHaveBeenCalledTimes(2);
 		});
 
 	});
 
-	describe('joinRoom', () => {
-		it('should call the gatewayGameService to join a lobby', async () => {
+	describe('joinRoom' , () => {
+		it('Should\'n let ownerUser to join his own lobby', async () => {
 			/**
 			 * Create a lobby
 			 */
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const reqCreate = new CreateGameRoomRequestDto();
-			reqCreate.auth_token = jwt_user1;
-
-			const resCreate = await gameGateway.createMyRoom(reqCreate);
-
-			console.debug(`res: ${JSON.stringify(resCreate)}`);
-
-			expect(createLobbySpy).toHaveBeenCalledTimes(1);
-			expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
+			// Should create a lobby
+			const resCreate = await createMyRoom(jwt_user1);
 
 			const game_room_id = resCreate?.message?.game_room_id;
 
+			// Should return a success acknowledgment
 			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
 				game_room_id: game_room_id,
 			});
 			expect(resCreate).toEqual(expectedResCreate);
-
-			/**
-			 * Add user2 to the whitelist
-			 */
-
-			const addPlayerToWhiteListSpy = jest.spyOn(gameGateway, 'addPlayerToWhiteList');
-
-			const reqAdd = new addPlayerToWhiteListRequestDto();
-			reqAdd.auth_token = jwt_user1;
-			reqAdd.user_to_white_list = user2.userId;
-
-			const resAdd = await gameGateway.addPlayerToWhiteList(reqAdd);
-
-			console.debug(`res: ${JSON.stringify(resAdd)}`);
-
-			expect(addPlayerToWhiteListSpy).toHaveBeenCalledTimes(1);
-			expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
-
-			const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
-			expect(resAdd).toEqual(expectedResAdd);
+			expect(createLobbySpy).toHaveBeenCalledTimes(1);
 
 			/**
 			 * Join the lobby
 			 */
 
-			const joinLobbySpy = jest.spyOn(gameGateway, 'joinRoom');
 
-			const reqJoin = new JoinGameRoomRequestDto();
-			reqJoin.auth_token = jwt_user2;
-			reqJoin.game_room_id = game_room_id;
-
-			const resJoin = await gameGateway.joinRoom(reqJoin);
+			const resJoin = await joinPlayerToLobby(jwt_user1, game_room_id);
 
 			console.debug(`res: ${JSON.stringify(resJoin)}`);
 
-			expect(joinLobbySpy).toHaveBeenCalledTimes(1);
-			expect(joinLobbySpy).toHaveBeenCalledWith(reqJoin);
-
-			const expectedResJoin = new AcknowledgmentWsDto<joinGameResponse>('ok', {
-				game_room_id: game_room_id,
-			});
+			const expectedResJoin = new AcknowledgmentWsDto<string>('error', `User ${user1.userId} is the owner of the lobby ${game_room_id}`);
 			expect(resJoin).toEqual(expectedResJoin);
 		});
 
-		it('should\'n join a lobby when the user is allready in a lobby', async () => {
+		it('Should add to white list and join guestUser in the ownerUser lobby', async () => {
 			/**
 			 * Create a lobby
 			 */
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const reqCreate = new CreateGameRoomRequestDto();
-			reqCreate.auth_token = jwt_user1;
+			// Should create a lobby
+			const resCreate = await createMyRoom(jwt_user1);
 
-			const resCreate = await gameGateway.createMyRoom(reqCreate);
-
-			console.debug(`res: ${JSON.stringify(resCreate)}`);
-
+			// Should return a success acknowledgment
+			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
+				game_room_id: resCreate?.message?.game_room_id,
+			});
+			expect(resCreate).toEqual(expectedResCreate);
 			expect(createLobbySpy).toHaveBeenCalledTimes(1);
-			expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
+
+			/**
+			 * Add user2 to the whitelist and join the lobby
+			 */
+
+			addPlayerToWhiteListJoinItAndCheck(
+				resCreate?.message?.game_room_id,
+				user2.userId,
+				jwt_user2,
+				jwt_user1,
+				// Should successfull add user2 to the whitelist
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				// Should successfull join user2 to the lobby
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: resCreate?.message?.game_room_id,
+				}
+			));
+		});
+
+		it('should\'n allow to join a lobby when the user is allready in a lobby', async () => {
+			/**
+			 * Create a lobby
+			 */
+			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
+
+			// Should create a lobby
+			const resCreate = await createMyRoom(jwt_user1);
 
 			const game_room_id = resCreate?.message?.game_room_id;
 
@@ -263,67 +333,33 @@ describe('GameGateway', () => {
 				game_room_id: game_room_id,
 			});
 			expect(resCreate).toEqual(expectedResCreate);
+			expect(createLobbySpy).toHaveBeenCalledTimes(1);
 
 			/**
-			 * Add user2 to the whitelist
+			 * Add user2 to the whitelist and join the lobby
 			 */
 
-			const addPlayerToWhiteListSpy = jest.spyOn(gameGateway, 'addPlayerToWhiteList');
-
-			const reqAdd = new addPlayerToWhiteListRequestDto();
-			reqAdd.auth_token = jwt_user1;
-			reqAdd.user_to_white_list = user2.userId;
-
-			const resAdd = await gameGateway.addPlayerToWhiteList(reqAdd);
-
-			console.debug(`res: ${JSON.stringify(resAdd)}`);
-
-			expect(addPlayerToWhiteListSpy).toHaveBeenCalledTimes(1);
-			expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
-
-			const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
-			expect(resAdd).toEqual(expectedResAdd);
-
-			/**
-			 * Join the lobby
-			 */
-
-			const joinLobbySpy = jest.spyOn(gameGateway, 'joinRoom');
-
-			const reqJoin = new JoinGameRoomRequestDto();
-			reqJoin.auth_token = jwt_user2;
-			reqJoin.game_room_id = game_room_id;
-
-			const resJoin = await gameGateway.joinRoom(reqJoin);
-
-			console.debug(`res: ${JSON.stringify(resJoin)}`);
-
-			expect(joinLobbySpy).toHaveBeenCalledWith(reqJoin);
-
-			const expectedResJoin = new AcknowledgmentWsDto<joinGameResponse>('ok', {
-				game_room_id: game_room_id,
-			});
-			expect(resJoin).toEqual(expectedResJoin);
+			await addPlayerToWhiteListJoinItAndCheck(
+				game_room_id,
+				user2.userId,
+				jwt_user2,
+				jwt_user1,
+				// Should successfull add user2 to the whitelist
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				// Should successfull join user2 to the lobby
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
 
 			/**
 			 * Join the lobby again
+			 * Should return an error
 			 */
+			const resJoin = await joinPlayerToLobby(jwt_user2, game_room_id);
 
-			const reqJoin2 = new JoinGameRoomRequestDto();
-			reqJoin2.auth_token = jwt_user2;
-			reqJoin2.game_room_id = game_room_id;
-
-			const resJoin2 = await gameGateway.joinRoom(reqJoin2);
-
-			console.debug(`res: ${JSON.stringify(resJoin2)}`);
-
-			expect(joinLobbySpy).toHaveBeenCalledWith(reqJoin);
-			expect(joinLobbySpy).toHaveBeenCalledTimes(2);
-
-			const expectedResJoin2 = new AcknowledgmentWsDto<string>('error', `User ${user2.userId} is already in a lobby ${game_room_id}`);
-			expect(resJoin2).toEqual(expectedResJoin2);
-
-			
+			const expectedResJoin2 = new AcknowledgmentWsDto<string>('error', `User ${user2.userId} is already in the lobby ${game_room_id}`);
+			expect(resJoin).toEqual(expectedResJoin2);
 		});
 
 		it('should\'n join a lobby when the user is not in the whitelist', async () => {
@@ -332,15 +368,8 @@ describe('GameGateway', () => {
 			 */
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const reqCreate = new CreateGameRoomRequestDto();
-			reqCreate.auth_token = jwt_user1;
-
-			const resCreate = await gameGateway.createMyRoom(reqCreate);
-
-			console.debug(`res: ${JSON.stringify(resCreate)}`);
-
-			expect(createLobbySpy).toHaveBeenCalledTimes(1);
-			expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
+			// Should create a lobby
+			const resCreate = await createMyRoom(jwt_user1);
 
 			const game_room_id = resCreate?.message?.game_room_id;
 
@@ -348,6 +377,7 @@ describe('GameGateway', () => {
 				game_room_id: game_room_id,
 			});
 			expect(resCreate).toEqual(expectedResCreate);
+			expect(createLobbySpy).toHaveBeenCalledTimes(1);
 
 			/**
 			 * Join the lobby
@@ -368,63 +398,7 @@ describe('GameGateway', () => {
 			const expectedResJoin = new AcknowledgmentWsDto<string>('error', `User ${user2.userId} is not in the white list of lobby ${game_room_id}`);
 			expect(resJoin).toEqual(expectedResJoin);
 		});
-
-		async function addPlayerToWhiteList (userToAdd: any, userToAddJwt: any, roomOwer: any, roomOwerJwt: any, game_room_id: any,) {
-			/**
-			 * Add user to the whitelist
-			 */
-
-			const addPlayerToWhiteListSpy = jest.spyOn(gameGateway, 'addPlayerToWhiteList');
-
-			const reqAdd = new addPlayerToWhiteListRequestDto();
-			reqAdd.auth_token = roomOwerJwt;
-			reqAdd.user_to_white_list = userToAdd.userId;
-
-			const resAdd = await gameGateway.addPlayerToWhiteList(reqAdd);
-
-			console.debug(`res: ${JSON.stringify(resAdd)}`);
-
-			expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
-
-			return resAdd;
-
-			// const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
-			// expect(resAdd).toEqual(expectedResAdd);
-		}
-
-		async function joinPlayerToLobby (userToJoin: any, userToJoinJwt: any, game_room_id: any,) {
-			/**
-			 * Join the lobby
-			 */
-
-			const joinLobbySpy = jest.spyOn(gameGateway, 'joinRoom');
-
-			const reqJoin = new JoinGameRoomRequestDto();
-			reqJoin.auth_token = userToJoinJwt;
-			reqJoin.game_room_id = game_room_id;
-
-			const resJoin = await gameGateway.joinRoom(reqJoin);
-
-			console.debug(`res: ${JSON.stringify(resJoin)}`);
-
-			expect(joinLobbySpy).toHaveBeenCalledWith(reqJoin);
-
-			return resJoin;
-
-			// const expectedResJoin = new AcknowledgmentWsDto<joinGameResponse>('ok', {
-			// 	game_room_id: game_room_id,
-			// });
-			// expect(resJoin).toEqual(expectedResJoin);
-		}
-
-		async function addPlayerToWhiteListAndJoinIt(userToAdd: any, userToAddJwt: any, roomOwer: any, roomOwerJwt: any, game_room_id: any, expectedWhiteListRes: any, expectedJoinRes: any) {
-			const resAdd = await addPlayerToWhiteList(userToAdd, userToAddJwt, roomOwer, roomOwerJwt, game_room_id);
-			expect(resAdd).toEqual(expectedWhiteListRes);
-
-			const resJoin = await joinPlayerToLobby(userToAdd, userToAddJwt, game_room_id);
-			expect(resJoin).toEqual(expectedJoinRes);
-		}
-		
+	
 		//TODO Check game mode, 2, 4 players
 
 		it('owner should be able to add 3 player to his lobby and player join', async () => {
@@ -434,48 +408,43 @@ describe('GameGateway', () => {
 
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const reqCreate = new CreateGameRoomRequestDto();
-			reqCreate.auth_token = jwt_user1;
+			// Should create a lobby
+			const resCreate = await createMyRoom(jwt_user1);
 
-			const resCreate = await gameGateway.createMyRoom(reqCreate);
-
-			console.debug(`res: ${JSON.stringify(resCreate)}`);
-
+			// Should return a success acknowledgment
+			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
+				game_room_id: resCreate?.message?.game_room_id,
+			});
+			expect(resCreate).toEqual(expectedResCreate);
 			expect(createLobbySpy).toHaveBeenCalledTimes(1);
-			expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
 
 			const game_room_id = resCreate?.message?.game_room_id;
 
-			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
-				game_room_id: game_room_id,
-			});
-			expect(resCreate).toEqual(expectedResCreate);
-
-			await addPlayerToWhiteListAndJoinIt(user2,
+			await addPlayerToWhiteListJoinItAndCheck(
+				game_room_id,
+				user2.userId,
 				jwt_user2,
-				user1,
 				jwt_user1,
-				game_room_id,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<joinGameResponse>('ok', {
 					game_room_id: game_room_id,
 				}
 			));
-			await addPlayerToWhiteListAndJoinIt(user3,
+			await addPlayerToWhiteListJoinItAndCheck(
+				game_room_id,
+				user3.userId,
 				jwt_user3,
-				user1,
 				jwt_user1,
-				game_room_id,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<joinGameResponse>('ok', {
 					game_room_id: game_room_id,
 				}
 			));
-			await addPlayerToWhiteListAndJoinIt(user4,
-				jwt_user4,
-				user1,
-				jwt_user1,
+			await addPlayerToWhiteListJoinItAndCheck(
 				game_room_id,
+				user4.userId,
+				jwt_user4,
+				jwt_user1,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<joinGameResponse>('ok', {
 					game_room_id: game_room_id,
@@ -490,48 +459,43 @@ describe('GameGateway', () => {
 
 			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
 
-			const reqCreate = new CreateGameRoomRequestDto();
-			reqCreate.auth_token = jwt_user1;
+			// Should create a lobby
+			const resCreate = await createMyRoom(jwt_user1);
 
-			const resCreate = await gameGateway.createMyRoom(reqCreate);
-
-			console.debug(`res: ${JSON.stringify(resCreate)}`);
-
+			// Should return a success acknowledgment
+			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
+				game_room_id: resCreate?.message?.game_room_id,
+			});
+			expect(resCreate).toEqual(expectedResCreate);
 			expect(createLobbySpy).toHaveBeenCalledTimes(1);
-			expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
 
 			const game_room_id = resCreate?.message?.game_room_id;
 
-			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
-				game_room_id: game_room_id,
-			});
-			expect(resCreate).toEqual(expectedResCreate);
-
-			await addPlayerToWhiteListAndJoinIt(user2,
+			await addPlayerToWhiteListJoinItAndCheck(
+				game_room_id,
+				user2.userId,
 				jwt_user2,
-				user1,
 				jwt_user1,
-				game_room_id,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<joinGameResponse>('ok', {
 					game_room_id: game_room_id,
 				}
 			));
-			await addPlayerToWhiteListAndJoinIt(user3,
+			await addPlayerToWhiteListJoinItAndCheck(
+				game_room_id,
+				user3.userId,
 				jwt_user3,
-				user1,
 				jwt_user1,
-				game_room_id,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<joinGameResponse>('ok', {
 					game_room_id: game_room_id,
 				}
 			));
-			await addPlayerToWhiteListAndJoinIt(user4,
-				jwt_user4,
-				user1,
-				jwt_user1,
+			await addPlayerToWhiteListJoinItAndCheck(
 				game_room_id,
+				user4.userId,
+				jwt_user4,
+				jwt_user1,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<joinGameResponse>('ok', {
 					game_room_id: game_room_id,
@@ -540,12 +504,13 @@ describe('GameGateway', () => {
 
 			/**
 			 * Add user5 to the whitelist
+			 * Should return an error
 			 */
-			await addPlayerToWhiteListAndJoinIt(user5,
-				jwt_user5,
-				user1,
-				jwt_user1,
+			await addPlayerToWhiteListJoinItAndCheck(
 				game_room_id,
+				user5.userId,
+				jwt_user5,
+				jwt_user1,
 				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
 				new AcknowledgmentWsDto<string>('error', `Lobby ${game_room_id} is full`)
 			);

@@ -42,8 +42,6 @@ export class GameService {
 	 */
 	async createLobby(userId: number): Promise<string> {
 
-		this.logger.debug(`User ${userId} does not own a lobby, create one`);
-
 		const newRoomId = this.generateUniqueRoomId(6);
 
 		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
