@@ -4,7 +4,6 @@
 
 import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { GameService } from '../../service/game/game.service';
-import e from 'express';
 
 
 @Injectable()

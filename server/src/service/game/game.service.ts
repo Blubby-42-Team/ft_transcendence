@@ -26,6 +26,7 @@ export class GameService {
 	private users: {
 		[key: number]: {
 			room_id: string,
+			connectedClients: Array<string>,
 		}
 	} = {};
 
@@ -49,6 +50,7 @@ export class GameService {
 
 		this.users[userId] = {
 			room_id: newRoomId,
+			connectedClients: [],
 		};
 
 		return newRoomId;
@@ -139,6 +141,7 @@ export class GameService {
 		lobby.addPlayerToLobby(userId);
 		this.users[userId] = {
 			room_id: roomId,
+			connectedClients: [],
 		};
 		this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
 		return lobby.room_id;
