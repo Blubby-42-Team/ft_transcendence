@@ -1,6 +1,6 @@
 import { MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import { JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse } from '@shared/dto/ws.dto'
+import { JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse } from '@shared/dto/ws.dto'
 import { Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
@@ -38,13 +38,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('joinRoom')
 	async joinRoom(@MessageBody() req: any) {
-		return handleRequest(req, JoinGameRoomRequestDto, async (data): Promise<deleteGameRoomResponse> => {
+		return handleRequest(req, JoinGameRoomRequestDto, async (data): Promise<joinGameResponse> => {
 
 			// TODO check if we can move this to the handleRequest
 			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
 
-			await this.gatewayGameService.joinALobby(data.game_room_id, user.userId);
-			return 'ok';
+			const roomId = await this.gatewayGameService.joinALobby(data.game_room_id, user.userId);
+			return {
+				game_room_id: roomId
+			};
 		});
 	}
 

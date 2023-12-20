@@ -121,6 +121,13 @@ export class GameService {
 		lobby.removePlayerFromWhiteList(userId)
 	}
 
+	/**
+	 * Add a player to a lobby
+	 * @param roomId room id of the lobby
+	 * @param userId user id of the player
+	 * @returns room id of the lobby
+	 * @throws BadRequestException if the user is already in a lobby
+	 */
 	async addPlayerToLobby(roomId: string, userId: number) {
 		this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
 
@@ -136,6 +143,7 @@ export class GameService {
 			room_id: roomId,
 		};
 		this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
+		return lobby.room_id;
 
 	}
 
