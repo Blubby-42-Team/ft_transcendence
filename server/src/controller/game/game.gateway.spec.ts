@@ -369,7 +369,7 @@ describe('GameGateway', () => {
 			expect(resJoin).toEqual(expectedResJoin);
 		});
 
-		async function addPlayerToWhiteListAndJoinIt( userToAdd: any, userToAddJwt: any, roomOwer: any, roomOwerJwt: any, game_room_id: any,) {
+		async function addPlayerToWhiteList (userToAdd: any, userToAddJwt: any, roomOwer: any, roomOwerJwt: any, game_room_id: any,) {
 			/**
 			 * Add user to the whitelist
 			 */
@@ -386,9 +386,13 @@ describe('GameGateway', () => {
 
 			expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
 
-			const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
-			expect(resAdd).toEqual(expectedResAdd);
+			return resAdd;
 
+			// const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
+			// expect(resAdd).toEqual(expectedResAdd);
+		}
+
+		async function joinPlayerToLobby (userToJoin: any, userToJoinJwt: any, game_room_id: any,) {
 			/**
 			 * Join the lobby
 			 */
@@ -396,7 +400,7 @@ describe('GameGateway', () => {
 			const joinLobbySpy = jest.spyOn(gameGateway, 'joinRoom');
 
 			const reqJoin = new JoinGameRoomRequestDto();
-			reqJoin.auth_token = userToAddJwt;
+			reqJoin.auth_token = userToJoinJwt;
 			reqJoin.game_room_id = game_room_id;
 
 			const resJoin = await gameGateway.joinRoom(reqJoin);
@@ -405,12 +409,24 @@ describe('GameGateway', () => {
 
 			expect(joinLobbySpy).toHaveBeenCalledWith(reqJoin);
 
-			const expectedResJoin = new AcknowledgmentWsDto<joinGameResponse>('ok', {
-				game_room_id: game_room_id,
-			});
-			expect(resJoin).toEqual(expectedResJoin);
+			return resJoin;
+
+			// const expectedResJoin = new AcknowledgmentWsDto<joinGameResponse>('ok', {
+			// 	game_room_id: game_room_id,
+			// });
+			// expect(resJoin).toEqual(expectedResJoin);
+		}
+
+		async function addPlayerToWhiteListAndJoinIt(userToAdd: any, userToAddJwt: any, roomOwer: any, roomOwerJwt: any, game_room_id: any, expectedWhiteListRes: any, expectedJoinRes: any) {
+			const resAdd = await addPlayerToWhiteList(userToAdd, userToAddJwt, roomOwer, roomOwerJwt, game_room_id);
+			expect(resAdd).toEqual(expectedWhiteListRes);
+
+			const resJoin = await joinPlayerToLobby(userToAdd, userToAddJwt, game_room_id);
+			expect(resJoin).toEqual(expectedJoinRes);
 		}
 		
+		//TODO Check game mode, 2, 4 players
+
 		it('owner should be able to add 3 player to his lobby and player join', async () => {
 			/**
 			 * Make a lobby with 4 players
@@ -435,9 +451,104 @@ describe('GameGateway', () => {
 			});
 			expect(resCreate).toEqual(expectedResCreate);
 
-			await addPlayerToWhiteListAndJoinIt(user2, jwt_user2, user1, jwt_user1, game_room_id);
-			await addPlayerToWhiteListAndJoinIt(user3, jwt_user3, user1, jwt_user1, game_room_id);
-			await addPlayerToWhiteListAndJoinIt(user4, jwt_user4, user1, jwt_user1, game_room_id);
+			await addPlayerToWhiteListAndJoinIt(user2,
+				jwt_user2,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
+			await addPlayerToWhiteListAndJoinIt(user3,
+				jwt_user3,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
+			await addPlayerToWhiteListAndJoinIt(user4,
+				jwt_user4,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
+		});
+
+		it('should\'n not join more than 4 player in the lobby', async () => {
+			/**
+			 * Make a lobby with 4 players
+			 */
+
+			const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
+
+			const reqCreate = new CreateGameRoomRequestDto();
+			reqCreate.auth_token = jwt_user1;
+
+			const resCreate = await gameGateway.createMyRoom(reqCreate);
+
+			console.debug(`res: ${JSON.stringify(resCreate)}`);
+
+			expect(createLobbySpy).toHaveBeenCalledTimes(1);
+			expect(createLobbySpy).toHaveBeenCalledWith(reqCreate);
+
+			const game_room_id = resCreate?.message?.game_room_id;
+
+			const expectedResCreate = new AcknowledgmentWsDto<createGameRoomResponse>('ok', {
+				game_room_id: game_room_id,
+			});
+			expect(resCreate).toEqual(expectedResCreate);
+
+			await addPlayerToWhiteListAndJoinIt(user2,
+				jwt_user2,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
+			await addPlayerToWhiteListAndJoinIt(user3,
+				jwt_user3,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
+			await addPlayerToWhiteListAndJoinIt(user4,
+				jwt_user4,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<joinGameResponse>('ok', {
+					game_room_id: game_room_id,
+				}
+			));
+
+			/**
+			 * Add user5 to the whitelist
+			 */
+			await addPlayerToWhiteListAndJoinIt(user5,
+				jwt_user5,
+				user1,
+				jwt_user1,
+				game_room_id,
+				new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok'),
+				new AcknowledgmentWsDto<string>('error', `Lobby ${game_room_id} is full`)
+			);
 		});
 	});
 
