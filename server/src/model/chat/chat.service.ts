@@ -303,4 +303,26 @@ export class ModelChatService {
 			throw new BadGatewayException("Error while hashing: " + err.message);
 		}
 	}
+
+	async muteUser (
+		userId: number,
+		toMute: number,
+		chatId: number,
+		time: number,
+	) {
+		await this.postgresUserService.getUserById(userId);
+		await this.postgresUserService.getUserById(toMute);
+		await this.postgresChatService.getChatById(chatId, userId);
+		await this.postgresChatService.isInChat(userId, chatId).catch((err) => {throw err});
+		if (await this.postgresChatService.isAdmin(userId, chatId).catch((err) => {throw err})
+			&& !await this.postgresChatService.isOwner(toMute, chatId).catch((err) => {throw err})
+			&& !await this.postgresChatService.isAdmin(toMute, chatId).catch((err) => {throw err})) {
+			return await this.postgresChatService.muteUser(toMute, chatId, time).catch((err) => {throw err});
+		}
+		else if (await this.postgresChatService.isOwner(userId, chatId).catch((err) => {throw err})) {
+			return await this.postgresChatService.muteUser(toMute, chatId, time).catch((err) => {throw err});
+		}
+		else
+			throw new UnauthorizedException("Not authorized to mute this user.")
+	}
 }

@@ -11,7 +11,7 @@ import { ModelMessagesModule } from './messages/messages.module';
 import { ModelChatModule } from './chat/chat.module';
 
 @Module({
-	imports: [ModelUserModule, ModelSettingsModule, ModelStatsModule, ModelHistoryModule, ModelMessagesModule, ModelChatModule],
+	imports: [ModelUserModule, ModelSettingsModule, ModelStatsModule, ModelHistoryModule, ModelMessagesModule, ModelChatModule, ModelMuteModule],
 	controllers: [],
 	providers: [],
 })

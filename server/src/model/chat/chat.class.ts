@@ -3,6 +3,7 @@ import { IsNotEmpty, IsNumber, IsString} from 'class-validator';
 import { EChatType } from "@shared/types/chat";
 import { User } from "../user/user.class";
 import { Messages } from "../messages/messages.class";
+import { Mute } from "../mute/mute.class";
 
 @Entity()
 export class Chat {
@@ -35,6 +36,9 @@ export class Chat {
 		inverseJoinColumn: { name: 'blacklist_id', referencedColumnName: 'id' },
 	})
 	blacklist: User[];
+
+	@OneToMany(type => Mute, mute => mute.chatId)
+    mutes: Mute[];
 
 	@ManyToOne(type => User, (user) => user.owned_chat)
 	owner: User;

@@ -153,4 +153,13 @@ export class ChatService {
 	) {
 		return await this.modelChatService.changeType(userId, chatId, password);
 	}
+
+	async muteUser(
+		userId: number,
+		toMute: number,
+		chatId: number,
+		time: number,
+	) {
+		return await this.modelChatService.muteUser(userId, toMute, chatId, time);
+	}
 }
