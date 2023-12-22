@@ -12,12 +12,12 @@ export class GatewayGameService {
 		private readonly modelGameService: ModelGameService,
 	) {}
 
-	async joinALobby(roomId: string, userId: number) {
-		return this.modelGameService.joinALobby(roomId, userId);
+	async joinAGame(roomId: string, userId: number) {
+		return this.modelGameService.joinAGame(roomId, userId);
 	}
 
-	async createLobby(userId: number) {
-		return this.modelGameService.createLobby(userId);
+	async createAGame(userId: number) {
+		return this.modelGameService.createAGame(userId);
 	}
 
 	/**
@@ -26,8 +26,8 @@ export class GatewayGameService {
 	 * @returns
 	 * @throws NotFoundException if the user does not own a lobby
 	 */
-	async deleteMyLobby(userId: number) {
-		return this.modelGameService.deleteMyLobby(userId);
+	async stopMyGame(userId: number) {
+		return this.modelGameService.stopMyGame(userId);
 	}
 
 	/**
@@ -36,7 +36,7 @@ export class GatewayGameService {
 	 * @param userId Id of the user to add in the white list
 	 * @returns
 	 */
-	async addPlayerToMyWhiteList(ownerId: number, userId: number) {
-		return this.modelGameService.addPlayerToMyWhiteList(ownerId, userId);
+	async addPlayerToMyGame(ownerId: number, userId: number) {
+		return this.modelGameService.addPlayerToMyGame(ownerId, userId);
 	}
 }

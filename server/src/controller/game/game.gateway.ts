@@ -40,28 +40,28 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// User should be allowed to join a room only if he is in the white list
 	// Only check if there is a client connected to the room
 	// If it's the case, disconnect the old client and connect the new one
-	@SubscribeMessage('joinRoom')
-	async joinRoom(@MessageBody() req: any) {
+	@SubscribeMessage('joinGame')
+	async joinGame(@MessageBody() req: any) {
 		return handleRequest(req, JoinGameRoomRequestDto, async (data): Promise<joinGameResponse> => {
 
 			// TODO check if we can move this to the handleRequest
 			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
 
-			const roomId = await this.gatewayGameService.joinALobby(data.game_room_id, user.userId);
+			const roomId = await this.gatewayGameService.joinAGame(data.game_room_id, user.userId);
 			return {
 				game_room_id: roomId
 			};
 		});
 	}
 
-	@SubscribeMessage('createMyRoom')
-	async createMyRoom(@MessageBody() req: any) {
+	@SubscribeMessage('createMyGame')
+	async createMyGame(@MessageBody() req: any) {
 		return handleRequest(req, createRoomRequestDto, async (data): Promise<createGameRoomResponse> => {
 
 			// TODO check if we can move this to the handleRequest
 			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
 
-			const roomId = await this.gatewayGameService.createLobby(user.userId);
+			const roomId = await this.gatewayGameService.createAGame(user.userId);
 			return {
 				game_room_id: roomId
 			};
@@ -69,20 +69,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		});
 	}
 
-	@SubscribeMessage('deleteMyRoom')
-	async deleteMyRoom(@MessageBody() req: any) {
+	@SubscribeMessage('deleteMyGame')
+	async stopMyGame(@MessageBody() req: any) {
 		return handleRequest(req, deleteGameRoomRequestDto, async (data): Promise<deleteGameRoomResponse> => {
 
 			// TODO check if we can move this to the handleRequest
 			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
 
-			await this.gatewayGameService.deleteMyLobby(user.userId);
+			await this.gatewayGameService.stopMyGame(user.userId);
 			return 'ok';
 		});
 	}
 
-	@SubscribeMessage('addPlayerToMyWhiteList')
-	async addPlayerToWhiteList(@MessageBody() req: any) {
+	@SubscribeMessage('addPlayerToMyGame')
+	async addPlayerToMyGame(@MessageBody() req: any) {
 		return handleRequest(req, addPlayerToWhiteListRequestDto, async (data): Promise<addOrRemovePlayerToWhiteListResponse> => {
 
 			// TODO check if we can move this to the handleRequest

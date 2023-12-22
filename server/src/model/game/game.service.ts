@@ -15,7 +15,7 @@ export class ModelGameService {
 		private readonly gameService: GameService
 	) {}
 
-	async joinALobby(roomId: string, userId: number) {
+	async joinAGame(roomId: string, userId: number) {
 		return await this.gameService.findUserInLobbys(userId)
 		.then((lobby) => {
 			if (lobby !== undefined) {
@@ -48,7 +48,7 @@ export class ModelGameService {
 	 * @returns return the room_id of the lobby
 	 * @throws BadRequestException if the user is allready in a lobby
 	 */
-	async createLobby(userId: number) {
+	async createAGame(userId: number) {
 		return await this.gameService.findUserInLobbys(userId)
 		.then((lobby) => {
 			if (lobby !== undefined) {
@@ -70,7 +70,7 @@ export class ModelGameService {
 		});
 	}
 
-	async deleteMyLobby(userId: number) {
+	async stopMyGame(userId: number) {
 
 		// Is in a lobby and is the owner
 		const userLobby = await this.gameService.findUserInLobbys(userId)
@@ -101,7 +101,7 @@ export class ModelGameService {
 	 * @returns 
 	 * @throws NotFoundException if the owner does not own a lobby or if the user is the owner of the lobby
 	 */
-	async addPlayerToMyWhiteList(ownerId: number, userId: number) {
+	async addPlayerToMyGame(ownerId: number, userId: number) {
 
 		const userLobby = await this.gameService.findUserInLobbys(ownerId)
 		.catch((err) => {

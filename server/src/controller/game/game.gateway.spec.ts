@@ -88,7 +88,7 @@ describe('GameGateway', () => {
 		const reqCreate = new CreateGameRoomRequestDto();
 		reqCreate.auth_token = userJwt;
 
-		const resCreate = await gameGateway.createMyRoom(reqCreate);
+		const resCreate = await gameGateway.createMyGame(reqCreate);
 
 		logger.debug(`res: ${JSON.stringify(resCreate)}`);
 
@@ -125,7 +125,7 @@ describe('GameGateway', () => {
 		reqAdd.auth_token = roomOwnerJwt;
 		reqAdd.user_to_white_list = userToAdd;
 
-		const resAdd = await gameGateway.addPlayerToWhiteList(reqAdd);
+		const resAdd = await gameGateway.addPlayerToGame(reqAdd);
 
 		return checkCallBack(reqAdd, resAdd, addPlayerToWhiteListSpy);
 	}
@@ -160,7 +160,7 @@ describe('GameGateway', () => {
 		reqJoin.auth_token = userToJoinJwt;
 		reqJoin.game_room_id = game_room_id;
 
-		const resJoin = await gameGateway.joinRoom(reqJoin);
+		const resJoin = await gameGateway.joinGame(reqJoin);
 
 		return checkCallBack(reqJoin, resJoin, joinLobbySpy);
 	}
