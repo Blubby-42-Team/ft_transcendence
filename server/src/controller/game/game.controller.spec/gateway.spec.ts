@@ -63,6 +63,47 @@ describe('createMyGame', () => {
 	let jwt_user4: string;
 	let jwt_user5: string;
 
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [
+				GameGateway,
+				GatewayGameService,
+				ModelGameService,
+				ConfigService,
+			],
+			imports: [
+				PostgresModule,
+				AuthModule,
+				ModelGameModule,
+				GameModule,
+				ControllerGameModule,
+				ConfigModule.forRoot({
+					isGlobal: true,
+					envFilePath: '.env',
+				}),
+			]
+
+		}).compile();
+
+		gameGateway = module.get<GameGateway>(GameGateway);
+		gatewayGameService = module.get<GatewayGameService>(GatewayGameService);
+		configService = module.get<ConfigService>(ConfigService);
+		
+
+		/**
+		 * JWTs for testing
+		 * secret: 'secret'
+		 */
+		// const secret = 'secret';
+		const secret = configService.get<string>('JWT_SECRET');
+		
+		jwt_user1 = jwt.sign(user1, secret)
+		jwt_user2 = jwt.sign(user2, secret)
+		jwt_user3 = jwt.sign(user3, secret)
+		jwt_user4 = jwt.sign(user4, secret)
+		jwt_user5 = jwt.sign(user5, secret)
+	});
+
 	/**
 	 * Create a lobby for the user
 	 * @param userJwt user jwt
@@ -193,51 +234,19 @@ describe('createMyGame', () => {
 		return returnFormatterCallBack ? returnFormatterCallBack(resAdd, resJoin) : undefined;
 	}
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			providers: [
-				GameGateway,
-				GatewayGameService,
-				ModelGameService,
-				ConfigService,
-			],
-			imports: [
-				PostgresModule,
-				AuthModule,
-				ModelGameModule,
-				GameModule,
-				ControllerGameModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-					envFilePath: '.env',
-				}),
-			]
-
-		}).compile();
-
-		gameGateway = module.get<GameGateway>(GameGateway);
-		gatewayGameService = module.get<GatewayGameService>(GatewayGameService);
-		configService = module.get<ConfigService>(ConfigService);
-		
-
-		/**
-		 * JWTs for testing
-		 * secret: 'secret'
-		 */
-		// const secret = 'secret';
-		const secret = configService.get<string>('JWT_SECRET');
-		
-		jwt_user1 = jwt.sign(user1, secret)
-		jwt_user2 = jwt.sign(user2, secret)
-		jwt_user3 = jwt.sign(user3, secret)
-		jwt_user4 = jwt.sign(user4, secret)
-		jwt_user5 = jwt.sign(user5, secret)
-	});
-
-
 	it('should be defined', () => {
 		expect(gameGateway).toBeDefined();
 	});
+
+
+
+
+
+
+
+	/**
+	 * Test connection and disconnection
+	 */
 
 	describe('handleConnection', () => {
 		it('should log a message when a client connects', () => {
@@ -256,6 +265,16 @@ describe('createMyGame', () => {
 		expect(logSpy).toHaveBeenCalledWith('Client 1 disconnected');
 		});
 	});
+
+
+
+
+
+
+
+	/**
+	 * Test createMyGame
+	 */
 
 	describe('createMyGame', () => {
 		it('Should create a lobby for ownerUser', async () => {
@@ -298,6 +317,15 @@ describe('createMyGame', () => {
 		});
 
 	});
+
+
+
+
+
+
+	/**
+	 * Test joinGame
+	 */
 
 	describe('joinGame' , () => {
 		it('Should\'n let ownerUser to join his own lobby', async () => {
