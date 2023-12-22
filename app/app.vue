@@ -2,8 +2,8 @@
 
 const { selectedChannelType, selectedChannel, isSideMenuOpen } = useChannelListStore()
 const { selectedCategory, selectedLobby } = usePageStore()
-const { players, sequence, timeRemaining, cards, hostId } = useLobbyStore()
-
+const { players, sequence, timeRemaining, cards, hostId, settings } = useLobbyStore()
+		
 const theme = useState('theme');
 
 </script>

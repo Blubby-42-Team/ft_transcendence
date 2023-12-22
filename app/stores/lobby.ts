@@ -62,6 +62,8 @@ export const useLobbyStore = defineStore('lobby', {
 		settings:		(state) => computed(() => state._gameSettings),
 		hostId:			(state) => computed(() => state._hostId),
 		cards:			(state) => computed(() => state._players.map((player, i) => {
+			const { getUser } = useUserStore()
+			getUser(player.id);
 			return {
 				id: player.id,
 				card: getCard(i, player, state._lobbyMode, state._gameSettings)
@@ -69,18 +71,36 @@ export const useLobbyStore = defineStore('lobby', {
 		})),
 	},
 	actions: {
-		setLobbyMode(mode: EGameMode) {
+		join(id: number, mode: EGameMode){
+			this.reset();
 			this._lobbyMode = mode;
+			api.fetchUser(5, (res) => {
+				this._players = [
+					{ id: id, ready: true },
+					{ id: 0, ready: true },
+					{ id: 0, ready: true },
+					{ id: 0, ready: true },
+				]
+			});
 		},
-		reset(id: number) {
+		leave(id: number){
+			api.fetchUser(5, (res) => {
+				this._players = [
+					{ id: id, ready: true },
+					{ id: 0, ready: true },
+					{ id: 0, ready: true },
+					{ id: 0, ready: true },
+				]
+			});
+		},
+		reset() {
 			this._sequence = LobbyStartingSequence.NOT_STARTED;
 			this._timeRemaining = 6;
-			this._players[0].id = id;
-			for (let i = 1; i < this._players.length; i++){
-				this._players[i].id = 0;
-			}
-			this._players[0].id = id;
-		},	
+		},
+		cancel() {
+			this._sequence = LobbyStartingSequence.NOT_STARTED;
+			this._timeRemaining = 6;
+		},
 		async start() {
 			this._sequence = LobbyStartingSequence.STARTING;
 			while (this._timeRemaining > 0 && this._sequence === LobbyStartingSequence.STARTING) {
@@ -101,10 +121,6 @@ export const useLobbyStore = defineStore('lobby', {
 					await new Promise((r) => setTimeout(r, 300));
 				}
 			}
-		},
-		cancel() {
-			this._sequence = LobbyStartingSequence.NOT_STARTED;
-			this._timeRemaining = 6;
 		},
 	},
 })
