@@ -36,24 +36,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	readonly server: Server;
 
-	// TODO #36 REWORK
-	// User should be allowed to join a room only if he is in the white list
-	// Only check if there is a client connected to the room
-	// If it's the case, disconnect the old client and connect the new one
-	@SubscribeMessage('joinGame')
-	async joinGame(@MessageBody() req: any) {
-		return handleRequest(req, JoinGameRoomRequestDto, async (data): Promise<joinGameResponse> => {
-
-			// TODO check if we can move this to the handleRequest
-			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
-
-			const roomId = await this.gatewayGameService.joinAGame(data.game_room_id, user.userId);
-			return {
-				game_room_id: roomId
-			};
-		});
-	}
-
 	@SubscribeMessage('createMyGame')
 	async createMyGame(@MessageBody() req: any) {
 		return handleRequest(req, createRoomRequestDto, async (data): Promise<createGameRoomResponse> => {
@@ -69,7 +51,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		});
 	}
 
-	@SubscribeMessage('deleteMyGame')
+	@SubscribeMessage('stopMyGame')
 	async stopMyGame(@MessageBody() req: any) {
 		return handleRequest(req, deleteGameRoomRequestDto, async (data): Promise<deleteGameRoomResponse> => {
 
@@ -88,10 +70,28 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			// TODO check if we can move this to the handleRequest
 			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
 
-			await this.gatewayGameService.addPlayerToMyWhiteList(user.userId, data.user_to_white_list);
+			await this.gatewayGameService.addPlayerToMyGame(user.userId, data.user_to_white_list);
 			return 'ok';
 		});
 	}
 
 	// @SubscribeMessage('removePlayerFromWhiteList')
+
+	// TODO #36 REWORK
+	// User should be allowed to join a room only if he is in the white list
+	// Only check if there is a client connected to the room
+	// If it's the case, disconnect the old client and connect the new one
+	@SubscribeMessage('joinGame')
+	async joinGame(@MessageBody() req: any) {
+		return handleRequest(req, JoinGameRoomRequestDto, async (data): Promise<joinGameResponse> => {
+
+			// TODO check if we can move this to the handleRequest
+			const user = await this.authService.validateJwtAndGetPayload(req.auth_token);
+
+			const roomId = await this.gatewayGameService.joinAGame(data.game_room_id, user.userId);
+			return {
+				game_room_id: roomId
+			};
+		});
+	}
 }

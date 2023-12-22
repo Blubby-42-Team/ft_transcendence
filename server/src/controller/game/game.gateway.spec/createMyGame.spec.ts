@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GameGateway } from './game.gateway';
-import { GatewayGameService } from './gateway.game.service';
+import { GameGateway } from '../game.gateway';
+import { GatewayGameService } from '../gateway.game.service';
 
 import * as jwt from 'jsonwebtoken';
 import { ModelGameModule } from 'src/model/game/game.module';
@@ -8,12 +8,12 @@ import { ModelGameService } from 'src/model/game/game.service';
 import { AcknowledgmentWsDto, CreateGameRoomRequestDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, joinGameResponse } from '@shared/dto/ws.dto';
 import { PostgresModule } from 'src/service/postgres/postgres.module';
 import { GameModule } from 'src/service/game/game.module';
-import { ControllerGameModule } from './game.module';
+import { ControllerGameModule } from '../game.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from 'src/auth/auth.module';
 import { Logger } from '@nestjs/common';
 
-describe('GameGateway', () => {
+describe('createMyGame', () => {
 	
 	const logger = new Logger(`${GameGateway.name} test`);
 
@@ -83,7 +83,7 @@ describe('GameGateway', () => {
 		/**
 		 * Create a lobby
 		 */
-		const createLobbySpy = jest.spyOn(gameGateway, 'createMyRoom');
+		const createLobbySpy = jest.spyOn(gameGateway, 'createMyGame');
 
 		const reqCreate = new CreateGameRoomRequestDto();
 		reqCreate.auth_token = userJwt;
@@ -119,13 +119,13 @@ describe('GameGateway', () => {
 		 * Add user to the whitelist
 		 */
 
-		const addPlayerToWhiteListSpy = jest.spyOn(gameGateway, 'addPlayerToWhiteList');
+		const addPlayerToWhiteListSpy = jest.spyOn(gameGateway, 'addPlayerToMyGame');
 
 		const reqAdd = new addPlayerToWhiteListRequestDto();
 		reqAdd.auth_token = roomOwnerJwt;
 		reqAdd.user_to_white_list = userToAdd;
 
-		const resAdd = await gameGateway.addPlayerToGame(reqAdd);
+		const resAdd = await gameGateway.addPlayerToMyGame(reqAdd);
 
 		return checkCallBack(reqAdd, resAdd, addPlayerToWhiteListSpy);
 	}
@@ -154,7 +154,7 @@ describe('GameGateway', () => {
 		 * Join the lobby
 		 */
 
-		const joinLobbySpy = jest.spyOn(gameGateway, 'joinRoom');
+		const joinLobbySpy = jest.spyOn(gameGateway, 'joinGame');
 
 		const reqJoin = new JoinGameRoomRequestDto();
 		reqJoin.auth_token = userToJoinJwt;
@@ -257,7 +257,7 @@ describe('GameGateway', () => {
 		});
 	});
 
-	describe('createMyRoom', () => {
+	describe('createMyGame', () => {
 		it('Should create a lobby for ownerUser', async () => {
 			// Should create a lobby
 			const res = await createMyRoomAndCheck(jwt_user1, (reqCreate: CreateGameRoomRequestDto, resCreate: any, createLobbySpy: any) => {
@@ -299,7 +299,7 @@ describe('GameGateway', () => {
 
 	});
 
-	describe('joinRoom' , () => {
+	describe('joinGame' , () => {
 		it('Should\'n let ownerUser to join his own lobby', async () => {
 
 			/**
