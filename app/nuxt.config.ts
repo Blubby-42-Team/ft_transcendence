@@ -11,6 +11,7 @@ export default defineNuxtConfig({
 		dirs: [
 			'stores/**',
 			'../libs/types/**',
+			'../libs/types/game/**',
 			'../libs/game/**',
 		],
 	},

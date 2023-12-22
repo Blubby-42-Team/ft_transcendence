@@ -4,7 +4,7 @@ export default {
 		callback: (response: any) => void,
 	){
 		const config = useRuntimeConfig()
-		return useFetch(`${config.public.back.uri}`, {
+		return useFetch(`${config.public.back.uri}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('user fetched');
@@ -20,7 +20,6 @@ export default {
 		callback: (response: any) => void,
 	){
 		const config = useRuntimeConfig()
-		console.log(config.public.back.uri)
 		return useFetch(`${config.public.back.uri}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
@@ -37,7 +36,7 @@ export default {
 		callback: (response: any) => void,
 	){
 		const config = useRuntimeConfig()
-		return useFetch(`${config.public.back.uri}`, {
+		return useFetch(`${config.public.back.uri}/game/room`, {
 			onResponse: ({ request, response, options }) => {
 				callback(response);
 				console.log('history fetched');

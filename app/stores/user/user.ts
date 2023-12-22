@@ -36,12 +36,6 @@ export type IHistory = {
 	// }>,
 };
 
-type gameStoreType = {
-	_users: { [key: number]: IUser | null },
-	_stats: { [key: number]: IStats | null },
-	_history: { [key: number]: Array<IHistory> | null },
-};
-
 const userPlaceHolder = {
 	id: 0,
 	name: '...',
@@ -68,14 +62,19 @@ const statsPlaceHolder: IStats = {
 };
 
 export const useUserStore = defineStore('user', {
-	state: (): gameStoreType => ({
-		_users: {},
-		_stats: {},
-		_history: {},
+	state: () => ({
+		_primaryUser: 0,
+		_users: {} as { [key: number]: IUser | null },
+		_stats: {} as { [key: number]: IStats | null },
+		_history: {} as { [key: number]: Array<IHistory> | null },
 	}),
 	getters: {
 	},
 	actions: {
+		getPrimaryUser(){
+			return this.getUser(this._primaryUser);
+		},
+
 		getUser(userId: number){
 			if (this._users[userId] === undefined){
 				this._users[userId] = null;
@@ -89,10 +88,6 @@ export const useUserStore = defineStore('user', {
 					login42: 'jbond',
 					avatar: '/themes/anime/astolfo.jpg',
 				};
-			});
-
-			api.fetchUser(userId, (response) => {
-				console.log(response);
 			});
 
 			return computed(() => {
