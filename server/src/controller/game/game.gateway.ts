@@ -104,7 +104,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	readonly server: Server;
 
 	@SubscribeMessage('createMyGame')
-	async createMyGame(@MessageBody() req: any, @ConnectedSocket() socket: Socket) {
+	async createMyGame(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
 		return this.handleRequest(socket, req, createRoomRequestDto, async (user, data): Promise<createGameRoomResponse> => {
 
 			const roomId = await this.gatewayGameService.createAGame(user.userId);
@@ -116,7 +119,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('stopMyGame')
-	async stopMyGame(socket: Socket, @MessageBody() req: any) {
+	async stopMyGame(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
 		return this.handleRequest(socket, req, deleteGameRoomRequestDto, async (user, data): Promise<deleteGameRoomResponse> => {
 
 			await this.gatewayGameService.stopMyGame(user.userId);
@@ -125,7 +131,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('addPlayerToMyGame')
-	async addPlayerToMyGame(socket: Socket, @MessageBody() req: any) {
+	async addPlayerToMyGame(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
 		return this.handleRequest(socket, req, addPlayerToWhiteListRequestDto, async (user, data): Promise<addOrRemovePlayerToWhiteListResponse> => {
 
 			await this.gatewayGameService.addPlayerToMyGame(user.userId, data.user_to_white_list);
@@ -140,7 +149,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// Only check if there is a client connected to the room
 	// If it's the case, disconnect the old client and connect the new one
 	@SubscribeMessage('joinGame')
-	async joinGame(socket: Socket, @MessageBody() req: any) {
+	async joinGame(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
 		return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
 
 			const roomId = await this.gatewayGameService.joinAGame(data.game_room_id, user.userId);
