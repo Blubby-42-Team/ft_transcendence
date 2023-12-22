@@ -7,17 +7,14 @@ definePageMeta({
 
 const { setPageDataLobby } = usePageStore();
 const { join, leave, cards } = useLobbyStore();
-const { getPrimaryUser } = useUserStore();
-
-const user = getPrimaryUser();
 
 onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, EGameMode.Classic);
-	join(user.value.id, EGameMode.Classic);
+	join(EGameMode.Classic);
 })
 
 onUnmounted(() => {
-	leave(user.value.id);
+	leave();
 })
 
 </script>
