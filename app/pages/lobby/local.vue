@@ -10,8 +10,8 @@ onMounted(() => { setPageDataLobby(EPageCategories.GAME, EGameMode.Local); })
 const { join, leave, cards } = useLobbyStore();
 
 onMounted(() => {
-	setPageDataLobby(EPageCategories.GAME, EGameMode.Classic);
-	join(EGameMode.Classic);
+	setPageDataLobby(EPageCategories.GAME, EGameMode.Local);
+	join(EGameMode.Local);
 })
 
 onUnmounted(() => {
