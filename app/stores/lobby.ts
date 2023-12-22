@@ -43,27 +43,35 @@ const defaultSettings = {
 
 export const useLobbyStore = defineStore('lobby', {
 	state: () => ({
-		_hostId: 0,
+		_hostId: 223,
 		_players: [
 			{ id: 0,	ready: true	},
 			{ id: 0,	ready: true	},
 			{ id: 0,	ready: true	},
 			{ id: 0,	ready: true	},
 		],
-		_lobbyMode: EGameMode.Classic,
+		_lobbyMode: EGameMode.Custom,
 		_gameSettings: defaultSettings as gameSettingsType,
 		_sequence: LobbyStartingSequence.NOT_STARTED,
 		_timeRemaining: 6,
 	}),
 	getters: {
 		players:		(state) => computed(() => state._players),
-		cards:			(state) => computed(() => state._players.map((player, i) => { return { id: player.id, card: getCard(i, player, state._lobbyMode, state._gameSettings) }})),
 		sequence:		(state) => computed(() => state._sequence),
 		timeRemaining:	(state) => computed(() => state._timeRemaining),
 		settings:		(state) => computed(() => state._gameSettings),
 		hostId:			(state) => computed(() => state._hostId),
+		cards:			(state) => computed(() => state._players.map((player, i) => {
+			return {
+				id: player.id,
+				card: getCard(i, player, state._lobbyMode, state._gameSettings)
+			}
+		})),
 	},
 	actions: {
+		setLobbyMode(mode: EGameMode) {
+			this._lobbyMode = mode;
+		},
 		reset(id: number) {
 			this._sequence = LobbyStartingSequence.NOT_STARTED;
 			this._timeRemaining = 6;
@@ -72,7 +80,6 @@ export const useLobbyStore = defineStore('lobby', {
 				this._players[i].id = 0;
 			}
 			this._players[0].id = id;
-			console.log(this._players)
 		},	
 		async start() {
 			this._sequence = LobbyStartingSequence.STARTING;
@@ -91,7 +98,6 @@ export const useLobbyStore = defineStore('lobby', {
 					// else if (this._players[i].type === CardType.COMING1){
 					// 	this._players[i].type = CardType.COMING2;
 					// }
-					console.log(this._players)
 					await new Promise((r) => setTimeout(r, 300));
 				}
 			}

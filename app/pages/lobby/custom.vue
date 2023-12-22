@@ -6,16 +6,20 @@ definePageMeta({
 })
 
 const { setPageDataLobby } = usePageStore();
-const { cards, reset } = useLobbyStore();
+const { reset, cards, setLobbyMode } = useLobbyStore();
+const { getPrimaryUser } = useUserStore();
+
+const user = getPrimaryUser();
 
 onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
-	reset(1);
-});
+	reset(user.value.id);
+	setLobbyMode(EGameMode.Custom);
+})
 
 onUnmounted(() => {
-	reset(1);
-});
+	reset(user.value.id);
+})
 
 </script>
 

@@ -63,7 +63,7 @@ const statsPlaceHolder: IStats = {
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
-		_primaryUser: 0,
+		_primaryUser: 223,
 		_users: {} as { [key: number]: IUser | null },
 		_stats: {} as { [key: number]: IStats | null },
 		_history: {} as { [key: number]: Array<IHistory> | null },
