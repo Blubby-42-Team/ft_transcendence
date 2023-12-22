@@ -17,9 +17,6 @@ export class AcknowledgmentWsDto<T> {
 }
 
 export class WsRequestDto {
-	@IsNotEmpty()
-	@IsJWT()
-	auth_token: string;
 }
 
 export class CreateGameRoomRequestDto extends WsRequestDto {
