@@ -61,94 +61,96 @@ const statsPlaceHolder: IStats = {
 	},
 };
 
-export const useUserStore = defineStore('user', {
-	state: () => ({
-		_primaryUser: 223,
-		_users: {} as { [key: number]: IUser | null },
-		_stats: {} as { [key: number]: IStats | null },
-		_history: {} as { [key: number]: Array<IHistory> | null },
-	}),
-	getters: {
-	},
-	actions: {
-		getPrimaryUser(){
-			return this.getUser(this._primaryUser);
-		},
+export const useUserStore = defineStore('user', () => {
+	let primaryUser = 223;
+	let users = {} as { [key: number]: IUser | null };
+	let stats = {} as { [key: number]: IStats | null };
+	let history = {} as { [key: number]: Array<IHistory> | null };
 
-		getUser(userId: number){
-			if (this._users[userId] === undefined){
-				this._users[userId] = null;
+	function getPrimaryUser(){
+		return getUser(primaryUser);
+	}
+
+	function getUser(userId: number){
+		if (users[userId] === undefined){
+			users[userId] = null;
+		}
+
+		api.fetchUser(userId, (response) => {
+			users[userId] = {
+				id: userId,
+				name: 'James',
+				fullName: 'James Bond',
+				login42: 'jbond',
+				avatar: '/themes/anime/astolfo.jpg',
+			};
+		});
+
+		return computed(() => {
+			const user = users[userId];
+			return (user !== null ? user : userPlaceHolder);
+		});
+	}
+
+	function getStats(userId: number){
+		if (stats[userId] === undefined){
+			stats[userId] = null;
+		}
+
+		api.fetchStats(userId, (response) => {
+			stats[userId] = {
+				classic: {
+					matchPlayed: Math.floor(Math.random() * 100),
+					ranking: Math.floor(Math.random() * 100),
+					mmr: Math.floor(Math.random() * 1000),
+					winrate: Math.floor(Math.random() * 100),
+					averagePointPerGame: Math.floor(Math.random() * 100),
+				},
+				random: {
+					matchPlayed: Math.floor(Math.random() * 100),
+					ranking: Math.floor(Math.random() * 100),
+					mmr: Math.floor(Math.random() * 1000),
+					winrate: Math.floor(Math.random() * 100),
+					averagePointPerGame: Math.floor(Math.random() * 100),
+				},
+			};
+		});
+		
+		return computed(() => {
+			const newStats = stats[userId];
+			return (newStats !== null ? newStats : statsPlaceHolder);
+		});
+	}
+
+	function getHistory(userId: number){
+		if (history[userId] === undefined){
+			history[userId] = [];
+		}
+
+		api.fetchHistory(userId, (response) => {
+			for (let i = 0; i < 10; i++){
+				history[userId]?.push({
+					matchId: 45,
+					date: new Date,
+					duration: 100,
+					adversary: 3,
+					adversaryName: 'Jameskii',
+					score: 10,
+					scoreAdv: Math.floor(Math.random() * 10),
+				})
 			}
+		});
+		
+		return computed(() => {
+			const newHistory = history[userId];
+			return (newHistory !== null && newHistory.length ? history : []);
+		});
+	}
 
-			api.fetchUser(userId, (response) => {
-				this._users[userId] = {
-					id: userId,
-					name: 'James',
-					fullName: 'James Bond',
-					login42: 'jbond',
-					avatar: '/themes/anime/astolfo.jpg',
-				};
-			});
-
-			return computed(() => {
-				const user = this._users[userId];
-				return (user !== null ? user : userPlaceHolder);
-			});
-		},
-
-		getStats(userId: number){
-			if (this._stats[userId] === undefined){
-				this._stats[userId] = null;
-			}
-
-			api.fetchStats(userId, (response) => {
-				this._stats[userId] = {
-					classic: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
-					},
-					random: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
-					},
-				};
-			});
-			
-			return computed(() => {
-				const stats = this._stats[userId];
-				return (stats !== null ? stats : statsPlaceHolder);
-			});
-		},
-
-		getHistory(userId: number){
-			if (this._history[userId] === undefined){
-				this._history[userId] = [];
-			}
-
-			api.fetchHistory(userId, (response) => {
-				for (let i = 0; i < 10; i++){
-					this._history[userId]?.push({
-						matchId: 45,
-						date: new Date,
-						duration: 100,
-						adversary: 3,
-						adversaryName: 'Jameskii',
-						score: 10,
-						scoreAdv: Math.floor(Math.random() * 10),
-					})
-				}
-			});
-			
-			return computed(() => {
-				const history = this._history[userId];
-				return (history !== null && history.length ? history : []);
-			});
-		},
-	},
+	return {
+		getPrimaryUser,
+		getUser,
+		getStats,
+		getHistory,
+	}
 })
