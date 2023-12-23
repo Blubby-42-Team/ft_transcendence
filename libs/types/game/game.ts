@@ -1,3 +1,5 @@
+import { Rectangle, Coordinates } from './utils';
+
 export type gameControllerType = {[key: string]: (status: boolean) => void};
 
 export type gameTexture = {
