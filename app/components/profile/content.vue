@@ -7,10 +7,22 @@ const props = defineProps({
 	},
 });
 
-const { getUser, getStats, getHistory } = useUserStore();
+const { getUser, getStat, getHistory, fetchStat, fetchUser, fetchHistory } = useUserStore();
 const user = getUser(props.userId);
-const stats = getStats(props.userId);
+const stats = getStat(props.userId);
 const history = getHistory(props.userId);
+
+await fetchUser(props.userId);
+await fetchStat(props.userId);
+await fetchHistory(props.userId);
+// onMounted(async () => {
+// });
+
+// watch(() => props.userId, async (newVal, oldVal) => {
+// 	await fetchUser(newVal);
+// 	await fetchStat(newVal);
+// 	await fetchHistory(newVal);
+// });
 
 </script>
 

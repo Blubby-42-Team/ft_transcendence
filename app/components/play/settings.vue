@@ -1,17 +1,21 @@
 <script setup lang="ts">
 
 const { settings, hostId } = useLobbyStore()
-const { getPrimaryUser } = useUserStore();
-const user = getPrimaryUser();
+const { primaryUser, fetchPrimaryUser } = useUserStore();
+
+await fetchPrimaryUser()
+onMounted(async () => {
+	await fetchPrimaryUser()
+})
 
 const props = defineProps({
 	preview: {
 		type: Boolean,
-		default: true,		
+		default: true,
 	},
 })
 
-const isHost = computed(() => user.value.id !== 0 && user.value.id === hostId.value)
+const isHost = computed(() => primaryUser.value.id !== 0 && primaryUser.value.id === hostId.value)
 
 function updatePadSize(delta: number){
 	if (0 < settings.value.padSize + delta && settings.value.padSize + delta <= 10){

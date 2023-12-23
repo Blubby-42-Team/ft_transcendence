@@ -12,10 +12,6 @@ const props = defineProps({
 	},
 })
 
-const { getUser, getStats } = useUserStore();
-const user = getUser(42);
-const stats = getStats(42);
-
 </script>
 
 <template>

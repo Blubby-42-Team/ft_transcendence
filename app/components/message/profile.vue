@@ -1,7 +1,9 @@
 <script setup lang="ts">
 
-const { getUser, getStats, getHistory } = useUserStore();
+const { getUser, fetchUser, fetchHistory } = useUserStore();
 const user = getUser(42);
+await fetchUser(42);
+await fetchHistory(42);
 
 const test: Ref<Array<{ text: string, icon: string } | undefined>> = ref([
 	undefined,

@@ -7,9 +7,12 @@ const props = defineProps({
 	},
 })
 
-const { getUser, getStats } = useUserStore();
+const { getUser, getStat, fetchStat, fetchUser } = useUserStore();
 const user = getUser(props.userId);
-const stats = getStats(props.userId);
+const stats = getStat(props.userId);
+
+await fetchUser(props.userId);
+await fetchStat(props.userId);
 
 </script>
 

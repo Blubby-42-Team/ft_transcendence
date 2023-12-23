@@ -63,24 +63,38 @@ const statsPlaceHolder: IStats = {
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
-		_primaryUser: 0,
-		_users: {} as { [key: number]: IUser | null },
-		_stats: {} as { [key: number]: IStats | null },
-		_history: {} as { [key: number]: Array<IHistory> | null },
+		_primaryUser: 42,
+		_users: {} as { [key: number]: IUser | undefined },
+		_stats: {} as { [key: number]: IStats | undefined },
+		_history: {} as { [key: number]: Array<IHistory> | undefined },
 	}),
 	getters: {
+		primaryUser: (state) => computed(() => {
+			const user = state._users[state._primaryUser];
+			return (user !== undefined ? user : userPlaceHolder);
+		}),
+		getUser: (state) => (userId: number) => computed(() => {
+			const user = state._users[userId];
+			return (user !== undefined ? user : userPlaceHolder);
+		}),
+		getStat: (state) => (userId: number) => computed(() => {
+			const stats = state._stats[userId];
+			return (stats !== undefined ? stats : statsPlaceHolder);
+		}),
+		getHistory: (state) => (userId: number) => computed(() => {
+			const history = state._history[userId];
+			return (history !== undefined && history.length ? history : []);
+		}),
 	},
 	actions: {
-		getPrimaryUser(){
-			return this.getUser(this._primaryUser);
+		async fetchPrimaryUser(){
+			return this.fetchUser(this._primaryUser);
 		},
-
-		getUser(userId: number){
-			if (this._users[userId] === undefined){
-				this._users[userId] = null;
+		async fetchUser(userId: number){
+			if (userId === 0){
+				return;
 			}
-
-			api.fetchUser(userId, (response) => {
+			return api.fetchUser(userId, (response) => {
 				this._users[userId] = {
 					id: userId,
 					name: 'James',
@@ -89,19 +103,12 @@ export const useUserStore = defineStore('user', {
 					avatar: '/themes/anime/astolfo.jpg',
 				};
 			});
-
-			return computed(() => {
-				const user = this._users[userId];
-				return (user !== null ? user : userPlaceHolder);
-			});
 		},
-
-		getStats(userId: number){
-			if (this._stats[userId] === undefined){
-				this._stats[userId] = null;
+		async fetchStat(userId: number){
+			if (userId === 0){
+				return;
 			}
-
-			api.fetchStats(userId, (response) => {
+			return api.fetchStats(userId, (response) => {
 				this._stats[userId] = {
 					classic: {
 						matchPlayed: Math.floor(Math.random() * 100),
@@ -119,19 +126,16 @@ export const useUserStore = defineStore('user', {
 					},
 				};
 			});
-			
-			return computed(() => {
-				const stats = this._stats[userId];
-				return (stats !== null ? stats : statsPlaceHolder);
-			});
 		},
-
-		getHistory(userId: number){
-			if (this._history[userId] === undefined){
-				this._history[userId] = [];
+		async fetchHistory(userId: number){
+			if (userId === 0){
+				return;
 			}
-
-			api.fetchHistory(userId, (response) => {
+			return await api.fetchHistory(userId, (response) => {
+				console.log('fetchHistory', userId);
+				if (this._history[userId] === undefined){
+					this._history[userId] = [];
+				}
 				for (let i = 0; i < 10; i++){
 					this._history[userId]?.push({
 						matchId: 45,
@@ -143,11 +147,6 @@ export const useUserStore = defineStore('user', {
 						scoreAdv: Math.floor(Math.random() * 10),
 					})
 				}
-			});
-			
-			return computed(() => {
-				const history = this._history[userId];
-				return (history !== null && history.length ? history : []);
 			});
 		},
 	},
