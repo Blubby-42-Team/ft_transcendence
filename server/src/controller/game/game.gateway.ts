@@ -155,10 +155,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	) {
 		return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
 
-			const roomId = await this.gatewayGameService.joinAGame(data.game_room_id, user.userId);
-			return {
-				game_room_id: roomId
-			};
+			await this.gatewayGameService.joinAGame(data.game_room_id, user.userId, socket);
+			return 'ok';
 		});
 	}
 }

@@ -3,9 +3,11 @@ import { ModelGameService } from './game.service';
 import { GameModule } from 'src/service/game/game.module';
 
 @Module({
-	imports: [GameModule],
+	imports: [
+		GameModule,
+	],
 	providers: [
-		ModelGameService
+		ModelGameService,
 	],
 	exports: [ModelGameService],
 })
