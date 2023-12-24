@@ -11,6 +11,6 @@ import { ModelUserModule } from 'src/model/user/user.module';
 		GameService,
 		EmitGateway,
 	],
-	exports: [GameService],
+	exports: [GameService, EmitGateway],
 })
 export class GameModule { }

@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 import { ModelGameService } from '../../model/game/game.service';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class GatewayGameService {
@@ -12,8 +13,8 @@ export class GatewayGameService {
 		private readonly modelGameService: ModelGameService,
 	) {}
 
-	async joinAGame(roomId: string, userId: number) {
-		return this.modelGameService.joinAGame(roomId, userId);
+	async joinAGame(roomId: string, userId: number, Socket: Socket) {
+		return this.modelGameService.joinAGame(roomId, userId, Socket);
 	}
 
 	async createAGame(userId: number) {

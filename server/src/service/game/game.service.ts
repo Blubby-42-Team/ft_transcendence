@@ -7,6 +7,9 @@ import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
 import { ModelUserService } from 'src/model/user/user.service';
+import { DisconnectReason, Socket } from 'socket.io';
+import { WsRequestDto, disconnectClientFromTheLobbyResponse } from '@shared/dto/ws.dto';
+import { ModelChatModule } from '../../model/chat/chat.module';
 
 @Injectable()
 export class GameService {
@@ -57,6 +60,60 @@ export class GameService {
 	}
 
 	/**
+	 * Join a player WS to the socket.io room of the lobby
+	 * @param roomId Id of the lobby
+	 * @param userId Id of the user
+	 * @param socket Socket.io socket of the player
+	 * @returns void Promise
+	 * @throws NotFoundException if the lobby does not exist
+	 * @throws BadRequestException if the user is not in the white list of the lobby
+	 */
+	async joinPlayerToLobby(roomId: string, userId: number, socket: Socket): Promise<void> {
+		
+		this.logger.debug(`try joinPlayerToLobby ${roomId} ${userId}`);
+
+		const lobby = await this.getLobby(roomId);
+
+		if (lobby.isInWhiteList(userId) === false) {
+			this.logger.debug(`User ${userId} is not in the white list of lobby ${roomId}`);
+			throw new BadRequestException(`User ${userId} is not in the white list of lobby ${roomId}`);
+		}
+
+		const checkUserWsConnectedClient = this.users[userId]?.connectedClients;
+		if (checkUserWsConnectedClient !== undefined) {
+
+			// Check if the user have already a client connected
+			if (checkUserWsConnectedClient.length !== 0) {
+
+				this.logger.debug(`User ${userId} have already a client connected`);
+
+				// disconnect all client of the user
+				for (const client of checkUserWsConnectedClient) {
+
+					this.logger.debug(`disconnect WS client ${client} of user ${userId}`);
+
+					// Emit to the client that he is disconnected
+					const msg: disconnectClientFromTheLobbyResponse = {
+						reason: "DuplicateConnection",
+						msg: "You are connected from another device, you have been disconnected",
+					}
+					this.emitGAteway.server.to(client).emit('disconnectClientFromTheLobby', msg);
+
+					this.emitGAteway.server.in(client).socketsLeave(roomId)
+
+					// Remove the client from the array using filter
+					this.users[userId].connectedClients = this.users[userId].connectedClients.filter(c => c !== client);
+				}
+			}
+		}
+
+		socket.join(roomId);
+		this.users[userId].connectedClients.push(socket.id);
+
+		this.logger.debug(`joinPlayerToLobby ${roomId} ${userId}`);
+	}
+
+	/**
 	 * Delete a lobby and disconnect all players before
 	 * @param roomId Id of the lobby to delete
 	 * @throws NotFoundException if the lobby does not exist
@@ -98,7 +155,7 @@ export class GameService {
 	}
 
 	async addPlayerToWhiteList(roomId: string, newUserId: number) {
-		const lobby = this.getLobby(roomId);
+		const lobby = await this.getLobby(roomId);
 
 		// check if the user is the owner of the lobby
 		if (lobby.owner_id === newUserId) {
@@ -110,7 +167,7 @@ export class GameService {
 	}
 
 	async removePlayerFromWhiteList(roomId: string, userId: number) {
-		const lobby = this.getLobby(roomId);
+		const lobby = await this.getLobby(roomId);
 
 		// check if the user is the owner of the lobby
 		if (lobby.owner_id !== userId) {
@@ -137,7 +194,7 @@ export class GameService {
 			throw new BadRequestException(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
 		}
 
-		const lobby = this.getLobby(roomId);
+		const lobby = await this.getLobby(roomId);
 		lobby.addPlayerToLobby(userId);
 		this.users[userId] = {
 			room_id: roomId,
@@ -161,7 +218,7 @@ export class GameService {
 	 * @returns return the lobby instance
 	 * @throws NotFoundException if the lobby does not exist
 	 */
-	getLobby(roomId: string): LobbyInstance {
+	async getLobby(roomId: string) {
 		const lobby = this.lobbys[roomId];
 		if (lobby === undefined) {
 			throw new NotFoundException(`Lobby ${roomId} does not exist`);
@@ -231,10 +288,16 @@ export class GameService {
 		for (const userId of Object.keys(this.users)) {
 			playerPublicData[userId] = this.users[userId].room_id;
 		}
+
+		const playerWsClients = {};
+		for (const userId of Object.keys(this.users)) {
+			playerWsClients[userId] = this.users[userId].connectedClients;
+		}
 		
 		return {
 			lobbys: lobbysPublicData,
 			players: playerPublicData,
+			playerWsClients: playerWsClients,
 		};
 	}
 

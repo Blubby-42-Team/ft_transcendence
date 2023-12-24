@@ -22,6 +22,8 @@ export class LobbyInstance {
 			wsId: '',
 			isConnected: false,
 		}
+		
+		this.whiteList.push(owner_id);
 	}
 
 	readonly room_id: string;

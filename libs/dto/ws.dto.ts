@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolean} from 'class-validator'
 import { Min } from 'class-validator';
+import { DisconnectReason } from 'socket.io';
 
 export class AcknowledgmentWsDto<T> {
 
@@ -60,9 +61,7 @@ export class removePlayerFromWhiteListRequestDto extends WsRequestDto {
 
 export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
 
-export type joinGameResponse = {
-	game_room_id: string;
-};
+export type joinGameResponse = 'ok';
 
 export type createGameRoomResponse = {
 	game_room_id: string;
@@ -70,3 +69,8 @@ export type createGameRoomResponse = {
 
 export type deleteGameRoomResponse = 'ok';
 export type addOrRemovePlayerToWhiteListResponse = 'ok';
+
+export type disconnectClientFromTheLobbyResponse = {
+	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin',
+	msg: string,
+}
