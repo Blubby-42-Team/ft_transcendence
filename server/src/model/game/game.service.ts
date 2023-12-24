@@ -4,6 +4,8 @@
 
 import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { GameService } from '../../service/game/game.service';
+import { LobbyInstance } from './game.class';
+import { EmitGateway } from 'src/service/game/emit.gateway';
 
 
 @Injectable()
@@ -12,7 +14,8 @@ export class ModelGameService {
 	private readonly logger = new Logger(ModelGameService.name);
 
 	constructor(
-		private readonly gameService: GameService
+		private readonly gameService: GameService,
+		private readonly emitGAteway: EmitGateway,
 	) {}
 
 	async joinAGame(roomId: string, userId: number) {
@@ -118,5 +121,10 @@ export class ModelGameService {
 		}
 
 		return this.gameService.addPlayerToWhiteList(userLobby.room_id, userId);
+	}
+
+	async testGame(userId: number) {
+		let lobby = new LobbyInstance("1", userId, (state) => { state = state }, this.emitGAteway.server);
+		await lobby.startGame();
 	}
 }

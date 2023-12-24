@@ -1,16 +1,27 @@
-import { Direction, gameSettingsType, gameStateType } from '@shared/types/game'
+import { BotDifficulty, Direction, gameSettingsType, gameStateType } from '@shared/types/game'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
+import { Settings } from '../settings/settings.class';
+import { Server } from 'socket.io'
 
 export class LobbyInstance {
 
 	private readonly logger: undefined | Logger;
 
-	constructor (room_id: string, owner_id: number, updateState: (state: gameStateType) => void ) {
+	constructor (room_id: string, owner_id: number, updateState: (state: gameStateType) => void, socket: Server ) {
 
 		this.room_id = room_id;
 		this.owner_id = owner_id;
-		this.gameSettings = undefined;
+		this.gameSettings = {
+			maxPoint:			5,
+			numPlayer:			2,
+			ballSize:			1,
+			padSize:			1,
+			mode:				BotDifficulty.NORMAL,
+			randomizer:			false,
+			speedAcceleration:	1,
+			initialBallSpeed:	4,
+		};
 		this.game = undefined;
 		this.slots = 1;
 
@@ -18,10 +29,12 @@ export class LobbyInstance {
 
 		this.players[owner_id] = {
 			dir: this.getDirectionBySlot(this.slots),
-			ready: false,
+			ready: true,
 			wsId: '',
-			isConnected: false,
+			isConnected: true,
 		}
+		this.gameState = undefined;
+		this.io = socket;
 	}
 
 	readonly room_id: string;
@@ -42,21 +55,41 @@ export class LobbyInstance {
 
 	private game: GameEngine | undefined;
 
-	private gameSettings: gameSettingsType | undefined;
+	private gameState: gameStateType | undefined;
 
-	async startGame(roomName: string, opt: any, io: any) {
-		if (this.game === undefined) {
-			this.logger.error(`No game instance set for lobby ${this.room_id}`);
-			throw new Error(`No game instance set for lobby ${this.room_id}`);
+	private gameSettings: gameSettingsType;
+
+	private io: Server;
+
+	checkBeforeStart() {
+		if (this.slots !== this.gameSettings.numPlayer)
+			throw new BadRequestException(`The amount of connected players is incorrect : ${this.slots}.`)
+		for (let player in this.players) {
+			if (!this.players[player].ready)
+				throw new BadRequestException("Not everybody is ready.")
 		}
 	}
 
+	async startGame() {
+		this.checkBeforeStart();
+		this.game = new GameEngine(this.gameSettings, (newGameState: gameStateType) => {
+			this.gameState = newGameState;
+			this.io.to(this.room_id).emit("state", this.gameState)
+		},
+		(state) => {
+			state = this.gameState;
+		});
+		this.game.start();
+	}
+
+	async movePlayer (userId: number, sens: boolean) {
+		this.game.move(this.players[userId].dir, sens, true);
+	}
+
 	async stopGame () {
-		if (this.game === undefined) {
-			this.logger.error(`No game instance to stop in lobby ${this.room_id}`);
-			throw new Error(`No game instance to stop in lobby ${this.room_id}`);
-		}
-		//TODO save game state to DB
+		if (this.game)
+			this.game.stop()
+		this.game = undefined;
 	}
 
 	async closeLobby() {
@@ -74,125 +107,42 @@ export class LobbyInstance {
 	 * @throws BadRequestException if the user is already in the lobby or the lobby is full
 	 */
 	addPlayerToLobby(userId: number) {
-		if (this.players[userId] !== undefined) {
-			this.logger.warn(`User ${userId} is already in the lobby ${this.room_id}`);
-			throw new BadRequestException(`User ${userId} is already in the lobby ${this.room_id}`);
-		}
-
-		if (this.slots === 4) {
-			this.logger.error(`Lobby ${this.room_id} is full`);
-			throw new BadRequestException(`Lobby ${this.room_id} is full`);
-		}
-
-		if (!this.isInWhiteList(userId)) {
-			this.logger.warn(`User ${userId} is not in the white list of lobby ${this.room_id}`);
-			throw new BadRequestException(`User ${userId} is not in the white list of lobby ${this.room_id}`);
-		}
-
-		this.slots++;
-
-		this.players[userId] = {
-			dir: this.getDirectionBySlot(this.slots),
-			ready: false,
-			wsId: '',
-			isConnected: false,
-		}
-
-		//TODO emit new state to the lobby
-		this.logger.log(`User ${userId} added to the lobby`);
+		
 	}
 
 	/**
 	 * Remove a player from the lobby and emit the new state to the lobby
 	 */
 	removePlayerFromLobby(userId: number) {
-		if (this.players[userId] === undefined) {
-			this.logger.warn(`User ${userId} is not in the lobby`);
-			throw new NotFoundException(`User ${userId} is not in the lobby`);
-		}
-
-		if (this.slots === 1) {
-			this.logger.error(`Lobby ${this.room_id} is empty`);
-			throw new BadRequestException(`Lobby ${this.room_id} is empty`);
-		}
-
-		if (userId === this.owner_id) {
-			this.logger.error(`User ${userId} is the owner of the lobby ${this.room_id}, can't remove him`);
-			throw new BadRequestException(`User ${userId} is the owner of the lobby ${this.room_id}, can't remove him`);
-		}
-
-		this.slots--;
-
-		this.removePlayerFromWhiteList(userId);
-
-		if (this.players[userId].isConnected) {
-			this.logger.warn(`User ${userId} is connected to the WS room, disconnect him`);
-			//TODO emit and disconnect player from the WS room
-		}
-
-		delete this.players[userId];
-		this.logger.log(`User ${userId} removed from the lobby`);
-		//TODO emit new state to the lobby
+		
 	}
 
 	/**
 	 * Set player connection state to true and emit the new state to the lobby
 	 */
 	onPlayerWsConnect(userId: number, wsId: string) {
-		if (this.players[userId] === undefined) {
-			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
-		}
-
-		this.players[userId].wsId = wsId;
-		this.players[userId].isConnected = true;
-
-		//TODO emit new state to the lobby
-		this.logger.log(`User ${userId} connected to the WS room [${this.room_id}]`);
+		
 	}
 
 	/**
 	 * Set player connection state to false and emit the new state to the lobby
 	 */
 	onPlayerWsDisconnect(userId: number) {
-		if (this.players[userId] === undefined) {
-			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
-		}
-
-		this.players[userId].isConnected = false;
-
-		//TODO emit new state to the lobby
+		
 	}
 
 	/**
 	 * Set player ready state to true and emit the new state to the lobby
 	 */
 	onPlayerReady(userId: number) {
-		if (this.players[userId] === undefined) {
-			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
-		}
-
-		this.players[userId].ready = true;
-
-		//TODO emit new state to the lobby
-		this.logger.log(`User ${userId} is ready`);
+		
 	}
 
 	/**
 	 * Set player ready state to false and emit the new state to the lobby
 	 */
 	onPlayerNotReady(userId: number) {
-		if (this.players[userId] === undefined) {
-			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
-		}
-
-		this.players[userId].ready = false;
-
-		//TODO emit new state to the lobby
-		this.logger.log(`User ${userId} is not ready`);
+		
 	}
 
 	/**
@@ -209,13 +159,7 @@ export class LobbyInstance {
 	 * @throws BadRequestException if the user is already in the white list or if the user is the owner of the lobby
 	 */
 	addPlayerToWhiteList(userId: number) {
-		if (this.isInWhiteList(userId)) {
-			this.logger.warn(`User ${userId} is already in the white list`);
-			throw new BadRequestException(`User ${userId} is already in the white list`);
-		}
-
-		this.whiteList.push(userId);
-		this.logger.log(`User ${userId} added to the white list`);
+		
 	}
 
 	/**
@@ -224,14 +168,7 @@ export class LobbyInstance {
 	 * @throws BadRequestException if the user is not in the white list
 	 */
 	removePlayerFromWhiteList(userId: number) {
-		if (!this.isInWhiteList(userId)) {
-			this.logger.warn(`User ${userId} is not in the white list`);
-			throw new BadRequestException(`User ${userId} is not in the white list`);
-		}
-
-		this.whiteList = this.whiteList.filter((id) => id !== userId);
-		this.logger.log(`User ${userId} removed from the white list`);
-		//TODO emit new state to the lobby
+		
 	}
 
 	/**

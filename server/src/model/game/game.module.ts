@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ModelGameService } from './game.service';
 import { GameModule } from 'src/service/game/game.module';
+import { EmitGateway } from 'src/service/game/emit.gateway';
 
 @Module({
 	imports: [GameModule],
 	providers: [
-		ModelGameService
+		ModelGameService,
+		EmitGateway
 	],
 	exports: [ModelGameService],
 })

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { GatewayGameService } from './gateway.game.service';
@@ -27,6 +27,13 @@ export class GameController {
 	@Delete('/room/:id')
 	async deleteRoom(@Param('id') id: string) {
 		// await this.gatewayGameService.deleteLobby(id);//TODO WIP
+		return 'ok'
+	}
+
+	@Roles([UserRoleType.Guest])
+	@Post('/room/:id')
+	async newGame(@Param('id') id: number) {
+		await this.modelGameService.testGame(id);//TODO WIP
 		return 'ok'
 	}
 

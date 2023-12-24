@@ -45,7 +45,7 @@ export class GameService {
 
 		const newRoomId = this.generateUniqueRoomId(6);
 
-		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
+		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager, null);//TODO REMOVE AT MERGE
 		this.lobbys[newRoomId] = newLobby;
 
 		this.users[userId] = {
