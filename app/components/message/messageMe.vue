@@ -26,7 +26,9 @@ const { messages, getMessagePlayer } = useChannelStore()
 	<div class="flex float-left">
 		<div class="mr-auto"></div>
 		<div class="flex self-center text-xs">
-			{{ format(props.message.time, "dd MMMM") }} at {{ format(props.message.time, "HH:mm:ss") }}
+			<ClientOnly>
+				{{ format(props.message.time, "dd MMMM") }} at {{ format(props.message.time, "HH:mm:ss") }}
+			</ClientOnly>
 		</div>
 		<div class="flex self-center ml-2 mr-2 text-lg">
 			{{ getMessagePlayer(props.message.senderId)?.name }}

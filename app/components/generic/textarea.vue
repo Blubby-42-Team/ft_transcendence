@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const textarea: Ref<any> = ref(null);
+const textarea =  ref<HTMLInputElement>();
 
 const rowsHeightStart = ref(1)
 const rowsHeight = ref(rowsHeightStart.value)
@@ -9,7 +9,6 @@ function changeRows(event: any) {
 	const textarea = event.target;
 	
 	rowsHeight.value = event.target.value.split("\n").length > rowsHeightStart.value ? event.target.value.split("\n").length : rowsHeightStart.value
-	const lineBreaks = (textarea.value.match(/\n/g) || []).length;
 
   // Calculate the number of rows based on content height
 	const contentHeight = textarea.scrollHeight - parseFloat(getComputedStyle(textarea.value).paddingTop) - parseFloat(getComputedStyle(textarea.value).paddingBottom);
@@ -26,7 +25,7 @@ function changeRows(event: any) {
 			@input="changeRows"
 			ref="textarea"
 			:rows="rowsHeight"
-			class="w-full h-auto overflow-y-scroll resize-none bg-pink-500 scrollbar-none rounded-xl"
+			class="w-full h-auto overflow-y-scroll bg-pink-500 resize-none scrollbar-none rounded-xl"
 		></textarea>
 	</div>
 </template>

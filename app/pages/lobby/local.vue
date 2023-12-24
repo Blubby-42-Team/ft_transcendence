@@ -13,7 +13,7 @@ onMounted(() => { setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Local); 
 <template>
 	<div class="grid h-full grid-cols-[max-content_repeat(1,auto)]">
 		<PlaySettings :preview="false"/>
-		<div class="flex w-full h-full p-5 overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-pink-500 scrollbar-thumb-rounded-full scrollbar-track">
+		<div class="flex w-full h-full p-5">
 			<GamePreviewCanvas uniqueToken="previewLocal"/>
 		</div>
 	</div>

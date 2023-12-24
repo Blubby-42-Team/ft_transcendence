@@ -4,56 +4,28 @@ definePageMeta({name: 'Friends'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.FRIENDS); })
 
-const testRef		= ref()
-const testButton	= ref<HTMLElement>()
-
-const test: Array<{ text: string, icon: string } | undefined> = [
-	{ text: 'Zoom',				icon: 'material-symbols:zoom-in' },
-	{ text: 'Zoom Out',			icon: 'material-symbols:zoom-out' },
-	{ text: 'Full Screen',		icon: 'material-symbols:open-in-full' },
-	{ text: 'Share',			icon: 'material-symbols:share' },
-	undefined,
-	{ text: 'Go Back',			icon: 'material-symbols:arrow-back' },
-	{ text: 'Add to Wallet',	icon: 'material-symbols:wallet' },
-]
-
-const sideMenu = {
-	reference: testButton,
-	direction: 'top',
-}
+const openFindFriend = ref();
 
 </script>
 
 <template>
-	<div class="h-full p-5">
-		<div :buttonStyle="1"
-			@click="testRef?.open"
-			class="flex w-32 p-5 bg-red-900 hover:bg-red-950 rounded-2xl"
-			ref="testButton"
-		>
-			Hello World
+	<div class="grid h-full grid-rows-[4rem,1fr] grid-cols-[max-content,auto]">
+		<div class="col-span-2 bg-color1">
+			<ClientOnly>
+				<teleport to="#additionalHeaderButton">
+					<div class="mx-2 border border-text-light bg-text-light"></div>
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
+						@click="openFindFriend?.open"
+					>
+						<Icon name="material-symbols:search" class="w-full h-full"/>
+					</GenericButton>
+					<GenericModal ref="openFindFriend">
+						<FriendsFind/>
+					</GenericModal>
+				</teleport>
+			</ClientOnly>
 		</div>
-		<GenericSideMenu ref="testRef" :options="sideMenu" direction="top">
-			<div class="w-full">
-				<div class="flex flex-col w-full px-2 py-4 text-sm text-pink-500 bg-pink-500 border-4 border-pink-500 rounded-lg shadow-lg">
-					<!-- <GenericProfilePicture imageSrc="/amogus.png"/> -->
-					<div class="w-full p-2 mt-3 text-base">James Milwaukee</div>
-					<hr class="my-3 border-pink-500" />
-					<template v-for="elem in test">
-						<template v-if="elem">
-							<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-pink-500 hover:text-pink-500">
-								<div class="w-5">
-									<Icon :name="elem.icon" class="w-4 h-4"/>
-								</div>
-								<div class="ml-4">{{ elem.text }}</div>
-							</button>
-						</template>
-						<template v-else>
-							<hr class="my-3 border-pink-500" />
-						</template>
-					</template>
-				</div>
-			</div>
-		</GenericSideMenu>
+		<FriendsList class="scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track"/>
+		<Profile class="max-h-full overflow-hidden" :userId="1" />
 	</div>
 </template>

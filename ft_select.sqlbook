@@ -1,0 +1,13 @@
+-- SQLBook: Code
+SELECT * FROM "user"
+-- SQLBook: Code
+SELECT * FROM "user42"
+-- SQLBook: Code
+SELECT * FROM "stats"
+-- SQLBook: Code
+-- Active: 1701168611681@@localhost@5432@masterminds
+SELECT * FROM "settings"
+-- SQLBook: Code
+-- Active: 1701168611681@@localhost@5432@masterminds
+SELECT * FROM "history"
+WHERE "playerId" = 1

@@ -8,7 +8,5 @@ onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 </script>
 
 <template>
-	<div>
-		profile
-	</div>
+	<Profile :userId="1864"/>
 </template>
