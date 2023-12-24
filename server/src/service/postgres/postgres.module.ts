@@ -23,7 +23,7 @@ import { Chat } from 'src/model/chat/chat.class';
 					username: configService.get<string>('POSTGRES_USER'),
 					database: configService.get<string>('POSTGRES_DB'),
 					synchronize: true,
-					logging: true,
+					// logging: true,
 					entities: [
 						User,
 						User42,

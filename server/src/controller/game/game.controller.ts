@@ -1,46 +1,33 @@
-import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
-import { GameService } from '../../service/game/game.service';
-import { GameOptDto, GameRoomIdDto } from '@shared/dto/game.dto';
-import { get } from 'http';
-import { GameGateway } from './game.gateway';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
+import { GatewayGameService } from './gateway.game.service';
+import { ModelGameService } from 'src/model/game/game.service';
 
 @Controller('game')
 export class GameController {
 
-	constructor (private readonly gameService: GameService,
-		private readonly gameGateway: GameGateway) {}
+	constructor (
+		private readonly gatewayGameService: GatewayGameService,
+		private readonly modelGameService: ModelGameService,
+	) {}
 
 	@Roles([UserRoleType.Guest])
 	@Get('/room')
-	async getRoom(@Headers() head: any): Promise<GameRoomIdDto> {
-
-		//TODO check jwt in head
-		this.gameService.test();
-
-		return new GameRoomIdDto("//TODO");
+	async getRooms() {
+		return this.modelGameService.getAllLobbysPublicData();
 	}
-
-	// @Roles([UserRoleType.Guest])
-	// @Post('/room/create')
-	// async createRoom(@Headers() head: any): Promise<GameRoomIdDto> {
-	// 	//TODO check jwt in head
-	// 	const user_id = '123';
-
-	// 	const room = await this.gameService.createRoom(user_id);
-
-	// 	return new GameRoomIdDto(room);
-	// // }
 
 	@Roles([UserRoleType.Guest])
-	@Post('/room/start')
-	async startRoom(@Headers() head: any, @Body() body: GameOptDto): Promise<any/*//TODO create dto*/> {
-		//TODO check jwt in head
-
-		// TODO start room later
-		// NOTE: Dont run this with await, it need to be run in background
-		// this.gameService.startRoom(body.game_room_id, body, this.gameGateway.server);
-		return "ok";
+	@Get('/room/:id')
+	async getRoomData() {
 	}
+
+	@Roles([UserRoleType.Guest])
+	@Delete('/room/:id')
+	async deleteRoom(@Param('id') id: string) {
+		// await this.gatewayGameService.deleteLobby(id);//TODO WIP
+		return 'ok'
+	}
+
 }
