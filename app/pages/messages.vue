@@ -35,6 +35,6 @@ console.log(channel.value);
 			<div class="w-full p-5">Loading...</div>
 		</template>
 
-		<MessageGroupChannelMemberList/>
+		<MessageGroupChannelMemberList :members="channel?.members ?? []"/>
 	</div>
 </template>

@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 
-import { IPlayer } from '#imports'
-
 const props = defineProps({
 	member: {
-		type: Object as PropType<IPlayer>,
+		type: Number,
 		required: true,
 	},
 });
+
+const { getShortUser } = useUserStore();
+const user = getShortUser(props.member);
 
 const viewProfile = ref();
 const testButton = ref();
@@ -20,7 +21,7 @@ const test = () => testButton;
 	<GenericButton class="w-full p-1" :buttonStyle="2" @click="viewProfile?.open" ref="testButton">
 		<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
 		<div class="self-center pl-2">
-			{{ props.member.name }}
+			{{ user.name }}
 		</div>
 		<div class="mr-auto"></div>
 	</GenericButton>

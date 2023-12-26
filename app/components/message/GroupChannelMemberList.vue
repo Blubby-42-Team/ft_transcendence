@@ -1,13 +1,19 @@
 <script lang="ts" setup>
 
-const { members }		= useChannelStore()
+const props = defineProps({
+	members: {
+		type: Array<number>,
+		required: true,
+	},
+})
+
 
 const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListStore()
 
 </script>
 
 <template>
-	<div>
+	<div class="w-full min-w-[12rem]">
 		<ClientOnly>
 			<template v-if="selectedChannelType?.hasSideMenu">
 				<teleport to="#additionalHeaderButton">
@@ -20,9 +26,9 @@ const { isSideMenuOpen, selectedChannelType, toggleSideMenu } = useChannelListSt
 			</template>
 		</ClientOnly>
 		<template v-if="selectedChannelType?.hasSideMenu && isSideMenuOpen">
-			<div class="h-full" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
-				<div class="overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">
-					<template v-for="member in members">
+			<div class="w-full h-full" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
+				<div class="w-full h-full overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">
+					<template v-for="member in props.members">
 						<MessageChannelMemberPreview :member="member"/>
 					</template>
 				</div>
