@@ -1,6 +1,6 @@
 import { CardType } from '@/utils/types'
 
-import { EGameMode } from '../../libs/types/game/game'
+import { EGameMode } from '../../../libs/types/game/game'
 
 export enum LobbyStartingSequence {
 	NOT_STARTED	= 0,	// On Hold
@@ -57,7 +57,7 @@ export const useLobbyStore = defineStore('lobby', {
 	}),
 	getters: {
 		players:		(state) => computed(() => state._players),
-		cards:			(state) => computed(() => state._players.map((player, i) => { return { id: player.id, card: getCard(i, player, state._lobbyMode, state._gameSettings) }})),
+		cards:			(state) => computed(() => state._players.map((player, i) => ({ id: player.id, card: getCard(i, player, state._lobbyMode, state._gameSettings) }))),
 		sequence:		(state) => computed(() => state._sequence),
 		timeRemaining:	(state) => computed(() => state._timeRemaining),
 		settings:		(state) => computed(() => state._gameSettings),

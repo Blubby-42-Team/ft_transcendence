@@ -13,6 +13,7 @@ export const useChannelStore = defineStore('channel', {
 	},
 	actions: {
 		fetchChannelList(userId: number){
+			const { updateShortUser } = useUserStore();
 			return api.fetchUser(userId, (response) => {
 				this._channelList = [1, 2, 3, 4, 5, 6];
 				this._shortChannels = {
@@ -54,6 +55,18 @@ export const useChannelStore = defineStore('channel', {
 						avatar: '/amogus.png'
 					},
 				};
+				updateShortUser([
+					{
+						id: 4,
+						name: 'James',
+						avatar: '/themes/anime/astolfo.jpg',
+					},
+					{
+						id: 5,
+						name: 'Bond',
+						avatar: '/amogus.png',
+					},
+				])
 			});
 		},
 		selectChannel(channelId: number){

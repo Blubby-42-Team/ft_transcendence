@@ -47,6 +47,11 @@ export const useUserStore = defineStore('user', {
 		getHistory:		(state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
 	},
 	actions: {
+		async updateShortUser(users: Array<IShortUser>){
+			for (const user of users){
+				this._shortUsers[user.id] = user;
+			}
+		},
 		async fetchPrimaryUser(){
 			return this.fetchUser(this._primaryUser);
 		},
