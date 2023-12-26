@@ -4,6 +4,7 @@ export function fetchAllChats(
 	userId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response);
@@ -20,6 +21,7 @@ export function fetchChatsByTypes(
 	chatType: EChatType,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/chat/${chatType}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response);
@@ -36,6 +38,7 @@ export function fetchChatsById(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/chat/${chatId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response);
@@ -52,6 +55,7 @@ export function fetchIsInChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/is_in/${chatId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response);
@@ -69,6 +73,7 @@ export function fetchCreateChat(
 	name: string,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}`, {
 		method: 'POST',
 		body: {
@@ -92,6 +97,7 @@ export function fetchCreateChatProtected(
 	password: string,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/protected`, {
 		method: 'POST',
 		body: {
@@ -115,6 +121,7 @@ export function fetchAddInChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/add`, {
 		method: 'PATCH',
 		body: {
@@ -137,6 +144,7 @@ export function fetchRemoveFromChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/remove`, {
 		method: 'DELETE',
 		body: {
@@ -158,6 +166,7 @@ export function fetchLeaveChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/leave`, {
 		method: 'DELETE',
 		body: {
@@ -179,6 +188,7 @@ export function fetchAddAdminChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/admin_add`, {
 		method: 'PATCH',
 		body: {
@@ -201,6 +211,7 @@ export function fetchRemoveAdminFromChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/admin_remove`, {
 		method: 'DELETE',
 		body: {
@@ -223,6 +234,7 @@ export function fetchBanUser(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/ban`, {
 		method: 'PATCH',
 		body: {
@@ -245,6 +257,7 @@ export function fetchUnanUser(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/unban`, {
 		method: 'DELETE',
 		body: {
@@ -266,6 +279,7 @@ export function fetchDeleteChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/delete`, {
 		method: 'DELETE',
 		body: {
@@ -286,6 +300,7 @@ export function fetchJoinChat(
 	chatId: number,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/join/${chatId}`, {
 		method: 'PATCH',
 		body: {
@@ -306,6 +321,7 @@ export function fetchJoinProtectedChat(
 	password: string,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/join_protected/${chatId}`, {
 		method: 'PATCH',
 		body: {
@@ -327,6 +343,7 @@ export function fetchChangeChatType(
 	password: string,
 	callback: (response: any) => void,
 ){
+	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/change_type/${chatId}`, {
 		method: 'PATCH',
 		body: {
@@ -343,3 +360,22 @@ export function fetchChangeChatType(
 }
 
 
+export default {
+	fetchAllChats,
+	fetchChatsByTypes,
+	fetchChatsById,
+	fetchIsInChat,
+	fetchCreateChat,
+	fetchCreateChatProtected,
+	fetchAddInChat,
+	fetchRemoveFromChat,
+	fetchLeaveChat,
+	fetchAddAdminChat,
+	fetchRemoveAdminFromChat,
+	fetchBanUser,
+	fetchUnanUser,
+	fetchDeleteChat,
+	fetchJoinChat,
+	fetchJoinProtectedChat,
+	fetchChangeChatType,
+}
