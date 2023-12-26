@@ -21,6 +21,23 @@ export interface IChannel {
 	id:		number,
 	type:	ChannelType
 	name:	string,
+	avatar: string,
 	members: Array<number>,
 	messages: Array<IMessage>,
+}
+
+export interface IShortChannel {
+	id:		number,
+	type:	ChannelType
+	name:	string,
+	avatar: string,
+}
+
+export type channelTypeSettings = {
+    type: ChannelType;
+    name: string;
+    icon: string;
+    open: boolean;
+    hasBottom: boolean;
+    hasSideMenu: boolean;
 }

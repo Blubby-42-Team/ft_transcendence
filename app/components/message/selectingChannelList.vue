@@ -1,15 +1,17 @@
 <script lang="ts" setup>
 
-const { channels, channelType, updateSelectedChannel, selectedChannel } = useChannelListStore()
+const { selectChannel, selectedChannel, channels } = useChannelStore()
+
+const types = useState<Array<channelTypeSettings>>('channelTypes');
 
 </script>
 
 <template>
 	<div class="w-full h-auto overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
-		<template v-for="ctype in channelType">			
+		<template v-for="ctype in types">			
 			<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
-				:selected="ctype.type === selectedChannel?.type"
-				@click="() => { ctype.open = !ctype.open }"
+				:selected="ctype.type === selectedChannel?.type ?? undefined"
+				@click="ctype.open = !ctype.open"
 			>
 				<Icon :name="ctype.icon" class="w-10 h-10"/>
 				<div class="pl-2">{{ ctype.name }}</div>
@@ -20,13 +22,13 @@ const { channels, channelType, updateSelectedChannel, selectedChannel } = useCha
 			<TransitionExpand>
 				<template v-if="ctype.open">
 					<div>
-						<template v-for="channel in channels.filter((elem) => elem.type === ctype.type)">
+						<template v-for="channel in channels.filter((elem) => elem !== undefined && elem?.type === ctype.type)">
 							<GenericButton class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
-								:selected="channel.id === selectedChannel?.id"
-								@click="() => updateSelectedChannel(channel.id)"
+								:selected="channel?.id === selectedChannel?.id"
+								@click="selectChannel(channel?.id ?? 0)"
 							>
 								<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
-								<div class="pl-2">{{ channel.name }}</div>
+								<div class="pl-2">{{ channel?.name }}</div>
 							</GenericButton>
 						</template>
 					</div>
