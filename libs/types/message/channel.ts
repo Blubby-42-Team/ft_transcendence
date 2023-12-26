@@ -5,8 +5,8 @@ export interface IPlayer {
 }
 
 export interface IMessage {
-	id			: string,
-	senderId	: string,
+	id			: number,
+	senderId	: number,
 	message		: string,
 	time		: Date,
 }
@@ -21,4 +21,6 @@ export interface IChannel {
 	id:		number,
 	type:	ChannelType
 	name:	string,
+	members: Array<number>,
+	messages: Array<IMessage>,
 }

@@ -3,6 +3,10 @@
 const { textarea, input } = useTextareaAutosize()
 
 defineProps({
+	channel: {
+		type: Object as PropType<IChannel>,
+		required: true,
+	},
 	id: {
 		type: Number,
 		required: true,
@@ -10,10 +14,7 @@ defineProps({
 	}
 })
 
-const { messages } = useChannelStore()
-const { selectedChannel  } = useChannelListStore()
-
-const myId = "2"
+const { primaryUser } = useUserStore()
 
 </script>
 
@@ -21,15 +22,15 @@ const myId = "2"
 	<div class="grid grid-rows-[max_contents,1px,max_contents]">
 		<div class="h-16 p-2 text-lg bg-color1 text-text-light">
 			<div class="flex items-center justify-center h-full ">
-				{{ selectedChannel?.name }}
+				{{ channel.name }}
 			</div>
 		</div>
 		<div class="flex flex-col-reverse overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain">
-			<template v-for="message in messages">
+			<template v-for="message in channel.messages">
 				<div class="inline-grid grid-rows-[auto,2em] p-5"
-					:class="message.senderId == myId ? 'grid-cols-[auto,70%,4em]' : 'grid-cols-[4em,70%,auto]'"
+					:class="message.senderId == primaryUser.id ? 'grid-cols-[auto,70%,4em]' : 'grid-cols-[4em,70%,auto]'"
 				>
-					<template v-if="message.senderId == myId">
+					<template v-if="message.senderId == primaryUser.id">
 						<MessageMe :message="message"/>
 					</template>
 					<template v-else>

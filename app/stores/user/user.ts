@@ -1,4 +1,6 @@
-const userPlaceHolder = {
+import { IUser, IShortUser, IStats, IHistory } from "#imports"
+
+const userPlaceHolder: IUser = {
 	id: 0,
 	name: '...',
 	fullName: '...',
@@ -23,9 +25,16 @@ const statsPlaceHolder: IStats = {
 	},
 };
 
+const shortUserPlaceHolder: IShortUser = {
+	id: 0,
+	name: '...',
+	avatar: '/amogus.png',
+};
+
 export const useUserStore = defineStore('user', {
 	state: () => ({
 		_primaryUser: 42,
+		_shortUsers: {} as { [key: number]: IShortUser | undefined },
 		_users: {} as { [key: number]: IUser | undefined },
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
@@ -33,6 +42,7 @@ export const useUserStore = defineStore('user', {
 	getters: {
 		primaryUser:	(state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
 		getUser:		(state) => (userId: number) => computed(() => state._users?.[userId] ?? userPlaceHolder),
+		getShortUser:	(state) => (userId: number) => computed(() => state._shortUsers?.[userId] ?? shortUserPlaceHolder),
 		getStat:		(state) => (userId: number) => computed(() => state._stats?.[userId] ?? statsPlaceHolder),
 		getHistory:		(state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
 	},

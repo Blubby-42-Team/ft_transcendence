@@ -9,7 +9,8 @@ const props = defineProps({
 	},
 })
 
-const { messages, getMessagePlayer } = useChannelStore()
+const { getShortUser } = useUserStore();
+const user = getShortUser(props.message.senderId);
 
 </script>
 
@@ -31,7 +32,7 @@ const { messages, getMessagePlayer } = useChannelStore()
 			</ClientOnly>
 		</div>
 		<div class="flex self-center ml-2 mr-2 text-lg">
-			{{ getMessagePlayer(props.message.senderId)?.name }}
+			{{ getShortUser(props.message.senderId).value?.name }}
 		</div>
 	</div>
 </template>
