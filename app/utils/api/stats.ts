@@ -63,9 +63,3 @@ export function fetchRandomMatchEnd(
 		},
 	})
 }
-
-export default {
-    fetchStats,
-    fetchClassicMatchEnd,
-    fetchRandomMatchEnd,
-}

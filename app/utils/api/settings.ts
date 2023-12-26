@@ -38,8 +38,3 @@ export function fetchSettingsPatch(
 		},
 	})
 }
-
-export default {
-    fetchSettings,
-    fetchSettingsPatch,
-}

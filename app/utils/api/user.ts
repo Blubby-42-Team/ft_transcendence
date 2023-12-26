@@ -162,15 +162,3 @@ export function fetchUserBlacklistDelete(
 		},
 	})
 }
-
-export default {
-	fetchUser,
-	fetchUserFriends,
-	fetchUserWhitelist,
-	fetchUserBlacklist,
-	fetchUserIsInBlacklist,
-	fetchUserWhitelistPost,
-	fetchUserBlacklistPost,
-	fetchUserFriendDelete,
-	fetchUserBlacklistDelete,
-}

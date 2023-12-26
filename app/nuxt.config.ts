@@ -13,6 +13,7 @@ export default defineNuxtConfig({
 			'../libs/types/**',
 			'../libs/types/game/**',
 			'../libs/game/**',
+			'utils/**',
 		],
 	},
 	devServer: {

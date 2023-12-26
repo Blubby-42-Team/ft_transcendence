@@ -24,7 +24,3 @@ export function fetchPostMessage(
 		},
 	})
 }
-
-export default {
-    fetchPostMessage,
-}

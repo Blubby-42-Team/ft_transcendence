@@ -46,8 +46,3 @@ export function fetchSaveGame(
 		},
 	})
 }
-
-export default {
-    fetchHistory,
-    fetchSaveGame,
-}

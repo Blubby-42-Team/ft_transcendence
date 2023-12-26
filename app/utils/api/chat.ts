@@ -358,24 +358,3 @@ export function fetchChangeChatType(
 		},
 	})
 }
-
-
-export default {
-	fetchAllChats,
-	fetchChatsByTypes,
-	fetchChatsById,
-	fetchIsInChat,
-	fetchCreateChat,
-	fetchCreateChatProtected,
-	fetchAddInChat,
-	fetchRemoveFromChat,
-	fetchLeaveChat,
-	fetchAddAdminChat,
-	fetchRemoveAdminFromChat,
-	fetchBanUser,
-	fetchUnanUser,
-	fetchDeleteChat,
-	fetchJoinChat,
-	fetchJoinProtectedChat,
-	fetchChangeChatType,
-}

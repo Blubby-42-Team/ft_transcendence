@@ -59,7 +59,7 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return api.fetchUser(userId, (response) => {
+			return fetchUser(userId, (response) => {
 				this._users[userId] = {
 					id: userId,
 					name: 'James',
@@ -73,7 +73,7 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return api.fetchStats(userId, (response) => {
+			return fetchStats(userId, (response) => {
 				this._stats[userId] = {
 					classic: {
 						matchPlayed: Math.floor(Math.random() * 100),
@@ -96,7 +96,7 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return await api.fetchHistory(userId, (response) => {
+			return await fetchHistory(userId, (response) => {
 				console.log('fetchHistory', userId);
 				if (this._history[userId] === undefined){
 					this._history[userId] = [];
