@@ -31,22 +31,10 @@ export const useUserStore = defineStore('user', {
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
 	}),
 	getters: {
-		primaryUser: (state) => computed(() => {
-			const user = state._users[state._primaryUser];
-			return (user !== undefined ? user : userPlaceHolder);
-		}),
-		getUser: (state) => (userId: number) => computed(() => {
-			const user = state._users[userId];
-			return (user !== undefined ? user : userPlaceHolder);
-		}),
-		getStat: (state) => (userId: number) => computed(() => {
-			const stats = state._stats[userId];
-			return (stats !== undefined ? stats : statsPlaceHolder);
-		}),
-		getHistory: (state) => (userId: number) => computed(() => {
-			const history = state._history[userId];
-			return (history !== undefined && history.length ? history : []);
-		}),
+		primaryUser:	(state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
+		getUser:		(state) => (userId: number) => computed(() => state._users?.[userId] ?? userPlaceHolder),
+		getStat:		(state) => (userId: number) => computed(() => state._stats?.[userId] ?? statsPlaceHolder),
+		getHistory:		(state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
 	},
 	actions: {
 		async fetchPrimaryUser(){
