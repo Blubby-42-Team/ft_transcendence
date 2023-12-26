@@ -21,7 +21,7 @@ const user = getShortUser(props.message.senderId);
 	</div>
 	<div class="flex flex-col row-span-2">
 		<div class="mb-auto"></div>
-		<GenericProfilePicture class="flex ml-2 w-14 h-14" imageSrc="/amogus.png"/>
+		<GenericProfilePicture class="flex ml-2 w-14 h-14" :imageSrc="user.avatar"/>
 	</div>
 	<br/>
 	<div class="flex float-left">
@@ -32,7 +32,7 @@ const user = getShortUser(props.message.senderId);
 			</ClientOnly>
 		</div>
 		<div class="flex self-center ml-2 mr-2 text-lg">
-			{{ getShortUser(props.message.senderId).value?.name }}
+			{{ user.name }}
 		</div>
 	</div>
 </template>

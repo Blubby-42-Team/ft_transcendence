@@ -66,6 +66,11 @@ export const useChannelStore = defineStore('channel', {
 						name: 'Bond',
 						avatar: '/amogus.png',
 					},
+					{
+						id: 42,
+						name: 'xd',
+						avatar: '/themes/anime/astolfo.jpg',
+					},
 				])
 			});
 		},
