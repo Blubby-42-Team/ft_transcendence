@@ -1,25 +1,10 @@
-import { IChannel } from "./channelList";
-
-export interface IPlayer {
-	id			: string,
-	name		: string,
-	profilePic	: string,
-}
-
-export interface IMessage {
-	id			: string,
-	senderId	: string,
-	message		: string,
-	time		: Date,
-}
-
 export const useChannelStore = defineStore('channel', {
 	state: (): {
 		_channel		: IChannel;
 		_members		: Array<IPlayer>;
 		_messages		: Array<IMessage>;
 	} => ({
-		_channel: {	id: '1',		isGroup: false,		channelName: ''		},
+		_channel: {	id: 1,	type: 1,	name: 'Chats 1'	},
 		_members: [
 			{ id: '1',	name: 'James',		profilePic: 'test' },
 			{ id: '2',	name: 'Alicia',		profilePic: 'test' },

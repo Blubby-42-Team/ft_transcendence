@@ -1,35 +1,8 @@
-export enum ChannelType {
-	Group	= 1,
-	Chat	= 2,
-	Friend	= 3,
-}
-
-export interface IChannel {
-	id:		number,
-	type:	ChannelType
-	name:	string,
-}
-
-export interface IChannelType {
-	type:			ChannelType,
-	name:			string,
-	icon:			string,
-	open:			boolean,
-	hasBottom:		boolean,
-	hasSideMenu:	boolean,
-}
-
 export const useChannelListStore = defineStore('channelList', {
-	state: (): {
-		_selectedChannel:		number,
-		_isSideMenuOpen:		boolean,
-		_selectedChannelMenu:	ChannelType,
-		_channels:				Array<IChannel>;
-		_channelType:			Array<IChannelType>
-	} => ({
+	state: () => ({
 		_selectedChannel: 1,
-		_selectedChannelMenu: ChannelType.Friend,
 		_isSideMenuOpen: true,
+		_selectedChannelMenu: ChannelType.Friend,
 		_channels: [
 			{	id: 1,		type: ChannelType.Chat,		name: 'Chats 1'		},
 			{	id: 2,		type: ChannelType.Chat,		name: 'Chats 2'		},
@@ -61,7 +34,7 @@ export const useChannelListStore = defineStore('channelList', {
 			{	id: 28,		type: ChannelType.Group,	name: 'Group 8'		},
 			{	id: 29,		type: ChannelType.Group,	name: 'Group 9'		},
 			{	id: 30,		type: ChannelType.Group,	name: 'Group 10'	},
-		],
+		] as Array<IChannel>,
 		_channelType: [
 			{
 				type: ChannelType.Friend,
@@ -90,8 +63,8 @@ export const useChannelListStore = defineStore('channelList', {
 		],
 	}),
 	getters: {
-		channels:				(state) => computed((): Array<IChannel> => state._channels),
-		channelType:			(state) => computed((): Array<IChannelType> => state._channelType),
+		channels:				(state) => computed(() => state._channels),
+		channelType:			(state) => computed(() => state._channelType),
 		isSideMenuOpen:			(state) => computed(() => state._isSideMenuOpen),
 		selectedChannel:		(state) => computed(() => state._channels.find((channel) => channel.id === state._selectedChannel)),
 		selectedChannelType:	(state) => computed(() => state._channelType.find((type) => type.type === (state._channels.find((channel) => channel.id === state._selectedChannel)?.type))),
@@ -102,9 +75,6 @@ export const useChannelListStore = defineStore('channelList', {
 		},
 		toggleSideMenu() {
 			this._isSideMenuOpen = !this._isSideMenuOpen;
-		},
-		selectChannelMenu(newMenu: ChannelType) {
-			this._selectedChannelMenu = newMenu;
 		},
 	},
 })
