@@ -49,6 +49,7 @@ export class GatewayGameService {
 	 */
 
 
+	//TODO wip @Matthew-Dreemurr
 	/**
 	 * Handle move request from the client
 	 * @param userId Id of the user
@@ -56,5 +57,5 @@ export class GatewayGameService {
 	 * @param press True if the user press the key, false if he release it
 	 * @returns Aknowledgement 'ok'
 	 */
-	async move(userId: number, direction: string, press: boolean) {
+	// async move(userId: number, direction: string, press: boolean) {
 }

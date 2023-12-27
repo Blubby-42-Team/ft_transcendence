@@ -115,5 +115,6 @@ export class ModelGameService {
 		return this.gameService.addPlayerToWhiteList(userLobby.room_id, userId);
 	}
 
-	async move
+	// TODO WIP @Matthew-Dreemurr
+	// async move
 }
