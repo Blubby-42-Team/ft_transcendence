@@ -1,4 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
+	if (process.server){
+		return ;
+	}
 	const config = useRuntimeConfig();
 	const cookie = useCookie('user_id', {
 		default: () => 0,
