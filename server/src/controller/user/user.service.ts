@@ -9,7 +9,7 @@ export class UserService {
 	) {}
 
 	async getUserById(id: number) {
-		return await this.modelUserService.getUserById(id);
+		return await this.modelUserService.getUserByIdForWilla(id);
 	}
 
 	async getFriendsById(id: number) {
