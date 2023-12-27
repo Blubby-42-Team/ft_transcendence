@@ -13,6 +13,8 @@ if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
 	await selectChannel(parseInt(route.params.id));
 }
 
+const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
+
 </script>
 
 <template>
