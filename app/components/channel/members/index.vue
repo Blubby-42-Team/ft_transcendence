@@ -25,7 +25,7 @@ const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
 			</template>
 		</ClientOnly>
 		<template v-if="hasSideMenu && isSideMenuOpen">
-			<div class="w-full h-full" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
+			<div class="h-full w-60">
 				<div class="w-full h-full overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">
 					<template v-for="member in props.members">
 						<ChannelMembersSingle :member="member"/>

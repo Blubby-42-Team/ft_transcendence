@@ -31,7 +31,6 @@ const types = useState(() => [
 ]);
 
 watch(selectedChannel, () => {
-	console.log(selectedChannel.value);
 	const newSettings = types.value.find((elem) => elem.type === selectedChannel.value?.type) ?? types.value[0];
 	hasSideMenu.value = newSettings.hasSideMenu;
 })
