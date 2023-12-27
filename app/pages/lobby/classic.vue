@@ -6,10 +6,10 @@ definePageMeta({
 })
 
 const { setPageDataLobby } = usePageStore();
-const { players, reset } = useLocalLobbyStore();
+const { reset, cards } = useLobbyStore();
 
 onMounted(() => {
-	setPageDataLobby(EPageCategories.GAME, ESelectedLobby.Classic);
+	setPageDataLobby(EPageCategories.GAME, EGameMode.Classic);
 	reset(1);
 })
 
@@ -21,9 +21,9 @@ onUnmounted(() => {
 
 <template>
 	<div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
-		<template v-for="el of players">
+		<template v-for="player of cards">
 			<div class="p-2">
-				<PlayLobbyCard :type="el.type"/>
+				<PlayLobbyCard :player="player"/>
 			</div>
 		</template>
 		<br>

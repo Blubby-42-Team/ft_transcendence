@@ -2,8 +2,24 @@
 
 definePageMeta({name: 'History'})
 const { setSelectedCategory } = usePageStore();
-
 onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
+
+const { getHistory, fetchHistory, primaryUser } = useUserStore();
+let history = computed(() => getHistory(primaryUser.value.id));
+
+await fetchHistory(primaryUser.value.id);
+
+onMounted(async () => {
+	console.log('fetching history', primaryUser.value.id)
+	await fetchHistory(primaryUser.value.id);
+	console.log('fetched history', history.value.value)
+})
+
+watch(() => primaryUser.value.id, async (newVal, oldVal) => {
+	console.log('fetching history', newVal, oldVal)
+	console.log('xd', await fetchHistory(newVal));
+	console.log('fetched history', history.value.value)
+})
 
 </script>
 
@@ -21,7 +37,7 @@ onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
 		</div>
 		<div class="flex justify-center h-full p-5 overflow-hidden">
 			<div class="p-5 rounded-3xl bg-background1 w-[60rem] h-full">
-				<HistoryList :numberOfElem="30"/>
+				<HistoryList :matchList="history.value"/>
 			</div>
 		</div>
 	</div>

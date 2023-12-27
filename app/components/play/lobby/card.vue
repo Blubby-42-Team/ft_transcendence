@@ -3,58 +3,39 @@
 import { CardType } from '#imports'
 
 const props = defineProps({
-	type: {
-		type: Number as PropType<CardType>,
+	player: {
+		type: Object as PropType<{
+			card: CardType;
+			id: number;
+		}>,
     	required: true
 	},
 })
-
-
-const stats = {
-	classic: {
-		matchPlayed: 42,
-		ranking: 872,
-		winrate: 76,
-		averagePointPerGame: 42,
-	},
-	random: {
-		matchPlayed: 1,
-		ranking: 423,
-		winrate: 0,
-		averagePointPerGame: 42,
-	},
-}
 
 </script>
 
 <template>
 	<div class="relative w-full h-full">
 		<transition name="flip" mode="in-out">
-			<div v-if="props.type === CardType.EMPTY" class="absolute w-full h-full align-top card">
+			<div v-if="props.player.card === CardType.EMPTY" class="absolute w-full h-full align-top card">
 				<div class="w-full h-full overflow-hidden border-4 border-color2 bg-color1 text-color2 rounded-2xl">
 					<Icon name="material-symbols:account-circle" class="w-full h-full"/>
 				</div>
 			</div>
-			<div v-else-if="props.type === CardType.ADD" class="absolute w-full h-full align-top card">
+			<div v-else-if="props.player.card === CardType.ADD" class="absolute w-full h-full align-top card">
 				<GenericButton class="w-full h-full overflow-hidden border-4 text-color2 bg-color1 border-color2 hover:bg-opacity-80 rounded-2xl">
 					<Icon name="material-symbols:add" class="w-full h-full"/>
 				</GenericButton>
 			</div>
-			<div v-else-if="props.type === CardType.PLAYER" class="absolute w-full h-full align-top card">
-				<div class="w-full h-full overflow-hidden border-4 bg-gradient-to-bl from-yellow-400 via-accent1 to-yellow-400 rounded-2xl border-accent1">
-					<div class="h-full w-full p-2 bg-gradient-to-tl grid from-yellow-600 via-transparent to-yellow-600 grid-rows-[9rem_max-content_repeat(4,auto)] rounded-xl justify-items-center">
-						<GenericProfilePicture imageSrc="/amogus.png" class="w-32 h-32"/>
-						<div class="flex justify-center w-full pt-2 overflow-hidden text-2xl font-bold truncate pb-7 text-text">James Milwaukee</div>
-						<ProfileStat class="w-full px-3 h-max" :stat="stats.classic"/>
-					</div>
-				</div>
+			<div v-else-if="props.player.card === CardType.PLAYER" class="absolute w-full h-full align-top card">
+				<PlayLobbyPlayerCard :userId="props.player.id"/>
 			</div>
-			<div v-else-if="props.type === CardType.COMING1" class="absolute w-full h-full align-top card">
+			<div v-else-if="props.player.card === CardType.COMING1" class="absolute w-full h-full align-top card">
 				<div class="grid w-full h-full overflow-hidden border-4 rounded-2xl text-background2 bg-background1 border-background1 bg-opacity-80 place-content-center">
 					<div class="flex justify-center text-4xl -rotate-45 select-none text-color2">Coming Soon</div>
 				</div>
 			</div>
-			<div v-else-if="props.type === CardType.COMING2" class="absolute w-full h-full align-top card">
+			<div v-else-if="props.player.card === CardType.COMING2" class="absolute w-full h-full align-top card">
 				<div class="flex w-full h-full overflow-hidden border-4 text-background2 bg-background1 border-background1 bg-opacity-80 rounded-2xl">
 					<Icon name="material-symbols:account-circle" class="w-full h-full"/>
 				</div>

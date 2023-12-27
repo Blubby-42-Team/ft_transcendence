@@ -1,4 +1,5 @@
-import { Direction, gameSettingsType, gameStateType } from '@shared/types/game'
+import { gameSettingsType, gameStateType } from '@shared/types/game/game'
+import { Direction } from '@shared/types/game/utils'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 

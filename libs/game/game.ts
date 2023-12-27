@@ -1,4 +1,5 @@
-import { Axis, Coordinates, Direction, Rectangle, gamePlayer, gameSettingsType, gameStateType, gameStatusType } from '../types/game';
+import { gamePlayer, gameSettingsType, gameStateType, gameStatusType } from '../types/game/game';
+import { Axis, Coordinates, Direction, Rectangle } from '../types/game/utils';
 import { Controller } from './controller';
 import { getNewStateWithGameSettings } from './getNewStateWithGameSettings';
 

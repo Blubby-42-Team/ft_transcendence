@@ -15,8 +15,8 @@ type TSidebarCategory = { type: EType.CATEGORY, categoryType: EPageCategories, p
 const categories: Ref<Array<TSidebarCategory>> = ref([
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.NONE, 		path: '/',				icon: '42'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.GAME, 		path: '/lobby',			icon: 'material-symbols:stadia-controller'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	path: '/tournament',	icon: 'material-symbols:trophy'	},
-	{	type: EType.CATEGORY,				categoryType: EPageCategories.WATCH, 		path: '/watch',			icon: 'material-symbols:visibility'	},
+	// {	type: EType.CATEGORY,				categoryType: EPageCategories.TOURNAMENT,	path: '/tournament',	icon: 'material-symbols:trophy'	},
+	// {	type: EType.CATEGORY,				categoryType: EPageCategories.WATCH, 		path: '/watch',			icon: 'material-symbols:visibility'	},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.HISTORY, 		path: '/history',		icon: 'material-symbols:history'	},
 	{	type: EType.SEPARATOR_BAR,																							},
 	{	type: EType.CATEGORY,				categoryType: EPageCategories.MESSAGES, 	path: '/messages',		icon: 'material-symbols:chat'	},

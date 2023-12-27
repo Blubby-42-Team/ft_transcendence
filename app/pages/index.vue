@@ -7,7 +7,7 @@ onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 </script>
 
 <template>
-	<div class="flex p-5">
-		<div class="flex p-10 bg-pink-500 rounded-3xl text-9xl">Play</div>
+	<div class="flex items-center justify-center h-full p-5 text-9xl">
+		Welcome
 	</div>
 </template>

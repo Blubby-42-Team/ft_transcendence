@@ -1,4 +1,6 @@
-import { gameStateType, gameStatusType, BotDifficulty, Direction, gameSettingsType } from "../types/game";
+import { gameStateType, gameStatusType, BotDifficulty, gameSettingsType } from "../types/game/game";
+import { Direction } from '../types/game/utils';
+
 
 const gameState4PlayersDefault: gameStateType = {
 	status:					gameStatusType.ON_HOLD,

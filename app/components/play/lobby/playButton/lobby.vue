@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { LobbyStartingSequence } from '#imports';
 
-const { timeRemaining, sequence, start, cancel } = useLocalLobbyStore();
+const { timeRemaining, sequence, start, cancel } = useLobbyStore();
 const hoverButton = ref(false);
 
 </script>

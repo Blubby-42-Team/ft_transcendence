@@ -9,7 +9,8 @@ const props = defineProps({
 	},
 })
 
-const { messages, getMessagePlayer } = useChannelStore()
+const { getShortUser } = useUserStore();
+const user = getShortUser(props.message.senderId);
 
 </script>
 
@@ -20,7 +21,7 @@ const { messages, getMessagePlayer } = useChannelStore()
 	</div>
 	<div class="flex flex-col row-span-2">
 		<div class="mb-auto"></div>
-		<GenericProfilePicture class="flex ml-2 w-14 h-14" imageSrc="/amogus.png"/>
+		<GenericProfilePicture class="flex ml-2 w-14 h-14" :imageSrc="user.avatar"/>
 	</div>
 	<br/>
 	<div class="flex float-left">
@@ -31,7 +32,7 @@ const { messages, getMessagePlayer } = useChannelStore()
 			</ClientOnly>
 		</div>
 		<div class="flex self-center ml-2 mr-2 text-lg">
-			{{ getMessagePlayer(props.message.senderId)?.name }}
+			{{ user.name }}
 		</div>
 	</div>
 </template>
