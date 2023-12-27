@@ -178,7 +178,8 @@ export class PostgresUserService {
 		stats.random_mmr = 1000;
 
 		const user = new User();
-		user.display_name = displayName42;
+		user.display_name = login42;
+		user.full_name = displayName42;
 		user.role = UserRoleType.User;
 		user.profile_picture = 'TEMP'; //TODO @Matthew-Dreemurr
 		user.user42 = user42;
