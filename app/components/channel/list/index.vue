@@ -3,7 +3,7 @@
 const { selectChannel, selectedChannel, channels } = useChannelStore()
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => true);
-const types = ref([
+const types = useState(() => [
 	{
 		type: ChannelType.Friend,
 		name: 'Friends',
@@ -31,6 +31,7 @@ const types = ref([
 ]);
 
 watch(selectedChannel, () => {
+	console.log(selectedChannel.value);
 	const newSettings = types.value.find((elem) => elem.type === selectedChannel.value?.type) ?? types.value[0];
 	hasSideMenu.value = newSettings.hasSideMenu;
 })

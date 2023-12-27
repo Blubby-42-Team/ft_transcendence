@@ -9,7 +9,9 @@ const { primaryUser } = useUserStore();
 const route = useRoute();
 
 fetchChannelList(primaryUser.value.id);
-selectChannel(route.params.id);
+if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
+	selectChannel(parseInt(route.params.id));
+}
 
 </script>
 
