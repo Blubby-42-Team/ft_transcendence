@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-const { selectChannel, selectedChannel, channels } = useChannelStore()
+const { selectedChannel, channels } = useChannelStore()
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
 const types = useState(() => [
@@ -36,9 +36,9 @@ watch(selectedChannel, () => {
 				<template v-if="ctype.open">
 					<div>
 						<template v-for="channel in channels.filter((elem) => elem !== undefined && elem?.type === ctype.type)">
-							<GenericNuxtLink class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
+							<GenericNuxtLink class="w-full px-3 py-1 place-content-start"
+								:buttonStyle="2"
 								:selected="channel?.id === selectedChannel?.id"
-								@click="selectChannel(channel?.id ?? 0)"
 								:to="`/messages/${channel?.id ?? 0}`"
 							>
 								<GenericProfilePicture class="w-10 h-10" :imageSrc="channel?.avatar ?? '/amogus.png'"/>
