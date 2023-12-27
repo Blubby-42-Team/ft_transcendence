@@ -5,12 +5,10 @@ const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.MESSAGES); })
 
 
-const { selectedChannel, channels, fetchChannelList } = useChannelStore();
+const { channels, fetchChannelList, selectChannel } = useChannelStore();
 const { primaryUser } = useUserStore();
 fetchChannelList(primaryUser.value.id);
-
-const isSideMenuOpen = useState<boolean>('isSideMenuOpen');
-
+selectChannel(0);
 </script>
 
 <template>

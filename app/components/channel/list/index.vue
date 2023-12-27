@@ -2,7 +2,7 @@
 
 const { selectChannel, selectedChannel, channels } = useChannelStore()
 
-const hasSideMenu = useState<boolean>('hasSideMenu', () => true);
+const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
 const types = useState(() => [
 	{ type: ChannelType.Friend, name: 'Friends', open: false, hasBottom: true,  hasSideMenu: false, icon: 'material-symbols:person' },
 	{ type: ChannelType.Group,  name: 'Groups',  open: false, hasBottom: true,  hasSideMenu: true,  icon: 'material-symbols:diversity-4' },
@@ -10,6 +10,9 @@ const types = useState(() => [
 ]);
 
 watch(selectedChannel, () => {
+	if (!selectedChannel.value){
+		hasSideMenu.value = false;
+	}
 	const newSettings = types.value.find((elem) => elem.type === selectedChannel.value?.type) ?? types.value[0];
 	hasSideMenu.value = newSettings.hasSideMenu;
 })
