@@ -33,7 +33,7 @@ const shortUserPlaceHolder: IShortUser = {
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
-		_primaryUser: 42,
+		_primaryUser: 0,
 		_shortUsers: {} as { [key: number]: IShortUser | undefined },
 		_users: {} as { [key: number]: IUser | undefined },
 		_stats: {} as { [key: number]: IStats | undefined },
@@ -52,14 +52,17 @@ export const useUserStore = defineStore('user', {
 		async updatePrimaryUser(userId: number){
 			this._primaryUser = userId;
 		},
+
 		async updateShortUser(users: Array<IShortUser>){
 			for (const user of users){
 				this._shortUsers[user.id] = user;
 			}
 		},
+
 		async fetchPrimaryUser(){
 			return this.fetchUser(this._primaryUser);
 		},
+
 		async fetchUser(userId: number){
 			if (userId === 0){
 				return;
@@ -73,8 +76,10 @@ export const useUserStore = defineStore('user', {
 					login42: data.login,
 					avatar: data.profile_picture,
 				};
-			});
+			}
+			);
 		},
+		
 		async fetchStat(userId: number){
 			if (userId === 0){
 				return;
@@ -99,6 +104,7 @@ export const useUserStore = defineStore('user', {
 				};
 			});
 		},
+
 		async fetchHistory(userId: number){
 			if (userId === 0){
 				return;
@@ -122,6 +128,16 @@ export const useUserStore = defineStore('user', {
 					score: 			el.playerId === userId ? el.player_score : el.opp_score,
 					scoreAdv: 		el.playerId === userId ? el.opp_score : el.player_score,
 				}));
+			});
+		},
+
+		async fetchFriends(userId: number){
+			if (userId === 0){
+				return;
+			}
+			return await fetchUserFriends(userId, (response) => {
+				const data = response._data;
+				console.log('res', data);
 			});
 		},
 	},

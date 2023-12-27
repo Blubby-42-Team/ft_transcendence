@@ -1,7 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-	if (process.server){
-		return ;
-	}
+	
 	const config = useRuntimeConfig();
 	const cookie = useCookie('user_id', {
 		default: () => 0,
@@ -9,7 +7,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	});
 
 	if (cookie.value === 0) {
-		window.location.href = `${config.public.back.uri}/auth42/login`;
+		if (!process.server){
+			window.location.href = `${config.public.back.uri}/auth42/login`;
+		}
 	}
 
 	const { fetchUser, updatePrimaryUser } = useUserStore();
@@ -17,7 +17,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	const res = await fetchUser(cookie.value);
 
 	if (!res || res.error.value){
-		window.location.href = `${config.public.back.uri}/auth42/login`;
+		if (!process.server){
+			window.location.href = `${config.public.back.uri}/auth42/login`;
+		}
 	}
 
 	updatePrimaryUser(cookie.value);
