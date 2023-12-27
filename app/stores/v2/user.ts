@@ -38,13 +38,15 @@ export const useUserStore = defineStore('user', {
 		_users: {} as { [key: number]: IUser | undefined },
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
+		_friends: {} as { [key: number]: Array<IShortUser> | undefined },
 	}),
 	getters: {
-		primaryUser:	(state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
-		getUser:		(state) => (userId: number) => computed(() => state._users?.[userId] ?? userPlaceHolder),
-		getShortUser:	(state) => (userId: number) => computed(() => state._shortUsers?.[userId] ?? shortUserPlaceHolder),
-		getStat:		(state) => (userId: number) => computed(() => state._stats?.[userId] ?? statsPlaceHolder),
-		getHistory:		(state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
+		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
+		getUser:      (state) => (userId: number) => computed(() => state._users?.[userId] ?? userPlaceHolder),
+		getShortUser: (state) => (userId: number) => computed(() => state._shortUsers?.[userId] ?? shortUserPlaceHolder),
+		getStat:      (state) => (userId: number) => computed(() => state._stats?.[userId] ?? statsPlaceHolder),
+		getHistory:   (state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
+		getFriends:   (state) => (userId: number) => computed(() => state._friends?.[userId] ?? []),
 	},
 	actions: {
 		async updateShortUser(users: Array<IShortUser>){
@@ -59,7 +61,7 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return fetchUser(userId, (response) => {
+			return fetchTest(userId, (response) => {
 				this._users[userId] = {
 					id: userId,
 					name: 'James',
@@ -73,7 +75,7 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return fetchStats(userId, (response) => {
+			return fetchTest(userId, (response) => {
 				this._stats[userId] = {
 					classic: {
 						matchPlayed: Math.floor(Math.random() * 100),
@@ -96,7 +98,7 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return await fetchHistory(userId, (response) => {
+			return await fetchTest(userId, (response) => {
 				console.log('fetchHistory', userId);
 				if (this._history[userId] === undefined){
 					this._history[userId] = [];

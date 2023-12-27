@@ -14,7 +14,7 @@ export const useChannelStore = defineStore('channel', {
 	actions: {
 		fetchChannelList(userId: number){
 			const { updateShortUser } = useUserStore();
-			return fetchUser(userId, (response) => {
+			return fetchTest(userId, (response) => {
 				this._channelList = [1, 2, 3, 4, 5, 6];
 				this._shortChannels = {
 					1: {
@@ -70,7 +70,7 @@ export const useChannelStore = defineStore('channel', {
 			if (channelId === 0){
 				return;
 			}
-			return fetchUser(channelId, (response) => {
+			return fetchTest(channelId, (response) => {
 				this._channels[channelId] = {
 					id: channelId,
 					name: 'Chat XD',

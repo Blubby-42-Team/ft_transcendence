@@ -32,7 +32,7 @@ onMounted(() => {
 	}
 
 	watch([buttonRef, menuRef], () => {
-		updateMenu()
+		updateMenu();
 	})
 })
 
