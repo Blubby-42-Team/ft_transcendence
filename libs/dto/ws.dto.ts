@@ -58,11 +58,21 @@ export class removePlayerFromWhiteListRequestDto extends WsRequestDto {
 	user_id: number;
 }
 
+export class moveRequestDto extends WsRequestDto {
+	@IsNotEmpty()
+	user_id: number;
+
+	@IsNotEmpty()
+	direcction: boolean;
+
+	@IsNotEmpty()
+	press: boolean;
+}
+
 export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
 
-export type joinGameResponse = {
-	game_room_id: string;
-};
+export type joinGameResponse = 'ok';
+export type moveResponse = 'ok';
 
 export type createGameRoomResponse = {
 	game_room_id: string;
@@ -70,3 +80,8 @@ export type createGameRoomResponse = {
 
 export type deleteGameRoomResponse = 'ok';
 export type addOrRemovePlayerToWhiteListResponse = 'ok';
+
+export type disconnectClientFromTheLobbyResponse = {
+	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin',
+	msg: string,
+}

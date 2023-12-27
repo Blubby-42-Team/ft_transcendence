@@ -7,17 +7,29 @@ const props = defineProps({
 	},
 });
 
-const { getUser, getStats, getHistory } = useUserStore();
+const { getUser, getStat, getHistory, fetchStat, fetchUser, fetchHistory } = useUserStore();
 const user = getUser(props.userId);
-const stats = getStats(props.userId);
+const stats = getStat(props.userId);
 const history = getHistory(props.userId);
+
+await fetchUser(props.userId);
+await fetchStat(props.userId);
+await fetchHistory(props.userId);
+// onMounted(async () => {
+// });
+
+// watch(() => props.userId, async (newVal, oldVal) => {
+// 	await fetchUser(newVal);
+// 	await fetchStat(newVal);
+// 	await fetchHistory(newVal);
+// });
 
 </script>
 
 <template>
 	<div class="grid h-full grid-cols-2 grid-rows-[max-content,max-content,1fr]">
 		<div class="flex justify-center p-5 overflow-hidden h-max w-max">
-			<GenericProfilePicture imageSrc="/amogus.png" class="w-64 h-64"/>
+			<GenericProfilePicture :imageSrc="user.avatar" class="w-64 h-64"/>
 		</div>
 		<div class="grid grid-cols-[3rem,auto] grid-rows-5">
 			<div class="col-span-2"></div>

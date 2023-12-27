@@ -1,4 +1,4 @@
-import { Direction } from "../types/game";
+import { Direction } from "../types/game/utils";
 
 export class Controller {
 	protected controller = {

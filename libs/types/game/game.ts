@@ -1,3 +1,5 @@
+import { Rectangle, Coordinates } from './utils';
+
 export type gameControllerType = {[key: string]: (status: boolean) => void};
 
 export type gameTexture = {
@@ -10,35 +12,18 @@ export type gameTexture = {
 	imageRotation: 0 | 1 | 2 | 3,
 }
 
-export enum Direction {
-	NONE,
-	LEFT,
-	RIGHT,
-	TOP,
-	BOTTOM,
-};
-
-export type Coordinates = {
-	x: number,
-	y: number,
-}
-
-export enum Axis {
-	X,
-	Y,
-};
-
-export type Rectangle = {
-	center: Coordinates,
-	height_d_2: number, // height divided by two
-	width_d_2: number,  // width  divided by two
-};
-
 export type screenData = {
 	delta: Coordinates,
 	width: number,
 	height: number,
 }
+
+export enum EGameMode {
+	Local,
+	Classic,
+	Random,
+	Custom,
+};
 
 export type gameTheme = {
 	fontColor:			string,

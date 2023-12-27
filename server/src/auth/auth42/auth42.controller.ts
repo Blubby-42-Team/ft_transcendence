@@ -71,6 +71,8 @@ export class Auth42Controller {
 		)
 
 		res.cookie('user_auth', jwt, { httpOnly: true });
+		
+		res.cookie('user_id', userId, { httpOnly: false });
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,

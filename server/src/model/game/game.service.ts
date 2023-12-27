@@ -4,7 +4,8 @@
 
 import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { GameService } from '../../service/game/game.service';
-
+import { Socket } from 'socket.io';
+import { EmitGateway } from 'src/service/game/emit.gateway';
 
 @Injectable()
 export class ModelGameService {
@@ -12,31 +13,25 @@ export class ModelGameService {
 	private readonly logger = new Logger(ModelGameService.name);
 
 	constructor(
-		private readonly gameService: GameService
+		private readonly gameService: GameService,
+		private readonly emitGAteway: EmitGateway,
 	) {}
 
-	async joinAGame(roomId: string, userId: number) {
-		return await this.gameService.findUserInLobbys(userId)
-		.then((lobby) => {
-			if (lobby !== undefined) {
-				this.logger.debug(`User ${userId} is already in the lobby ${lobby.room_id}`);
-
-				if (userId === lobby.owner_id) {
-					throw new BadRequestException(`User ${userId} is the owner of the lobby ${lobby.room_id}`);
-				}
-				throw new BadRequestException(`User ${userId} is already in the lobby ${lobby.room_id}`);
+	async joinAGame(roomId: string, userId: number, socket: Socket) {
+		return await this.gameService.getLobby(roomId)
+		.then(async (lobby) => {
+			if (lobby.isInWhiteList(userId) === false) {
+				this.logger.debug(`User ${userId} is not in the white list of lobby ${roomId}`);
+				throw new UnauthorizedException(`User ${userId} is not in the white list of lobby ${roomId}`);
 			}
-			this.logger.error(`getLobbyByUserId(${userId}) return undefined?!`);
-			throw new BadGatewayException(`Create lobby failed!, see logs or contact an admin`);
+			this.gameService.joinPlayerToLobby(lobby.room_id, userId, socket);
 		})
 		.catch((err) => {
-			if ((err instanceof NotFoundException) === false) {
-				throw err;
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`Lobby ${roomId} not found`);
+				throw new NotFoundException(`Lobby ${roomId} not found`);
 			}
-
-			this.logger.debug(`User ${userId} is not in a lobby, add him in the lobby ${roomId}`);
-
-			return this.gameService.addPlayerToLobby(roomId, userId);
+			throw err;
 		});
 	}
 
@@ -119,4 +114,7 @@ export class ModelGameService {
 
 		return this.gameService.addPlayerToWhiteList(userLobby.room_id, userId);
 	}
+
+	// TODO WIP @Matthew-Dreemurr
+	// async move
 }

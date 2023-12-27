@@ -1,13 +1,7 @@
-type gameStoreType = {
-	_theme: gameTheme,
-	_localSettings: {
-		sound: boolean,
-	}
-	_gameSettings: gameSettingsType,
-};
+import { gameSettingsType } from "../../libs/types/game/game";
 
 export const useGameStore = defineStore('game', {
-	state: (): gameStoreType => ({
+	state: () => ({
 		_theme: {
 			fontColor:			'white',
 			background:			{	type: 'color',	color: 'black'	},
@@ -26,7 +20,7 @@ export const useGameStore = defineStore('game', {
 			player4RightElim:	{	type: 'color',	color: 'white'	},
 			player2Bottom:		{	type: 'color',	color: 'white'	},
 			player2Top:			{	type: 'color',	color: 'white'	},
-		},
+		} as gameTheme,
 		_localSettings: {
 			sound: false,
 		},
@@ -39,7 +33,7 @@ export const useGameStore = defineStore('game', {
 			randomizer:			false,
 			initialBallSpeed:	0.5,
 			speedAcceleration:	0.1,
-		},
+		} as gameSettingsType,
 	}),
 	getters: {
 		theme:			(state) => computed(() => state._theme),

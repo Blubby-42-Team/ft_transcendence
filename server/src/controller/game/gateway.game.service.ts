@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 import { ModelGameService } from '../../model/game/game.service';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class GatewayGameService {
@@ -12,8 +13,8 @@ export class GatewayGameService {
 		private readonly modelGameService: ModelGameService,
 	) {}
 
-	async joinAGame(roomId: string, userId: number) {
-		return this.modelGameService.joinAGame(roomId, userId);
+	async joinAGame(roomId: string, userId: number, Socket: Socket) {
+		return this.modelGameService.joinAGame(roomId, userId, Socket);
 	}
 
 	async createAGame(userId: number) {
@@ -39,4 +40,22 @@ export class GatewayGameService {
 	async addPlayerToMyGame(ownerId: number, userId: number) {
 		return this.modelGameService.addPlayerToMyGame(ownerId, userId);
 	}
+
+	/**
+	 * Remove a user from the white list of the owner lobby
+	 * @param ownerId Id of the owner of the lobby
+	 * @param userId Id of the user to remove from the white list
+	 * @returns
+	 */
+
+
+	//TODO wip @Matthew-Dreemurr
+	/**
+	 * Handle move request from the client
+	 * @param userId Id of the user
+	 * @param direction Direction of the move
+	 * @param press True if the user press the key, false if he release it
+	 * @returns Aknowledgement 'ok'
+	 */
+	// async move(userId: number, direction: string, press: boolean) {
 }

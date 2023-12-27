@@ -1,6 +1,9 @@
-import { Direction, gameSettingsType, gameStateType } from '@shared/types/game'
+import { gameSettingsType, gameStateType } from '@shared/types/game/game'
+import { Direction } from '@shared/types/game/utils'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
+import { Server } from 'socket.io'
+
 
 export class LobbyInstance {
 
@@ -22,6 +25,8 @@ export class LobbyInstance {
 			wsId: '',
 			isConnected: false,
 		}
+		
+		this.whiteList.push(owner_id);
 	}
 
 	readonly room_id: string;
@@ -42,13 +47,33 @@ export class LobbyInstance {
 
 	private game: GameEngine | undefined;
 
-	private gameSettings: gameSettingsType | undefined;
+	private gameState: gameStateType | undefined;
 
-	async startGame(roomName: string, opt: any, io: any) {
-		if (this.game === undefined) {
-			this.logger.error(`No game instance set for lobby ${this.room_id}`);
-			throw new Error(`No game instance set for lobby ${this.room_id}`);
+	private gameSettings: gameSettingsType;
+
+	private io: Server;
+
+	checkBeforeStart() {
+		if (this.slots !== this.gameSettings.numPlayer)
+			throw new BadRequestException(`The amount of connected players is incorrect : ${this.slots}.`)
+		for (let player in this.players) {
+			if (!this.players[player].ready)
+				throw new BadRequestException("Not everybody is ready.")
 		}
+	}
+
+	async startGame() {
+		this.checkBeforeStart();
+		this.game = new GameEngine(
+			this.gameSettings,
+			(newGameState: gameStateType) => {
+				this.gameState = newGameState;
+				this.io.to(this.room_id).emit("state", this.gameState)
+			},
+			(state) => {
+				state = this.gameState;
+		});
+		this.game.start();
 	}
 
 	async stopGame () {
@@ -63,6 +88,14 @@ export class LobbyInstance {
 		//TODO emit to all players that the lobby is closed
 		//TODO disconnect all players from the WS room
 		//TODO stop game if it is running
+	}
+
+	async movePlayer (userId: number, sens: boolean) {
+		this.game.move(this.players[userId].dir, sens, true);
+	}
+
+	async testGame(userId: number) {
+
 	}
 
 	/**
@@ -212,6 +245,11 @@ export class LobbyInstance {
 		if (this.isInWhiteList(userId)) {
 			this.logger.warn(`User ${userId} is already in the white list`);
 			throw new BadRequestException(`User ${userId} is already in the white list`);
+		}
+
+		if (this.slots === 4) {
+			this.logger.error(`Lobby ${this.room_id} is full, can't add user to the white list`);
+			throw new BadRequestException(`Lobby ${this.room_id} is full, can't add user to the white list`);
 		}
 
 		this.whiteList.push(userId);

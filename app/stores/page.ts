@@ -1,3 +1,5 @@
+import { EGameMode } from '../../libs/types/game/game'
+
 export enum EPageCategories {
 	NONE		= 0,
 	GAME		= 1,
@@ -9,22 +11,15 @@ export enum EPageCategories {
 	HISTORY		= 7,
 };
 
-export enum ESelectedLobby {
-	Local,
-	Classic,
-	Random,
-	Custom,
-};
-
 export const usePageStore = defineStore('page', {
 	state: () => ({
 		_selectedCategory: EPageCategories.NONE,
-		_selectedLobby: ESelectedLobby.Local,
+		_selectedLobby: EGameMode.Local,
 		_lobby: [
-			{ id: ESelectedLobby.Classic,	name: 'Classic',	path: '/lobby/classic'},
-			{ id: ESelectedLobby.Random,	name: 'Random',		path: '/lobby/random'},
-			{ id: ESelectedLobby.Custom,	name: 'Custom',		path: '/lobby/custom'},
-			{ id: ESelectedLobby.Local,		name: 'Local',		path: '/lobby/local'},
+			{ id: EGameMode.Classic,	name: 'Classic',	path: '/lobby/classic'},
+			{ id: EGameMode.Random,		name: 'Random',		path: '/lobby/random'},
+			{ id: EGameMode.Custom,		name: 'Custom',		path: '/lobby/custom'},
+			{ id: EGameMode.Local,		name: 'Local',		path: '/lobby/local'},
 		]
 	}),
 	getters: {
@@ -33,7 +28,7 @@ export const usePageStore = defineStore('page', {
 		lobby:				(state) => state._lobby,
 	},
 	actions: {
-		setPageDataLobby(newCategory: EPageCategories, newLobby: ESelectedLobby){
+		setPageDataLobby(newCategory: EPageCategories, newLobby: EGameMode){
 			this._selectedCategory = newCategory;
 			this._selectedLobby = newLobby;
 		},
