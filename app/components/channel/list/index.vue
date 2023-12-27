@@ -21,7 +21,7 @@ watch(selectedChannel, () => {
 
 <template>
 	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
-		<template v-for="ctype in types">			
+		<template v-for="ctype in types">
 			<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
 				:selected="ctype.type === selectedChannel?.type ?? undefined"
 				@click="ctype.open = !ctype.open"

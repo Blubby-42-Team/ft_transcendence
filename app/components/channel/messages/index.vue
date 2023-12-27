@@ -12,7 +12,7 @@ const { primaryUser } = useUserStore()
 </script>
 
 <template>
-	<div  class="w-full h-full contents">
+	<div class="w-full h-full contents">
 		<div class="flex flex-col-reverse w-full h-full overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain">
 			<template v-for="message in channel.messages">
 				<div class="inline-grid grid-rows-[auto,2em] p-5"

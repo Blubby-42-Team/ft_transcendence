@@ -8,9 +8,9 @@ const { selectedChannel, fetchChannelList, selectChannel } = useChannelStore();
 const { primaryUser } = useUserStore();
 const route = useRoute();
 
-fetchChannelList(primaryUser.value.id);
+await fetchChannelList(primaryUser.value.id);
 if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
-	selectChannel(parseInt(route.params.id));
+	await selectChannel(parseInt(route.params.id));
 }
 
 </script>

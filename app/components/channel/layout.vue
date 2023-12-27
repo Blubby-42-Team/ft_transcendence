@@ -2,7 +2,7 @@
 
 const { selectedChannel, fetchChannelList } = useChannelStore();
 const { primaryUser } = useUserStore();
-fetchChannelList(primaryUser.value.id);
+await fetchChannelList(primaryUser.value.id);
 
 </script>
 

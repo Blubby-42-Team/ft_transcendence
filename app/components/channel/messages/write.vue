@@ -4,7 +4,6 @@ const { textarea, input } = useTextareaAutosize()
 
 </script>
 
-
 <template>
 	<div class="w-full p-5 grid grid-cols-[auto,3em] gap-2">
 		<div class="pt-2 pb-1 pl-2 pr-0 bg-background1 rounded-2xl">
