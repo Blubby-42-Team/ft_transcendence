@@ -6,6 +6,8 @@ import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundE
 import { GameService } from '../../service/game/game.service';
 import { Socket } from 'socket.io';
 import { EmitGateway } from 'src/service/game/emit.gateway';
+import { addPlayerToWhiteListRequestDto } from '@shared/dto/ws.dto';
+import { clear } from 'console';
 
 @Injectable()
 export class ModelGameService {
@@ -16,6 +18,10 @@ export class ModelGameService {
 		private readonly gameService: GameService,
 		private readonly emitGAteway: EmitGateway,
 	) {}
+
+	async matchMakingTwoPlayers(userId: number, socket: Socket) {
+		return await this.gameService.addPlayerToTwoUserMatchMaking(userId, socket);
+	}
 
 	async joinAGame(roomId: string, userId: number, socket: Socket) {
 		return await this.gameService.getLobby(roomId)

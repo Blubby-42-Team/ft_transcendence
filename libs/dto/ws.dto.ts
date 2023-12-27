@@ -39,6 +39,9 @@ export class JoinGameRoomRequestDto extends WsRequestDto {
 	game_room_id: string;
 }
 
+export class MatchMakingRequestDto extends WsRequestDto {
+}
+
 export class createRoomRequestDto extends WsRequestDto {
 }
 
@@ -83,5 +86,10 @@ export type addOrRemovePlayerToWhiteListResponse = 'ok';
 
 export type disconnectClientFromTheLobbyResponse = {
 	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin',
+	msg: string,
+}
+
+export type matchMakingResponse = {
+	status: 'FoundMatch' | 'NoMatchFound'| 'DisconnectedByServer',
 	msg: string,
 }

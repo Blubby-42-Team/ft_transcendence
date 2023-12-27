@@ -1,6 +1,6 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import { AcknowledgmentWsDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse, moveRequestDto, moveResponse } from '@shared/dto/ws.dto'
+import { AcknowledgmentWsDto, JoinGameRoomRequestDto, MatchMakingRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse, moveRequestDto, moveResponse } from '@shared/dto/ws.dto'
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
@@ -155,18 +155,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// @SubscribeMessage('removePlayerFromWhiteList')
 
 	// TODO rework for #40 #64 #65 @Matthew-Dreemurr
-	@SubscribeMessage('joinGame')
-	async joinGame(
+	// @SubscribeMessage('joinGame')
+	// async joinGame(
+	// 	@MessageBody() req: any,
+	// 	@ConnectedSocket() socket: Socket
+	// ) {
+	// 	return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
+
+	// 		await this.gatewayGameService.joinAGame(data.game_room_id, user.userId, socket);
+	// 		return 'ok';
+	// 	});
+	// }
+
+	// WIP @Matthew-Dreemurr #40 #64 #65
+	/**
+	 * Match makeking
+	 */
+	@SubscribeMessage('matchmake')
+	async matchmake(
 		@MessageBody() req: any,
 		@ConnectedSocket() socket: Socket
 	) {
-		return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
+		return this.handleRequest(socket, req, MatchMakingRequestDto, async (user, data): Promise<joinGameResponse> => {
 
-			await this.gatewayGameService.joinAGame(data.game_room_id, user.userId, socket);
+			await this.gatewayGameService.matchMakingTwoPlayers(user.userId, socket);
 			return 'ok';
 		});
 	}
 
+	/**
+	 * Handle player move input
+	 */
 	@SubscribeMessage('move')
 	async move(
 		@MessageBody() req: any,

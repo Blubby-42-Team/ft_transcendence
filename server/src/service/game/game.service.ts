@@ -2,17 +2,16 @@
 	Service for managing game lobbys and game rooms
  */
 
-import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
 import { ModelUserService } from 'src/model/user/user.service';
-import { DisconnectReason, Socket } from 'socket.io';
-import { WsRequestDto, disconnectClientFromTheLobbyResponse } from '@shared/dto/ws.dto';
-import { ModelChatModule } from '../../model/chat/chat.module';
+import { Socket } from 'socket.io';
+import { disconnectClientFromTheLobbyResponse, matchMakingResponse } from '@shared/dto/ws.dto';
 
 @Injectable()
-export class GameService {
+export class GameService implements OnModuleInit, OnModuleDestroy {
 
 	constructor (
 		private readonly emitGAteway: EmitGateway,
@@ -33,9 +32,126 @@ export class GameService {
 		}
 	} = {};
 
-	async gameStateManager() {
-		this.logger.debug('gameStateManager');
-		// TODO
+	private twoUserMatchMakingQueue: Array<{ userId: number, socket: Socket }> = [];
+
+	private matchMakingTwoPlayersInterval: NodeJS.Timeout;
+	private readonly matchMakingTwoPlayersIntervalTime = 1000;
+
+	onModuleInit() {
+		this.logger.debug(`onModuleInit: start`);
+		// Do not await this call
+		// Call the matchMakingTwoPlayers function every second
+		this.matchMakingLoop();
+	}
+
+	async onModuleDestroy() {
+		clearInterval(this.matchMakingTwoPlayersInterval);
+	}
+
+	async matchMakingLoop() {
+		this.matchMakingTwoPlayersInterval = setInterval(() => {
+			this.matchMakingTwoPlayers();
+		}, this.matchMakingTwoPlayersIntervalTime);
+	
+	}
+
+	/**
+	 * Will try to match the user with another user
+	 * @param userId Id of the user
+	 * @param socket Socket of the user
+	 * @returns 
+	 */
+	async matchMakingTwoPlayers() {
+		if (this.twoUserMatchMakingQueue && this.twoUserMatchMakingQueue.length < 2) {
+			return;
+		}
+
+		const player1 = await this.getAndPopFristPlayerFromTwoUserMatchMaking();
+		const player2 = await this.getAndPopFristPlayerFromTwoUserMatchMaking();
+
+		if (player1 === undefined || player2 === undefined) {
+			this.logger.error(`matchMakingTwoPlayers: player1 or player2 is undefined`);
+		}
+
+		// Create a lobby
+		const lobby_id = await this.createLobby(player1.userId);
+
+		// Join WS of the two players to the lobby
+
+		// Dont need to add the player1 to the white list because he is the owner
+		await this.joinPlayerToLobby(lobby_id, player1.userId, player1.socket);
+
+		await this.addPlayerToWhiteList(lobby_id, player2.userId);
+		await this.joinPlayerToLobby(lobby_id, player2.userId, player2.socket);
+
+
+		this.emitGAteway.server.in(lobby_id).emit('matchMakingStatus', {
+			status: "ok",
+			msg: "Match found, waiting for players to be ready",
+		});
+
+		// TODO WIP @Matthew-Dreemurr
+		// Emit to the two players that we found an opponent and start the game
+		// Start lobby instance and wait for player to be ready
+		// Check how to setup the game and settings
+		// this.lobbys[lobby_id].startLobby();
+		this.logger.debug(`matchMakingTwoPlayers: match found ${player1.userId} ${player2.userId}`);
+		this.logger.debug('Starting lobby')
+	}
+
+	async getAndPopFristPlayerFromTwoUserMatchMaking(): Promise<{userId: number, socket: Socket}> {
+		return this.twoUserMatchMakingQueue.shift();
+	}
+
+	/**
+	 * Add player to the match making queue
+	 * @param userId user id
+	 * @param socket socket of the user that will be used to send him a messages
+	 */
+	async addPlayerToTwoUserMatchMaking(userId: number, socket: Socket) {
+
+
+		const checkIfPlayerIsAlreadyInLobby = await this.findUserInLobbys(userId)
+		.then((lobby) => {
+			this.logger.debug(`User ${userId} is already in a lobby ${lobby.room_id}`);
+			throw new BadRequestException(`User ${userId} is already in a lobby ${lobby.room_id}`);
+		})
+		.catch((err) => {
+			if ((err instanceof NotFoundException) === false) {
+				throw err;
+			}
+
+			// User is not in a lobby, continue
+		})
+
+		const checkIfUserIsAlreadyInMatchMaking = this.twoUserMatchMakingQueue.find((e) => e.userId === userId);
+		if (checkIfUserIsAlreadyInMatchMaking !== undefined) {
+			this.logger.log(`User ${userId} is already in the match making, ignoring`);
+			return;
+		}
+		this.twoUserMatchMakingQueue.push({
+			userId: userId,
+			socket: socket,
+		});
+		this.logger.debug(`addPlayerToTwoUserMatchMaking ${userId}`);
+	}
+
+	async removePlayerFromTwoUserMatchMaking(userId: number) {
+
+		// Disconnect the user if he is still connected
+		const socket = this.twoUserMatchMakingQueue.find((e) => e.userId === userId)?.socket;
+
+		if (socket !== undefined && socket.connected === true) {
+			const res: matchMakingResponse = {
+				status: "DisconnectedByServer",
+				msg: "You have been removed from the match making",
+			}
+			socket.emit('matchMakingStatus', res);
+			socket.disconnect();
+		}
+
+		// Remove the user from the array using filter
+		this.twoUserMatchMakingQueue = this.twoUserMatchMakingQueue.filter((e) => e.userId !== userId);
 	}
 
 	/**
@@ -48,7 +164,7 @@ export class GameService {
 
 		const newRoomId = this.generateUniqueRoomId(6);
 
-		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
+		const newLobby = new LobbyInstance(newRoomId, userId, ()=>{});
 		this.lobbys[newRoomId] = newLobby;
 
 		this.users[userId] = {
@@ -276,15 +392,6 @@ export class GameService {
 	 * @returns return all lobbys public data
 	 */
 	async getAllLobbysPublicData() {
-
-		if (this.lobbys === undefined) {
-			return [];
-		}
-
-		if (Object.keys(this.lobbys).length === 0) {
-			return [];
-		}
-
 		const lobbysPublicData = [];
 		for (const lobbyId in this.lobbys) {
 			if (this.lobbys[lobbyId] === undefined) {
@@ -303,11 +410,17 @@ export class GameService {
 		for (const userId of Object.keys(this.users)) {
 			playerWsClients[userId] = this.users[userId].connectedClients;
 		}
+
+		const dataMatchMakingTwoPlayers = {};
+		for (const player of this.twoUserMatchMakingQueue) {
+			dataMatchMakingTwoPlayers[player.userId] = player.socket.id;
+		}
 		
 		return {
 			lobbys: lobbysPublicData,
 			players: playerPublicData,
 			playerWsClients: playerWsClients,
+			dataMatchMakingTwoPlayers: dataMatchMakingTwoPlayers,
 		};
 	}
 
