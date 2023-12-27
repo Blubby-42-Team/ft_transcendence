@@ -104,51 +104,57 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	readonly server: Server;
 
-	@SubscribeMessage('createMyGame')
-	async createMyGame(
-		@MessageBody() req: any,
-		@ConnectedSocket() socket: Socket
-	) {
-		return this.handleRequest(socket, req, createRoomRequestDto, async (user, data): Promise<createGameRoomResponse> => {
+	/**
+	 * TODO Feature temporarily disabled #39
+	 */
+	// @SubscribeMessage('createMyGame')
+	// async createMyGame(
+	// 	@MessageBody() req: any,
+	// 	@ConnectedSocket() socket: Socket
+	// ) {
+	// 	return this.handleRequest(socket, req, createRoomRequestDto, async (user, data): Promise<createGameRoomResponse> => {
 
-			const roomId = await this.gatewayGameService.createAGame(user.userId);
-			return {
-				game_room_id: roomId
-			};
+	// 		const roomId = await this.gatewayGameService.createAGame(user.userId);
+	// 		return {
+	// 			game_room_id: roomId
+	// 		};
 
-		});
-	}
+	// 	});
+	// }
 
-	@SubscribeMessage('stopMyGame')
-	async stopMyGame(
-		@MessageBody() req: any,
-		@ConnectedSocket() socket: Socket
-	) {
-		return this.handleRequest(socket, req, deleteGameRoomRequestDto, async (user, data): Promise<deleteGameRoomResponse> => {
+	/**
+	 * TODO Feature temporarily disabled #39
+	 */
+	// @SubscribeMessage('stopMyGame')
+	// async stopMyGame(
+	// 	@MessageBody() req: any,
+	// 	@ConnectedSocket() socket: Socket
+	// ) {
+	// 	return this.handleRequest(socket, req, deleteGameRoomRequestDto, async (user, data): Promise<deleteGameRoomResponse> => {
 
-			await this.gatewayGameService.stopMyGame(user.userId);
-			return 'ok';
-		});
-	}
+	// 		await this.gatewayGameService.stopMyGame(user.userId);
+	// 		return 'ok';
+	// 	});
+	// }
 
-	@SubscribeMessage('addPlayerToMyGame')
-	async addPlayerToMyGame(
-		@MessageBody() req: any,
-		@ConnectedSocket() socket: Socket
-	) {
-		return this.handleRequest(socket, req, addPlayerToWhiteListRequestDto, async (user, data): Promise<addOrRemovePlayerToWhiteListResponse> => {
+	/**
+	 * TODO Feature temporarily disabled #39
+	 */
+	// @SubscribeMessage('addPlayerToMyGame')
+	// async addPlayerToMyGame(
+	// 	@MessageBody() req: any,
+	// 	@ConnectedSocket() socket: Socket
+	// ) {
+	// 	return this.handleRequest(socket, req, addPlayerToWhiteListRequestDto, async (user, data): Promise<addOrRemovePlayerToWhiteListResponse> => {
 
-			await this.gatewayGameService.addPlayerToMyGame(user.userId, data.user_to_white_list);
-			return 'ok';
-		});
-	}
+	// 		await this.gatewayGameService.addPlayerToMyGame(user.userId, data.user_to_white_list);
+	// 		return 'ok';
+	// 	});
+	// }
 
 	// @SubscribeMessage('removePlayerFromWhiteList')
 
-	// TODO #36 REWORK
-	// User should be allowed to join a room only if he is in the white list
-	// Only check if there is a client connected to the room
-	// If it's the case, disconnect the old client and connect the new one
+	// TODO rework for #40 #64 #65 @Matthew-Dreemurr
 	@SubscribeMessage('joinGame')
 	async joinGame(
 		@MessageBody() req: any,
