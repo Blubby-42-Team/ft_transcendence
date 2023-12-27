@@ -9,11 +9,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		window.location.href = `${config.public.back.uri}/auth42/login`;
 	}
 
-	const { fetchUser } = useUserStore();
+	const { fetchUser, updatePrimaryUser } = useUserStore();
 
 	const res = await fetchUser(cookie.value);
 
 	if (!res || res.error.value){
 		window.location.href = `${config.public.back.uri}/auth42/login`;
 	}
+
+	updatePrimaryUser(cookie.value);
 })

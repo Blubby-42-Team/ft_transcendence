@@ -10,6 +10,10 @@ const props = defineProps({
 	},
 })
 
+const { getUser, fetchUser } = useUserStore();
+const user = getUser(props.match.adversary);
+await fetchUser(props.match.adversary);
+
 const openMatchHistoryPreview = ref();
 
 </script>
@@ -27,7 +31,7 @@ const openMatchHistoryPreview = ref();
 			</ClientOnly>
 		</div>
 		<div class="flex items-center justify-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
-			{{ match.adversaryName }}
+			{{ user.name }}
 		</div>
 		<div class="flex items-center justify-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
 			{{ match.scoreAdv }}-{{ match.score }}

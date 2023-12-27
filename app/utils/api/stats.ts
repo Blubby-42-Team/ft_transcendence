@@ -3,7 +3,7 @@ export function fetchStats(
 	callback: (response: any) => void,
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
+	return useFetch(`${config.public.back.uri}/stats/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response);
 			console.log('stats fetched');

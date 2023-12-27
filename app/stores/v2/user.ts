@@ -49,6 +49,9 @@ export const useUserStore = defineStore('user', {
 		getFriends:   (state) => (userId: number) => computed(() => state._friends?.[userId] ?? []),
 	},
 	actions: {
+		async updatePrimaryUser(userId: number){
+			this._primaryUser = userId;
+		},
 		async updateShortUser(users: Array<IShortUser>){
 			for (const user of users){
 				this._shortUsers[user.id] = user;
@@ -61,13 +64,14 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return fetchTest(userId, (response) => {
+			return fetchUser(userId, (response) => {
+				const data = response._data;
 				this._users[userId] = {
-					id: userId,
-					name: 'James',
-					fullName: 'James Bond',
-					login42: 'jbond',
-					avatar: '/themes/anime/astolfo.jpg',
+					id: data.id,
+					name: data.display_name,
+					fullName: data.full_name,
+					login42: data.login,
+					avatar: data.profile_picture,
 				};
 			});
 		},
@@ -75,21 +79,22 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return fetchTest(userId, (response) => {
+			return fetchStats(userId, (response) => {
+				const data = response._data;
 				this._stats[userId] = {
 					classic: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
+						matchPlayed: 			data.classic_match_played,
+						ranking: 				data.classic_ranking,
+						mmr: 					data.classic_mmr,
+						winrate: 				data.classic_winrate,
+						averagePointPerGame:	data.classic_average_point,
 					},
 					random: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
+						matchPlayed: 			data.random_match_played,
+						ranking: 				data.random_ranking,
+						mmr: 					data.random_mmr,
+						winrate: 				data.random_winrate,
+						averagePointPerGame: 	data.random_average_point,
 					},
 				};
 			});
@@ -98,22 +103,25 @@ export const useUserStore = defineStore('user', {
 			if (userId === 0){
 				return;
 			}
-			return await fetchTest(userId, (response) => {
-				console.log('fetchHistory', userId);
-				if (this._history[userId] === undefined){
-					this._history[userId] = [];
-				}
-				for (let i = 0; i < 10; i++){
-					this._history[userId]?.push({
-						matchId: 45,
-						date: new Date,
-						duration: 100,
-						adversary: 3,
-						adversaryName: 'Jameskii',
-						score: 10,
-						scoreAdv: Math.floor(Math.random() * 10),
-					})
-				}
+			return await fetchHistory(userId, (response) => {
+				const data = response._data;
+				this._history[userId] = data.map((el: {
+					id: number,
+					game_type: 'classic' | 'random',
+					player_score: number,
+					opp_score: number,
+					date: string,
+					duration: number,
+					playerId: number,
+					oppId: number
+				}) => ({
+					matchId: 		el.id,
+					date: 			new Date(el.date),
+					duration: 		el.duration,
+					adversary: 		el.playerId === userId ? el.oppId : el.playerId,
+					score: 			el.playerId === userId ? el.player_score : el.opp_score,
+					scoreAdv: 		el.playerId === userId ? el.opp_score : el.player_score,
+				}));
 			});
 		},
 	},

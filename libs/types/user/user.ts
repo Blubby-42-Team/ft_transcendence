@@ -30,7 +30,6 @@ export type IHistory = {
 	date			: Date,
 	duration		: number,
 	adversary		: number,
-	adversaryName	: string,
 	score			: number,
 	scoreAdv		: number,
 
