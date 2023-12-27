@@ -100,3 +100,15 @@ export class DTO_chatPassword {
 	@IsString()
 	password: string;
 }
+
+export class DTO_muteLength {
+	@IsDefined()
+	@IsNotEmpty()
+	@IsNumber()
+	toMute: number;
+
+	@IsDefined()
+	@IsNotEmpty()
+	@IsNumber()
+	length: number;
+}

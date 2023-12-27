@@ -436,8 +436,9 @@ export class PostgresChatService {
 
 		let chat = await this.getChatByIdSystem(chatId);
 		let user = await this.postgresUserService.getUserById(userId);
+		console.log(chat.admins, " ==>> ", user.id)
 		chat.admins.forEach(usr => {
-			if (usr.id = user.id)
+			if (usr.id === user.id)
 				is_in = true;
 		});
 		return is_in;
