@@ -108,7 +108,17 @@ export class GameService {
 		}
 
 		socket.join(roomId);
+
+		// Add the client to the user map if he is not already in
+		if (this.users[userId] === undefined) {
+			this.users[userId] = {
+				room_id: roomId,
+				connectedClients: [],
+			};
+		}
+
 		this.users[userId].connectedClients.push(socket.id);
+		this.emitGAteway.server.in(roomId).emit('newPlayerInLobby', userId);
 
 		this.logger.debug(`joinPlayerToLobby ${roomId} ${userId}`);
 	}

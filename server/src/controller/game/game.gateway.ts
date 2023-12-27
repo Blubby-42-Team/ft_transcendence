@@ -1,12 +1,13 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import { AcknowledgmentWsDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse } from '@shared/dto/ws.dto'
+import { AcknowledgmentWsDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse, moveRequestDto, moveResponse } from '@shared/dto/ws.dto'
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import { subscribe } from 'diagnostics_channel';
 
 
 @WebSocketGateway({
@@ -156,6 +157,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
 
 			await this.gatewayGameService.joinAGame(data.game_room_id, user.userId, socket);
+			return 'ok';
+		});
+	}
+
+	@SubscribeMessage('move')
+	async move(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
+		return this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<moveResponse> => {
+			
 			return 'ok';
 		});
 	}
