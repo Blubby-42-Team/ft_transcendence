@@ -26,6 +26,6 @@ const test = () => testButton;
 		<div class="mr-auto"></div>
 	</GenericButton>
 	<GenericSideMenu ref="viewProfile" direction="left" alignDirection="bottom" :accessRef="test">
-		<MessageProfile/>
+		<ChannelMembersPreview/>
 	</GenericSideMenu>
 </template>

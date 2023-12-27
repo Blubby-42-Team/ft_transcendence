@@ -2,12 +2,43 @@
 
 const { selectChannel, selectedChannel, channels } = useChannelStore()
 
-const types = useState<Array<channelTypeSettings>>('channelTypes');
+const hasSideMenu = useState<boolean>('hasSideMenu', () => true);
+const types = ref([
+	{
+		type: ChannelType.Friend,
+		name: 'Friends',
+		icon: 'material-symbols:person',
+		open: false,
+		hasBottom: true,
+		hasSideMenu: false,
+	},
+	{
+		type: ChannelType.Group,
+		name: 'Groups',
+		icon: 'material-symbols:diversity-4',
+		open: false,
+		hasBottom: true,
+		hasSideMenu: true,
+	},
+	{
+		type: ChannelType.Chat,
+		name: 'Chats',
+		icon: 'material-symbols:groups',
+		open: false,
+		hasBottom: false,
+		hasSideMenu: true,
+	}
+]);
+
+watch(selectedChannel, () => {
+	const newSettings = types.value.find((elem) => elem.type === selectedChannel.value?.type) ?? types.value[0];
+	hasSideMenu.value = newSettings.hasSideMenu;
+})
 
 </script>
 
 <template>
-	<div class="w-full h-auto overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
+	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
 		<template v-for="ctype in types">			
 			<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
 				:selected="ctype.type === selectedChannel?.type ?? undefined"
@@ -23,13 +54,14 @@ const types = useState<Array<channelTypeSettings>>('channelTypes');
 				<template v-if="ctype.open">
 					<div>
 						<template v-for="channel in channels.filter((elem) => elem !== undefined && elem?.type === ctype.type)">
-							<GenericButton class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
+							<GenericNuxtLink class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
 								:selected="channel?.id === selectedChannel?.id"
 								@click="selectChannel(channel?.id ?? 0)"
+								:to="`/messages/${channel?.id ?? 0}`"
 							>
 								<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
 								<div class="pl-2">{{ channel?.name }}</div>
-							</GenericButton>
+							</GenericNuxtLink>
 						</template>
 					</div>
 				</template>

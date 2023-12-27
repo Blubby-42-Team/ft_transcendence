@@ -56,21 +56,12 @@ export const useChannelStore = defineStore('channel', {
 					},
 				};
 				updateShortUser([
-					{
-						id: 4,
-						name: 'James',
-						avatar: '/themes/anime/astolfo.jpg',
-					},
-					{
-						id: 5,
-						name: 'Bond',
+					// Generate a list of 100 users randomly without automation
+					...Array.from({ length: 100 }, (_, i) => ({
+						id: i,
+						name: `User ${i}`,
 						avatar: '/amogus.png',
-					},
-					{
-						id: 42,
-						name: 'xd',
-						avatar: '/themes/anime/astolfo.jpg',
-					},
+					}))
 				])
 			});
 		},
@@ -85,34 +76,22 @@ export const useChannelStore = defineStore('channel', {
 					name: 'Chat XD',
 					type: ChannelType.Chat,
 					avatar: '/themes/anime/astolfo.jpg',
-					messages: [
-						{
-							id: 0,
-							senderId: 42,
-							message: 'Hello world!',
-							time: new Date(),
-						},
-						{
-							id: 1,
-							senderId: 76,
-							message: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl eget ultricies ultrices, nunc nisl aliquam nunc, vitae aliquam nisl nisl nec nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl. Sed vitae nisl euismod, aliquet nisl sed, aliquet nisl.',
-							time: new Date(),
-						},
-						{
-							id: 2,
-							senderId: 26,
-							message: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-							time: new Date(),
-						},
-						{
-							id: 23,
-							senderId: 42,
-							message: 'Hello world again!',
-							time: new Date(),
-						},
-					],
+					messages: [],
 					members: [4, 26, 69, 76, 42, 12, 36, 24, 18, 1, 2, 3, 5, 6, 7, 8, 9, 10],
 				};
+				const channel = this._channels[channelId];
+				if (!channel){
+					return;
+				}
+				// genreate 100 messages from members list
+				for (let i = 0; i < 100; i++){
+					channel.messages.push({
+						id: i,
+						senderId: channel.members[Math.floor(Math.random() * channel.members.length)],
+						message: `Message ${i}`,
+						time: new Date(),
+					});
+				}
 			});
 		},
 	}

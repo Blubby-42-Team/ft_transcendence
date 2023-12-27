@@ -5,20 +5,16 @@ const props = defineProps({
 		type: Array<number>,
 		required: true,
 	},
-	type: {
-		type: Object as PropType<channelTypeSettings>,
-		required: true,
-	}
 })
 
-const isSideMenuOpen = useState('isSideMenuOpen');
-
+const hasSideMenu = useState<boolean>('hasSideMenu');
+const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
 </script>
 
 <template>
 	<div class="h-full">
 		<ClientOnly>
-			<template v-if="props.type.hasSideMenu">
+			<template v-if="hasSideMenu">
 				<teleport to="#additionalHeaderButton">
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
 						@click="isSideMenuOpen = !isSideMenuOpen"
@@ -28,11 +24,11 @@ const isSideMenuOpen = useState('isSideMenuOpen');
 				</teleport>
 			</template>
 		</ClientOnly>
-		<template v-if="props.type.hasSideMenu && isSideMenuOpen">
+		<template v-if="hasSideMenu && isSideMenuOpen">
 			<div class="w-full h-full" :class="(isSideMenuOpen ? 'w-60' : 'w-14')">
 				<div class="w-full h-full overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">
 					<template v-for="member in props.members">
-						<MessageChannelMemberPreview :member="member"/>
+						<ChannelMembersSingle :member="member"/>
 					</template>
 				</div>
 			</div>
