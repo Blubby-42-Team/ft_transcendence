@@ -60,7 +60,7 @@ export const useChannelStore = defineStore('channel', {
 					...Array.from({ length: 100 }, (_, i) => ({
 						id: i,
 						name: `User ${i}`,
-						avatar: '/amogus.png',
+						avatar: '/themes/anime/astolfo.jpg',
 					}))
 				])
 			});

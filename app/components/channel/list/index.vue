@@ -4,30 +4,9 @@ const { selectChannel, selectedChannel, channels } = useChannelStore()
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => true);
 const types = useState(() => [
-	{
-		type: ChannelType.Friend,
-		name: 'Friends',
-		icon: 'material-symbols:person',
-		open: false,
-		hasBottom: true,
-		hasSideMenu: false,
-	},
-	{
-		type: ChannelType.Group,
-		name: 'Groups',
-		icon: 'material-symbols:diversity-4',
-		open: false,
-		hasBottom: true,
-		hasSideMenu: true,
-	},
-	{
-		type: ChannelType.Chat,
-		name: 'Chats',
-		icon: 'material-symbols:groups',
-		open: false,
-		hasBottom: false,
-		hasSideMenu: true,
-	}
+	{ type: ChannelType.Friend, name: 'Friends', open: false, hasBottom: true,  hasSideMenu: false, icon: 'material-symbols:person' },
+	{ type: ChannelType.Group,  name: 'Groups',  open: false, hasBottom: true,  hasSideMenu: true,  icon: 'material-symbols:diversity-4' },
+	{ type: ChannelType.Chat,   name: 'Chats',   open: false, hasBottom: false, hasSideMenu: true,  icon: 'material-symbols:groups' },
 ]);
 
 watch(selectedChannel, () => {
@@ -59,7 +38,7 @@ watch(selectedChannel, () => {
 								@click="selectChannel(channel?.id ?? 0)"
 								:to="`/messages/${channel?.id ?? 0}`"
 							>
-								<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
+								<GenericProfilePicture class="w-10 h-10" :imageSrc="channel?.avatar ?? '/amogus.png'"/>
 								<div class="pl-2">{{ channel?.name }}</div>
 							</GenericNuxtLink>
 						</template>
