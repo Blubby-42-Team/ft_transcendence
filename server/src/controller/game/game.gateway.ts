@@ -16,7 +16,7 @@ import { subscribe } from 'diagnostics_channel';
 		origin: '*',
 	},
 })
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway {
 
 	readonly logger = new Logger(GameGateway.name);
 
@@ -89,17 +89,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return new AcknowledgmentWsDto<any>('error', error);
 		}
 	}
-
-	// When a client connect to the server
-	handleConnection(client: Socket) {
-		this.logger.debug(`Client ${client.id} connected`);
-	}
-
-	// When a client disconnect from the server
-	handleDisconnect(client: Socket) {
-		this.logger.debug(`Client ${client.id} disconnected`);
-	}
-
 	// Inject the server instance
 	@WebSocketServer()
 	readonly server: Server;
