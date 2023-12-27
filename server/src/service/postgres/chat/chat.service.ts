@@ -202,9 +202,11 @@ export class PostgresChatService {
 			chat.chat_picture = res[0].chat_picture;
 			chat.id = res[0].chat_id;
 			chat.messages = [];
-			for (const msg of res[0].messages) {
-				if (!(await this.postgresUserService.isInBlacklistById(userId, msg.userId)) && msg.type !== null) {
-					chat.messages.push(msg);
+			if (res[0].messages) {
+				for (const msg of res[0].messages) {
+					if (!(await this.postgresUserService.isInBlacklistById(userId, msg.userId)) && msg.type !== null) {
+						chat.messages.push(msg);
+					}
 				}
 			}
 			chat.name = res[0].chat_name;

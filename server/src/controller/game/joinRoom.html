@@ -7,10 +7,10 @@
 </head>
 <body>
 
-<script src="https://cdn.socket.io/4.1.2/socket.io.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
 <script>
     // Connect to the Socket.io server
-    const socket = io('http://localhost:3001', {
+    const socket = io('http://localhost:3001/game', {
 		// withCredentials: true,
 	});
 
@@ -19,10 +19,9 @@
         console.log('Socket.io connected', test);
 
         // Sending a message to the server
-        socket.emit('joinRoom', {
-    "token": "eyJhbGciOiJIUzI1Ni.IsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDlllIyfQSflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-}, (response) => {
+        socket.emit('joinRoom', {test: "lol"}, (response, error) => {
 			console.log(response); // ok
+			console.log(error); // null
 		});
 	});
 
@@ -35,6 +34,10 @@
     socket.on('disconnect', () => {
         console.log('Socket.io disconnected');
     });
+
+	socket.on('error', (error) => {
+		console.error('Socket.io error:', error);
+	});
 </script>
 
 </body>
