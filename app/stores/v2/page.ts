@@ -1,4 +1,4 @@
-import { EGameMode } from '../../libs/types/game/game'
+import { EGameMode } from '../../../libs/types/game/game'
 
 export enum EPageCategories {
 	NONE		= 0,

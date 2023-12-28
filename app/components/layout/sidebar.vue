@@ -52,3 +52,4 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 	</div>
 </template>
 
+~/stores/v2/page
