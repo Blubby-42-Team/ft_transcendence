@@ -1,6 +1,6 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import { AcknowledgmentWsDto, JoinGameRoomRequestDto, MatchMakingRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse, moveRequestDto, moveResponse } from '@shared/dto/ws.dto'
+import { AcknowledgmentWsDto, JoinGameRoomRequestDto, MatchMakingRequestDto, ReadyOrNotRequestDto, addOrRemovePlayerToWhiteListWSResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomWSResponse, joinGameResponse, moveRequestDto, moveResponse, readyOrNotResponse } from '@shared/dto/ws.dto'
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
@@ -186,6 +186,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return this.handleRequest(socket, req, MatchMakingRequestDto, async (user, data): Promise<joinGameResponse> => {
 
 			await this.gatewayGameService.matchMakingTwoPlayers(user.userId, socket);
+			return 'ok';
+		});
+	}
+
+	/**
+	 * Ready or not
+	 */
+	@SubscribeMessage('readyOrNot')
+	async readyOrNot(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
+		return this.handleRequest(socket, req, ReadyOrNotRequestDto, async (user, data): Promise<readyOrNotResponse> => {
+
+			await this.gatewayGameService.readyOrNot(user.userId, data.ready);
 			return 'ok';
 		});
 	}

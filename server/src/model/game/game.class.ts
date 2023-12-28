@@ -1,19 +1,20 @@
-import { gameSettingsType, gameStateType } from '@shared/types/game/game'
+import { BotDifficulty, gameSettingsType, gameStateType, gameStatusType } from '@shared/types/game/game'
 import { Direction } from '@shared/types/game/utils'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { Server, Socket} from 'socket.io'
-import { disconnectClientFromTheLobbyResponse } from '@shared/dto/ws.dto';
+import { disconnectClientFromTheLobbyWSResponse, playerGameStateTypeWSResponse, GameRoomStatus } from '@shared/dto/ws.dto';
 
 
 export class LobbyInstance {
 
 	private readonly logger: undefined | Logger;
 
-	constructor (room_id: string, owner_id: number, updateState: (state: gameStateType) => void ) {
+	constructor (room_id: string, io: Server, owner_id: number, updateState: (state: gameStateType) => void ) {
 
 		this.room_id = room_id;
 		this.owner_id = owner_id;
+		this.io = io;
 		this.gameSettings = undefined;
 		this.game = undefined;
 		this.slots = 1;
@@ -50,41 +51,92 @@ export class LobbyInstance {
 
 	private io: Server;
 
-	checkBeforeStart() {
-		if (this.slots !== this.gameSettings.numPlayer)
-			throw new BadRequestException(`The amount of connected players is incorrect : ${this.slots}.`)
-		for (let player in this.players) {
-			if (!this.players[player].ready)
-				throw new BadRequestException("Not everybody is ready.")
+	private playerReadyInterval: NodeJS.Timeout | undefined;
+	private readonly playerReadyIntervalTime: number = 1000;
+
+	async checkBeforeStart() {
+		if (this.slots !== this.gameSettings.numPlayer) {
+			throw new BadRequestException(`The amount of connected players is incorrect : ${this.slots}.`);
 		}
+		
+		// await new Promise((resolve) => {
+		// 	this.playerReadyInterval = setInterval(() => {
+
+		// 		let count = 0;
+		// 		for (let player in this.players) {
+		// 			if (this.players[player].ready === false) {
+		// 				playerNotReady.push(player);
+		// 				continue;
+		// 			}
+
+		// 			count++;
+
+		// 			if (count === this.slots) {
+		// 				clearInterval(this.playerReadyInterval);
+		// 				this.playerReadyInterval = undefined;
+		// 				resolve('ok'); // Resolve the promise when all players are ready
+		// 			}
+		// 		}
+		// 		const res : gameStateTypeWSResponse = {
+		// 			status: 'waiting',
+		// 			msg: `Waiting for ${playerNotReady.join(', ')} to be ready`,
+		// 		}
+		// 		this.io.to(this.room_id).emit("stateGame", res)
+
+		// 	}, this.playerReadyIntervalTime);
+		// });
 	}
 
-	async startGame() {
-		this.checkBeforeStart();
+	async startLobby() {
+		this.gameSettings = {
+			maxPoint:				2,
+			numPlayer:				2,
+			ballSize:				1,
+			padSize:				5,
+			mode:					BotDifficulty.NORMAL,
+			randomizer:				false,
+			initialBallSpeed:		0.5,
+			speedAcceleration:		0.1,
+		};
+		await this.checkBeforeStart();
 		this.game = new GameEngine(
 			this.gameSettings,
 			(newGameState: gameStateType) => {
 				this.gameState = newGameState;
-				this.io.to(this.room_id).emit("state", this.gameState)
+				this.io.to(this.room_id).emit("stateGame", this.gameState)
 			},
 			(state) => {
 				state = this.gameState;
 		});
+	}
+
+	async startGame() {
+		this.logger.log(`Starting game ${this.room_id}`);
+
+		if (this.game === undefined) {
+			this.logger.warn(`No game instance to start in lobby ${this.room_id}`);
+			throw new Error(`No game instance to start in lobby ${this.room_id}`);
+		}
+
 		this.game.start();
 	}
 
 	async stopGame () {
-		if (this.game === undefined) {
-			this.logger.error(`No game instance to stop in lobby ${this.room_id}`);
-			throw new Error(`No game instance to stop in lobby ${this.room_id}`);
-		}
-		//TODO save game state to DB
-	}
+		this.logger.log(`Stopping game ${this.room_id}`);
 
-	async closeLobby() {
-		//TODO emit to all players that the lobby is closed
-		//TODO disconnect all players from the WS room
-		//TODO stop game if it is running
+		if (this.playerReadyInterval !== undefined) {
+			clearInterval(this.playerReadyInterval);
+			this.playerReadyInterval = undefined;
+		}
+
+		if (this.game === undefined) {
+			this.logger.warn(`No game instance to stop in lobby ${this.room_id}`);
+			// throw new Error(`No game instance to stop in lobby ${this.room_id}`);
+		}
+
+		this.game.stop();
+
+		//TODO save game state to DB
 	}
 
 	async movePlayer (userId: number, sens: boolean) {
@@ -148,13 +200,36 @@ export class LobbyInstance {
 	onPlayerReady(userId: number) {
 		if (this.players[userId] === undefined) {
 			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
+			throw new BadRequestException(`User ${userId} is not in the lobby`);
 		}
 
 		this.players[userId].ready = true;
 
-		//TODO emit new state to the lobby
+		// Check if all players are ready
+		let count = 0;
+		let playerNotReady: string[] = [];
+
+		for (let player in this.players) {
+			if (this.players[player].ready === false) {
+				playerNotReady.push(player);
+				continue;
+			}
+
+			count++;
+
+			if (count === this.slots) {
+				this.startGame();
+				return;
+			}
+		}
+
 		this.logger.log(`User ${userId} is ready`);
+
+		const res : playerGameStateTypeWSResponse = {
+			status: 'waiting',
+			msg: `Waiting for ${playerNotReady.join(', ')} to be ready`,
+		}
+		this.io.to(this.room_id).emit("playerGameState", res)
 	}
 
 	/**
@@ -163,7 +238,7 @@ export class LobbyInstance {
 	onPlayerNotReady(userId: number) {
 		if (this.players[userId] === undefined) {
 			this.logger.warn(`User ${userId} is not in the lobby`);
-			return;//TODO throw error
+			throw new BadRequestException(`User ${userId} is not in the lobby`);
 		}
 
 		this.players[userId].ready = false;

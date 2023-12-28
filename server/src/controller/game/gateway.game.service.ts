@@ -28,6 +28,10 @@ export class GatewayGameService {
 		return this.modelGameService.matchMakingTwoPlayers(userId, Socket);
 	}
 
+	async readyOrNot(userId: number, ready: boolean) {
+		return this.modelGameService.readyOrNot(userId, ready);
+	}
+
 	//  // TODO Feature temporarily disabled #39
 	// async joinAGame(roomId: string, userId: number, Socket: Socket) {
 	// 	return this.modelGameService.joinAGame(roomId, userId, Socket);

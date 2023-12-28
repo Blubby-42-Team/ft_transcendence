@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolean} from 'class-validator'
 import { Min } from 'class-validator';
+import { Stats } from '../../server/src/model/stats/stats.class';
 
 export class AcknowledgmentWsDto<T> {
 
@@ -42,6 +43,12 @@ export class JoinGameRoomRequestDto extends WsRequestDto {
 export class MatchMakingRequestDto extends WsRequestDto {
 }
 
+export class ReadyOrNotRequestDto extends WsRequestDto {
+	@IsNotEmpty()
+	@IsBoolean()
+	ready: boolean;
+}
+
 export class createRoomRequestDto extends WsRequestDto {
 }
 
@@ -75,21 +82,32 @@ export class moveRequestDto extends WsRequestDto {
 export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
 
 export type joinGameResponse = 'ok';
+export type readyOrNotResponse = 'ok';
 export type moveResponse = 'ok';
 
 export type createGameRoomResponse = {
 	game_room_id: string;
 };
 
-export type deleteGameRoomResponse = 'ok';
-export type addOrRemovePlayerToWhiteListResponse = 'ok';
+export type deleteGameRoomWSResponse = 'ok';
+export type addOrRemovePlayerToWhiteListWSResponse = 'ok';
 
-export type disconnectClientFromTheLobbyResponse = {
+export type disconnectClientFromTheLobbyWSResponse = {
 	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin' | 'PlayerLeftTheGame' | 'DisconnectedByServer',
 	msg: string,
 }
 
-export type matchMakingResponse = {
-	status: 'FoundMatch' | 'NoMatchFound'| 'DisconnectedByServer',
+export type matchMakingWSResponse = {
+	status: 'FoundMatch' | 'NoMatchFound'| 'WaitingForPlayers' | 'DisconnectedByServer',
 	msg: string,
+}
+
+export type playerGameStateTypeWSResponse = {
+	status: GameRoomStatus,
+	msg: string,
+}
+
+export type playerReadyOrNotWSResponse = {
+	userId: number,
+	ready: boolean,
 }

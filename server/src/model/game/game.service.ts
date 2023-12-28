@@ -6,7 +6,7 @@ import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundE
 import { GameService } from '../../service/game/game.service';
 import { Socket } from 'socket.io';
 import { EmitGateway } from 'src/service/game/emit.gateway';
-import { disconnectClientFromTheLobbyResponse } from '@shared/dto/ws.dto';
+import { disconnectClientFromTheLobbyWSResponse } from '@shared/dto/ws.dto';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 
 @Injectable()
@@ -20,6 +20,19 @@ export class ModelGameService {
 		private readonly userService: PostgresUserService,
 	) {}
 
+
+	async readyOrNot(userId: number, ready: boolean) {
+		return this.gameService.readyOrNot(userId, ready);
+	}
+
+	/**
+	 * Handle the disconnection of a client
+	 * Will try to find the user id of the socket, then the lobby of the user
+	 * and finally disconnect all players from the lobby before deleting it
+	 * @param client Socket of the client
+	 * @throws NotFoundException if the lobby does not exist
+	 * @throws NotFoundException if the user does not exist
+	 */
 	async clientDisconnect(client: Socket) {
 
 		// Try to find the user id of the socket
@@ -67,7 +80,7 @@ export class ModelGameService {
 		})
 
 		// Disconnect all players from the lobby before deleting it
-		const disconnectMessage: disconnectClientFromTheLobbyResponse = {
+		const disconnectMessage: disconnectClientFromTheLobbyWSResponse = {
 			reason: 'PlayerLeftTheGame',
 			msg: `Player ${user_diplay_name} left the game`,
 		}
@@ -193,6 +206,4 @@ export class ModelGameService {
 		return this.gameService.addPlayerToWhiteList(userLobby.room_id, userId);
 	}
 
-	// TODO WIP @Matthew-Dreemurr
-	// async move
 }
