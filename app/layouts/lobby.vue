@@ -6,9 +6,9 @@
 		<LayoutSidebar/>
 		<LayoutHeader/>
 		<div class="block h-full overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">
-			<PlayLobby>
+			<GameLobby>
 				<slot />
-			</PlayLobby>
+			</GameLobby>
 		</div>
 	</div>
 </template>
