@@ -16,7 +16,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	constructor (
 		private readonly emitGAteway: EmitGateway,
 		private readonly authService: AuthService,
-		private readonly modelUserService: ModelUserService,
 	) {}
 
 	private readonly logger = new Logger(GameService.name);
@@ -25,14 +24,15 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		[key: string]: LobbyInstance;
 	} = {};
 
-	private users: {
-		[key: number]: {
-			room_id: string,
-			connectedClients: Array<string>,
-		}
-	} = {};
+	private usersInLobby: Map<number, {
+		room_id: string,
+		connectedClients: Socket[],
+	}> = new Map();
 
-	private twoUserMatchMakingQueue: Array<{ userId: number, socket: Socket }> = [];
+	private twoUserMatchMakingQueue: Array<{
+		userId: number,
+		socket: Socket
+	}> = [];
 
 	private matchMakingTwoPlayersInterval: NodeJS.Timeout;
 	private readonly matchMakingTwoPlayersIntervalTime = 1000;
@@ -41,7 +41,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		this.logger.debug(`onModuleInit: start`);
 		// Do not await this call
 		// Call the matchMakingTwoPlayers function every second
-		this.matchMakingLoop();
+		this.matchMakingLoop()
 	}
 
 	async onModuleDestroy() {
@@ -50,7 +50,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 	async matchMakingLoop() {
 		this.matchMakingTwoPlayersInterval = setInterval(() => {
-			this.matchMakingTwoPlayers();
+			this.matchMakingTwoPlayers()
+			.catch((err) => {
+				this.logger.error(`matchMakingTwoPlayers: ${err}`);
+			});
 		}, this.matchMakingTwoPlayersIntervalTime);
 	
 	}
@@ -167,7 +170,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		const newLobby = new LobbyInstance(newRoomId, userId, ()=>{});
 		this.lobbys[newRoomId] = newLobby;
 
-		this.users[userId] = {
+		this.usersInLobby[userId] = {
 			room_id: newRoomId,
 			connectedClients: [],
 		};
@@ -195,7 +198,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new BadRequestException(`User ${userId} is not in the white list of lobby ${roomId}`);
 		}
 
-		const checkUserWsConnectedClient = this.users[userId]?.connectedClients;
+		const checkUserWsConnectedClient = this.usersInLobby[userId]?.connectedClients;
 		if (checkUserWsConnectedClient !== undefined) {
 
 			// Check if the user have already a client connected
@@ -213,38 +216,49 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 						reason: "DuplicateConnection",
 						msg: "You are connected from another device, you have been disconnected",
 					}
-					this.emitGAteway.server.to(client).emit('disconnectClientFromTheLobby', msg);
 
-					this.emitGAteway.server.in(client).socketsLeave(roomId)
+					this.emitGAteway.server.to(client.id).emit('disconnectClientFromTheLobby', msg);
+
+					this.emitGAteway.server.in(client.id).socketsLeave(roomId)
 
 					// Remove the client from the array using filter
-					this.users[userId].connectedClients = this.users[userId].connectedClients.filter(c => c !== client);
+					this.usersInLobby[userId].connectedClients = this.usersInLobby[userId].connectedClients.filter(c => c !== client);
 				}
 			}
 		}
 
 		socket.join(roomId);
 
+		// Edit the user socket in the lobby
+		await lobby.editPlayerSocket(userId, socket)
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`Edit player socket: User ${userId} is not in the lobby`);
+				throw new NotFoundException(`User ${userId} is not in the lobby`);
+			}
+			throw err;
+		});
+
 		// Add the client to the user map if he is not already in
-		if (this.users[userId] === undefined) {
-			this.users[userId] = {
+		if (this.usersInLobby[userId] === undefined) {
+			this.usersInLobby[userId] = {
 				room_id: roomId,
 				connectedClients: [],
 			};
 		}
 
-		this.users[userId].connectedClients.push(socket.id);
+		this.usersInLobby[userId].connectedClients.push(socket);
 		this.emitGAteway.server.in(roomId).emit('newPlayerInLobby', userId);
 
 		this.logger.debug(`joinPlayerToLobby ${roomId} ${userId}`);
 	}
 
 	/**
-	 * Delete a lobby and disconnect all players before
+	 * Delete a lobby and all players before
 	 * @param roomId Id of the lobby to delete
 	 * @throws NotFoundException if the lobby does not exist
 	 */
-	async disconnectAllPlayerAndDeleteLobby(roomId: string) {
+	async deleteLobby(roomId: string) {
 
 		this.logger.debug(`try deleteLobby ${roomId}`);
 
@@ -255,20 +269,57 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		this.lobbys[roomId].closeLobby();//TODO
 
-
 		// Remove all players from the map
 		const players = this.lobbys[roomId].getPlayers();
 
 		for (const player_id of Object.keys(players)) {
-			if (this.users[player_id] === undefined) {
+			if (this.usersInLobby[player_id] === undefined) {
 				this.logger.error(`User ${player_id} is in the lobby ${roomId} but not in the user map!?`);
 				throw new BadGatewayException(`[${roomId}][${player_id}] Failed to delete lobby, see logs or contact an admin`);
 			}
-			delete this.users[player_id];
+			delete this.usersInLobby[player_id];
 		}
 
 		delete this.lobbys[roomId];
 		this.logger.debug(`deleteLobby ${roomId}`);
+	}
+	
+	/**
+	 * Try to disconnect all players from the lobby
+	 * @param roomId room id of the lobby
+	 * @param disconnectMessage Message to send to the players
+	 * @returns void Promise
+	 * @throws NotFoundException if the lobby does not exist
+	 */
+	async disconnectAllPlayersFromLobby(roomId: string, disconnectMessage: disconnectClientFromTheLobbyResponse) {
+		const lobby = await this.getLobby(roomId)
+		.then((lobby) => {
+			return lobby;
+		})
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`Lobby ${roomId} not found`);
+				throw new NotFoundException(`Lobby ${roomId} not found`);
+			}
+			throw err;
+		});
+
+		if (lobby === undefined) {
+			return;
+		}
+		const players = lobby.getPlayers();
+
+		// Emit to all players that the user left the game
+
+		for (const id in players) {
+
+			const player = players[id];
+
+			if (player?.wsClient?.connected === true) {
+				player.wsClient.emit("disconnectClientFromTheLobby", disconnectMessage);
+				this.logger.debug(`disconnectAllPlayersFromLobby ${roomId}: disconnect user ${id}`);
+			}
+		}
 	}
 
 	// async startGame(roomName: string, opt: GameOptDto, io: Server) {
@@ -315,27 +366,20 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
 
 		// check if the user is already in a lobby
-		if (this.users[userId] !== undefined) {
-			this.logger.debug(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
-			throw new BadRequestException(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
+		if (this.usersInLobby[userId] !== undefined) {
+			this.logger.debug(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
+			throw new BadRequestException(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
 		}
 
 		const lobby = await this.getLobby(roomId);
 		lobby.addPlayerToLobby(userId);
-		this.users[userId] = {
+		this.usersInLobby[userId] = {
 			room_id: roomId,
 			connectedClients: [],
 		};
 		this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
 		return lobby.room_id;
 
-	}
-
-	async removePlayerFromLobby(roomId: string, userId: number): Promise<void> {
-	}
-	
-	
-	async reconnectPlayerToRoom(userId: number) {
 	}
 
 	/**
@@ -361,13 +405,30 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	async findUserInLobbys(userId: number): Promise<LobbyInstance> {
 		
 		// I use a user map that make the link between the user and the lobby
-		const user = this.users[userId];
+		const user = this.usersInLobby[userId];
 		if (user === undefined) {
 			this.logger.debug(`User ${userId} does not exist`);
 			throw new NotFoundException(`User ${userId} does not exist`);
 		}
 
 		return this.lobbys[user.room_id];
+	}
+
+	/**
+	 * Find the socket of the user in the lobby
+	 * @param socketId Socket id of the user
+	 * @returns Socket of the user
+	 */
+	async findUserIdOfActiveSocket(socketId: string): Promise<number> {
+		for (const userId of Object.keys(this.usersInLobby)) {
+			for (const socket of this.usersInLobby[userId].connectedClients) {
+				if (socket.id === socketId) {
+					return parseInt(userId);
+				}
+			}
+		}
+		this.logger.debug(`Socket ${socketId} does not exist`);
+		throw new NotFoundException(`Socket ${socketId} does not exist`);
 	}
 
 	/**
@@ -388,7 +449,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	/**
-	 * 
+	 * @warning This function is not safe! Should be used only for debug
+	 * //TODO remove this function
 	 * @returns return all lobbys public data
 	 */
 	async getAllLobbysPublicData() {
@@ -402,25 +464,28 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		}
 
 		const playerPublicData = {};
-		for (const userId of Object.keys(this.users)) {
-			playerPublicData[userId] = this.users[userId].room_id;
+		for (const userId of Object.keys(this.usersInLobby)) {
+			playerPublicData[userId] = {
+				room_id: this.usersInLobby[userId].room_id,
+				connectedClients: this.usersInLobby[userId].connectedClients?.map((e) => e.id),
+			};
 		}
 
-		const playerWsClients = {};
-		for (const userId of Object.keys(this.users)) {
-			playerWsClients[userId] = this.users[userId].connectedClients;
-		}
+		// const playerWsClients = {};
+		// for (const userId of Object.keys(this.usersInLobby)) {
+		// 	playerWsClients[userId] = this.usersInLobby[userId].connectedClients?.id;
+		// }
 
-		const dataMatchMakingTwoPlayers = {};
-		for (const player of this.twoUserMatchMakingQueue) {
-			dataMatchMakingTwoPlayers[player.userId] = player.socket.id;
-		}
+		// const dataMatchMakingTwoPlayers = {};
+		// for (const player of this.twoUserMatchMakingQueue) {
+		// 	dataMatchMakingTwoPlayers[player.userId] = player.socket.id;
+		// }
 		
 		return {
 			lobbys: lobbysPublicData,
 			players: playerPublicData,
-			playerWsClients: playerWsClients,
-			dataMatchMakingTwoPlayers: dataMatchMakingTwoPlayers,
+			// playerWsClients: playerWsClients,
+			// dataMatchMakingTwoPlayers: dataMatchMakingTwoPlayers,
 		};
 	}
 

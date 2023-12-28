@@ -85,7 +85,7 @@ export type deleteGameRoomResponse = 'ok';
 export type addOrRemovePlayerToWhiteListResponse = 'ok';
 
 export type disconnectClientFromTheLobbyResponse = {
-	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin',
+	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin' | 'PlayerLeftTheGame' | 'DisconnectedByServer',
 	msg: string,
 }
 

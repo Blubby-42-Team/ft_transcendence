@@ -16,7 +16,7 @@ import { subscribe } from 'diagnostics_channel';
 		origin: '*',
 	},
 })
-export class GameGateway {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	readonly logger = new Logger(GameGateway.name);
 
@@ -24,6 +24,24 @@ export class GameGateway {
 		private readonly gatewayGameService: GatewayGameService,
 		private readonly authService: AuthService,
 	) { }
+
+// When a client connect to the server
+	handleConnection(client: Socket) {
+		this.logger.debug(`Client ${client.id} connected`);
+	}
+
+	// When a client disconnect from the server
+	async handleDisconnect(client: Socket) {
+		this.logger.debug(`Client ${client.id} disconnected`);
+		// const checkIsInGame = this.gameService.findUserInLobbys(client.id);
+		//TODO remove the client from the game room
+		//TODO remove the client from the matchmaking
+		await this.gatewayGameService.clientDisconnect(client)
+		.catch((err) => {
+			this.logger.error(err);
+			this.logger.debug(`Error while disconnecting client ${client.id}`);
+		})
+	}
 
 	/**
 	 * Handle a request from a client and return an acknowledgment

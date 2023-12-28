@@ -13,6 +13,11 @@ export class GatewayGameService {
 		private readonly modelGameService: ModelGameService,
 	) {}
 
+
+	async clientDisconnect(client: Socket) {
+		return this.modelGameService.clientDisconnect(client);
+	}
+
 	/**
 	 * Will try to match the user with another user
 	 * @param userId Id of the user
