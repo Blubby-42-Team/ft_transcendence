@@ -52,6 +52,33 @@ export class PostgresUserService {
 
 	}
 
+	async getUserByIdForWilla(userId: number) {
+		return this.userRepository.query(`
+			SELECT u.id, u.display_name, u.full_name, u.profile_picture, ft.login
+			FROM "user" as u
+			LEFT JOIN "user42" AS ft
+			ON ft.id = u."user42Id"
+			WHERE u.id = $1`,
+			[userId],
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user by id ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by id ${userId}`);
+		})
+		.then((res): User => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get user by id ${userId}: not found`);
+				throw new NotFoundException(`Failed to get user by id ${userId}: not found`);
+			}
+			if (res.length > 1) {
+				this.logger.debug(`Failed to get user by id ${userId}: too many results`);
+				throw new InternalServerErrorException(`Failed to get user by id ${userId}: too many results`);
+			}
+			return res[0];
+		})
+
+	}
+
 	/**
 	 * Update user in database
 	 * @param idUser id of user to update 
@@ -178,9 +205,10 @@ export class PostgresUserService {
 		stats.random_mmr = 1000;
 
 		const user = new User();
-		user.display_name = displayName42;
+		user.display_name = login42;
+		user.full_name = displayName42;
 		user.role = UserRoleType.User;
-		user.profile_picture = 'TEMP'; //TODO @Matthew-Dreemurr
+		user.profile_picture = '/amogus.png'; //TODO @Matthew-Dreemurr
 		user.user42 = user42;
 		user.settings = settings;
 		user.stats = stats;
