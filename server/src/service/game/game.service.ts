@@ -229,6 +229,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		socket.join(roomId);
 
+		if (lobby.isInLobby(userId) === false) {
+			lobby.addPlayerToLobby(userId, socket);
+		}
+
 		// Edit the user socket in the lobby
 		await lobby.editPlayerSocket(userId, socket)
 		.catch((err) => {
@@ -355,32 +359,33 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		lobby.removePlayerFromWhiteList(userId)
 	}
 
-	/**
-	 * Add a player to a lobby
-	 * @param roomId room id of the lobby
-	 * @param userId user id of the player
-	 * @returns room id of the lobby
-	 * @throws BadRequestException if the user is already in a lobby
-	 */
-	async addPlayerToLobby(roomId: string, userId: number) {
-		this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
+	// Feature temporarily disabled #39
+	// /**
+	//  * Add a player to a lobby
+	//  * @param roomId room id of the lobby
+	//  * @param userId user id of the player
+	//  * @returns room id of the lobby
+	//  * @throws BadRequestException if the user is already in a lobby
+	//  */
+	// async addPlayerToLobby(roomId: string, userId: number) {
+	// 	this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
 
-		// check if the user is already in a lobby
-		if (this.usersInLobby[userId] !== undefined) {
-			this.logger.debug(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
-			throw new BadRequestException(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
-		}
+	// 	// check if the user is already in a lobby
+	// 	if (this.usersInLobby[userId] !== undefined) {
+	// 		this.logger.debug(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
+	// 		throw new BadRequestException(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
+	// 	}
 
-		const lobby = await this.getLobby(roomId);
-		lobby.addPlayerToLobby(userId);
-		this.usersInLobby[userId] = {
-			room_id: roomId,
-			connectedClients: [],
-		};
-		this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
-		return lobby.room_id;
+	// 	const lobby = await this.getLobby(roomId);
+	// 	lobby.addPlayerToLobby(userId, );
+	// 	this.usersInLobby[userId] = {
+	// 		room_id: roomId,
+	// 		connectedClients: [],
+	// 	};
+	// 	this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
+	// 	return lobby.room_id;
 
-	}
+	// }
 
 	/**
 	 * 
@@ -467,7 +472,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		for (const userId of Object.keys(this.usersInLobby)) {
 			playerPublicData[userId] = {
 				room_id: this.usersInLobby[userId].room_id,
-				connectedClients: this.usersInLobby[userId].connectedClients?.map((e) => e.id),
+				connectedClients: this.usersInLobby[userId].connectedClients?.map((e) => e?.id),
 			};
 		}
 
@@ -481,12 +486,16 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		// 	dataMatchMakingTwoPlayers[player.userId] = player.socket.id;
 		// }
 		
-		return {
+		const res = JSON.parse(JSON.stringify({
 			lobbys: lobbysPublicData,
 			players: playerPublicData,
 			// playerWsClients: playerWsClients,
 			// dataMatchMakingTwoPlayers: dataMatchMakingTwoPlayers,
-		};
+		}));
+
+		this.logger.debug(res);
+
+		return res;
 	}
 
 	/**

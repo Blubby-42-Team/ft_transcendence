@@ -34,13 +34,11 @@ export class LobbyInstance {
 
 	private slots: 1 | 2 | 3 | 4;
 
-	private players: {
-		[key: number]: {
-			dir: Direction,
-			ready: boolean,
-			wsClient: Socket | undefined,
-		};
-	} = {};
+	private players: Map<number, {
+		dir: Direction,
+		ready: boolean,
+		wsClient: Socket | undefined,
+	}> = new Map();
 
 	private whiteList: number[] = [];
 
@@ -101,7 +99,7 @@ export class LobbyInstance {
 	 * @param userId user id
 	 * @throws BadRequestException if the user is already in the lobby or the lobby is full
 	 */
-	addPlayerToLobby(userId: number) {
+	addPlayerToLobby(userId: number, socket: Socket) {
 		if (this.players[userId] !== undefined) {
 			this.logger.warn(`User ${userId} is already in the lobby ${this.room_id}`);
 			throw new BadRequestException(`User ${userId} is already in the lobby ${this.room_id}`);
@@ -122,7 +120,7 @@ export class LobbyInstance {
 		this.players[userId] = {
 			dir: this.getDirectionBySlot(this.slots),
 			ready: false,
-			wsClient: undefined,
+			wsClient: socket,
 		}
 
 		//TODO emit new state to the lobby
@@ -183,6 +181,14 @@ export class LobbyInstance {
 	}
 
 	/**
+	 * Check if the player is in the lobby
+	 * @returns true | false
+	 */
+	isInLobby(userId: number): boolean {
+		return this.players[userId] !== undefined;
+	}
+
+	/**
 	 * Add a player to the white list
 	 * @param userId user id
 	 * @throws BadRequestException if the user is already in the white list or if the user is the owner of the lobby
@@ -237,11 +243,23 @@ export class LobbyInstance {
 	 * @returns return all public data of the lobby
 	 */
 	getPublicData() {
+
+		const publicPlayers = [];
+
+		for (let player in this.players) {
+			publicPlayers.push({
+				userId: player,
+				dir: this.players[player].dir,
+				ready: this.players[player].ready,
+				clientId: this.players[player].wsClient?.id,
+			})
+		}
+
 		return {
 			room_id: this.room_id,
 			owner_id: this.owner_id,
 			slots: this.slots,
-			players: this.players,
+			players: publicPlayers,
 			whiteList: this.whiteList,
 			gameSettings: this.gameSettings,
 		}
