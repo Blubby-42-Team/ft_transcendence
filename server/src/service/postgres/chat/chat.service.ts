@@ -86,7 +86,8 @@ export class PostgresChatService {
 			SELECT
 				ch.id,
 				ch.name,
-				ch.chat_picture
+				ch.chat_picture,
+				ch.type
 			FROM chat ch
 			JOIN custom_users_chat cuc ON ch.id = cuc.chat_id
 			WHERE cuc.user_id = $1
@@ -110,7 +111,8 @@ export class PostgresChatService {
 		SELECT
 			ch.id,
 			ch.name,
-			ch.chat_picture
+			ch.chat_picture,
+			ch.type
 		FROM chat ch
 		JOIN custom_users_chat cuc ON ch.id = cuc.chat_id
 		WHERE cuc.user_id = $1`,

@@ -223,7 +223,7 @@ export class PostgresUserService {
 		await this.getUserById(userId);
 		return this.userRepository.query(`
 			SELECT
-				f.id
+				f.id, f.display_name, f.profile_picture
 			FROM
 				"user" AS u
 			JOIN
@@ -244,14 +244,14 @@ export class PostgresUserService {
 		const user = await this.getUserById(id);
 		const friend = await this.getUserById(friendId);
 
-		this.userRepository.query(`
+		await this.userRepository.query(`
 			INSERT INTO custom_user_friends (user_id, friend_id)
 			VALUES ($1, $2)
 			ON CONFLICT (user_id, friend_id) DO NOTHING;
 		`,
 		[id, friendId])
 
-		this.userRepository.query(`
+		await this.userRepository.query(`
 			INSERT INTO custom_user_friends (user_id, friend_id)
 			VALUES ($2, $1)
 			ON CONFLICT (user_id, friend_id) DO NOTHING;
@@ -259,18 +259,19 @@ export class PostgresUserService {
 		[id, friendId])
 
 		const chatList = await this.userRepository.query(`
-			SELECT DISTINCT cuc.chat_id
-			FROM custom_users_chat cuc
-			JOIN chat ON chat.id = cuc.chat_id
-			WHERE cuc.user_id IN ($1, $2)
-			AND cuc.chat_id IN (
-				SELECT chat_id
-				FROM custom_users_chat
-				WHERE user_id IN ($1, $2)
-				GROUP BY chat_id
-				HAVING COUNT(DISTINCT user_id) = $2
-			)
-			AND chat.type = 'inactive';`,
+			SELECT *
+			FROM chat AS c
+			WHERE
+				c.id IN (
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $1
+					INTERSECT
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $2
+				)
+				AND c."type" = 'inactive';`,
 			[id, friendId]
 		)
 		.catch((err) => {
@@ -278,20 +279,24 @@ export class PostgresUserService {
 		});
 		console.log(chatList)
 		let chat;
-		if (!chatList)
+		if (chatList.length === 0){
 			chat = await this.postgresChatService.createChat(await this.getUserById(id), EChatType.friends, 'friends')
+		}
 		else {
 			this.userRepository.query(`
-				UPDATE chat
-				SET type = 'friends'
-				WHERE id IN (
-					SELECT cuc.chat_id
-					FROM custom_user_friends cuf
-					JOIN custom_users_chat cuc ON cuf.user_id = cuc.user_id
-					WHERE (cuf.user_id = $1 AND cuf.friend_id = $2)
-					OR (cuf.user_id = $2 AND cuf.friend_id = $1)
-					AND chat."type" = 'inactive'
-				);
+				UPDATE "chat" as c
+				SET "type" = 'friends'
+				WHERE
+					c.id IN (
+						SELECT chat_id
+						FROM "custom_users_chat"
+						WHERE user_id = $1
+						INTERSECT
+						SELECT chat_id
+						FROM "custom_users_chat"
+						WHERE user_id = $2
+					)
+					AND c."type" = 'inactive';
 			`,
 			[id, friendId])
 			.catch((err) => {
@@ -496,6 +501,23 @@ export class PostgresUserService {
 		.catch((err) => {
 			return err
 		})
+
+		this.userRepository.query(`
+			UPDATE "chat" as c
+			SET "type" = 'inactive'
+			WHERE
+				c.id IN (
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $1
+					INTERSECT
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $2
+				)
+				AND c."type" = 'friends'
+			`,
+			[id, blacklistId])
 		return 'ok'	
 	}
 
