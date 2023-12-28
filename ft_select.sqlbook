@@ -1,4 +1,5 @@
 -- SQLBook: Code
+-- Active: 1703161905752@@127.0.0.1@5432@masterminds
 SELECT * FROM "user"
 -- SQLBook: Code
 SELECT * FROM "user42"
@@ -11,3 +12,17 @@ SELECT * FROM "settings"
 -- Active: 1701168611681@@localhost@5432@masterminds
 SELECT * FROM "history"
 WHERE "playerId" = 1
+-- SQLBook: Code
+UPDATE "chat" as c
+SET "type" = 'friends'
+WHERE
+    c.id IN (
+        SELECT chat_id
+        FROM "custom_users_chat"
+        WHERE user_id = $1
+        INTERSECT
+        SELECT chat_id
+        FROM "custom_users_chat"
+        WHERE user_id = $2
+    )
+    AND c."type" = 'inactive';
