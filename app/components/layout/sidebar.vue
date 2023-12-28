@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { EPageCategories } from '@/stores/page'
+import { EPageCategories } from '#imports'
 const { selectedCategory, selectedLobby, lobby } = usePageStore();
 
 enum EType {
