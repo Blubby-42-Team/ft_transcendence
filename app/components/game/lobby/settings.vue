@@ -96,7 +96,7 @@ function redirect(){
 		
 		<div class="p-5">
 			<template v-if="props.preview">
-				<GamePreviewCanvas uniqueToken="previewSettings"/>
+				<GameInstancePreview uniqueToken="previewSettings"/>
 			</template>
 		</div>
 

@@ -8,7 +8,7 @@ const props = defineProps({
     	required: true,
 	},
 	card: {
-		type: Object as PropType<CardType>,
+		type: Number as PropType<CardType>,
 		required: true,
 	},
 })
