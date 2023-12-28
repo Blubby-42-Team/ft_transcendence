@@ -18,7 +18,7 @@ function redirect(){
 	<div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
 		<div/>
 		<GameLobbyCard :id="1" :card="CardType.PLAYER"/>
-		<GameLobbyCard :id="1" :card="CardType.PLAYER"/>
+		<GameLobbyCard :id="1" :card="CardType.EMPTY"/>
 		<div/>
 		<div/>
 		<div class="w-full col-span-2 p-2">
