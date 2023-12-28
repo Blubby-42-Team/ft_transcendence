@@ -26,3 +26,18 @@ WHERE
         WHERE user_id = $2
     )
     AND c."type" = 'inactive';
+-- SQLBook: Code
+SELECT DISTINCT
+    ch.id,
+    ch.name,
+    ch.chat_picture,
+    ch.type,
+    usr.profile_picture,
+    usr.display_name
+FROM chat AS ch
+JOIN custom_users_chat AS cuc
+    ON ch.id = cuc.chat_id
+LEFT JOIN public.user AS usr
+    ON usr.id != 1
+WHERE cuc.user_id = 1
+    AND ch.type != 'inactive';
