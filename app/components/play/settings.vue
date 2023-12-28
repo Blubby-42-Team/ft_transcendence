@@ -45,6 +45,11 @@ const difficulties = [
 	{ name: BotDifficulty.CRAZY,	icon: 'material-symbols:sentiment-extremely-dissatisfied' },
 ]
 
+function redirect(){
+	navigateTo('/game/local');
+};
+
+
 </script>
 
 <template>
@@ -95,7 +100,11 @@ const difficulties = [
 		</div>
 
 		<div class="w-full p-2">
-			<PlayLobbyPlayButtonLobby/>
+			<GenericButton class="w-full h-16" :buttonStyle="1"
+				@click="redirect"
+			>
+				Play
+			</GenericButton>
 		</div>
 	</div>
 </template>

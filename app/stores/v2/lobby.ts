@@ -2,12 +2,6 @@ import { CardType } from '@/utils/types'
 
 import { EGameMode } from '../../../libs/types/game/game'
 
-export enum LobbyStartingSequence {
-	NOT_STARTED	= 0,	// On Hold
-	STARTING	= 1,	// 5 Seconds Countdown
-	STARTED		= 2,	// Card Animation
-}
-
 function getCard(
 	index: number,
 	player: { id: number, ready: boolean },
@@ -47,12 +41,12 @@ export const useLobbyStore = defineStore('lobby', {
 		_players: [
 			{ id: 0,	ready: true	},
 			{ id: 0,	ready: true	},
-			{ id: 0,	ready: true	},
-			{ id: 0,	ready: true	},
+			// { id: 0,	ready: true	},
+			// { id: 0,	ready: true	},
 		],
 		_lobbyMode: EGameMode.Classic,
 		_gameSettings: defaultSettings as gameSettingsType,
-		_sequence: LobbyStartingSequence.NOT_STARTED,
+		_sequence: LobbyStatus.NOT_STARTED,
 		_timeRemaining: 6,
 	}),
 	getters: {
@@ -65,7 +59,7 @@ export const useLobbyStore = defineStore('lobby', {
 	},
 	actions: {
 		reset(id: number) {
-			this._sequence = LobbyStartingSequence.NOT_STARTED;
+			this._sequence = LobbyStatus.NOT_STARTED;
 			this._timeRemaining = 6;
 			this._players[0].id = id;
 			for (let i = 1; i < this._players.length; i++){
@@ -75,15 +69,15 @@ export const useLobbyStore = defineStore('lobby', {
 			console.log(this._players)
 		},	
 		async start() {
-			this._sequence = LobbyStartingSequence.STARTING;
-			while (this._timeRemaining > 0 && this._sequence === LobbyStartingSequence.STARTING) {
+			this._sequence = LobbyStatus.STARTING;
+			while (this._timeRemaining > 0 && this._sequence === LobbyStatus.STARTING) {
 				this._timeRemaining -= 1;
 				if (this._timeRemaining === 0){
-					this._sequence = LobbyStartingSequence.STARTED;
+					this._sequence = LobbyStatus.STARTED;
 				}
 				await new Promise((r) => setTimeout(r, 1000));
 			}
-			if (this._sequence == LobbyStartingSequence.STARTED){
+			if (this._sequence == LobbyStatus.STARTED){
 				for (let i = 1; i < this._players.length; i++){
 					if (this._players[i].id === 0){
 						this._players[i].id = 2;
@@ -97,7 +91,7 @@ export const useLobbyStore = defineStore('lobby', {
 			}
 		},
 		cancel() {
-			this._sequence = LobbyStartingSequence.NOT_STARTED;
+			this._sequence = LobbyStatus.NOT_STARTED;
 			this._timeRemaining = 6;
 		},
 	},

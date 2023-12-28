@@ -20,14 +20,21 @@ export const usePageStore = defineStore('page', {
 			// { id: EGameMode.Random,		name: 'Random',		path: '/lobby/random'},
 			// { id: EGameMode.Custom,		name: 'Custom',		path: '/lobby/custom'},
 			{ id: EGameMode.Local,		name: 'Local',		path: '/lobby/local'},
-		]
+		],
+		_waiting: 1,
 	}),
 	getters: {
 		selectedCategory:	(state) => computed(() => state._selectedCategory),
 		selectedLobby:		(state) => computed(() => state._selectedLobby),
 		lobby:				(state) => state._lobby,
+		waitingString:		(state) => computed(() => '.'.repeat(state._waiting)),
 	},
 	actions: {
+		startLoopWaiting(){
+			setInterval(() => {
+				this._waiting = (this._waiting < 3 ? this._waiting + 1 : 1);
+			}, 500);
+		},
 		setPageDataLobby(newCategory: EPageCategories, newLobby: EGameMode){
 			this._selectedCategory = newCategory;
 			this._selectedLobby = newLobby;
