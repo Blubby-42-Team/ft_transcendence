@@ -12,7 +12,7 @@ export class ModelStatsService {
 
 	async getStatsByUserId(userId: number) {
 		const stats = await this.postgresStatsService.getStatsByUserId(userId);
-		return {
+		let res = {
 			classic_match_played: stats.classic_match_won + stats.classic_match_lost,
 			classic_ranking: await this.postgresStatsService.getClassicRankByUserId(userId),
 			classic_mmr: stats.classic_mmr,
@@ -24,6 +24,16 @@ export class ModelStatsService {
 			random_winrate: (stats.random_match_won / (stats.random_match_won + stats.random_match_lost)) * 100,
 			random_average_point: stats.random_match_points_won / (stats.random_match_won + stats.random_match_lost),
 		}
+
+		if (!res.classic_winrate)
+			res.classic_winrate = 0;
+		if (!res.classic_average_point)
+			res.classic_average_point = 0;
+		if (!res.random_winrate)
+			res.random_winrate = 0;
+		if (!res.random_winrate)
+			res.random_average_point = 0;
+		return res;
 	}
 
 	async addPlayedMatch(userId: number) {

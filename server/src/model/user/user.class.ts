@@ -21,6 +21,10 @@ export class User {
 	@IsNotEmpty()
 	display_name: string;
 
+	@Column()
+	@IsNotEmpty()
+	full_name: string;
+
 	@Column({type: 'enum', enum: UserRoleType, default: UserRoleType.User})
 	@IsNotEmpty()
 	@IsEnum(UserRoleType)
