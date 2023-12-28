@@ -68,13 +68,12 @@ export const useUserStore = defineStore('user', {
 				return;
 			}
 			return fetchUser(userId, (response) => {
-				const data = response._data;
 				this._users[userId] = {
-					id: data.id,
-					name: data.display_name,
-					fullName: data.full_name,
-					login42: data.login,
-					avatar: data.profile_picture,
+					id:       response.id,
+					name:     response.display_name,
+					fullName: response.full_name,
+					login42:  response.login,
+					avatar:   response.profile_picture,
 				};
 			}
 			);
@@ -85,21 +84,20 @@ export const useUserStore = defineStore('user', {
 				return;
 			}
 			return fetchStats(userId, (response) => {
-				const data = response._data;
 				this._stats[userId] = {
 					classic: {
-						matchPlayed: 			data.classic_match_played,
-						ranking: 				data.classic_ranking,
-						mmr: 					data.classic_mmr,
-						winrate: 				data.classic_winrate,
-						averagePointPerGame:	data.classic_average_point,
+						matchPlayed: 			response.classic_match_played,
+						ranking: 				response.classic_ranking,
+						mmr: 					response.classic_mmr,
+						winrate: 				response.classic_winrate,
+						averagePointPerGame:	response.classic_average_point,
 					},
 					random: {
-						matchPlayed: 			data.random_match_played,
-						ranking: 				data.random_ranking,
-						mmr: 					data.random_mmr,
-						winrate: 				data.random_winrate,
-						averagePointPerGame: 	data.random_average_point,
+						matchPlayed: 			response.random_match_played,
+						ranking: 				response.random_ranking,
+						mmr: 					response.random_mmr,
+						winrate: 				response.random_winrate,
+						averagePointPerGame: 	response.random_average_point,
 					},
 				};
 			});
@@ -110,17 +108,7 @@ export const useUserStore = defineStore('user', {
 				return;
 			}
 			return await fetchHistory(userId, (response) => {
-				const data = response._data;
-				this._history[userId] = data.map((el: {
-					id: number,
-					game_type: 'classic' | 'random',
-					player_score: number,
-					opp_score: number,
-					date: string,
-					duration: number,
-					playerId: number,
-					oppId: number
-				}) => ({
+				this._history[userId] = response.map(el => ({
 					matchId: 		el.id,
 					date: 			new Date(el.date),
 					duration: 		el.duration,
@@ -136,17 +124,12 @@ export const useUserStore = defineStore('user', {
 				return;
 			}
 			return await fetchUserFriends(userId, (response) => {
-				const data: Array<{
-					id: number,
-					display_name: string,
-					profile_picture: string,
-				}> = response._data;
-				this.updateShortUser(data.map((el) => ({
+				this.updateShortUser(response.map((el) => ({
 					id: el.id,
 					name: el.display_name,
 					avatar: el.profile_picture,
 				})));
-				this._friends[userId] = data.map((el) => el.id);
+				this._friends[userId] = response.map((el) => el.id);
 			});
 		},
 	},

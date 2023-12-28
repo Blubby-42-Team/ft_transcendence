@@ -16,6 +16,7 @@ const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
 		<ClientOnly>
 			<template v-if="hasSideMenu">
 				<teleport to="#additionalHeaderButton">
+					<div class="mx-2 border border-text-light bg-text-light"></div>
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
 						@click="isSideMenuOpen = !isSideMenuOpen"
 					>

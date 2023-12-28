@@ -5,7 +5,7 @@ export function fetchUser(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -16,12 +16,12 @@ export function fetchUser(
 
 export function fetchUserFriends(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: Array<{id: number, display_name: string, profile_picture: string}>) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/friends/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user friends fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -37,7 +37,7 @@ export function fetchUserWhitelist(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/whitelist/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user whitelist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -53,7 +53,7 @@ export function fetchUserBlacklist(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user blacklist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -70,7 +70,7 @@ export function fetchUserIsInBlacklist(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/blacklist/is_in/${userId}/${blacklistId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user is in blacklist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -91,7 +91,7 @@ export function fetchUserWhitelistPost(
 			'id': whitelistId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user whitelist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -112,7 +112,7 @@ export function fetchUserBlacklistPost(
 			'id': blacklistId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user blacklist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -133,7 +133,7 @@ export function fetchUserFriendDelete(
 			'id': friendId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user delete friend fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -154,7 +154,7 @@ export function fetchUserBlacklistDelete(
 			'id': blacklistId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user delete blacklist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
