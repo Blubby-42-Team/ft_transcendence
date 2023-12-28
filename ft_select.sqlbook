@@ -13,16 +13,127 @@ SELECT * FROM "settings"
 SELECT * FROM "history"
 WHERE "playerId" = 1
 -- SQLBook: Code
-UPDATE "chat" as c
-SET "type" = 'friends'
-WHERE
-    c.id IN (
-        SELECT chat_id
-        FROM "custom_users_chat"
-        WHERE user_id = $1
-        INTERSECT
-        SELECT chat_id
-        FROM "custom_users_chat"
-        WHERE user_id = $2
-    )
-    AND c."type" = 'inactive';
+-- Active: 1703750171894@@127.0.0.1@5432@masterminds
+SELECT
+    ch.id,
+    ch.name,
+    ch.chat_picture,
+    ch.type
+FROM chat AS ch
+JOIN custom_users_chat AS cuc
+    ON ch.id = cuc.chat_id
+WHERE cuc.user_id = 1
+    AND ch.type != 'inactive'
+    AND ch.type != 'friends'
+
+SELECT 
+    ch.id,
+    ch.name,
+    ch.chat_picture,
+    ch.type
+FROM chat AS ch
+JOIN custom_users_chat AS cuc
+    ON ch.id = cuc.chat_id
+WHERE cuc.user_id = 1
+    AND ch.type = 'friends'
+
+-- SQLBook: Code
+-- Active: 1703750171894@@127.0.0.1@5432@masterminds
+SELECT
+    ch.id,
+    ch.name,
+    ch.chat_picture,
+    ch.type
+FROM chat AS ch
+JOIN custom_users_chat AS cuc
+    ON ch.id = cuc.chat_id
+WHERE cuc.user_id = 2
+    AND ch.type != 'inactive'
+    AND ch.type != 'friends'
+
+SELECT 
+	ch.id,
+	cu2.display_name as name,
+	cu2.profile_picture as chat_picture,
+    ch.type
+FROM chat AS ch
+JOIN custom_users_chat AS cuc
+	ON ch.id = cuc.chat_id
+JOIN "user" AS cu
+	ON cuc.user_id = cu.id
+JOIN custom_users_chat AS cuc2
+	ON ch.id = cuc2.chat_id
+JOIN "user" AS cu2
+	ON cuc2.user_id = cu2.id
+WHERE cuc.user_id = 2
+    AND ch.type = 'friends'
+	AND cuc2.user_id != 2;
+-- SQLBook: Code
+SELECT * FROM (
+    SELECT
+        ch.id,
+        ch.name,
+        ch.chat_picture,
+        ch.type
+    FROM chat AS ch
+    JOIN custom_users_chat AS cuc
+        ON ch.id = cuc.chat_id
+    WHERE cuc.user_id = 2
+        AND ch.type != 'inactive'
+        AND ch.type != 'friends'
+)
+UNION
+SELECT * FROM (
+    SELECT 
+        ch.id,
+        cu2.display_name as name,
+        cu2.profile_picture as chat_picture,
+        ch.type
+    FROM chat AS ch
+    JOIN custom_users_chat AS cuc
+        ON ch.id = cuc.chat_id
+    JOIN "user" AS cu
+        ON cuc.user_id = cu.id
+    JOIN custom_users_chat AS cuc2
+        ON ch.id = cuc2.chat_id
+    JOIN "user" AS cu2
+        ON cuc2.user_id = cu2.id
+    WHERE cuc.user_id = 2
+        AND ch.type = 'friends'
+        AND cuc2.user_id != 2
+);
+-- SQLBook: Code
+SELECT
+    ch.id,
+    CASE
+        WHEN ch.type != 'friends' THEN ch.name
+        ELSE cu2.display_name
+    END AS name,
+    CASE
+        WHEN ch.type != 'friends' THEN ch.chat_picture
+        ELSE cu2.profile_picture
+    END AS chat_picture,
+    ch.type
+FROM chat AS ch
+JOIN custom_users_chat AS cuc
+    ON ch.id = cuc.chat_id
+LEFT JOIN "user" AS cu
+    ON cuc.user_id = cu.id
+LEFT JOIN custom_users_chat AS cuc2
+    ON ch.id = cuc2.chat_id
+LEFT JOIN "user" AS cu2
+    ON cuc2.user_id = cu2.id
+WHERE cuc.user_id = 2
+    AND (
+        (ch.type != 'inactive' AND ch.type != 'friends')
+        OR (ch.type = 'friends' AND cuc2.user_id != 2)
+    );
+-- SQLBook: Code
+-- Active: 1703750171894@@127.0.0.1@5432@masterminds
+SELECT chat_id
+FROM "custom_users_chat"
+WHERE user_id = 1
+INTERSECT
+SELECT chat_id
+FROM "custom_users_chat"
+WHERE user_id = 3
