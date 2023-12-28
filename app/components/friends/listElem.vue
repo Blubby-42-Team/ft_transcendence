@@ -7,15 +7,22 @@ const props = defineProps({
 	},
 })
 
-const { getUser } = useUserStore()
-const user = getUser(props.userId);
+const { getShortUser } = useUserStore()
+const user = getShortUser(computed(() => props.userId));
 
-const viewProfile = ref()
+const selectedFriend = useState<number | null>('selectedFriend');
+
+function openProfile() {
+	selectedFriend.value = props.userId;
+	console.log(selectedFriend.value);
+}
 
 </script>
 
 <template>
-	<GenericButton class="w-full p-1" :buttonStyle="2" @click="viewProfile?.open">
+	<GenericButton class="w-full p-1" :buttonStyle="2"
+		@click="openProfile"
+	>
 		<GenericProfilePicture class="w-10 h-10" imageSrc="/amogus.png"/>
 		<div class="self-center pl-2">
 			{{ user.name }}

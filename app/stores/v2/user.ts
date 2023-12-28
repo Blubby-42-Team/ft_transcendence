@@ -38,15 +38,15 @@ export const useUserStore = defineStore('user', {
 		_users: {} as { [key: number]: IUser | undefined },
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
-		_friends: {} as { [key: number]: Array<IShortUser> | undefined },
+		_friends: {} as { [key: number]: Array<number> | undefined },
 	}),
 	getters: {
 		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
-		getUser:      (state) => (userId: number) => computed(() => state._users?.[userId] ?? userPlaceHolder),
-		getShortUser: (state) => (userId: number) => computed(() => state._shortUsers?.[userId] ?? shortUserPlaceHolder),
-		getStat:      (state) => (userId: number) => computed(() => state._stats?.[userId] ?? statsPlaceHolder),
-		getHistory:   (state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
-		getFriends:   (state) => (userId: number) => computed(() => state._friends?.[userId] ?? []),
+		getUser:      (state) => (userId: Ref<number>) => computed(() => state._users?.[userId.value] ?? userPlaceHolder),
+		getShortUser: (state) => (userId: Ref<number>) => computed(() => state._shortUsers?.[userId.value] ?? shortUserPlaceHolder),
+		getStat:      (state) => (userId: Ref<number>) => computed(() => state._stats?.[userId.value] ?? statsPlaceHolder),
+		getHistory:   (state) => (userId: Ref<number>) => computed(() => state._history?.[userId.value] ?? []),
+		getFriends:   (state) => (userId: Ref<number>) => computed(() => state._friends?.[userId.value] ?? []),
 	},
 	actions: {
 		async updatePrimaryUser(userId: number){
@@ -136,8 +136,17 @@ export const useUserStore = defineStore('user', {
 				return;
 			}
 			return await fetchUserFriends(userId, (response) => {
-				const data = response._data;
-				console.log('res', data);
+				const data: Array<{
+					id: number,
+					display_name: string,
+					profile_picture: string,
+				}> = response._data;
+				this.updateShortUser(data.map((el) => ({
+					id: el.id,
+					name: el.display_name,
+					avatar: el.profile_picture,
+				})));
+				this._friends[userId] = data.map((el) => el.id);
 			});
 		},
 	},

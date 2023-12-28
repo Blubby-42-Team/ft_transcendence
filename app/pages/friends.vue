@@ -6,6 +6,8 @@ onMounted(() => { setSelectedCategory(EPageCategories.FRIENDS); })
 
 const openFindFriend = ref();
 
+const selectedFriend = useState<number | null>('selectedFriend', () => null);
+
 </script>
 
 <template>
@@ -26,6 +28,11 @@ const openFindFriend = ref();
 			</ClientOnly>
 		</div>
 		<FriendsList class="scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track"/>
-		<Profile class="max-h-full overflow-hidden" :userId="1" />
+		<template v-if="selectedFriend">
+			<Profile class="max-h-full overflow-hidden" :userId="selectedFriend" />
+		</template>
+		<template>
+			<div></div>
+		</template>
 	</div>
 </template>
