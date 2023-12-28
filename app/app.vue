@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore()
-const { players, sequence, timeRemaining } = useLobbyStore()
 
 const theme = useState('theme');
 

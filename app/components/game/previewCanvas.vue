@@ -54,7 +54,9 @@ onMounted(async () => {
 	engine.start()
 	graphic.start();
 
-	watch(gameSettings.value, () => engine.restart(gameSettings.value));
+	const settings = useState<gameSettingsType>('settings');
+
+	watch(settings.value, () => engine.restart(settings.value));
 })
 
 onUnmounted(() => {

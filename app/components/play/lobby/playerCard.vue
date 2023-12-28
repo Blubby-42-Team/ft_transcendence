@@ -8,8 +8,8 @@ const props = defineProps({
 })
 
 const { getUser, getStat, fetchStat, fetchUser } = useUserStore();
-const user = getUser(props.userId);
-const stats = getStat(props.userId);
+const user = getUser(computed(() => props.userId));
+const stats = getStat(computed(() => props.userId));
 
 await fetchUser(props.userId);
 await fetchStat(props.userId);

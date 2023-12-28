@@ -16,8 +16,7 @@ export class SearchGame {
 		this.timer = setTimeout(() => {
 			this.status.value = LobbyStatus.STARTED;
 			this.end();
-		}, 5000);
-
+		}, 5000); // TODO Change to real login with socket
 	};
 
 	cancel(){

@@ -1,7 +1,19 @@
 <script setup lang="ts">
 
-const { settings, hostId } = useLobbyStore()
 const { primaryUser, fetchPrimaryUser } = useUserStore();
+
+const defaultSettings = {
+	maxPoint:			2,
+	numPlayer:			4,
+	ballSize:			1,
+	padSize:			5,
+	mode:				BotDifficulty.NORMAL,
+	randomizer:			false,
+	initialBallSpeed:	0.5,
+	speedAcceleration:	0.1,
+};
+
+const settings = useState<gameSettingsType>('settings', () => defaultSettings);
 
 await fetchPrimaryUser();
 
@@ -11,8 +23,6 @@ const props = defineProps({
 		default: true,
 	},
 })
-
-const isHost = computed(() => primaryUser.value.id !== 0 && primaryUser.value.id === hostId.value)
 
 function updatePadSize(delta: number){
 	if (0 < settings.value.padSize + delta && settings.value.padSize + delta <= 10){
@@ -75,7 +85,7 @@ function redirect(){
 			<div class="flex items-center h-full col-span-2">Bot Difficulty</div>
 			<template v-for="difficulty in difficulties">
 				<GenericButton :buttonStyle="1" class="w-full h-12"
-					:disabled="!isHost || settings.numPlayer !== 1"
+					:disabled="settings.numPlayer !== 1"
 					:selected="settings.mode === difficulty.name && settings.numPlayer === 1"
 					@click="() => settings.mode = difficulty.name"
 				>
