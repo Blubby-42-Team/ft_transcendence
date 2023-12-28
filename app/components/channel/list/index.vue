@@ -41,7 +41,7 @@ watch(selectedChannel, () => {
 								:selected="channel?.id === selectedChannel?.id"
 								:to="`/messages/${channel?.id ?? 0}`"
 							>
-								<GenericProfilePicture class="w-10 h-10" :imageSrc="channel?.avatar ?? '/amogus.png'"/>
+								<GenericProfilePicture class="w-10 h-10" :imageSrc="channel?.avatar ?? '/pp.png'"/>
 								<div class="pl-2">{{ channel?.name }}</div>
 							</GenericNuxtLink>
 						</template>

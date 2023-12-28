@@ -5,7 +5,7 @@ const userPlaceHolder: IUser = {
 	name: '...',
 	fullName: '...',
 	login42: '...',
-	avatar: '/amogus.png',
+	avatar: '/pp.png',
 };
 
 const statsPlaceHolder: IStats = {
@@ -28,7 +28,7 @@ const statsPlaceHolder: IStats = {
 const shortUserPlaceHolder: IShortUser = {
 	id: 0,
 	name: '...',
-	avatar: '/amogus.png',
+	avatar: '/pp.png',
 };
 
 export const useUserStore = defineStore('user', {
