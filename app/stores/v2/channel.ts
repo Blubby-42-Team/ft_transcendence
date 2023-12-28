@@ -1,5 +1,7 @@
 import { ChannelType, IShortChannel } from "#imports";	
 
+
+
 export const useChannelStore = defineStore('channel', {
 	state: () => ({
 		_selectedChannel: 0,
@@ -15,47 +17,26 @@ export const useChannelStore = defineStore('channel', {
 		fetchChannelList(userId: number){
 			const { updateShortUser } = useUserStore();
 			return fetchAllChats(userId, (response) => {
-				console.log(response);
-				this._channelList = [1, 2, 3, 4, 5, 6];
-				this._shortChannels = {
-					1: {
-						id: 1,
-						type: ChannelType.Chat,
-						name: 'Chat 1',
-						avatar: '/themes/anime/astolfo.jpg',
-					},
-					2: {
-						id: 2,
-						type: ChannelType.Chat,
-						name: 'Chat 2',
-						avatar: '/amogus.png'
-					},
-					3: {
-						id: 3,
-						type: ChannelType.Group,
-						name: 'Group 1',
-						avatar: '/amogus.png'
-					},
-					
-					4: {
-						id: 4,
-						type: ChannelType.Friend,
-						name: 'Friend 1',
-						avatar: '/themes/anime/astolfo.jpg',
-					},
-					5: {
-						id: 5,
-						type: ChannelType.Friend,
-						name: 'Friend 2',
-						avatar: '/amogus.png'
-					},
-					6: {
-						id: 6,
-						type: ChannelType.Chat,
-						name: 'Chat 3',
-						avatar: '/amogus.png'
-					},
+				
+				for (const chat of response){
+					console.log(chat, );
+					const type = (() => {
+						switch (chat.type) {
+							case EChatType.friends:		return ChannelType.Friend;
+							case EChatType.group:		return ChannelType.Group;
+							case EChatType.protected:	return ChannelType.Chat;
+							case EChatType.public:		return ChannelType.Chat;
+							default: return ChannelType.Chat;
+						}
+					})();
+					this._shortChannels[chat.id] = {
+						id: chat.id,
+						type: type,
+						name: chat.name,
+						avatar: chat.chat_picture,
+					};
 				};
+				this._channelList = response.map((chat) => chat.id);
 				updateShortUser([
 					// Generate a list of 100 users randomly without automation
 					...Array.from({ length: 100 }, (_, i) => ({

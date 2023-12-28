@@ -2,7 +2,12 @@ import { EChatType } from '#imports';
 
 export function fetchAllChats(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: Array<{
+		id: number,
+		name: string,
+		type: EChatType,
+		chat_picture: string,
+	}>) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}`, {

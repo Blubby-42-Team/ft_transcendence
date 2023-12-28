@@ -12,6 +12,7 @@ export interface IMessage {
 }
 
 export enum ChannelType {
+	
 	Group	= 1,
 	Chat	= 2,
 	Friend	= 3,
