@@ -15,6 +15,7 @@ export class PostgresChatService {
 
 	constructor (
 		@InjectRepository(Chat) private readonly chatRepository: Repository<Chat>,
+		//TODO #79 Need to rework https://docs.nestjs.com/fundamentals/circular-dependency
 		@Inject(forwardRef(() => PostgresUserService))
 		private readonly postgresUserService: PostgresUserService,
 	  ) {}
@@ -454,8 +455,9 @@ export class PostgresChatService {
 
 		let chat = await this.getChatByIdSystem(chatId);
 		let user = await this.postgresUserService.getUserById(userId);
+		console.log(chat.admins, " ==>> ", user.id)
 		chat.admins.forEach(usr => {
-			if (usr.id = user.id)
+			if (usr.id === user.id)
 				is_in = true;
 		});
 		return is_in;

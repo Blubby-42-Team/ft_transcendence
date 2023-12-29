@@ -8,6 +8,7 @@ import { User42 } from 'src/model/user/user42.class';
 import { History } from 'src/model/history/history.class';
 import { Messages } from 'src/model/messages/messages.class';
 import { Chat } from 'src/model/chat/chat.class';
+import { Mute } from 'src/model/mute/mute.class';
 
 @Module({
 	imports: [
@@ -32,6 +33,7 @@ import { Chat } from 'src/model/chat/chat.class';
 						History,
 						Messages,
 						Chat,
+						Mute,
 					],
 				}
 			},

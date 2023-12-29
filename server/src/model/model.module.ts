@@ -9,6 +9,7 @@ import { ModelStatsModule } from './stats/stats.module';
 import { ModelHistoryModule } from './history/history.module';
 import { ModelMessagesModule } from './messages/messages.module';
 import { ModelChatModule } from './chat/chat.module';
+import { ModelMuteModule } from './mute/mute.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { ModelChatModule } from './chat/chat.module';
 		ModelHistoryModule,
 		ModelMessagesModule,
 		ModelChatModule,
+    ModelMuteModule,
 	],
 	controllers: [],
 	providers: [],
