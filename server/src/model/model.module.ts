@@ -12,7 +12,15 @@ import { ModelChatModule } from './chat/chat.module';
 import { ModelMuteModule } from './mute/mute.module';
 
 @Module({
-	imports: [ModelUserModule, ModelSettingsModule, ModelStatsModule, ModelHistoryModule, ModelMessagesModule, ModelChatModule, ModelMuteModule],
+	imports: [
+		ModelUserModule,
+		ModelSettingsModule,
+		ModelStatsModule,
+		ModelHistoryModule,
+		ModelMessagesModule,
+		ModelChatModule,
+    ModelMuteModule,
+	],
 	controllers: [],
 	providers: [],
 })

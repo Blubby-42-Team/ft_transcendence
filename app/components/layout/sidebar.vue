@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { EPageCategories } from '@/stores/page'
+import { EPageCategories } from '#imports'
 const { selectedCategory, selectedLobby, lobby } = usePageStore();
 
 enum EType {
@@ -52,3 +52,4 @@ const categories: Ref<Array<TSidebarCategory>> = ref([
 	</div>
 </template>
 
+~/stores/v2/page

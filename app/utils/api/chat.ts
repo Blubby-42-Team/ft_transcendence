@@ -1,13 +1,18 @@
-import { EChatType } from '#imports';
+import { EChatType, BackChannelType } from '#imports';
 
 export function fetchAllChats(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: Array<{
+		id: number,
+		name: string,
+		type: EChatType,
+		chat_picture: string,
+	}>) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('all chats fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -24,7 +29,7 @@ export function fetchChatsByTypes(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/chat/${chatType}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('all chats by type fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -36,12 +41,12 @@ export function fetchChatsByTypes(
 export function fetchChatsById(
 	userId: number,
 	chatId: number,
-	callback: (response: any) => void,
+	callback: (response: BackChannelType) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/chat/${chatId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('chats by id fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -58,7 +63,7 @@ export function fetchIsInChat(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/is_in/${chatId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('is in chats by id fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -81,7 +86,7 @@ export function fetchCreateChat(
 			'name': name
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('create chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -106,7 +111,7 @@ export function fetchCreateChatProtected(
 			'password': password
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('create chat protected fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -129,7 +134,7 @@ export function fetchAddInChat(
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('add in chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -152,7 +157,7 @@ export function fetchRemoveFromChat(
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('remove from chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -173,7 +178,7 @@ export function fetchLeaveChat(
 			'id': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('leave chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -196,7 +201,7 @@ export function fetchAddAdminChat(
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('add admin to chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -219,7 +224,7 @@ export function fetchRemoveAdminFromChat(
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('remove admin from chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -242,7 +247,7 @@ export function fetchBanUser(
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('ban user from chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -265,7 +270,7 @@ export function fetchUnanUser(
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('unban user from chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -286,7 +291,7 @@ export function fetchDeleteChat(
 			'id': chatId
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('delete chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -306,7 +311,7 @@ export function fetchJoinChat(
 		body: {
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('join chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -328,7 +333,7 @@ export function fetchJoinProtectedChat(
 			'password': password
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('join protected chat fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -350,7 +355,7 @@ export function fetchChangeChatType(
 			'password': password
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('change chat type fetched');
 		},
 		onRequestError: ({ request, error, options }) => {

@@ -2,7 +2,7 @@
 
 source "$(dirname "$0")/tools/print.sh"
 
-config=("help" "check" "db" "dbstart" "dbstop" "dbstat" "node")
+config=("help" "init" "check" "db" "dbstart" "dbstop" "dbstat" "node")
 
 err_msg_arg=${config[@]}
 err_msg="Usage: $0 [ ${err_msg_arg// / | } ]"
@@ -19,11 +19,18 @@ do
 	then
 		[ $arg == "help" ] && {
 			echo "help    : show this message"
+			echo "init    : installs all dependencies"
 			echo "check   : check if all the dependency is install"
 			echo "db      : show db usage"
 			echo "dbstart : start db"
 			echo "dbstop  : stop db, be carefull all data will be lost"
 			echo "dbstat  : show db status"
+			continue;
+		}
+		[ $arg == "init" ] && {
+			npm i --prefix ./app
+			npm i --prefix ./libs
+			npm i --prefix ./server
 			continue;
 		}
 		[ $arg == "check" ] && {

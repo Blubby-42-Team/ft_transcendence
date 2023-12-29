@@ -5,7 +5,7 @@ export function fetchTest(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/game/room`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('stats fetched');
 		},
 		onRequestError: ({ request, error, options }) => {

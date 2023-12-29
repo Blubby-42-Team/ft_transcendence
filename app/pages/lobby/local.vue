@@ -12,9 +12,9 @@ onMounted(() => { setPageDataLobby(EPageCategories.GAME, EGameMode.Local); })
 
 <template>
 	<div class="grid h-full grid-cols-[max-content_repeat(1,auto)]">
-		<PlaySettings :preview="false"/>
+		<GameLobbySettings :preview="false"/>
 		<div class="flex w-full h-full p-5">
-			<GamePreviewCanvas uniqueToken="previewLocal"/>
+			<GameInstancePreview uniqueToken="previewLocal"/>
 		</div>
 	</div>
 </template>

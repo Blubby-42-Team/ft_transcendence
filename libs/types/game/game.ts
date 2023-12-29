@@ -64,6 +64,12 @@ export enum gameStatusType {
 	GAMEOVER,
 };
 
+export enum LobbyStatus {
+	NOT_STARTED	= 0,	// On Hold
+	STARTING	= 1,	// 5 Seconds Countdown
+	STARTED		= 2,	// Card Animation
+}
+
 export type gameStateType = {
 	status:				gameStatusType,
 	aispeed:			number,

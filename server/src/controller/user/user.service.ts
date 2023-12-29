@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UserTelemetryStatus } from '@shared/types/user/user';
 import { ModelUserService } from 'src/model/user/user.service';
 
 @Injectable()
@@ -46,5 +47,13 @@ export class UserService {
 
 	async deleteBlacklistById(id: number, blacklistId: number) {
 		return await this.modelUserService.deleteBlacklistById(id, blacklistId);
+	}
+
+	async setStatusTelemitry(id: number, status: UserTelemetryStatus) {
+		return await this.modelUserService.setUserStatus(id, status);
+	}
+
+	async getStatusTelemitry(id: number) {
+		return await this.modelUserService.getUserStatus(id);
 	}
 }

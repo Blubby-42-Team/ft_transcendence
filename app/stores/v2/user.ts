@@ -5,7 +5,7 @@ const userPlaceHolder: IUser = {
 	name: '...',
 	fullName: '...',
 	login42: '...',
-	avatar: '/amogus.png',
+	avatar: '/pp.png',
 };
 
 const statsPlaceHolder: IStats = {
@@ -28,92 +28,108 @@ const statsPlaceHolder: IStats = {
 const shortUserPlaceHolder: IShortUser = {
 	id: 0,
 	name: '...',
-	avatar: '/amogus.png',
+	avatar: '/pp.png',
 };
 
 export const useUserStore = defineStore('user', {
 	state: () => ({
-		_primaryUser: 42,
+		_primaryUser: 0,
 		_shortUsers: {} as { [key: number]: IShortUser | undefined },
 		_users: {} as { [key: number]: IUser | undefined },
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
-		_friends: {} as { [key: number]: Array<IShortUser> | undefined },
+		_friends: {} as { [key: number]: Array<number> | undefined },
 	}),
 	getters: {
 		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
-		getUser:      (state) => (userId: number) => computed(() => state._users?.[userId] ?? userPlaceHolder),
-		getShortUser: (state) => (userId: number) => computed(() => state._shortUsers?.[userId] ?? shortUserPlaceHolder),
-		getStat:      (state) => (userId: number) => computed(() => state._stats?.[userId] ?? statsPlaceHolder),
-		getHistory:   (state) => (userId: number) => computed(() => state._history?.[userId] ?? []),
-		getFriends:   (state) => (userId: number) => computed(() => state._friends?.[userId] ?? []),
+		getUser:      (state) => (userId: Ref<number>) => computed(() => state._users?.[userId.value] ?? userPlaceHolder),
+		getShortUser: (state) => (userId: Ref<number>) => computed(() => state._shortUsers?.[userId.value] ?? shortUserPlaceHolder),
+		getStat:      (state) => (userId: Ref<number>) => computed(() => state._stats?.[userId.value] ?? statsPlaceHolder),
+		getHistory:   (state) => (userId: Ref<number>) => computed(() => state._history?.[userId.value] ?? []),
+		getFriends:   (state) => (userId: Ref<number>) => computed(() => state._friends?.[userId.value] ?? []),
 	},
 	actions: {
+		async updatePrimaryUser(userId: number){
+			this._primaryUser = userId;
+		},
+
 		async updateShortUser(users: Array<IShortUser>){
 			for (const user of users){
 				this._shortUsers[user.id] = user;
 			}
 		},
+
 		async fetchPrimaryUser(){
 			return this.fetchUser(this._primaryUser);
 		},
+
 		async fetchUser(userId: number){
 			if (userId === 0){
 				return;
 			}
-			return fetchTest(userId, (response) => {
+			return fetchUser(userId, (response) => {
 				this._users[userId] = {
-					id: userId,
-					name: 'James',
-					fullName: 'James Bond',
-					login42: 'jbond',
-					avatar: '/themes/anime/astolfo.jpg',
+					id:       response.id,
+					name:     response.display_name,
+					fullName: response.full_name,
+					login42:  response.login,
+					avatar:   response.profile_picture,
 				};
-			});
+			}
+			);
 		},
+		
 		async fetchStat(userId: number){
 			if (userId === 0){
 				return;
 			}
-			return fetchTest(userId, (response) => {
+			return fetchStats(userId, (response) => {
 				this._stats[userId] = {
 					classic: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
+						matchPlayed: 			response.classic_match_played,
+						ranking: 				response.classic_ranking,
+						mmr: 					response.classic_mmr,
+						winrate: 				response.classic_winrate,
+						averagePointPerGame:	response.classic_average_point,
 					},
 					random: {
-						matchPlayed: Math.floor(Math.random() * 100),
-						ranking: Math.floor(Math.random() * 100),
-						mmr: Math.floor(Math.random() * 1000),
-						winrate: Math.floor(Math.random() * 100),
-						averagePointPerGame: Math.floor(Math.random() * 100),
+						matchPlayed: 			response.random_match_played,
+						ranking: 				response.random_ranking,
+						mmr: 					response.random_mmr,
+						winrate: 				response.random_winrate,
+						averagePointPerGame: 	response.random_average_point,
 					},
 				};
 			});
 		},
+
 		async fetchHistory(userId: number){
 			if (userId === 0){
 				return;
 			}
-			return await fetchTest(userId, (response) => {
-				console.log('fetchHistory', userId);
-				if (this._history[userId] === undefined){
-					this._history[userId] = [];
-				}
-				for (let i = 0; i < 10; i++){
-					this._history[userId]?.push({
-						matchId: 45,
-						date: new Date,
-						duration: 100,
-						adversary: 3,
-						adversaryName: 'Jameskii',
-						score: 10,
-						scoreAdv: Math.floor(Math.random() * 10),
-					})
-				}
+			return await fetchHistory(userId, (response) => {
+				this._history[userId] = response.map(el => ({
+					matchId: 		el.id,
+					date: 			new Date(el.date),
+					duration: 		el.duration,
+					adversary: 		el.playerId === userId ? el.oppId : el.playerId,
+					score: 			el.playerId === userId ? el.player_score : el.opp_score,
+					scoreAdv: 		el.playerId === userId ? el.opp_score : el.player_score,
+				}));
+			});
+		},
+
+		async fetchFriends(userId: number){
+			if (userId === 0){
+				return;
+			}
+			return await fetchUserFriends(userId, (response) => {
+				this.updateShortUser(response.map((el) => ({
+					id: el.id,
+					name: el.display_name,
+					avatar: el.profile_picture,
+				})));
+				this._friends[userId] = response.map((el) => el.id);
 			});
 		},
 	},
