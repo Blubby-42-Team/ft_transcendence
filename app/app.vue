@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore()
+const { selectedChannel, channels } = useChannelStore()
 
 const defaultSettings = {
 	maxPoint:			2,
