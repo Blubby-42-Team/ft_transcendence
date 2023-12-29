@@ -4,6 +4,8 @@ import { PostgresUserService } from 'src/service/postgres/user/user.service';
 import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { ModelUser42Service } from './user42.service';
 import { UserRoleType } from 'src/auth/auth.class';
+import { UserTelemetryStatus } from '@shared/types/user/user';
+import { TelemetryService } from 'src/service/telemetry/telemetry.service';
 
 @Injectable()
 export class ModelUserService {
@@ -11,6 +13,7 @@ export class ModelUserService {
 		private readonly postgresUserService: PostgresUserService,
 		private readonly postgresChatService: PostgresChatService,
 		private readonly modelUser42Service: ModelUser42Service,
+		private readonly telemetryService: TelemetryService,
 	) {}
 	
 	private readonly logger = new Logger(ModelUserService.name);
@@ -150,6 +153,14 @@ export class ModelUserService {
 
 	async deleteBlacklistById(id: number, blacklistId: number) {
 		return await this.postgresUserService.deleteBlacklistById(id, blacklistId)
+	}
+
+	async setUserStatus(id: number, status: UserTelemetryStatus) {
+		return await this.telemetryService.setUserStatus(id, status);
+	}
+
+	async getUserStatus(id: number) {
+		return await this.telemetryService.getUserStatus(id);
 	}
 }
 
