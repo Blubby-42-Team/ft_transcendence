@@ -1,13 +1,12 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import { AcknowledgmentWsDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomResponse, joinGameResponse, moveRequestDto, moveResponse } from '@shared/dto/ws.dto'
+import { AcknowledgmentWsDto, MatchMakingRequestDto, ReadyOrNotRequestDto, joinGameResponse, moveRequestDto, moveResponse, readyOrNotResponse } from '@shared/dto/ws.dto'
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
-import { subscribe } from 'diagnostics_channel';
 
 
 @WebSocketGateway({
@@ -24,6 +23,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private readonly gatewayGameService: GatewayGameService,
 		private readonly authService: AuthService,
 	) { }
+
+// When a client connect to the server
+	handleConnection(client: Socket) {
+		this.logger.debug(`Client ${client.id} connected`);
+	}
+
+	// When a client disconnect from the server
+	async handleDisconnect(client: Socket) {
+		this.logger.debug(`Client ${client.id} disconnected`);
+		// const checkIsInGame = this.gameService.findUserInLobbys(client.id);
+		//TODO remove the client from the game room
+		//TODO remove the client from the matchmaking
+		await this.gatewayGameService.clientDisconnect(client)
+		.catch((err) => {
+			this.logger.error(err);
+			this.logger.debug(`Error while disconnecting client ${client.id}`);
+		})
+	}
 
 	/**
 	 * Handle a request from a client and return an acknowledgment
@@ -89,17 +106,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return new AcknowledgmentWsDto<any>('error', error);
 		}
 	}
-
-	// When a client connect to the server
-	handleConnection(client: Socket) {
-		this.logger.debug(`Client ${client.id} connected`);
-	}
-
-	// When a client disconnect from the server
-	handleDisconnect(client: Socket) {
-		this.logger.debug(`Client ${client.id} disconnected`);
-	}
-
 	// Inject the server instance
 	@WebSocketServer()
 	readonly server: Server;
@@ -155,26 +161,69 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	// @SubscribeMessage('removePlayerFromWhiteList')
 
 	// TODO rework for #40 #64 #65 @Matthew-Dreemurr
-	@SubscribeMessage('joinGame')
-	async joinGame(
+	// @SubscribeMessage('joinGame')
+	// async joinGame(
+	// 	@MessageBody() req: any,
+	// 	@ConnectedSocket() socket: Socket
+	// ) {
+	// 	return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
+
+	// 		await this.gatewayGameService.joinAGame(data.game_room_id, user.userId, socket);
+	// 		return 'ok';
+	// 	});
+	// }
+
+	// WIP @Matthew-Dreemurr #40 #64 #65
+	/**
+	 * Match makeking
+	 */
+	@SubscribeMessage('matchmake')
+	async matchmake(
 		@MessageBody() req: any,
 		@ConnectedSocket() socket: Socket
 	) {
-		return this.handleRequest(socket, req, JoinGameRoomRequestDto, async (user, data): Promise<joinGameResponse> => {
+		return this.handleRequest(socket, req, MatchMakingRequestDto, async (user, data): Promise<joinGameResponse> => {
 
-			await this.gatewayGameService.joinAGame(data.game_room_id, user.userId, socket);
+			await this.gatewayGameService.matchMakingTwoPlayers(user.userId, socket);
 			return 'ok';
 		});
 	}
 
+	/**
+	 * Ready or not
+	 */
+	@SubscribeMessage('readyOrNot')
+	async readyOrNot(
+		@MessageBody() req: any,
+		@ConnectedSocket() socket: Socket
+	) {
+		return this.handleRequest(socket, req, ReadyOrNotRequestDto, async (user, data): Promise<readyOrNotResponse> => {
+
+			await this.gatewayGameService.readyOrNot(user.userId, data.ready);
+			return 'ok';
+		});
+	}
+
+	/**
+	 * Handle player move input
+	 */
 	@SubscribeMessage('move')
 	async move(
 		@MessageBody() req: any,
 		@ConnectedSocket() socket: Socket
 	) {
-		return this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<moveResponse> => {
-			
-			return 'ok';
-		});
+		try {
+			this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<void> => {
+				this.logger.debug(`move: ${data.dir}, press: ${data.press}`);
+				try {
+					this.gatewayGameService.move(user.userId, data.dir, data.press)
+				} catch (error) {
+					this.logger.error(error);
+				}
+			});
+		} catch (error) {
+			this.logger.error(error);
+		}
+		
 	}
 }

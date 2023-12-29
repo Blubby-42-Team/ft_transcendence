@@ -6,11 +6,17 @@ import { ModelUserModule } from 'src/model/user/user.module';
 
 @Module({
 
-	imports: [AuthModule, ModelUserModule],
+	imports: [
+		AuthModule,
+		ModelUserModule
+	],
 	providers: [
 		GameService,
 		EmitGateway,
 	],
-	exports: [GameService, EmitGateway],
+	exports: [
+		GameService,
+		EmitGateway
+	],
 })
 export class GameModule { }
