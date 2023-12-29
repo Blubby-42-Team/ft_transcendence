@@ -1,4 +1,4 @@
-import { EChatType, IShortChannel, BackChannelType } from "#imports";	
+import { EChatType, IShortChannel, BackChannelType, IChannel } from "#imports";	
 
 
 
@@ -15,7 +15,6 @@ export const useChannelStore = defineStore('channel', {
 	},
 	actions: {
 		fetchChannelList(userId: number){
-			const { updateShortUser } = useUserStore();
 			return fetchAllChats(userId, (response) => {
 				
 				for (const chat of response){

@@ -41,7 +41,7 @@ export type channelTypeSettings = {
 
 export type BackChannelType = {
 	id: number,
-	type: 'group' | 'friend' | 'public' | 'protected',
+	type: Exclude<EChatType, "inactive">
 	name: string,
 	chat_picture: string,
 	owner: number,

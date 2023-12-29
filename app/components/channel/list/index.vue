@@ -4,37 +4,44 @@ import { EChatType } from "#imports"
 
 const { selectedChannel, channels } = useChannelStore()
 
+type test = {
+	type: Array<EChatType>,
+	name: string,
+	open: boolean,
+	hasBottom: boolean,
+	hasSideMenu: boolean,
+	channels: Array<IShortChannel>,
+	icon: string,
+}
+
 const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
-const types = useState(() => [
-	{ type: [EChatType.friends],                     name: 'Friends', open: true,  hasBottom: true,  hasSideMenu: false, channels: [] as Array<IShortChannel>, icon: 'material-symbols:person' },
-	{ type: [EChatType.group],                       name: 'Groups',  open: true,  hasBottom: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:diversity-4' },
-	{ type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasBottom: false, hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:groups' },
-]);
+const types = useState((): {[key: string]: test} => ({
+	friend: { type: [EChatType.friends],                     name: 'Friends', open: true,  hasBottom: true,  hasSideMenu: false, channels: [] as Array<IShortChannel>, icon: 'material-symbols:person' },
+	group:  { type: [EChatType.group],                       name: 'Groups',  open: true,  hasBottom: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:diversity-4' },
+	chats:  { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasBottom: false, hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:groups' },
+}));
 
-const last = computed(() => {
-	for (const type of types.value.reverse()){
-		if (type.channels.length > 0){
-			return type.name;
-		}
-	}
-})
-
-types.value.forEach((elem) => {
-	elem.channels = channels.value.filter((channel) => channel !== undefined && elem.type.includes(channel.type));
-});
+for (const key in types.value){
+	types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type));
+}
 
 watch(channels, () => {
-	types.value.forEach((elem) => {
-		elem.channels = channels.value.filter((channel) => channel !== undefined && elem.type.includes(channel.type));
-	});
+	for (const key in types.value){
+		types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type));
+	}
 });
 
-watch(selectedChannel, () => {
-	if (!selectedChannel.value){
-		hasSideMenu.value = false;
+const activeType = computed(() => {
+	for (const key in types.value){
+		if (selectedChannel.value && types.value[key].type.includes(selectedChannel.value.type)){
+			return types.value[key];
+		}
 	}
-	const newSettings = types.value.find((elem) => selectedChannel.value !== null && elem.type.includes(selectedChannel.value.type)) ?? types.value[0];
-	hasSideMenu.value = newSettings.hasSideMenu;
+	return types.value[0];
+})
+
+watch(activeType, () => {
+	hasSideMenu.value = activeType.value.hasSideMenu;
 })
 
 </script>
@@ -43,8 +50,10 @@ watch(selectedChannel, () => {
 	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
 		<template v-for="(ctype, i) in types">
 			<template v-if="ctype.channels.length > 0">
+				<div class="border-b-[1px] border-background2"></div>
+				
 				<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
-					:selected="selectedChannel !== null && ctype.type.includes(selectedChannel.type)"
+					:selected="activeType?.name === ctype?.name"
 					@click="ctype.open = !ctype.open"
 				>
 					<Icon :name="ctype.icon" class="w-10 h-10"/>
@@ -67,12 +76,6 @@ watch(selectedChannel, () => {
 								</GenericNuxtLink>
 							</template>
 						</div>
-					</template>
-				</TransitionExpand>
-	
-				<TransitionExpand>
-					<template v-if="last !== ctype.name && ctype.hasBottom && ctype.open">
-						<div class="pb-4 border-b-[1px] border-background2"></div>
 					</template>
 				</TransitionExpand>
 			</template>
