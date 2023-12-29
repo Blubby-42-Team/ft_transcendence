@@ -1,26 +1,26 @@
 <script lang="ts" setup>
 
-definePageMeta({
-	name: 'Lobby Random',
-	layout: 'lobby',
-})
+// definePageMeta({
+// 	name: 'Lobby Random',
+// 	layout: 'lobby',
+// })
 
-const { setPageDataLobby } = usePageStore();
-const { cards, reset } = useLobbyStore();
+// const { setPageDataLobby } = usePageStore();
+// const { cards, reset } = useLobbyStore();
 
-onMounted(() => {
-	setPageDataLobby(EPageCategories.GAME, EGameMode.Random);
-	reset(1);
-})
+// onMounted(() => {
+// 	setPageDataLobby(EPageCategories.GAME, EGameMode.Random);
+// 	reset(1);
+// })
 
-onUnmounted(() => {
-	reset(1);
-})
+// onUnmounted(() => {
+// 	reset(1);
+// })
 
 </script>
 
 <template>
-	<div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
+	<!-- <div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
 		<template v-for="player of cards">
 			<div class="p-2">
 				<PlayLobbyCard :player="player"/>
@@ -31,5 +31,5 @@ onUnmounted(() => {
 			<PlayLobbyPlayButtonMatchmaking/>
 		</div>
 		<br>
-	</div>
+	</div> -->
 </template>

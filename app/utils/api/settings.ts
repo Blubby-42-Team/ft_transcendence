@@ -7,7 +7,7 @@ export function fetchSettings(
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('settings fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -30,7 +30,7 @@ export function fetchSettingsPatch(
 			'sound': sound,
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user game save fetched');
 		},
 		onRequestError: ({ request, error, options }) => {

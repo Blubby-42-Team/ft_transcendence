@@ -16,7 +16,7 @@ export function fetchPostMessage(
 			'content': content
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('post message fetched');
 		},
 		onRequestError: ({ request, error, options }) => {

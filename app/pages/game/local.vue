@@ -1,7 +1,7 @@
 <template>
 	<div class="w-full h-full">
 		<client-only placeholder="loading...">
-			<GameCanvas />
+			<GameInstance />
 		</client-only>
 	</div>
 </template>

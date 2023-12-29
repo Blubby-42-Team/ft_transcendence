@@ -1,13 +1,24 @@
 import { EGameType } from '#imports'
 
+type TFetchHistoryResponse = {
+	id: number,
+	game_type: 'classic' | 'random',
+	player_score: number,
+	opp_score: number,
+	date: string,
+	duration: number,
+	playerId: number,
+	oppId: number
+}[]
+
 export function fetchHistory(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: TFetchHistoryResponse) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/history/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('history fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -38,7 +49,7 @@ export function fetchSaveGame(
 			'duration': duration
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user game save fetched');
 		},
 		onRequestError: ({ request, error, options }) => {

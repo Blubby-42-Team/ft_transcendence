@@ -32,7 +32,7 @@ const players = computed(() => [match.player1, match.player2])
 					})"
 				>
 					<template v-if="player?.id !== undefined">
-						<GenericProfilePicture class="w-8 h-8" imageSrc="/amogus.png"/>
+						<GenericProfilePicture class="w-8 h-8" imageSrc="/pp.png"/>
 					</template>
 				</div>
 				<div class="pt-2 pr-2 text-left truncate border-pink-500 group-hover:border-pink-500"

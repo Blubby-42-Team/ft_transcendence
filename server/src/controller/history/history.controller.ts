@@ -26,6 +26,6 @@ export class HistoryController {
 		@Body() body: DTO_addHistory,
 	) {
 		log(`Add history by user id ${params.id}`);
-		return await this.historyService.addHistoryByUserId(params.id, body.opp_id, body.game_type, body.player_score, body.opp_score, body.date, body.duration);
+		return await this.historyService.addHistoryByUserId(params.id, body.opp_id, body.game_type, body.player_score, body.opp_score, body.duration);
 	}
 }

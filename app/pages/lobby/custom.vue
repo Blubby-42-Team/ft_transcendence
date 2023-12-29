@@ -1,26 +1,26 @@
 <script lang="ts" setup>
 
-definePageMeta({
-	name: 'Lobby Custom',
-	layout: 'lobby',
-})
+// definePageMeta({
+// 	name: 'Lobby Custom',
+// 	layout: 'lobby',
+// })
 
-const { setPageDataLobby } = usePageStore();
-const { cards, reset } = useLobbyStore();
+// const { setPageDataLobby } = usePageStore();
+// const { cards, reset } = useLobbyStore();
 
-onMounted(() => {
-	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
-	reset(1);
-});
+// onMounted(() => {
+// 	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
+// 	reset(1);
+// });
 
-onUnmounted(() => {
-	reset(1);
-});
+// onUnmounted(() => {
+// 	reset(1);
+// });
 
 </script>
 
 <template>
-	<div class="grid h-full grid-cols-[max-content_auto]">
+	<!-- <div class="grid h-full grid-cols-[max-content_auto]">
 		<PlaySettings/>
 		<div class="grid h-full grid-cols-[repeat(4,1fr)] w-full">
 			<template v-for="player of cards">
@@ -29,5 +29,5 @@ onUnmounted(() => {
 				</div>
 			</template>
 		</div>
-	</div>
+	</div> -->
 </template>
