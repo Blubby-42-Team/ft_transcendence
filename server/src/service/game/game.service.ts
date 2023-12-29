@@ -2,22 +2,19 @@
 	Service for managing game lobbys and game rooms
  */
 
-import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundException, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
-import { ModelUserService } from 'src/model/user/user.service';
-import { DisconnectReason, Socket } from 'socket.io';
-import { WsRequestDto, disconnectClientFromTheLobbyResponse } from '@shared/dto/ws.dto';
-import { ModelChatModule } from '../../model/chat/chat.module';
+import { Socket } from 'socket.io';
+import { disconnectClientFromTheLobbyWSResponse, matchMakingWSResponse, playerReadyOrNotWSResponse } from '@shared/dto/ws.dto';
 
 @Injectable()
-export class GameService {
+export class GameService implements OnModuleInit, OnModuleDestroy {
 
 	constructor (
 		private readonly emitGAteway: EmitGateway,
 		private readonly authService: AuthService,
-		private readonly modelUserService: ModelUserService,
 	) {}
 
 	private readonly logger = new Logger(GameService.name);
@@ -26,16 +23,180 @@ export class GameService {
 		[key: string]: LobbyInstance;
 	} = {};
 
-	private users: {
-		[key: number]: {
-			room_id: string,
-			connectedClients: Array<string>,
-		}
-	} = {};
+	private usersInLobby: Map<number, {
+		room_id: string,
+		connectedClients: Socket[],
+	}> = new Map();
 
-	async gameStateManager() {
-		this.logger.debug('gameStateManager');
-		// TODO
+	private twoUserMatchMakingQueue: Array<{
+		userId: number,
+		socket: Socket
+	}> = [];
+
+	private matchMakingTwoPlayersInterval: NodeJS.Timeout;
+	private readonly matchMakingTwoPlayersIntervalTime = 1000;
+
+	onModuleInit() {
+		this.logger.debug(`onModuleInit: start`);
+		// Do not await this call
+		// Call the matchMakingTwoPlayers function every second
+		this.matchMakingLoop()
+	}
+
+	async onModuleDestroy() {
+		clearInterval(this.matchMakingTwoPlayersInterval);
+	}
+
+	async matchMakingLoop() {
+		this.matchMakingTwoPlayersInterval = setInterval(() => {
+			this.matchMakingTwoPlayers()
+			.catch((err) => {
+				this.logger.error(`matchMakingTwoPlayers: ${err}`);
+			});
+		}, this.matchMakingTwoPlayersIntervalTime);
+	
+	}
+
+	/**
+	 * Will try to match the user with another user
+	 * @param userId Id of the user
+	 * @param socket Socket of the user
+	 * @returns 
+	 */
+	async matchMakingTwoPlayers() {
+		if (this.twoUserMatchMakingQueue && this.twoUserMatchMakingQueue.length < 2) {
+			const res: matchMakingWSResponse = {
+				status: "WaitingForPlayers",
+				msg: "Waiting for players to join the match making",
+			}
+			this.emitGAteway.server.to('matchMaking').emit('matchMakingStatus', res);
+			return;
+		}
+
+		const player1 = await this.getAndPopFristPlayerFromTwoUserMatchMaking();
+		const player2 = await this.getAndPopFristPlayerFromTwoUserMatchMaking();
+
+		if (player1 === undefined || player2 === undefined) {
+			this.logger.error(`matchMakingTwoPlayers: player1 or player2 is undefined`);
+		}
+
+		// Create a lobby
+		const lobby_id = await this.createLobby(player1.userId);
+
+		// Join WS of the two players to the lobby
+
+		// Dont need to add the player1 to the white list because he is the owner
+		await this.joinPlayerToLobby(lobby_id, player1.userId, player1.socket);
+
+		await this.addPlayerToWhiteList(lobby_id, player2.userId);
+		await this.joinPlayerToLobby(lobby_id, player2.userId, player2.socket);
+
+
+		// Remove the two players from the match making
+		player1.socket.leave('matchMaking');
+		player2.socket.leave('matchMaking');
+
+		this.emitGAteway.server.in(lobby_id).emit('matchMakingStatus', {
+			status: "ok",
+			msg: "Match found, waiting for players to be ready",
+		});
+
+		// TODO WIP @Matthew-Dreemurr
+		// Emit to the two players that we found an opponent and start the game
+		// Start lobby instance and wait for player to be ready
+		// Check how to setup the game and settings
+		this.logger.debug(`matchMakingTwoPlayers: match found ${player1.userId} ${player2.userId}`);
+		this.logger.debug('Starting lobby')
+		this.lobbys[lobby_id].startLobby();
+	}
+
+	async getAndPopFristPlayerFromTwoUserMatchMaking(): Promise<{userId: number, socket: Socket}> {
+		return this.twoUserMatchMakingQueue.shift();
+	}
+
+	async readyOrNot(userId: number, ready: boolean) {
+		const lobby = await this.findUserInLobbys(userId)
+
+		if (lobby === undefined) {
+			this.logger.debug(`User ${userId} is not in a lobby`);
+			throw new NotFoundException(`User ${userId} is not in a lobby`);
+		}
+
+		if (ready === true) {
+			lobby.onPlayerReady(userId);
+		} else {
+			lobby.onPlayerNotReady(userId);
+		}
+
+		const res : playerReadyOrNotWSResponse = 
+		{
+			userId: userId,
+			ready: ready,
+		}
+		await this.emitToRoom(lobby.room_id, 'playerReady', res)
+	}
+
+	async playerMove(userId: number, move: boolean, key_press: boolean) {
+		const lobby = await this.findUserInLobbys(userId)
+
+		if (lobby === undefined) {
+			this.logger.debug(`User ${userId} is not in a lobby`);
+			throw new NotFoundException(`User ${userId} is not in a lobby`);
+		}
+
+		lobby.movePlayer(userId, move, key_press);
+	}
+
+	/**
+	 * Add player to the match making queue
+	 * @param userId user id
+	 * @param socket socket of the user that will be used to send him a messages
+	 */
+	async addPlayerToTwoUserMatchMaking(userId: number, socket: Socket) {
+
+
+		const checkIfPlayerIsAlreadyInLobby = await this.findUserInLobbys(userId)
+		.then((lobby) => {
+			this.logger.debug(`User ${userId} is already in a lobby ${lobby.room_id}`);
+			throw new BadRequestException(`User ${userId} is already in a lobby ${lobby.room_id}`);
+		})
+		.catch((err) => {
+			if ((err instanceof NotFoundException) === false) {
+				throw err;
+			}
+
+			// User is not in a lobby, continue
+		})
+
+		const checkIfUserIsAlreadyInMatchMaking = this.twoUserMatchMakingQueue.find((e) => e.userId === userId);
+		if (checkIfUserIsAlreadyInMatchMaking !== undefined) {
+			this.logger.log(`User ${userId} is already in the match making, ignoring`);
+			return;
+		}
+		this.twoUserMatchMakingQueue.push({
+			userId: userId,
+			socket: socket,
+		});
+		socket.join('matchMaking');
+		this.logger.debug(`addPlayerToTwoUserMatchMaking ${userId}`);
+	}
+
+	async removePlayerFromTwoUserMatchMaking(userId: number) {
+
+		// Disconnect the user if he is still connected
+		const socket = this.twoUserMatchMakingQueue.find((e) => e.userId === userId)?.socket;
+
+		if (socket !== undefined && socket.connected === true) {
+			const res: matchMakingWSResponse = {
+				status: "DisconnectedByServer",
+				msg: "You have been removed from the match making",
+			}
+			socket.emit('matchMakingStatus', res);
+			socket.disconnect();
+		}
+
+		// Remove the user from the array using filter
+		this.twoUserMatchMakingQueue = this.twoUserMatchMakingQueue.filter((e) => e.userId !== userId);
 	}
 
 	/**
@@ -48,10 +209,10 @@ export class GameService {
 
 		const newRoomId = this.generateUniqueRoomId(6);
 
-		const newLobby = new LobbyInstance(newRoomId, userId, this.gameStateManager);
+		const newLobby = new LobbyInstance(newRoomId, this.emitGAteway.server, userId, ()=>{});
 		this.lobbys[newRoomId] = newLobby;
 
-		this.users[userId] = {
+		this.usersInLobby[userId] = {
 			room_id: newRoomId,
 			connectedClients: [],
 		};
@@ -79,7 +240,7 @@ export class GameService {
 			throw new BadRequestException(`User ${userId} is not in the white list of lobby ${roomId}`);
 		}
 
-		const checkUserWsConnectedClient = this.users[userId]?.connectedClients;
+		const checkUserWsConnectedClient = this.usersInLobby[userId]?.connectedClients;
 		if (checkUserWsConnectedClient !== undefined) {
 
 			// Check if the user have already a client connected
@@ -93,42 +254,57 @@ export class GameService {
 					this.logger.debug(`disconnect WS client ${client} of user ${userId}`);
 
 					// Emit to the client that he is disconnected
-					const msg: disconnectClientFromTheLobbyResponse = {
+					const msg: disconnectClientFromTheLobbyWSResponse = {
 						reason: "DuplicateConnection",
 						msg: "You are connected from another device, you have been disconnected",
 					}
-					this.emitGAteway.server.to(client).emit('disconnectClientFromTheLobby', msg);
 
-					this.emitGAteway.server.in(client).socketsLeave(roomId)
+					this.emitGAteway.server.to(client.id).emit('disconnectClientFromTheLobby', msg);
+
+					this.emitGAteway.server.in(client.id).socketsLeave(roomId)
 
 					// Remove the client from the array using filter
-					this.users[userId].connectedClients = this.users[userId].connectedClients.filter(c => c !== client);
+					this.usersInLobby[userId].connectedClients = this.usersInLobby[userId].connectedClients.filter(c => c !== client);
 				}
 			}
 		}
 
 		socket.join(roomId);
 
+		if (lobby.isInLobby(userId) === false) {
+			lobby.addPlayerToLobby(userId, socket);
+		}
+
+		// Edit the user socket in the lobby
+		await lobby.editPlayerSocket(userId, socket)
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`Edit player socket: User ${userId} is not in the lobby`);
+				throw new NotFoundException(`User ${userId} is not in the lobby`);
+			}
+			throw err;
+		});
+
 		// Add the client to the user map if he is not already in
-		if (this.users[userId] === undefined) {
-			this.users[userId] = {
+		if (this.usersInLobby[userId] === undefined) {
+			this.usersInLobby[userId] = {
 				room_id: roomId,
 				connectedClients: [],
 			};
 		}
 
-		this.users[userId].connectedClients.push(socket.id);
+		this.usersInLobby[userId].connectedClients.push(socket);
 		this.emitGAteway.server.in(roomId).emit('newPlayerInLobby', userId);
 
 		this.logger.debug(`joinPlayerToLobby ${roomId} ${userId}`);
 	}
 
 	/**
-	 * Delete a lobby and disconnect all players before
+	 * Delete a lobby and all players before
 	 * @param roomId Id of the lobby to delete
 	 * @throws NotFoundException if the lobby does not exist
 	 */
-	async disconnectAllPlayerAndDeleteLobby(roomId: string) {
+	async deleteLobby(roomId: string) {
 
 		this.logger.debug(`try deleteLobby ${roomId}`);
 
@@ -137,22 +313,62 @@ export class GameService {
 			throw new NotFoundException('Room does not exist');
 		}
 
-		this.lobbys[roomId].closeLobby();//TODO
-
+		await this.lobbys[roomId].stopGame()
+		.catch((err) => {
+			this.logger.error(`Failed to stop game: ${err}`);
+		})
 
 		// Remove all players from the map
 		const players = this.lobbys[roomId].getPlayers();
 
 		for (const player_id of Object.keys(players)) {
-			if (this.users[player_id] === undefined) {
+			if (this.usersInLobby[player_id] === undefined) {
 				this.logger.error(`User ${player_id} is in the lobby ${roomId} but not in the user map!?`);
 				throw new BadGatewayException(`[${roomId}][${player_id}] Failed to delete lobby, see logs or contact an admin`);
 			}
-			delete this.users[player_id];
+			delete this.usersInLobby[player_id];
 		}
 
 		delete this.lobbys[roomId];
 		this.logger.debug(`deleteLobby ${roomId}`);
+	}
+	
+	/**
+	 * Try to disconnect all players from the lobby
+	 * @param roomId room id of the lobby
+	 * @param disconnectMessage Message to send to the players
+	 * @returns void Promise
+	 * @throws NotFoundException if the lobby does not exist
+	 */
+	async disconnectAllPlayersFromLobby(roomId: string, disconnectMessage: disconnectClientFromTheLobbyWSResponse) {
+		const lobby = await this.getLobby(roomId)
+		.then((lobby) => {
+			return lobby;
+		})
+		.catch((err) => {
+			if (err instanceof NotFoundException) {
+				this.logger.debug(`Lobby ${roomId} not found`);
+				throw new NotFoundException(`Lobby ${roomId} not found`);
+			}
+			throw err;
+		});
+
+		if (lobby === undefined) {
+			return;
+		}
+		const players = lobby.getPlayers();
+
+		// Emit to all players that the user left the game
+
+		for (const id in players) {
+
+			const player = players[id];
+
+			if (player?.wsClient?.connected === true) {
+				player.wsClient.emit("disconnectClientFromTheLobby", disconnectMessage);
+				this.logger.debug(`disconnectAllPlayersFromLobby ${roomId}: disconnect user ${id}`);
+			}
+		}
 	}
 
 	// async startGame(roomName: string, opt: GameOptDto, io: Server) {
@@ -188,38 +404,43 @@ export class GameService {
 		lobby.removePlayerFromWhiteList(userId)
 	}
 
+	// Feature temporarily disabled #39
+	// /**
+	//  * Add a player to a lobby
+	//  * @param roomId room id of the lobby
+	//  * @param userId user id of the player
+	//  * @returns room id of the lobby
+	//  * @throws BadRequestException if the user is already in a lobby
+	//  */
+	// async addPlayerToLobby(roomId: string, userId: number) {
+	// 	this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
+
+	// 	// check if the user is already in a lobby
+	// 	if (this.usersInLobby[userId] !== undefined) {
+	// 		this.logger.debug(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
+	// 		throw new BadRequestException(`User ${userId} is already in a lobby ${this.usersInLobby[userId].room_id}`);
+	// 	}
+
+	// 	const lobby = await this.getLobby(roomId);
+	// 	lobby.addPlayerToLobby(userId, );
+	// 	this.usersInLobby[userId] = {
+	// 		room_id: roomId,
+	// 		connectedClients: [],
+	// 	};
+	// 	this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
+	// 	return lobby.room_id;
+
+	// }
+
+
 	/**
-	 * Add a player to a lobby
-	 * @param roomId room id of the lobby
-	 * @param userId user id of the player
-	 * @returns room id of the lobby
-	 * @throws BadRequestException if the user is already in a lobby
+	 * Emit to all players in the room
+	 * @param roomId room id 
+	 * @param event event name
+	 * @param data data to send
 	 */
-	async addPlayerToLobby(roomId: string, userId: number) {
-		this.logger.debug(`try to addPlayerToLobby ${roomId} ${userId}`);
-
-		// check if the user is already in a lobby
-		if (this.users[userId] !== undefined) {
-			this.logger.debug(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
-			throw new BadRequestException(`User ${userId} is already in a lobby ${this.users[userId].room_id}`);
-		}
-
-		const lobby = await this.getLobby(roomId);
-		lobby.addPlayerToLobby(userId);
-		this.users[userId] = {
-			room_id: roomId,
-			connectedClients: [],
-		};
-		this.logger.debug(`addUserToLobby ${roomId} ${userId}`);
-		return lobby.room_id;
-
-	}
-
-	async removePlayerFromLobby(roomId: string, userId: number): Promise<void> {
-	}
-	
-	
-	async reconnectPlayerToRoom(userId: number) {
+	async emitToRoom(roomId: string, event: string, data: any) {
+		this.emitGAteway.server.in(roomId).emit(event, data);
 	}
 
 	/**
@@ -245,13 +466,30 @@ export class GameService {
 	async findUserInLobbys(userId: number): Promise<LobbyInstance> {
 		
 		// I use a user map that make the link between the user and the lobby
-		const user = this.users[userId];
+		const user = this.usersInLobby[userId];
 		if (user === undefined) {
 			this.logger.debug(`User ${userId} does not exist`);
 			throw new NotFoundException(`User ${userId} does not exist`);
 		}
 
 		return this.lobbys[user.room_id];
+	}
+
+	/**
+	 * Find the socket of the user in the lobby
+	 * @param socketId Socket id of the user
+	 * @returns Socket of the user
+	 */
+	async findUserIdOfActiveSocket(socketId: string): Promise<number> {
+		for (const userId of Object.keys(this.usersInLobby)) {
+			for (const socket of this.usersInLobby[userId].connectedClients) {
+				if (socket.id === socketId) {
+					return parseInt(userId);
+				}
+			}
+		}
+		this.logger.debug(`Socket ${socketId} does not exist`);
+		throw new NotFoundException(`Socket ${socketId} does not exist`);
 	}
 
 	/**
@@ -272,19 +510,11 @@ export class GameService {
 	}
 
 	/**
-	 * 
+	 * @warning This function is not safe! Should be used only for debug
+	 * //TODO remove this function
 	 * @returns return all lobbys public data
 	 */
 	async getAllLobbysPublicData() {
-
-		if (this.lobbys === undefined) {
-			return [];
-		}
-
-		if (Object.keys(this.lobbys).length === 0) {
-			return [];
-		}
-
 		const lobbysPublicData = [];
 		for (const lobbyId in this.lobbys) {
 			if (this.lobbys[lobbyId] === undefined) {
@@ -295,20 +525,21 @@ export class GameService {
 		}
 
 		const playerPublicData = {};
-		for (const userId of Object.keys(this.users)) {
-			playerPublicData[userId] = this.users[userId].room_id;
-		}
-
-		const playerWsClients = {};
-		for (const userId of Object.keys(this.users)) {
-			playerWsClients[userId] = this.users[userId].connectedClients;
+		for (const userId of Object.keys(this.usersInLobby)) {
+			playerPublicData[userId] = {
+				room_id: this.usersInLobby[userId].room_id,
+				connectedClients: this.usersInLobby[userId].connectedClients?.map((e) => e?.id),
+			};
 		}
 		
-		return {
+		const res = JSON.parse(JSON.stringify({
 			lobbys: lobbysPublicData,
 			players: playerPublicData,
-			playerWsClients: playerWsClients,
-		};
+		}));
+
+		this.logger.debug(res);
+
+		return res;
 	}
 
 	/**

@@ -1,6 +1,7 @@
-
-import {Server} from 'socket.io';
+import {Server, Socket} from 'socket.io';
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
+import { GameService } from './game.service';
 
 @WebSocketGateway({
 	namespace: 'game',
@@ -10,5 +11,5 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 })
 export class EmitGateway {
 	@WebSocketServer()
-	server: Server;
+	server: Server;	
 }

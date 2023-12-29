@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolean} from 'class-validator'
+import { IsNotEmpty, IsString, IsNumber, IsBoolean} from 'class-validator'
 import { Min } from 'class-validator';
 
 export class AcknowledgmentWsDto<T> {
@@ -39,6 +39,15 @@ export class JoinGameRoomRequestDto extends WsRequestDto {
 	game_room_id: string;
 }
 
+export class MatchMakingRequestDto extends WsRequestDto {
+}
+
+export class ReadyOrNotRequestDto extends WsRequestDto {
+	@IsNotEmpty()
+	@IsBoolean()
+	ready: boolean;
+}
+
 export class createRoomRequestDto extends WsRequestDto {
 }
 
@@ -60,10 +69,7 @@ export class removePlayerFromWhiteListRequestDto extends WsRequestDto {
 
 export class moveRequestDto extends WsRequestDto {
 	@IsNotEmpty()
-	user_id: number;
-
-	@IsNotEmpty()
-	direcction: boolean;
+	dir: boolean;
 
 	@IsNotEmpty()
 	press: boolean;
@@ -72,16 +78,32 @@ export class moveRequestDto extends WsRequestDto {
 export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
 
 export type joinGameResponse = 'ok';
+export type readyOrNotResponse = 'ok';
 export type moveResponse = 'ok';
 
 export type createGameRoomResponse = {
 	game_room_id: string;
 };
 
-export type deleteGameRoomResponse = 'ok';
-export type addOrRemovePlayerToWhiteListResponse = 'ok';
+export type deleteGameRoomWSResponse = 'ok';
+export type addOrRemovePlayerToWhiteListWSResponse = 'ok';
 
-export type disconnectClientFromTheLobbyResponse = {
-	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin',
+export type disconnectClientFromTheLobbyWSResponse = {
+	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin' | 'PlayerLeftTheGame' | 'DisconnectedByServer',
 	msg: string,
+}
+
+export type matchMakingWSResponse = {
+	status: 'FoundMatch' | 'NoMatchFound'| 'WaitingForPlayers' | 'DisconnectedByServer',
+	msg: string,
+}
+
+export type playerGameStateTypeWSResponse = {
+	status: GameRoomStatus,
+	msg: string,
+}
+
+export type playerReadyOrNotWSResponse = {
+	userId: number,
+	ready: boolean,
 }

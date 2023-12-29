@@ -5,7 +5,7 @@ import { GatewayGameService } from '../gateway.game.service';
 import * as jwt from 'jsonwebtoken';
 import { ModelGameModule } from 'src/model/game/game.module';
 import { ModelGameService } from 'src/model/game/game.service';
-import { AcknowledgmentWsDto, CreateGameRoomRequestDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, joinGameResponse } from '@shared/dto/ws.dto';
+import { AcknowledgmentWsDto, CreateGameRoomRequestDto, JoinGameRoomRequestDto, addOrRemovePlayerToWhiteListWSResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, joinGameResponse } from '@shared/dto/ws.dto';
 import { PostgresModule } from 'src/service/postgres/postgres.module';
 import { GameModule } from 'src/service/game/game.module';
 import { ControllerGameModule } from '../game.module';
@@ -407,7 +407,7 @@ describe('createMyGame', () => {
 				jwt_user1,
 				// Should successfull add user2 to the whitelist
 				(reqAdd, resAdd, addPlayerToWhiteListSpy) => {
-					const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
+					const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListWSResponse>('ok', 'ok');
 					expect(resAdd).toEqual(expectedResAdd);
 					// expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
 					// expect(addPlayerToWhiteListSpy).toHaveBeenCalledTimes(1);
@@ -561,7 +561,7 @@ describe('createMyGame', () => {
 					jwt_user1,
 					// Should successfull add user2 to the whitelist
 					(reqAdd, resAdd, addPlayerToWhiteListSpy) => {
-						const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListResponse>('ok', 'ok');
+						const expectedResAdd = new AcknowledgmentWsDto<addOrRemovePlayerToWhiteListWSResponse>('ok', 'ok');
 						expect(resAdd).toEqual(expectedResAdd);
 						// expect(addPlayerToWhiteListSpy).toHaveBeenCalledWith(reqAdd);
 						// expect(addPlayerToWhiteListSpy).toHaveBeenCalledTimes(1);
