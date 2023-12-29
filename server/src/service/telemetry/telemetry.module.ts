@@ -4,12 +4,16 @@ https://docs.nestjs.com/modules
 */
 
 import { Module } from '@nestjs/common';
+import { TelemetryUserEmitGateway } from './telemetry.user.gateway';
 
 @Module({
-	imports: [],
+	imports: [
+
+	],
 	controllers: [],
 	providers: [
 		TelemetryService,
+		TelemetryUserEmitGateway,
 	],
 	exports: [
 		TelemetryService,

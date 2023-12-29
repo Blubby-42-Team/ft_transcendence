@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { UserTelemetryStatus } from '@shared/types/user/user';
+import { TelemetryUserEmitGateway } from './telemetry.user.gateway';
 
 type userTelemetry = {
 	status: UserTelemetryStatus;
@@ -14,6 +15,10 @@ type userTelemetry = {
 export class TelemetryService implements OnModuleInit, OnModuleDestroy {
 
 	private readonly logger = new Logger(TelemetryService.name);
+
+	constructor(
+		private readonly telemetryUserEmitGateway: TelemetryUserEmitGateway,
+	) {}
 
 	/**
 	 * Map of user id and their status
@@ -60,13 +65,16 @@ export class TelemetryService implements OnModuleInit, OnModuleDestroy {
 		// If the user is offline, remove it from the cache
 		if (status === UserTelemetryStatus.Offline) {
 			this.userStatus.delete(id);
-			return;
 		}
 
-		this.userStatus.set(id, {
-			status,
-			lastUpdate: new Date(),
-		});
+		if (status !== UserTelemetryStatus.Offline) {
+			this.userStatus.set(id, {
+				status,
+				lastUpdate: new Date(),
+			});
+		}
+
+		this.telemetryUserEmitGateway.server.emit(`telemetry.status.${id}`, status ?? UserTelemetryStatus.Offline)
 	}
 
 	/**
@@ -79,6 +87,7 @@ export class TelemetryService implements OnModuleInit, OnModuleDestroy {
 		const status = this.userStatus.get(id)?.status;
 		
 		if (status === undefined) {
+			this.logger.debug(`User ${id} is undefined in the cache?! return offline`);
 			return UserTelemetryStatus.Offline;
 		}
 
