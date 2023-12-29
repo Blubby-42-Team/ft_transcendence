@@ -146,7 +146,6 @@ export class ModelChatService {
 			await this.postgresChatService.removeFromChat(userId, chatId).catch((err) => {throw err});
 			let chat = await this.postgresChatService.getChatByIdSystem(chatId);
 			let newOwner: number;
-			console.log(chat.users, chat.admins)
 			if (chat.admins.length > 0) {
 				newOwner = chat.admins[0].id;
 			}

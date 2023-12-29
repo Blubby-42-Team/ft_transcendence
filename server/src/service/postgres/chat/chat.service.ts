@@ -72,9 +72,7 @@ export class PostgresChatService {
 		.catch(err => {
 			throw err
 		})
-		.then(res => {
-			return 'ok'
-		})
+		return 'ok'
 	}
 
 	async getChats(
