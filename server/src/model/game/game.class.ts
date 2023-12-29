@@ -1,9 +1,9 @@
-import { BotDifficulty, gameSettingsType, gameStateType, gameStatusType } from '@shared/types/game/game'
+import { BotDifficulty, gameSettingsType, gameStateType } from '@shared/types/game/game'
 import { Direction } from '@shared/types/game/utils'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { Server, Socket} from 'socket.io'
-import { disconnectClientFromTheLobbyWSResponse, playerGameStateTypeWSResponse, GameRoomStatus } from '@shared/dto/ws.dto';
+import { playerGameStateTypeWSResponse } from '@shared/dto/ws.dto';
 
 
 export class LobbyInstance {
@@ -51,40 +51,10 @@ export class LobbyInstance {
 
 	private io: Server;
 
-	private playerReadyInterval: NodeJS.Timeout | undefined;
-	private readonly playerReadyIntervalTime: number = 1000;
-
 	async checkBeforeStart() {
 		if (this.slots !== this.gameSettings.numPlayer) {
 			throw new BadRequestException(`The amount of connected players is incorrect : ${this.slots}.`);
 		}
-		
-		// await new Promise((resolve) => {
-		// 	this.playerReadyInterval = setInterval(() => {
-
-		// 		let count = 0;
-		// 		for (let player in this.players) {
-		// 			if (this.players[player].ready === false) {
-		// 				playerNotReady.push(player);
-		// 				continue;
-		// 			}
-
-		// 			count++;
-
-		// 			if (count === this.slots) {
-		// 				clearInterval(this.playerReadyInterval);
-		// 				this.playerReadyInterval = undefined;
-		// 				resolve('ok'); // Resolve the promise when all players are ready
-		// 			}
-		// 		}
-		// 		const res : gameStateTypeWSResponse = {
-		// 			status: 'waiting',
-		// 			msg: `Waiting for ${playerNotReady.join(', ')} to be ready`,
-		// 		}
-		// 		this.io.to(this.room_id).emit("stateGame", res)
-
-		// 	}, this.playerReadyIntervalTime);
-		// });
 	}
 
 	async startLobby() {
@@ -103,6 +73,7 @@ export class LobbyInstance {
 			this.gameSettings,
 			(newGameState: gameStateType) => {
 				this.gameState = newGameState;
+				this.logger.log(this.gameState)
 				this.io.to(this.room_id).emit("stateGame", this.gameState)
 			},
 			(state) => {
@@ -124,11 +95,6 @@ export class LobbyInstance {
 	async stopGame () {
 		this.logger.log(`Stopping game ${this.room_id}`);
 
-		if (this.playerReadyInterval !== undefined) {
-			clearInterval(this.playerReadyInterval);
-			this.playerReadyInterval = undefined;
-		}
-
 		if (this.game === undefined) {
 			this.logger.warn(`No game instance to stop in lobby ${this.room_id}`);
 			// throw new Error(`No game instance to stop in lobby ${this.room_id}`);
@@ -139,8 +105,8 @@ export class LobbyInstance {
 		//TODO save game state to DB
 	}
 
-	async movePlayer (userId: number, sens: boolean) {
-		this.game.move(this.players[userId].dir, sens, true);
+	async movePlayer (userId: number, sens: boolean, key_press: boolean) {
+		this.game.move(this.players[userId].dir, sens, key_press);
 	}
 
 	/**
@@ -175,7 +141,6 @@ export class LobbyInstance {
 			wsClient: socket,
 		}
 
-		//TODO emit new state to the lobby
 		this.logger.log(`User ${userId} added to the lobby`);
 	}
 
@@ -243,7 +208,6 @@ export class LobbyInstance {
 
 		this.players[userId].ready = false;
 
-		//TODO emit new state to the lobby
 		this.logger.log(`User ${userId} is not ready`);
 	}
 
@@ -296,7 +260,6 @@ export class LobbyInstance {
 
 		this.whiteList = this.whiteList.filter((id) => id !== userId);
 		this.logger.log(`User ${userId} removed from the white list`);
-		//TODO emit new state to the lobby
 	}
 
 	/**

@@ -25,6 +25,10 @@ export class ModelGameService {
 		return this.gameService.readyOrNot(userId, ready);
 	}
 
+	async move(userId: number, direction: boolean, press: boolean) {
+		return this.gameService.playerMove(userId, direction, press);
+	}
+
 	/**
 	 * Handle the disconnection of a client
 	 * Will try to find the user id of the socket, then the lobby of the user

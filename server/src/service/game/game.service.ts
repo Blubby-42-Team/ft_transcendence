@@ -136,6 +136,17 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		await this.emitToRoom(lobby.room_id, 'playerReady', res)
 	}
 
+	async playerMove(userId: number, move: boolean, key_press: boolean) {
+		const lobby = await this.findUserInLobbys(userId)
+
+		if (lobby === undefined) {
+			this.logger.debug(`User ${userId} is not in a lobby`);
+			throw new NotFoundException(`User ${userId} is not in a lobby`);
+		}
+
+		lobby.movePlayer(userId, move, key_press);
+	}
+
 	/**
 	 * Add player to the match making queue
 	 * @param userId user id

@@ -1,13 +1,12 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'
-import { AcknowledgmentWsDto, JoinGameRoomRequestDto, MatchMakingRequestDto, ReadyOrNotRequestDto, addOrRemovePlayerToWhiteListWSResponse, addPlayerToWhiteListRequestDto, createGameRoomResponse, createRoomRequestDto, deleteGameRoomRequestDto, deleteGameRoomWSResponse, joinGameResponse, moveRequestDto, moveResponse, readyOrNotResponse } from '@shared/dto/ws.dto'
+import { AcknowledgmentWsDto, MatchMakingRequestDto, ReadyOrNotRequestDto, joinGameResponse, moveRequestDto, moveResponse, readyOrNotResponse } from '@shared/dto/ws.dto'
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
-import { subscribe } from 'diagnostics_channel';
 
 
 @WebSocketGateway({
@@ -213,8 +212,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 		@ConnectedSocket() socket: Socket
 	) {
-		return this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<moveResponse> => {
-			
+		this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<moveResponse> => {
+			this.logger.debug(`move: ${data.dir}, press: ${data.press}`);
+			try {
+				this.gatewayGameService.move(user.userId, data.dir, data.press)
+			} catch (error) {
+				this.logger.error(error);
+			}
 			return 'ok';
 		});
 	}

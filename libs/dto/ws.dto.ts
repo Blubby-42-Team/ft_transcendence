@@ -1,6 +1,5 @@
-import { IsNotEmpty, IsJWT, isNotEmpty, IsString, IsNumber, IsPositive, IsBoolean} from 'class-validator'
+import { IsNotEmpty, IsString, IsNumber, IsBoolean} from 'class-validator'
 import { Min } from 'class-validator';
-import { Stats } from '../../server/src/model/stats/stats.class';
 
 export class AcknowledgmentWsDto<T> {
 
@@ -70,10 +69,7 @@ export class removePlayerFromWhiteListRequestDto extends WsRequestDto {
 
 export class moveRequestDto extends WsRequestDto {
 	@IsNotEmpty()
-	user_id: number;
-
-	@IsNotEmpty()
-	direcction: boolean;
+	dir: boolean;
 
 	@IsNotEmpty()
 	press: boolean;

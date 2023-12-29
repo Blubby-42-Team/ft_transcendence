@@ -32,6 +32,10 @@ export class GatewayGameService {
 		return this.modelGameService.readyOrNot(userId, ready);
 	}
 
+	async move(userId: number, direction: boolean, press: boolean) {
+		return this.modelGameService.move(userId, direction, press);
+	}
+
 	//  // TODO Feature temporarily disabled #39
 	// async joinAGame(roomId: string, userId: number, Socket: Socket) {
 	// 	return this.modelGameService.joinAGame(roomId, userId, Socket);
