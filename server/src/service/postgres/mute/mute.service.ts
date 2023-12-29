@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Mute } from '../../../model/mute/mute.class';
 import { ModelMuteService } from 'src/model/mute/mute.service';
-import { PostgresChatService } from '../chat/chat.service';
-import { PostgresUserService } from '../user/user.service';
+import { User } from 'src/model/user/user.class';
+import { Chat } from 'src/model/chat/chat.class';
 
 
 @Injectable()
@@ -12,20 +12,18 @@ export class PostgresMuteService {
 
 	constructor (
 		@InjectRepository(Mute) private readonly muteRepository: Repository<Mute>,
-		private readonly postgresUserService: PostgresUserService,
-		private readonly postgresChatService: PostgresChatService,
 	) {}
 	
 	private readonly logger = new Logger(ModelMuteService.name);
 
 	async muteUserById(
-		toMuteId: number,
-		chatId: number,
+		toMute: User,
+		chat: Chat,
 		length: number,
 	) {
 		const mute = new Mute;
-		mute.user = await this.postgresUserService.getUserById(toMuteId);
-		mute.chat = await this.postgresChatService.getChatByIdSystem(chatId);
+		mute.user = toMute;
+		mute.chat = chat;
 		mute.muteUntil = new Date(Date.now() + length * 60000);
 		this.muteRepository.save(mute)
 		.catch(err => {throw err})

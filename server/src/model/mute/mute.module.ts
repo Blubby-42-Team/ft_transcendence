@@ -5,7 +5,7 @@ import { PostgresUserModule } from 'src/service/postgres/user/user.module';
 import { PostgresChatModule } from 'src/service/postgres/chat/chat.module';
 
 @Module({
-	imports: [PostgresMuteModule,PostgresUserModule, PostgresChatModule],
+	imports: [PostgresChatModule, PostgresMuteModule, PostgresUserModule],
 	providers: [ModelMuteService],
 	exports: [ModelMuteService]
 })
