@@ -24,13 +24,12 @@ export class ModelHistoryService {
 			game_type: EGameType,
 			player_score: number,
 			opp_score: number,
-			date: Date,
 			duration: number,
 		) {
 			await this.postgresUserService.getUserById(userId);
 			await this.postgresUserService.getUserById(opp_id);
-			await this.postgresHistoryService.addHistory(userId, opp_id, game_type, player_score, opp_score, date, duration);
-			await this.postgresHistoryService.addHistory(opp_id, userId, game_type, opp_score, player_score, date, duration);
+			await this.postgresHistoryService.addHistory(userId, opp_id, game_type, player_score, opp_score, duration);
+			await this.postgresHistoryService.addHistory(opp_id, userId, game_type, opp_score, player_score, duration);
 			return 'ok'
 	}
 }

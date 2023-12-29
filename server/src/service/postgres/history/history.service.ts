@@ -41,7 +41,6 @@ export class PostgresHistoryService {
 		game_type: EGameType,
 		player_score: number,
 		opp_score: number,
-		date: Date,
 		duration: number,
 	) {
 		const player = new User()
@@ -51,7 +50,8 @@ export class PostgresHistoryService {
 		opponent.id = opp_id
 
 		const match = new History;
-		match.date = date;
+		match.date = new Date(Date.now());
+
 		match.player = player
 		match.duration = duration;
 		match.game_type = game_type;
