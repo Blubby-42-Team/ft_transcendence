@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty, IsNumber, IsString} from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString} from 'class-validator';
 import { EMsgType } from "@shared/types/messages";
 import { Chat } from "../chat/chat.class";
 import { User } from "../user/user.class";
+import { Type } from "class-transformer";
 
 @Entity()
 export class Messages {
@@ -26,4 +27,10 @@ export class Messages {
 	@IsNotEmpty()
 	@IsString()
 	content: string;
+
+	@Column()
+	@IsNotEmpty()
+	@IsDate()
+	@Type(() => Date)
+	date: Date;
 }

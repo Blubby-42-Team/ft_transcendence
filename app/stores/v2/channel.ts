@@ -1,4 +1,6 @@
-import { ChannelType, IShortChannel } from "#imports";	
+import { EChatType, IShortChannel, BackChannelType, IChannel } from "#imports";	
+
+
 
 export const useChannelStore = defineStore('channel', {
 	state: () => ({
@@ -13,86 +15,48 @@ export const useChannelStore = defineStore('channel', {
 	},
 	actions: {
 		fetchChannelList(userId: number){
-			const { updateShortUser } = useUserStore();
-			return fetchTest(userId, (response) => {
-				this._channelList = [1, 2, 3, 4, 5, 6];
-				this._shortChannels = {
-					1: {
-						id: 1,
-						type: ChannelType.Chat,
-						name: 'Chat 1',
-						avatar: '/themes/anime/astolfo.jpg',
-					},
-					2: {
-						id: 2,
-						type: ChannelType.Chat,
-						name: 'Chat 2',
-						avatar: '/amogus.png'
-					},
-					3: {
-						id: 3,
-						type: ChannelType.Group,
-						name: 'Group 1',
-						avatar: '/amogus.png'
-					},
-					
-					4: {
-						id: 4,
-						type: ChannelType.Friend,
-						name: 'Friend 1',
-						avatar: '/themes/anime/astolfo.jpg',
-					},
-					5: {
-						id: 5,
-						type: ChannelType.Friend,
-						name: 'Friend 2',
-						avatar: '/amogus.png'
-					},
-					6: {
-						id: 6,
-						type: ChannelType.Chat,
-						name: 'Chat 3',
-						avatar: '/amogus.png'
-					},
+			return fetchAllChats(userId, (response) => {
+				
+				for (const chat of response){
+					this._shortChannels[chat.id] = {
+						id: chat.id,
+						type: chat.type,
+						name: chat.name,
+						avatar: chat.chat_picture,
+					};
 				};
-				updateShortUser([
-					// Generate a list of 100 users randomly without automation
-					...Array.from({ length: 100 }, (_, i) => ({
-						id: i,
-						name: `User ${i}`,
-						avatar: '/themes/anime/astolfo.jpg',
-					}))
-				])
+				this._channelList = response.map((chat) => chat.id);
 			});
 		},
-		selectChannel(channelId: number){
+		selectChannel(userId: number, channelId: number){
 			this._selectedChannel = channelId;
-			if (channelId === 0){
+			if (channelId === 0 || userId === 0){
 				return;
 			}
-			return fetchTest(channelId, (response) => {
-				this._channels[channelId] = {
-					id: channelId,
-					name: 'Chat XD',
-					type: ChannelType.Chat,
-					avatar: '/themes/anime/astolfo.jpg',
-					messages: [],
-					members: [4, 26, 69, 76, 42, 12, 36, 24, 18, 1, 2, 3, 5, 6, 7, 8, 9, 10],
-				};
-				const channel = this._channels[channelId];
-				if (!channel){
-					return;
+			const { updateShortUser } = useUserStore();
+			return fetchChatsById(userId, channelId,
+				(response) => {
+					updateShortUser(response.users.map((user) => ({
+						id: user.userId,
+						name: user.userName,
+						avatar: user.profile_picture,
+					})))
+
+					this._channels[channelId] = {
+						id: response.id,
+						name: response.name,
+						type: response.type,
+						avatar: response.chat_picture,
+						messages: response.messages.map((message) => ({
+							id: message.messageId,
+							senderId: message.userId,
+							message: message.content,
+							time: new Date(message.date),
+						})),
+						members: response.users.map((user) => user.userId),
+					};
 				}
-				// genreate 100 messages from members list
-				for (let i = 0; i < 100; i++){
-					channel.messages.push({
-						id: i,
-						senderId: channel.members[Math.floor(Math.random() * channel.members.length)],
-						message: `Message ${i}`,
-						time: new Date(),
-					});
-				}
-			});
+			);
 		},
 	}
 })

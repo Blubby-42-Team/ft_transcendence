@@ -8,7 +8,8 @@ const props = defineProps({
 	}
 })
 
-const { theme, gameSettings } = useGameStore()
+const settings = useState<gameSettingsType>('settings');
+const theme = useState<gameTheme>('gameTheme');
 
 const screenSize = ref({
 	width: 0,
@@ -17,7 +18,7 @@ const screenSize = ref({
 
 let gameState: any = {};
 
-const engine = new GameEngine(gameSettings.value, (state) => {
+const engine = new GameEngine(settings.value, (state) => {
 		gameState = state;
 	},
 	(state) => {
@@ -42,7 +43,7 @@ const graphic = new GraphicEngine(props.uniqueToken, theme.value, () => gameStat
 
 	switch (gameState.status) {
 		case gameStatusType.GAMEOVER:
-			engine.restart(gameSettings.value);
+			engine.restart(settings.value);
 		case gameStatusType.ON_HOLD:
 			engine.changeGameStatus(gameStatusType.STARTED);
 		case gameStatusType.STARTED:
@@ -54,7 +55,9 @@ onMounted(async () => {
 	engine.start()
 	graphic.start();
 
-	watch(gameSettings.value, () => engine.restart(gameSettings.value));
+	const settings = useState<gameSettingsType>('settings');
+
+	watch(settings.value, () => engine.restart(settings.value));
 })
 
 onUnmounted(() => {

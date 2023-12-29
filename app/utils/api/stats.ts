@@ -3,9 +3,9 @@ export function fetchStats(
 	callback: (response: any) => void,
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
+	return useFetch(`${config.public.back.uri}/stats/${userId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('stats fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -30,7 +30,7 @@ export function fetchClassicMatchEnd(
 			'opp_mmr': opp_mmr
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user classic game end fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -55,7 +55,7 @@ export function fetchRandomMatchEnd(
 			'opp_mmr': opp_mmr
 		},
 		onResponse: ({ request, response, options }) => {
-			callback(response);
+			callback(response._data);
 			console.log('user random game end fetched');
 		},
 		onRequestError: ({ request, error, options }) => {

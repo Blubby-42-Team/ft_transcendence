@@ -13,35 +13,63 @@ export class GatewayGameService {
 		private readonly modelGameService: ModelGameService,
 	) {}
 
-	async joinAGame(roomId: string, userId: number, Socket: Socket) {
-		return this.modelGameService.joinAGame(roomId, userId, Socket);
-	}
 
-	async createAGame(userId: number) {
-		return this.modelGameService.createAGame(userId);
+	async clientDisconnect(client: Socket) {
+		return this.modelGameService.clientDisconnect(client);
 	}
 
 	/**
+	 * Will try to match the user with another user
+	 * @param userId Id of the user
+	 * @param Socket Socket of the user
+	 * @returns 
+	 */
+	async matchMakingTwoPlayers(userId: number, Socket: Socket) {
+		return this.modelGameService.matchMakingTwoPlayers(userId, Socket);
+	}
+
+	async readyOrNot(userId: number, ready: boolean) {
+		return this.modelGameService.readyOrNot(userId, ready);
+	}
+
+	async move(userId: number, direction: boolean, press: boolean) {
+		return this.modelGameService.move(userId, direction, press);
+	}
+
+	//  // TODO Feature temporarily disabled #39
+	// async joinAGame(roomId: string, userId: number, Socket: Socket) {
+	// 	return this.modelGameService.joinAGame(roomId, userId, Socket);
+	// }
+
+	//  // TODO Feature temporarily disabled #39
+	// async createAGame(userId: number) {
+	// 	return this.modelGameService.createAGame(userId);
+	// }
+
+	/**
+	 * // TODO Feature temporarily disabled #39
 	 * Delete the lobby of the user
 	 * @param userId Id of the user
 	 * @returns
 	 * @throws NotFoundException if the user does not own a lobby
 	 */
-	async stopMyGame(userId: number) {
-		return this.modelGameService.stopMyGame(userId);
-	}
+	// async stopMyGame(userId: number) {
+	// 	return this.modelGameService.stopMyGame(userId);
+	// }
 
 	/**
+	 * // TODO Feature temporarily disabled #39
 	 * Add in the new user in the white list of the owner lobby
 	 * @param ownerId Id of the owner of the lobby
 	 * @param userId Id of the user to add in the white list
 	 * @returns
 	 */
-	async addPlayerToMyGame(ownerId: number, userId: number) {
-		return this.modelGameService.addPlayerToMyGame(ownerId, userId);
-	}
+	// async addPlayerToMyGame(ownerId: number, userId: number) {
+	// 	return this.modelGameService.addPlayerToMyGame(ownerId, userId);
+	// }
 
 	/**
+	 * // TODO Feature temporarily disabled #39
 	 * Remove a user from the white list of the owner lobby
 	 * @param ownerId Id of the owner of the lobby
 	 * @param userId Id of the user to remove from the white list
@@ -49,7 +77,7 @@ export class GatewayGameService {
 	 */
 
 
-	//TODO wip @Matthew-Dreemurr
+	//// TODO wip @Matthew-Dreemurr
 	/**
 	 * Handle move request from the client
 	 * @param userId Id of the user

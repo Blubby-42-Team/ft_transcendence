@@ -5,31 +5,25 @@ definePageMeta({
 	layout: 'lobby',
 })
 
-const { setPageDataLobby } = usePageStore();
-const { reset, cards } = useLobbyStore();
+const { setPageDataLobby, waitingString } = usePageStore();
+onMounted(() => setPageDataLobby(EPageCategories.GAME, EGameMode.Classic));
 
-onMounted(() => {
-	setPageDataLobby(EPageCategories.GAME, EGameMode.Classic);
-	reset(1);
-})
-
-onUnmounted(() => {
-	reset(1);
-})
+function redirect(){
+	navigateTo('/game/local');
+};
 
 </script>
 
 <template>
 	<div class="grid h-full grid-cols-[repeat(4,1fr)] grid-rows-[auto_max-content] w-full">
-		<template v-for="player of cards">
-			<div class="p-2">
-				<PlayLobbyCard :player="player"/>
-			</div>
-		</template>
-		<br>
+		<div/>
+		<GameLobbyCard :id="1" :card="CardType.PLAYER"/>
+		<GameLobbyCard :id="1" :card="CardType.EMPTY"/>
+		<div/>
+		<div/>
 		<div class="w-full col-span-2 p-2">
-			<PlayLobbyPlayButtonMatchmaking/>
+			<GameLobbyButton :endFunc="redirect"/>
 		</div>
-		<br>
+		<div/>
 	</div>
 </template>

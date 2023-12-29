@@ -1,3 +1,4 @@
+import { TelemetryModule } from './service/telemetry/telemetry.module';
 import { ModelGameModule } from './model/game/game.module';
 import { PostgresUser42Module } from './service/postgres/user42/user42.module';
 import { ControllerModule } from './controller/controller.module';
@@ -10,6 +11,7 @@ import * as Joi from 'joi';
 
 @Module({
 	imports: [
+		TelemetryModule,
 		ModelGameModule,
 		PostgresUser42Module,
 		ControllerModule,
