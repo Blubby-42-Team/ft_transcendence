@@ -8,7 +8,12 @@ import { PostgresUserModule } from '../user/user.module';
 
 @Module({
 	providers: [PostgresChatService],
-	imports: [TypeOrmModule.forFeature([Chat]), forwardRef(() => PostgresUserModule)],
+	imports: [
+		TypeOrmModule.forFeature([Chat]),
+		//TODO #79 Need to rework https://docs.nestjs.com/fundamentals/circular-dependency
+		forwardRef(() => PostgresUserModule),
+		// PostgresUserModule,
+	],
 	exports: [PostgresChatService],
   })
 export class PostgresChatModule {}

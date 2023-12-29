@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, UnauthorizedException, forwardRef } from '@nestjs/common';
 import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 import { PostgresMuteService } from 'src/service/postgres/mute/mute.service';
@@ -6,9 +6,11 @@ import { PostgresMuteService } from 'src/service/postgres/mute/mute.service';
 @Injectable()
 export class ModelMuteService {
 	constructor (
-		private readonly postgresMuteService: PostgresMuteService,
 		private readonly postgresUserService: PostgresUserService,
 		private readonly postgresChatService: PostgresChatService,
+		//TODO #79 Need to rework https://docs.nestjs.com/fundamentals/circular-dependency
+		@Inject(forwardRef(() => PostgresMuteService))
+		private readonly postgresMuteService: PostgresMuteService,
 	) {}
 	
 	private readonly logger = new Logger(ModelMuteService.name);

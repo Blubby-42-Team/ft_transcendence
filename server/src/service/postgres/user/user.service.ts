@@ -18,6 +18,7 @@ export class PostgresUserService {
 
 	constructor (
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
+		//TODO #79 Need to rework https://docs.nestjs.com/fundamentals/circular-dependency
 		@Inject(forwardRef(() => PostgresChatService))
 		private readonly postgresChatService: PostgresChatService,
 	  ) {}
