@@ -33,7 +33,7 @@ export class PostgresChatService {
 		chat.owner = user;
 		chat.admins = [];
 		chat.admins.push(user);
-		chat.chat_picture = 'DEFAULT'; //TODO
+		chat.chat_picture = '/chat_default.png';
 		chat.blacklist = [];
 		chat.password = "default";
 		
@@ -106,18 +106,43 @@ export class PostgresChatService {
 	async getAllChats(
 		user: User,
 	) {
-	this.logger.log(user);
 	return await this.chatRepository.query(`
-		SELECT
-			ch.id,
-			ch.name,
-			ch.chat_picture,
-			ch.type
-		FROM chat ch
-		JOIN custom_users_chat cuc ON ch.id = cuc.chat_id
-		WHERE cuc.user_id = $1`,
+		SELECT * FROM (
+			SELECT
+				ch.id,
+				ch.name,
+				ch.chat_picture,
+				ch.type
+			FROM chat AS ch
+			JOIN custom_users_chat AS cuc
+				ON ch.id = cuc.chat_id
+			WHERE cuc.user_id = $1
+				AND ch.type != 'inactive'
+				AND ch.type != 'friends'
+		)
+		UNION
+		SELECT * FROM (
+			SELECT 
+				ch.id,
+				cu2.display_name as name,
+				cu2.profile_picture as chat_picture,
+				ch.type
+			FROM chat AS ch
+			JOIN custom_users_chat AS cuc
+				ON ch.id = cuc.chat_id
+			JOIN "user" AS cu
+				ON cuc.user_id = cu.id
+			JOIN custom_users_chat AS cuc2
+				ON ch.id = cuc2.chat_id
+			JOIN "user" AS cu2
+				ON cuc2.user_id = cu2.id
+			WHERE cuc.user_id = $1
+				AND ch.type = 'friends'
+				AND cuc2.user_id != $1
+			);`,
 		[user.id]
 	)
+	
 	.catch((err) => {
 		this.logger.debug("Could not get chats");
 		throw new InternalServerErrorException("Could not get chats");
@@ -173,24 +198,21 @@ export class PostgresChatService {
 					ORDER BY m.id, m."userId"
 				) AS msg
 			) AS messages
-		FROM 
-			public.chat AS c
-		LEFT JOIN 
-			custom_users_chat AS cuc ON cuc.chat_id = c.id
-		LEFT JOIN 
-			custom_admins_chat AS cac ON cac.chat_id = c.id
-		LEFT JOIN 
-			custom_blacklist_chat AS cbc ON cbc.chat_id = c.id
-		LEFT JOIN 
-			public.user AS usr ON usr.id = cuc.user_id
-		LEFT JOIN 
-			public.user AS usr_admin ON usr_admin.id = cac.admin_id
-		LEFT JOIN 
-			public.user AS usr_blacklist ON usr_blacklist.id = cbc.blacklist_id
-		WHERE
-			c.id = $1
-		GROUP BY 
-			c.id, c.name, c.type, c.chat_picture, c."ownerId";`,
+		FROM public.chat AS c
+		LEFT JOIN custom_users_chat AS cuc
+			ON cuc.chat_id = c.id
+		LEFT JOIN custom_admins_chat AS cac
+			ON cac.chat_id = c.id
+		LEFT JOIN custom_blacklist_chat AS cbc
+			ON cbc.chat_id = c.id
+		LEFT JOIN public.user AS usr
+			ON usr.id = cuc.user_id
+		LEFT JOIN public.user AS usr_admin
+			ON usr_admin.id = cac.admin_id
+		LEFT JOIN public.user AS usr_blacklist
+			ON usr_blacklist.id = cbc.blacklist_id
+		WHERE c.id = $1
+		GROUP BY c.id, c.name, c.type, c.chat_picture, c."ownerId";`,
 			[chatId],
 		)
 		.catch((err) => {
@@ -229,8 +251,10 @@ export class PostgresChatService {
 			})
 			if (chat.type === EChatType.friends) {
 				chat.users.forEach((usr: any) => {
-					if (usr.userId !== userId)
+					if (usr.userId !== userId) {
 						chat.name = usr.userName;
+						chat.chat_picture = usr.profile_picture;
+					}
 				})
 			}
 			return chat;

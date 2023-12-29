@@ -208,7 +208,7 @@ export class PostgresUserService {
 		user.display_name = login42;
 		user.full_name = displayName42;
 		user.role = UserRoleType.User;
-		user.profile_picture = '/amogus.png'; //TODO @Matthew-Dreemurr
+		user.profile_picture = '/pp.png';
 		user.user42 = user42;
 		user.settings = settings;
 		user.stats = stats;
