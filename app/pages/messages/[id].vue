@@ -24,7 +24,7 @@ const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
 			<ChannelMessages :channel="selectedChannel"/>
 			<ChannelMessagesWrite/>
 		</template>
-		<template>
+		<template v-else>
 			Loading...
 		</template>
 	</ChannelLayout>

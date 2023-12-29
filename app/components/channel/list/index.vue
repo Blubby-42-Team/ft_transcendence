@@ -77,7 +77,6 @@ watch(activeType, () => {
 						</div>
 					</template>
 				</TransitionExpand>
-				
 			</template>
 		</template>
 	</div>
