@@ -6,6 +6,8 @@ SELECT * FROM "user42"
 -- SQLBook: Code
 SELECT * FROM "stats"
 -- SQLBook: Code
+SELECT * FROM "chat"
+-- SQLBook: Code
 -- Active: 1701168611681@@localhost@5432@masterminds
 SELECT * FROM "settings"
 -- SQLBook: Code

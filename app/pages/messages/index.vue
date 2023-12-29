@@ -8,7 +8,7 @@ const { channels, fetchChannelList, selectChannel } = useChannelStore();
 const { primaryUser } = useUserStore();
 
 await fetchChannelList(primaryUser.value.id);
-await selectChannel(0);
+await selectChannel(primaryUser.value.id, 0);
 </script>
 
 <template>

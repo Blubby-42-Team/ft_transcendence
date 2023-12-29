@@ -1,3 +1,5 @@
+import { EChatType } from "#imports"
+
 export interface IPlayer {
 	id			: string,
 	name		: string,
@@ -11,16 +13,9 @@ export interface IMessage {
 	time		: Date,
 }
 
-export enum ChannelType {
-	
-	Group	= 1,
-	Chat	= 2,
-	Friend	= 3,
-}
-
 export interface IChannel {
 	id:		number,
-	type:	ChannelType
+	type:	EChatType
 	name:	string,
 	avatar: string,
 	members: Array<number>,
@@ -29,16 +24,39 @@ export interface IChannel {
 
 export interface IShortChannel {
 	id:		number,
-	type:	ChannelType
+	type:	EChatType
 	name:	string,
 	avatar: string,
 }
 
 export type channelTypeSettings = {
-    type: ChannelType;
+    type: EChatType;
     name: string;
     icon: string;
     open: boolean;
     hasBottom: boolean;
     hasSideMenu: boolean;
 }
+
+
+export type BackChannelType = {
+	id: number,
+	type: 'group' | 'friend' | 'public' | 'protected',
+	name: string,
+	chat_picture: string,
+	owner: number,
+	messages: Array<{
+		messageId: number,
+		type: "user" | "system",
+		userId: number,
+		content: string,
+		date: string,
+	}>,
+	users: Array<{
+		userId: number,
+		userName: string,
+		profile_picture: string
+	}>,
+	admins: Array<number>,
+	blacklist: Array<number>
+  }

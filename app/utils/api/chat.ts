@@ -1,4 +1,4 @@
-import { EChatType } from '#imports';
+import { EChatType, BackChannelType } from '#imports';
 
 export function fetchAllChats(
 	userId: number,
@@ -41,7 +41,7 @@ export function fetchChatsByTypes(
 export function fetchChatsById(
 	userId: number,
 	chatId: number,
-	callback: (response: any) => void,
+	callback: (response: BackChannelType) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/chat/${userId}/chat/${chatId}`, {

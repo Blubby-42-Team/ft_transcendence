@@ -1,19 +1,21 @@
 <script lang="ts" setup>
 
+import { EChatType } from "#imports"
+
 const { selectedChannel, channels } = useChannelStore()
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
 const types = useState(() => [
-	{ type: ChannelType.Friend, name: 'Friends', open: false, hasBottom: true,  hasSideMenu: false, icon: 'material-symbols:person' },
-	{ type: ChannelType.Group,  name: 'Groups',  open: false, hasBottom: true,  hasSideMenu: true,  icon: 'material-symbols:diversity-4' },
-	{ type: ChannelType.Chat,   name: 'Chats',   open: false, hasBottom: false, hasSideMenu: true,  icon: 'material-symbols:groups' },
+	{ type: [EChatType.friends],                     name: 'Friends', open: true, hasBottom: true,  hasSideMenu: false, icon: 'material-symbols:person' },
+	{ type: [EChatType.group],                       name: 'Groups',  open: true, hasBottom: true,  hasSideMenu: true,  icon: 'material-symbols:diversity-4' },
+	{ type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true, hasBottom: false, hasSideMenu: true,  icon: 'material-symbols:groups' },
 ]);
 
 watch(selectedChannel, () => {
 	if (!selectedChannel.value){
 		hasSideMenu.value = false;
 	}
-	const newSettings = types.value.find((elem) => elem.type === selectedChannel.value?.type) ?? types.value[0];
+	const newSettings = types.value.find((elem) => selectedChannel.value !== null && elem.type.includes(selectedChannel.value.type)) ?? types.value[0];
 	hasSideMenu.value = newSettings.hasSideMenu;
 })
 
@@ -23,7 +25,7 @@ watch(selectedChannel, () => {
 	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
 		<template v-for="ctype in types">
 			<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
-				:selected="ctype.type === selectedChannel?.type ?? undefined"
+				:selected="selectedChannel !== null && ctype.type.includes(selectedChannel.type)"
 				@click="ctype.open = !ctype.open"
 			>
 				<Icon :name="ctype.icon" class="w-10 h-10"/>
@@ -35,7 +37,7 @@ watch(selectedChannel, () => {
 			<TransitionExpand>
 				<template v-if="ctype.open">
 					<div>
-						<template v-for="channel in channels.filter((elem) => elem !== undefined && elem?.type === ctype.type)">
+						<template v-for="channel in channels.filter((elem) => elem !== undefined && ctype.type.includes(elem?.type))">
 							<GenericNuxtLink class="w-full px-3 py-1 place-content-start"
 								:buttonStyle="2"
 								:selected="channel?.id === selectedChannel?.id"
