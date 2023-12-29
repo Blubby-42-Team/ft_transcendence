@@ -566,11 +566,4 @@ export class PostgresUserService {
 	) {
 
 	}
-
-	async uploadPicture(
-		
-	): Promise<string> {
-
-		return 'path'
-	}
 }

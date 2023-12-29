@@ -9,6 +9,7 @@ import { History } from 'src/model/history/history.class';
 import { Messages } from 'src/model/messages/messages.class';
 import { Chat } from 'src/model/chat/chat.class';
 import { Mute } from 'src/model/mute/mute.class';
+import { Picture } from 'src/model/picture/picture.class';
 
 @Module({
 	imports: [
@@ -34,6 +35,7 @@ import { Mute } from 'src/model/mute/mute.class';
 						Messages,
 						Chat,
 						Mute,
+						Picture,
 					],
 				}
 			},
