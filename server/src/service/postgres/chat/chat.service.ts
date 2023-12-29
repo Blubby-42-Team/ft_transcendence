@@ -336,7 +336,7 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not update chat:" + err);
 		})
 		.then((res) => {
-			return res;
+			return 'ok';
 		})
 	}
 

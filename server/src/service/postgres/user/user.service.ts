@@ -537,4 +537,18 @@ export class PostgresUserService {
 		});
 		return is_in;
 	}
+
+	async updatePictureById(
+		userId: number,
+		picture: string,
+	) {
+
+	}
+
+	async uploadPicture(
+		
+	): Promise<string> {
+
+		return 'path'
+	}
 }
