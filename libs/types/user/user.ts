@@ -1,3 +1,5 @@
+import { IsDefined, IsEnum, IsNumber, Min } from "class-validator";
+
 export type IUser = {
 	id			: number,
 	name		: string,
@@ -40,3 +42,21 @@ export type IHistory = {
 	// 	score: number,
 	// }>,
 };
+
+export enum UserTelemetryStatus {
+	Online = 'online',
+	Offline = 'offline',
+	InGame = 'ingame',
+}
+
+export class UserTelemetryStatusWsDto {
+	@IsDefined()
+	@IsEnum(UserTelemetryStatus)
+	status: UserTelemetryStatus;
+};
+
+export class GetUserStatusOfWsDto {
+	@IsNumber()
+	@Min(1)
+	id: number;
+}

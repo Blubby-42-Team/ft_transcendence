@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 const { getUser, fetchUser, fetchHistory } = useUserStore();
-const user = getUser(42);
+const user = getUser(computed(() => 42));
 await fetchUser(42);
 await fetchHistory(42);
 

@@ -212,14 +212,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 		@ConnectedSocket() socket: Socket
 	) {
-		this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<moveResponse> => {
-			this.logger.debug(`move: ${data.dir}, press: ${data.press}`);
-			try {
-				this.gatewayGameService.move(user.userId, data.dir, data.press)
-			} catch (error) {
-				this.logger.error(error);
-			}
-			return 'ok';
-		});
+		try {
+			this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<void> => {
+				this.logger.debug(`move: ${data.dir}, press: ${data.press}`);
+				try {
+					this.gatewayGameService.move(user.userId, data.dir, data.press)
+				} catch (error) {
+					this.logger.error(error);
+				}
+			});
+		} catch (error) {
+			this.logger.error(error);
+		}
+		
 	}
 }

@@ -10,7 +10,7 @@ const props = defineProps({
 })
 
 const { getShortUser } = useUserStore();
-const user = getShortUser(props.message.senderId);
+const user = getShortUser(computed(() => props.message.senderId));
 
 </script>
 

@@ -10,7 +10,8 @@ const route = useRoute();
 
 await fetchChannelList(primaryUser.value.id);
 if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
-	await selectChannel(parseInt(route.params.id));
+	const channelId = parseInt(route.params.id);
+	await selectChannel(primaryUser.value.id, channelId);
 }
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
