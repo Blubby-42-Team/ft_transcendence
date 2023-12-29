@@ -27,6 +27,7 @@ export class PostgresMessagesService {
 		msg.chat = chat;
 		msg.type = type;
 		msg.content = content;
+		msg.date = new Date(Date.now());
 		
 		return this.messagesRepository.save(msg)
 		.catch((err) => {

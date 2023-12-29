@@ -19,9 +19,8 @@ export class HistoryService {
 		game_type: EGameType,
 		player_score: number,
 		opp_score: number,
-		date: Date,
 		duration: number
 		) {
-		return await this.modelHistoryService.addHistoryByUserId(id, opp_id, game_type, player_score, opp_score, date, duration);
+		return await this.modelHistoryService.addHistoryByUserId(id, opp_id, game_type, player_score, opp_score, duration);
 	}
 }

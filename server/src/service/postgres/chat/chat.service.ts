@@ -155,7 +155,7 @@ export class PostgresChatService {
 	async getChatById(
 		chatId: number,
 		userId: number,
-		) {
+	) {
 		return await this.chatRepository.query(`
 		SELECT
 			c.id AS chat_id,
@@ -168,23 +168,16 @@ export class PostgresChatService {
 				'userName', usr.display_name,
 				'profile_picture', usr.profile_picture
 			)::jsonb) AS users,
-			json_agg(DISTINCT json_build_object(
-				'userId', usr_admin.id,
-				'userName', usr_admin.display_name,
-				'profile_picture', usr_admin.profile_picture
-			)::jsonb) AS admins,
-			json_agg(DISTINCT json_build_object(
-				'userId', usr_blacklist.id,
-				'userName', usr_blacklist.display_name,
-				'profile_picture', usr_blacklist.profile_picture
-			)::jsonb) AS blacklist,
+			json_agg(DISTINCT usr_admin.id) AS admins,
+			json_agg(DISTINCT usr_blacklist.id) AS blacklist,
 			(
 				SELECT jsonb_agg(
 					json_build_object(
 						'messageId', msg.id,
 						'userId', msg."userId",
 						'content', msg.content,
-						'type', msg.type
+						'type', msg.type,
+						'date', msg.date
 					) ORDER BY msg.id
 				)
 				FROM (
@@ -192,7 +185,8 @@ export class PostgresChatService {
 						m.id,
 						m."userId",
 						m.content,
-						m.type
+						m.type,
+						m.date
 					FROM messages m
 					WHERE m."chatId" = c.id
 					ORDER BY m.id, m."userId"
@@ -234,7 +228,7 @@ export class PostgresChatService {
 				}
 			}
 			chat.name = res[0].chat_name;
-			chat.owner = await this.postgresUserService.getUserById(res[0].owner);
+			chat.owner = res[0].owner;
 			chat.type = res[0].chat_type;
 			chat.users = [];
 			res[0].users.forEach((usr) => {
@@ -246,7 +240,7 @@ export class PostgresChatService {
 			})
 			chat.blacklist = [];
 			res[0].blacklist.forEach((usr) => {
-				if (usr.userId !== null)
+				if (usr !== null && usr.userId !== null)
 					chat.blacklist.push(usr)
 			})
 			if (chat.type === EChatType.friends) {

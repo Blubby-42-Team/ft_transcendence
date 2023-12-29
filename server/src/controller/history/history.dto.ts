@@ -27,12 +27,6 @@ export class DTO_addHistory {
 
 	@IsDefined()
 	@IsNotEmpty()
-	@IsDate()
-	@Type(() => Date)
-	date: Date;
-
-	@IsDefined()
-	@IsNotEmpty()
 	@IsNumber()
 	duration: number;
 }
