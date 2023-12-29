@@ -8,7 +8,6 @@ type test = {
 	type: Array<EChatType>,
 	name: string,
 	open: boolean,
-	hasBottom: boolean,
 	hasSideMenu: boolean,
 	channels: Array<IShortChannel>,
 	icon: string,
@@ -16,9 +15,9 @@ type test = {
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
 const types = useState((): {[key: string]: test} => ({
-	friend: { type: [EChatType.friends],                     name: 'Friends', open: true,  hasBottom: true,  hasSideMenu: false, channels: [] as Array<IShortChannel>, icon: 'material-symbols:person' },
-	group:  { type: [EChatType.group],                       name: 'Groups',  open: true,  hasBottom: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:diversity-4' },
-	chats:  { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasBottom: false, hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:groups' },
+	friend: { type: [EChatType.friends],                     name: 'Friends', open: true,  hasSideMenu: false, channels: [] as Array<IShortChannel>, icon: 'material-symbols:person' },
+	group:  { type: [EChatType.group],                       name: 'Groups',  open: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:diversity-4' },
+	chats:  { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:groups' },
 }));
 
 for (const key in types.value){
@@ -37,7 +36,7 @@ const activeType = computed(() => {
 			return types.value[key];
 		}
 	}
-	return types.value[0];
+	return types.value.friend;
 })
 
 watch(activeType, () => {
@@ -48,12 +47,12 @@ watch(activeType, () => {
 
 <template>
 	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
-		<template v-for="(ctype, i) in types">
+		<template v-for="(ctype) in types">
 			<template v-if="ctype.channels.length > 0">
 				<div class="border-b-[1px] border-background2"></div>
 				
 				<GenericButton class="w-full h-12 p-2 text-lg place-content-start" :buttonStyle="2"
-					:selected="activeType?.name === ctype?.name"
+					:selected="selectedChannel?.id !== 0 && activeType?.name === ctype?.name"
 					@click="ctype.open = !ctype.open"
 				>
 					<Icon :name="ctype.icon" class="w-10 h-10"/>
@@ -64,8 +63,8 @@ watch(activeType, () => {
 	
 				<TransitionExpand>
 					<template v-if="ctype.open">
-						<div>
-							<template v-for="channel in channels.filter((elem) => elem !== undefined && ctype.type.includes(elem?.type))">
+						<div class="pb-4">
+							<template v-for="channel in ctype.channels">
 								<GenericNuxtLink class="w-full px-3 py-1 place-content-start"
 									:buttonStyle="2"
 									:selected="channel?.id === selectedChannel?.id"
@@ -78,6 +77,7 @@ watch(activeType, () => {
 						</div>
 					</template>
 				</TransitionExpand>
+				
 			</template>
 		</template>
 	</div>
