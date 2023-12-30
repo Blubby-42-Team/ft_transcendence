@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import { EChatType } from "#imports"
+import { EChatType, IShortChannel } from "#imports"
 
 const { selectedChannel, channels } = useChannelStore()
 
@@ -21,12 +21,12 @@ const types = useState((): {[key: string]: test} => ({
 }));
 
 for (const key in types.value){
-	types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type));
+	types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type)) as (IShortChannel)[];
 }
 
 watch(channels, () => {
 	for (const key in types.value){
-		types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type));
+		types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type)) as (IShortChannel)[];
 	}
 });
 
@@ -65,9 +65,8 @@ watch(activeType, () => {
 					<template v-if="ctype.open">
 						<div class="pb-4">
 							<template v-for="channel in ctype.channels">
-								<GenericNuxtLink class="w-full px-3 py-1 place-content-start"
-									:buttonStyle="2"
-									:selected="channel?.id === selectedChannel?.id"
+								<GenericNuxtLink class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
+									:selected="(channel?.id === selectedChannel?.id)"
 									:to="`/messages/${channel?.id ?? 0}`"
 								>
 									<GenericProfilePicture class="w-10 h-10" :imageSrc="channel?.avatar ?? '/pp.png'"/>
