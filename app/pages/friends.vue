@@ -22,7 +22,7 @@ const selectedFriend = useState<number | null>('selectedFriend', () => null);
 						<Icon name="material-symbols:search" class="w-full h-full"/>
 					</GenericButton>
 					<GenericModal ref="openFindFriend">
-						<FriendsFind/>
+						<FriendsFind :closeFunc="openFindFriend?.close"/>
 					</GenericModal>
 				</teleport>
 			</ClientOnly>

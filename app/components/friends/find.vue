@@ -1,6 +1,24 @@
 <script setup lang='ts'>
 
+const props = defineProps({
+	closeFunc: {
+		type: Function as PropType<() => void>,
+		required: true
+	}
+});
+
 const { textarea, input } = useTextareaAutosize()
+
+input.value = "";
+
+function search() {
+	const userLoginName = input.value;
+	input.value = "";
+	if (userLoginName && userLoginName.length > 0) {
+		console.log("searching for user: " + userLoginName);
+		props.closeFunc();
+	}
+}
 
 </script>
 
@@ -13,7 +31,9 @@ const { textarea, input } = useTextareaAutosize()
 					placeholder="Find a friend"
 				/>
 			</div>
-			<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1">
+			<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1"
+				@click="search"
+			>
 				<Icon name="material-symbols:search" class="w-10 h-10"/>
 			</GenericButton>
 		</div>
