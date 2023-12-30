@@ -30,6 +30,19 @@ export const useChannelStore = defineStore('channel', {
 		},
 		selectChannel(userId: number, channelId: number){
 			this._selectedChannel = channelId;
+			return this.refreshChannel(userId, channelId);
+		},
+		postMessage(userId: number, message: string){
+			return fetchPostMessage(userId, this._selectedChannel, message, (response) => {
+				this._channels[this._selectedChannel]!.messages.push({
+					id: response.messageId,
+					senderId: response.userId,
+					message: response.content,
+					time: new Date(response.date),
+				});
+			});
+		},
+		refreshChannel(userId: number, channelId: number){
 			if (channelId === 0 || userId === 0){
 				return;
 			}
@@ -57,6 +70,6 @@ export const useChannelStore = defineStore('channel', {
 					};
 				}
 			);
-		},
+		}
 	}
 })

@@ -9,22 +9,41 @@ defineProps({
 
 const { primaryUser } = useUserStore()
 
+const lastScrollTop = ref(0);
+const isScrollingUp = ref(false);
+
+const handleScroll = () => {
+	const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+	console.log(scrollTop);
+
+	// Check if scrolling up
+	isScrollingUp.value = scrollTop < lastScrollTop.value;
+	lastScrollTop.value = scrollTop;
+};
+
+onMounted(() => {
+	window.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener('scroll', handleScroll);
+});
+
 </script>
 
 <template>
 	<div class="w-full h-full contents">
-		<div class="flex flex-col-reverse w-full h-full overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain">
+		<div class="flex flex-col w-full h-full overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain"
+			:style="{ bottom: isScrollingUp ? '0' : '' }"
+		>
 			<template v-for="message in channel.messages">
-				<div class="inline-grid grid-rows-[auto,2em] p-5"
-					:class="message.senderId == primaryUser.id ? 'grid-cols-[auto,70%,4em]' : 'grid-cols-[4em,70%,auto]'"
-				>
-					<template v-if="message.senderId == primaryUser.id">
-						<ChannelMessagesMe :message="message"/>
-					</template>
-					<template v-else>
-						<ChannelMessagesOther :message="message"/>
-					</template>
-				</div>
+				<template v-if="message.senderId == primaryUser.id">
+					<ChannelMessagesMe :message="message"/>
+				</template>
+				<template v-else>
+					<ChannelMessagesOther :message="message"/>
+				</template>
 			</template>
 		</div>
 	</div>
