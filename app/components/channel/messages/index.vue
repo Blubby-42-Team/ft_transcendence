@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 
+import { IChannel, IMessage } from '#imports';
+
 defineProps({
 	channel: {
 		type: Object as PropType<IChannel>,
@@ -12,20 +14,18 @@ const { primaryUser } = useUserStore()
 </script>
 
 <template>
-	<div class="w-full h-full contents">
-		<div class="flex flex-col-reverse w-full h-full overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain">
-			<template v-for="message in channel.messages">
-				<div class="inline-grid grid-rows-[auto,2em] p-5"
-					:class="message.senderId == primaryUser.id ? 'grid-cols-[auto,70%,4em]' : 'grid-cols-[4em,70%,auto]'"
-				>
+	<div class="flex flex-col-reverse w-full h-full overflow-x-hidden scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color2 overscroll-y-contain">
+		<TransitionFade :group="true" class="contents">
+			<template v-for="message in channel.messages" :key="message.id">
+				<template v-if="message.id !== undefined">
 					<template v-if="message.senderId == primaryUser.id">
 						<ChannelMessagesMe :message="message"/>
 					</template>
 					<template v-else>
 						<ChannelMessagesOther :message="message"/>
 					</template>
-				</div>
+				</template>
 			</template>
-		</div>
+		</TransitionFade>
 	</div>
 </template>

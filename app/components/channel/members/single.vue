@@ -24,8 +24,8 @@ const test = () => testButton;
 			{{ user.name }}
 		</div>
 		<div class="mr-auto"></div>
+		<GenericSideMenu ref="viewProfile" direction="left" alignDirection="bottom" :accessRef="test">
+			<ChannelMembersPreview/>
+		</GenericSideMenu>
 	</GenericButton>
-	<GenericSideMenu ref="viewProfile" direction="left" alignDirection="bottom" :accessRef="test">
-		<ChannelMembersPreview/>
-	</GenericSideMenu>
 </template>

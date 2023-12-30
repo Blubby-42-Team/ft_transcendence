@@ -2,6 +2,21 @@
 
 const { textarea, input } = useTextareaAutosize()
 
+const { postMessage, refreshChannel, selectedChannel } = useChannelStore()
+const { primaryUser } = useUserStore()
+
+input.value = '';
+
+async function post() {
+	const message = input.value;
+	input.value = '';
+
+	if (message.length > 0){
+		await postMessage(primaryUser.value.id, message);
+		await refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
+	}
+}
+
 </script>
 
 <template>
@@ -12,7 +27,9 @@ const { textarea, input } = useTextareaAutosize()
 				placeholder="Send a Message"
 			/>
 		</div>
-		<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1">
+		<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1"
+			@click="post"
+		>
 			<Icon name="material-symbols:send" class="w-10 h-10"/>
 		</GenericButton>
 	</div>
