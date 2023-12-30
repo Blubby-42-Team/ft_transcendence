@@ -15,9 +15,9 @@ type test = {
 
 const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
 const types = useState((): {[key: string]: test} => ({
-	friend: { type: [EChatType.friends],                     name: 'Friends', open: true,  hasSideMenu: false, channels: [] as Array<IShortChannel>, icon: 'material-symbols:person' },
-	group:  { type: [EChatType.group],                       name: 'Groups',  open: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:diversity-4' },
-	chats:  { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasSideMenu: true,  channels: [] as Array<IShortChannel>, icon: 'material-symbols:groups' },
+	friend: { type: [EChatType.friends],                     name: 'Friends', open: true,  hasSideMenu: false, channels: [], icon: 'material-symbols:person' },
+	group:  { type: [EChatType.group],                       name: 'Groups',  open: true,  hasSideMenu: true,  channels: [], icon: 'material-symbols:diversity-4' },
+	chats:  { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasSideMenu: true,  channels: [], icon: 'material-symbols:groups' },
 }));
 
 for (const key in types.value){
