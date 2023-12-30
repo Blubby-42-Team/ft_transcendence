@@ -1,6 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostgresPictureService } from 'src/service/postgres/picture/picture.service';
-import * as FS from 'fs';
 
 
 @Injectable()
@@ -13,14 +12,17 @@ export class ModelPictureService {
 	
 	async uploadPicture(
 		pictureData: Buffer,
+		filename: string,
 	) {
-		return await this.postgresPictureService.uploadPicture(pictureData)
+		if (!pictureData)
+			throw new BadRequestException('The file is empty.')
+		return await this.postgresPictureService.uploadPicture(pictureData, filename)
+		.catch(err => {throw err})
 	}
 
 	async getPicture(
 		pictureId: number,
 	) {
-		const str = await this.postgresPictureService.getPicture(pictureId)
-		return str
+		return this.postgresPictureService.getPicture(pictureId)
 	}
 }

@@ -8,8 +8,8 @@ export class PictureService {
 		private readonly modelPictureService: ModelPictureService,
 	) {}
 
-	async uploadPicture(pictureData: Buffer) {
-		return await this.modelPictureService.uploadPicture(pictureData);
+	async uploadPicture(pictureData: Buffer, filename: string) {
+		return await this.modelPictureService.uploadPicture(pictureData, filename);
 	}
 
 	async getPicture(

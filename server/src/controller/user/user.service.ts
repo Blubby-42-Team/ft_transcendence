@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserTelemetryStatus } from '@shared/types/user/user';
+import { ModelPictureService } from 'src/model/picture/picture.service';
 import { ModelUserService } from 'src/model/user/user.service';
 
 @Injectable()
@@ -7,6 +8,7 @@ export class UserService {
 
 	constructor(
 		private readonly modelUserService: ModelUserService,
+		private readonly modelPictureService: ModelPictureService,
 	) {}
 
 	async getUserById(id: number) {
@@ -55,5 +57,10 @@ export class UserService {
 
 	async getStatusTelemitry(id: number) {
 		return await this.modelUserService.getUserStatus(id);
+	}
+
+	async uploadPictureUser(data: Buffer, filename: string, userId: number) {
+		const id = await this.modelPictureService.uploadPicture(data, filename);
+		return await this.modelUserService.uploadPictureUser(data, filename, userId, id);
 	}
 }

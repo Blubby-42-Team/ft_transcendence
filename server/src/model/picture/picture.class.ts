@@ -5,10 +5,13 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 export class Picture {
 
     @PrimaryGeneratedColumn()
-    @IsNotEmpty()
-    @IsNumber()
     id: number;
-
-    @Column('bytea', { nullable: false })
-    imageData: Buffer;
+ 
+    @Column()
+    filename: string;
+ 
+    @Column({
+    type: 'bytea',
+    })
+    data: Uint8Array;
 }

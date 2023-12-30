@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { DTO_addFriendById, DTO_getBlacklistedUserById, DTO_getUserById } from './user.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserService } from './user.service';
 import { log } from 'console';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -87,5 +88,18 @@ export class UserController {
 	) {
 		log(`Delete blacklist to ${params.id} by id ${body.id}`);
 		return await this.userService.deleteBlacklistById(params.id, body.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@UseInterceptors(FileInterceptor('file'))
+	@Post('/picture/:id')
+	async addPicture(
+		@Param() params: DTO_getUserById,
+		@UploadedFile() file: Express.Multer.File,
+	) {
+		log(`Add picture`);
+		if (!file)
+			throw new BadRequestException('The file is empty.')
+		return await this.userService.uploadPictureUser(file.buffer, file.originalname, params.id);
 	}
 }

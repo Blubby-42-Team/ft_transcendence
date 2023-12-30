@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Picture } from '../../../model/picture/picture.class';
 import { ModelPictureService } from 'src/model/picture/picture.service';
-import { User } from 'src/model/user/user.class';
-import { Chat } from 'src/model/chat/chat.class';
 
 
 @Injectable()
@@ -18,34 +16,27 @@ export class PostgresPictureService {
 
 	async uploadPicture(
 		pictureData: Buffer,
+		filename: string
 	) {
-		const picture = new Picture;
-		picture.imageData = pictureData;
-		this.pictureRepository.save(picture)
-		.catch(err => {throw err})
-		.then(res => {
-			return 'ok'
+		const newFile = await this.pictureRepository.create({
+			data: pictureData,
+			filename: filename,
 		})
+		return await this.pictureRepository.save(newFile).then(res => {return res.id})
 	}
 	
 	async getPicture(
 		pictureId: number
-	): Promise<string> {
-		return this.pictureRepository.query(`
-			SELECT "imageData"
-			FROM picture
-			WHERE picture.id = $1`,
-			[pictureId]
-		)
-		.catch(err => {
-			throw err
-		})
-		.then(res => {
-			if (!res[0])
-				throw new NotFoundException("There is no picture with this ID.")
-			else
-				return res[0].imageData
-		})
+	) {
+		const file = await this.pictureRepository.findOne({
+			where: {
+				id: pictureId
+			}
+		});
+    	if (!file) {
+      		throw new NotFoundException();
+		}
+		return file;
 	}
 }
 
