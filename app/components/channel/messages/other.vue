@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 
+import { IMessage } from '#imports';
 import { format } from 'date-fns'
 
 const props = defineProps({
@@ -15,7 +16,7 @@ const user = getShortUser(computed(() => props.message.senderId));
 </script>
 
 <template>
-	<div class="inline-grid grid-rows-[auto,2em] p-5 grid-cols-[4em,70%,auto]" :key="$props.message.id">
+	<div class="inline-grid grid-rows-[auto,2em] p-5 grid-cols-[4em,70%,auto]" :key="props.message.id">
 		<div class="flex flex-col row-span-2">
 			<div class="mb-auto"></div>
 			<GenericProfilePicture class="flex w-14 h-14" :imageSrc="user.avatar"/>

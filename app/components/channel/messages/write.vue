@@ -8,9 +8,13 @@ const { primaryUser } = useUserStore()
 input.value = '';
 
 async function post() {
-	await postMessage(primaryUser.value.id, input.value);
-	await refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
+	const message = input.value;
 	input.value = '';
+
+	if (message.length > 0){
+		await postMessage(primaryUser.value.id, message);
+		await refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
+	}
 }
 
 </script>

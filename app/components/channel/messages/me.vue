@@ -16,7 +16,7 @@ const user = getShortUser(computed(() => props.message.senderId));
 </script>
 
 <template>
-	<div class="inline-grid grid-rows-[auto,2em] p-5 grid-cols-[auto,70%,4em]" :key="$props.message.id">
+	<div class="inline-grid grid-rows-[auto,2em] p-5 grid-cols-[auto,70%,4em]">
 		<br/>
 		<div class="flex float-right h-full p-2 break-all whitespace-pre-line bg-color2 rounded-tl-2xl text-text-light rounded-tr-2xl rounded-bl-2xl">
 			{{ props.message.message }}
