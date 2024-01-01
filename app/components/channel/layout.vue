@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 
+import { EChatType } from "#imports";
+
 const { selectedChannel, fetchChannelList } = useChannelStore();
 const { primaryUser } = useUserStore();
 await fetchChannelList(primaryUser.value.id);
@@ -40,10 +42,6 @@ const openFindChannel = ref();
 					</GenericButton>
 				</template>
 
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
-					<Icon name="material-symbols:logout" class="w-full h-full"/>
-				</GenericButton>
-
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
 					@click="openFindChannel?.open"
 				>
@@ -53,9 +51,22 @@ const openFindChannel = ref();
 					<ChannelInteractionSearch :closeFunc="openFindChannel?.close"/>
 				</GenericModal>
 				
+				<div class="mx-2 border border-text-light bg-text-light"></div>
+
+				<template v-if="selectedChannel?.type !== EChatType.friends">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+						<Icon name="material-symbols:logout" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+				
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+					<Icon name="material-symbols:settings" class="w-full h-full"/>
+				</GenericButton>
+				
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
 					<Icon name="material-symbols:add" class="w-full h-full"/>
 				</GenericButton>
+
 			</Teleport>
 		</ClientOnly>
 	</div>

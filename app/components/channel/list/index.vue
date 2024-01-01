@@ -33,7 +33,7 @@ function update_channels(){
 update_channels();
 watch(channels, update_channels);
 
-const activeType = computed(() => {
+const activeType = useState('activeType', () => {
 	for (const key in types.value){
 		if (selectedChannel.value && types.value[key].type.includes(selectedChannel.value.type)){
 			return types.value[key];
