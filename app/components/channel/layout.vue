@@ -7,6 +7,8 @@ await fetchChannelList(primaryUser.value.id);
 const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
 const hasSideMenu = useState<boolean>('hasSideMenu');
 
+const openFindChannel = ref();
+
 </script>
 
 <template>
@@ -42,9 +44,14 @@ const hasSideMenu = useState<boolean>('hasSideMenu');
 					<Icon name="material-symbols:logout" class="w-full h-full"/>
 				</GenericButton>
 
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+					@click="openFindChannel?.open"
+				>
 					<Icon name="material-symbols:search" class="w-full h-full"/>
 				</GenericButton>
+				<GenericModal ref="openFindChannel">
+					<ChannelInteractionSearch :closeFunc="openFindChannel?.close"/>
+				</GenericModal>
 				
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
 					<Icon name="material-symbols:add" class="w-full h-full"/>
