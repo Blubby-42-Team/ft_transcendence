@@ -59,9 +59,11 @@ const openFindChannel = ref();
 					</GenericButton>
 				</template>
 				
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
-					<Icon name="material-symbols:settings" class="w-full h-full"/>
-				</GenericButton>
+				<template v-if="selectedChannel?.type !== EChatType.friends">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+						<Icon name="material-symbols:settings" class="w-full h-full"/>
+					</GenericButton>
+				</template>
 				
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
 					<Icon name="material-symbols:add" class="w-full h-full"/>
