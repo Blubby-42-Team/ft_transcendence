@@ -4,6 +4,9 @@ const { selectedChannel, fetchChannelList } = useChannelStore();
 const { primaryUser } = useUserStore();
 await fetchChannelList(primaryUser.value.id);
 
+const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
+const hasSideMenu = useState<boolean>('hasSideMenu');
+
 </script>
 
 <template>
@@ -23,15 +26,30 @@ await fetchChannelList(primaryUser.value.id);
 		/>
 
 		<ClientOnly>
-			<teleport to="#additionalHeaderButton">
+			<Teleport to="#additionalHeaderButton">
+				
 				<div class="mx-2 border border-text-light bg-text-light"></div>
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12">
+
+				<template v-if="hasSideMenu">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
+						@click="isSideMenuOpen = !isSideMenuOpen"
+					>
+						<Icon name="material-symbols:menu" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+					<Icon name="material-symbols:logout" class="w-full h-full"/>
+				</GenericButton>
+
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
 					<Icon name="material-symbols:search" class="w-full h-full"/>
 				</GenericButton>
-				<!-- <GenericModal ref="openFindFriend">
-					<ProfileRename :close="openFindFriend?.close"/>
-				</GenericModal> -->
-			</teleport>
+				
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+					<Icon name="material-symbols:add" class="w-full h-full"/>
+				</GenericButton>
+			</Teleport>
 		</ClientOnly>
 	</div>
 </template>

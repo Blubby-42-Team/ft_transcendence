@@ -13,18 +13,17 @@ const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
 
 <template>
 	<div class="h-full">
-		<ClientOnly>
+		<!-- <ClientOnly>
 			<template v-if="hasSideMenu">
-				<teleport to="#additionalHeaderButton">
-					<div class="mx-2 border border-text-light bg-text-light"></div>
+				<Teleport to="#additionalHeaderButton">
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
 						@click="isSideMenuOpen = !isSideMenuOpen"
 					>
 						<Icon name="material-symbols:menu" class="w-full h-full"/>
 					</GenericButton>
-				</teleport>
+				</Teleport>
 			</template>
-		</ClientOnly>
+		</ClientOnly> -->
 		<template v-if="hasSideMenu && isSideMenuOpen">
 			<div class="h-full w-60">
 				<div class="w-full h-full overflow-x-hidden scrollbar bg-background1 scrollbar-w-0">

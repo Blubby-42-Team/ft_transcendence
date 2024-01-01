@@ -22,7 +22,7 @@ defineExpose({
 
 <template>
 	<ClientOnly>
-		<teleport to='#modals'>
+		<Teleport to='#modals'>
 			<TransitionFade>
 				<template v-if="isOpen">
 					<div class="fixed top-0 left-0 grid w-full h-full grid-cols-[auto_max-content_auto] grid-rows-[auto_max-content_auto] overflow-auto h-25 m-25 bg-black bg-opacity-70"
@@ -34,6 +34,6 @@ defineExpose({
 					</div>
 				</template>
 			</TransitionFade>
-		</teleport>
+		</Teleport>
 	</ClientOnly>
 </template>

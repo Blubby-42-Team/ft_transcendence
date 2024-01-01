@@ -11,7 +11,7 @@ const personInteractionRef = ref();
 <template>
 	<div class="bg-background1 border-4 grid-flow-col border-color1 text-text rounded-2xl grid grid-rows-[repeat(6,max-content)] overflow-hidden gap-3 p-5">
 		<button class="flex flex-col items-center p-2 hover:bg-color1 hover:bg-opacity-30 rounded-xl">
-			<GenericProfilePicture imageSrc="/pp.png"/>
+			<GenericProfilePicture class="w-32 h-32" imageSrc="/pp.png"/>
 			<div class="pt-2 text-xl">James</div>
 		</button>
 		<div class="pt-5 text-right">42</div>
@@ -35,7 +35,7 @@ const personInteractionRef = ref();
 		<button class="flex flex-col items-center p-2 hover:bg-color1 hover:bg-opacity-30 rounded-xl"
 			@click.stop="personInteractionRef.open"
 		>
-			<GenericProfilePicture imageSrc="/pp.png"/>
+			<GenericProfilePicture class="w-32 h-32" imageSrc="/pp.png"/>
 			<div class="pt-2 text-xl">Karen69420</div>
 			<GenericContextMenu ref="personInteractionRef">
 				<InteractionsNonFriend/>

@@ -14,6 +14,8 @@ const { primaryUser } = useUserStore();
 		<GenericNuxtLink to="/profile" class="self-center w-12 h-12 border-none rounded-full hover:border-none" :buttonStyle="1">
 			<GenericProfilePicture class="w-full h-full hover:border-none" :imageSrc="primaryUser.avatar"/>
 		</GenericNuxtLink>
+
+		<!-- <div class="mx-8"/> -->
 		
 		<!-- <GenericButton ref="viewnotificationButtonRef" class="self-center w-12 h-12 mr-2 rounded-full" :buttonStyle="1" :disabled="false" :selected="false"
 			@click="viewnotificationRef?.open"

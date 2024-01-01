@@ -13,7 +13,7 @@ const openFindFriend = ref();
 <template>
 	<div class="h-full">
 		<ClientOnly>
-			<teleport to="#additionalHeaderButton">
+			<Teleport to="#additionalHeaderButton">
 				<div class="mx-2 border border-text-light bg-text-light"></div>
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
 					@click="openFindFriend?.open"
@@ -23,7 +23,7 @@ const openFindFriend = ref();
 				<GenericModal ref="openFindFriend">
 					<ProfileRename :close="openFindFriend?.close"/>
 				</GenericModal>
-			</teleport>
+			</Teleport>
 		</ClientOnly>
 		<Profile :userId="primaryUser.id"/>
 	</div>

@@ -24,11 +24,14 @@ for (const key in types.value){
 	types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type)) as (IShortChannel)[];
 }
 
-watch(channels, () => {
+function update_channels(){
 	for (const key in types.value){
 		types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type)) as (IShortChannel)[];
 	}
-});
+}
+
+update_channels();
+watch(channels, update_channels);
 
 const activeType = computed(() => {
 	for (const key in types.value){
@@ -39,6 +42,7 @@ const activeType = computed(() => {
 	return types.value.friend;
 })
 
+hasSideMenu.value = activeType.value.hasSideMenu;
 watch(activeType, () => {
 	hasSideMenu.value = activeType.value.hasSideMenu;
 })

@@ -27,12 +27,12 @@ onMounted(async () => {
 	<div class="grid h-full grid-rows-[4rem,1fr]">
 		<div class="flex bg-color1">
 			<ClientOnly>
-				<teleport to="#additionalHeaderButton">
+				<Teleport to="#additionalHeaderButton">
 					<div class="mx-2 border border-text-light bg-text-light"></div>
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12">
 						<Icon name="material-symbols:refresh" class="w-full h-full"/>
 					</GenericButton>
-				</teleport>
+				</Teleport>
 			</ClientOnly>
 		</div>
 		<div class="flex justify-center h-full p-5 overflow-hidden">
