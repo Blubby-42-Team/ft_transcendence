@@ -5,6 +5,7 @@ const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.FRIENDS); })
 
 const openFindFriend = ref();
+const openInviteToPlay = ref();
 
 const selectedFriend = useState<number | null>('selectedFriend', () => null);
 
@@ -24,16 +25,21 @@ const selectedFriend = useState<number | null>('selectedFriend', () => null);
 						<Icon name="material-symbols:search" class="w-full h-full"/>
 					</GenericButton>
 					<GenericModal ref="openFindFriend">
-						<FriendsFind :closeFunc="openFindFriend?.close"/>
+						<FriendsInteractionSearch :closeFunc="openFindFriend?.close"/>
 					</GenericModal>
 
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
 						<Icon name="material-symbols:person-remove" class="w-full h-full"/>
 					</GenericButton>
 
-					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openInviteToPlay?.open"
+					>
 						<Icon name="material-symbols:stadia-controller" class="w-full h-full"/>
 					</GenericButton>
+					<GenericModal ref="openInviteToPlay">
+						<FriendsInteractionInvite :closeFunc="openInviteToPlay?.close"/>
+					</GenericModal>
 					
 				</Teleport>
 			</ClientOnly>
