@@ -14,7 +14,11 @@ export const useChannelStore = defineStore('channel', {
 	}),
 	getters: {
 		selectedChannel: (state) => computed(() => state._channels?.[state._selectedChannel] ?? null),
-		channels:        (state) => computed(() => {
+		channels:        (state) => computed((): {
+			friends: IChannelTypeSettings,
+			groups:  IChannelTypeSettings,
+			chats:   IChannelTypeSettings,
+		} => {
 			const channels = state._channelList.map((id) => state._shortChannels[id]);
 			state._types.friends.channels = channels.filter((channel) => state._types.friends.type.includes(channel?.type as EChatType)) as IShortChannel[];
 			state._types.groups.channels  = channels.filter((channel) => state._types.groups .type.includes(channel?.type as EChatType)) as IShortChannel[];

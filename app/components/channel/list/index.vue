@@ -8,7 +8,7 @@ const { selectedChannel, channels, activeType } = useChannelStore()
 
 <template>
 	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
-		<template v-for="(ctype) in channelList">
+		<template v-for="ctype in channels">
 			<template v-if="ctype.channels && ctype.channels.length > 0">
 				<div class="border-b-[1px] border-background2"></div>
 				
