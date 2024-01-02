@@ -295,15 +295,14 @@ export class PostgresUserService {
 					SELECT chat_id
 					FROM "custom_users_chat"
 					WHERE user_id = $2
-				)
-				AND c."type" = 'inactive';`,
+				)`,
 			[id, friendId]
 		)
 		.catch((err) => {
 			throw err
 		});
 		console.log(chatList)
-		
+
 		if (chatList.length !== 0){
 			this.userRepository.query(`
 				UPDATE "chat" as c
