@@ -8,6 +8,7 @@ import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { WSDTO_subcribeToChatUpdates } from './chat.dto';
 import { ChatService } from './chat.service';
+import * as cookie from 'cookie'
 
 type subscribeToChatUpdatesWSResponse = {
 	listenTo: string;
@@ -63,7 +64,36 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 			/**
 			 * Check if the socket has the authorization header
 			 */
-			const authorization = socket?.handshake?.headers?.authorization;
+
+			let authorization: string;
+
+			let rawCookie = socket?.handshake?.headers?.cookie;
+
+			if (rawCookie === undefined) {
+
+				if (!socket?.handshake?.headers?.authorization) {
+					throw new ForbiddenException('missing authorization header');
+				}
+					this.logger.warn(`Authorization was found in the header not in the cookie`)
+					this.logger.warn(`If you are using a browser, you should use the cookie instead of the header`)
+					this.logger.warn(`If you using a client (postman, insomnia, ...) you can ignore this warning`)
+					authorization = socket?.handshake?.headers?.authorization;
+			} else {
+
+				this.logger.debug(`raw cookie: ${rawCookie}`);
+
+				try {
+
+					const cookiePars = cookie.parse(rawCookie);
+					authorization = cookiePars['user_auth']
+				} catch (error) {
+
+					this.logger.error(error);
+					throw new ForbiddenException('invalid cookie');
+				}
+			}
+
+			this.logger.debug(`authorization: ${authorization}`);
 
 			if (!authorization) {
 				throw new ForbiddenException('missing authorization header');
