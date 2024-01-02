@@ -54,7 +54,7 @@ onClickOutside(menu, () => {
 
 <template>
 	<ClientOnly>
-		<teleport to='#modals'>
+		<Teleport to='#modals'>
 			<TransitionFade>
 				<template v-if="isOpen">
 					<div ref="menu" class="absolute overflow-hidden w-max h-max"
@@ -67,6 +67,6 @@ onClickOutside(menu, () => {
 					</div>
 				</template>
 			</TransitionFade>
-		</teleport>
+		</Teleport>
 	</ClientOnly>
 </template>

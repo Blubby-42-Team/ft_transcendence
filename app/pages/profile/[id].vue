@@ -14,12 +14,12 @@ const userId = (typeof route.params.id === 'string' && !isNaN(parseInt(route.par
 	<div class="h-full">
 		<ClientOnly>
 			<template v-if="userId !== primaryUser.id">
-				<teleport to="#additionalHeaderButton">
+				<Teleport to="#additionalHeaderButton">
 					<div class="mx-2 border border-text-light bg-text-light"></div>
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12">
 						<Icon name="material-symbols:add" class="w-full h-full"/>
 					</GenericButton>
-				</teleport>
+				</Teleport>
 			</template>
 		</ClientOnly>
 		<Profile :userId="userId"/>

@@ -1,5 +1,5 @@
 import { Controller, Param, Body, Post, Get, Patch, Delete } from '@nestjs/common';
-import { DTO_getUserById, DTO_chatFormat, DTO_chatRequest, DTO_chatAddUser, DTO_chatRemoveUser, DTO_chatAddAdmin, DTO_banUser, DTO_unbanUser, DTO_getChatById, DTO_protectedChatFormat, DTO_chatPassword } from './chat.dto';
+import { DTO_getUserById, DTO_chatFormat, DTO_chatRequest, DTO_chatAddUser, DTO_chatRemoveUser, DTO_chatAddAdmin, DTO_banUser, DTO_unbanUser, DTO_getChatById, DTO_protectedChatFormat, DTO_chatPassword, DTO_muteLength } from './chat.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { ChatService } from './chat.service';
@@ -175,5 +175,24 @@ export class ChatController {
 	) {
 		log(`join chat ${params.chatId}`);
 		return await this.chatService.changeType(params.id, params.chatId, body.password);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/:id/mute/:chatId')
+	async muteUserById(
+		@Param() params: DTO_getChatById,
+		@Body() body: DTO_muteLength,
+	) {
+		log(`mute ${params.id} from chat ${params.chatId}`);
+		return await this.chatService.muteUserById(params.id, body.toMute, params.chatId, body.length);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Get('/:id/is_muted/:chatId')
+	async isMuted(
+		@Param() params: DTO_getChatById,
+	) {
+		log(`Is mute from ${params.chatId}`);
+		return await this.chatService.isMuted(params.id, params.chatId);
 	}
 }
