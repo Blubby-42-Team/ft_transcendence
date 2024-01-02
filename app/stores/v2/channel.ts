@@ -96,6 +96,18 @@ export const useChannelStore = defineStore('channel', {
 					};
 				}
 			);
-		}
+		},
+
+		async addNewChannel(name: string, type: EChatType){
+			const { primaryUser } = useUserStore();
+			const { data } = await fetchCreateChat(primaryUser.value.id, type, name);
+			return data.value ?? 0;
+		},
+
+		async addNewProtectedChannel(name: string, password: string, type: EChatType){
+			const { primaryUser } = useUserStore();
+			const { data } = await fetchCreateChatProtected(primaryUser.value.id, type, name, password);
+			return data.value ?? 0;
+		},
 	}
 })

@@ -76,10 +76,10 @@ export function fetchCreateChat(
 	userId: number,
 	type: EChatType,
 	name: string,
-	callback: (response: any) => void = () => {},
+	callback: (response: number) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/chat/${userId}`, {
+	return useFetch<number>(`${config.public.back.uri}/chat/${userId}`, {
 		method: 'POST',
 		body: {
 			'type': type,
@@ -103,7 +103,7 @@ export function fetchCreateChatProtected(
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/chat/${userId}/protected`, {
+	return useFetch<number>(`${config.public.back.uri}/chat/${userId}/protected`, {
 		method: 'POST',
 		body: {
 			'type': type,
