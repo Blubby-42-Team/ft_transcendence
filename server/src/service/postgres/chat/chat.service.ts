@@ -46,7 +46,7 @@ export class PostgresChatService {
 			this.logger.debug("Could not create");
 			throw new InternalServerErrorException("Could not create");
 		})
-		return chat
+		return chat.id
 	}
 
 	async deleteChat(
