@@ -26,17 +26,12 @@ export const useChannelStore = defineStore('channel', {
 			return state._types;
 		}),
 		activeType:      (state) => computed((): IChannelTypeSettings => {
-			const selectChannel = state._channels?.[state._selectedChannel] ?? null;
-			if (state._types.friends.type.includes(selectChannel?.type as EChatType)){
-				return state._types.friends;
+			switch (state._channels?.[state._selectedChannel]?.type ?? null){
+				case EChatType.friends: return state._types.friends;
+				case EChatType.group:   return state._types.groups;
+				case EChatType.public:  return state._types.chats;
+				default: return state._types.friends;
 			}
-			if (state._types.groups.type.includes(selectChannel?.type as EChatType)){
-				return state._types.groups;
-			}
-			if (state._types.chats.type.includes(selectChannel?.type as EChatType)){
-				return state._types.chats;
-			}
-			return state._types.friends;
 		}),
 	},
 	actions: {

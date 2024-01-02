@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore()
-const { selectedChannel, channels } = useChannelStore()
+const { selectedChannel, channels, activeType } = useChannelStore()
 const { notif } = useNotifStore();
 
 const defaultSettings = {
