@@ -2,7 +2,7 @@
 </script>
 	
 <template>
-	<div class="h-screen bg-background2 text-text grid grid-cols-[4rem,auto]">
+	<div class="h-screen bg-background2 text-text grid grid-cols-[4rem_auto]">
 		<LayoutSidebar/>
 		<LayoutNotificationPopup/>
 		<LayoutHeader/>
