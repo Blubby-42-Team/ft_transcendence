@@ -9,18 +9,6 @@ let history = getHistory(computed(() => primaryUser.value.id));
 
 await fetchHistory(primaryUser.value.id);
 
-onMounted(async () => {
-	console.log('fetching history', primaryUser.value.id)
-	await fetchHistory(primaryUser.value.id);
-	console.log('fetched history', history.value)
-})
-
-// watch(() => primaryUser.value.id, async (newVal, oldVal) => {
-// 	console.log('fetching history', newVal, oldVal)
-// 	console.log('xd', await fetchHistory(newVal));
-// 	console.log('fetched history', history.value)
-// })
-
 </script>
 
 <template>
@@ -29,7 +17,9 @@ onMounted(async () => {
 			<ClientOnly>
 				<Teleport to="#additionalHeaderButton">
 					<div class="mx-2 border border-text-light bg-text-light"></div>
-					<GenericButton :buttonStyle="1" class="self-center w-12 h-12">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
+						@click="fetchHistory(primaryUser.id)"
+					>
 						<Icon name="material-symbols:refresh" class="w-full h-full"/>
 					</GenericButton>
 				</Teleport>
