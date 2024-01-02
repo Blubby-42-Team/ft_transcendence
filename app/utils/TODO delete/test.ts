@@ -1,6 +1,6 @@
 export function fetchTest(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/game/room`, {
