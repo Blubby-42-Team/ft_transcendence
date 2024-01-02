@@ -303,11 +303,8 @@ export class PostgresUserService {
 			throw err
 		});
 		console.log(chatList)
-		let chat;
-		if (chatList.length === 0){
-			chat = await this.postgresChatService.createChat(await this.getUserById(id), EChatType.friends, 'friends')
-		}
-		else {
+		
+		if (chatList.length !== 0){
 			this.userRepository.query(`
 				UPDATE "chat" as c
 				SET "type" = 'friends'
@@ -329,7 +326,9 @@ export class PostgresUserService {
 			});
 			return 'ok'
 		}
-		await this.postgresChatService.addInChat(friendId, chat.id)
+
+		const chatId = await this.postgresChatService.createChat(user, EChatType.friends, 'friends')
+		await this.postgresChatService.addInChat(friendId, chatId)
 		return 'ok'
 	}
 
