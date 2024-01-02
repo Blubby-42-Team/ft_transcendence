@@ -4,7 +4,7 @@ export function fetchPostMessage(
 	userId: number,
 	chatId: number,
 	content: string,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/messages/${userId}`, {

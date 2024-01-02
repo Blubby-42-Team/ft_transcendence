@@ -78,6 +78,19 @@ export const useUserStore = defineStore('user', {
 			}
 			);
 		},
+
+		async getUserByName(userName: string){
+			const { data } = await fetchUserByName(userName, (response) => {
+				this._users[response.id] = {
+					id:       response.id,
+					name:     response.display_name,
+					fullName: response.full_name,
+					login42:  response.login,
+					avatar:   response.profile_picture,
+				};
+			});
+			return data.value.id;
+		},
 		
 		async fetchStat(userId: number){
 			if (userId === 0){

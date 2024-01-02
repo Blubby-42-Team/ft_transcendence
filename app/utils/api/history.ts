@@ -35,7 +35,7 @@ export function fetchSaveGame(
 	opp_score: number,
 	date: Date,
 	duration: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`localhost:5000/history/game/save/${userId}`, {

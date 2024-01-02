@@ -50,7 +50,6 @@ export class PostgresUserService {
 			}
 			return res[0];
 		})
-
 	}
 
 	async getUserByIdForWilla(userId: number) {
@@ -77,7 +76,32 @@ export class PostgresUserService {
 			}
 			return res[0];
 		})
+	}
 
+	async getUserByLogin(login: string) {
+		return this.userRepository.query(`
+			SELECT u.id, u.display_name, u.full_name, u.profile_picture, ft.login
+			FROM "user" as u
+			LEFT JOIN "user42" AS ft
+			ON ft.id = u."user42Id"
+			WHERE ft.login = $1`,
+			[login],
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user by login ${login}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by login ${login}`);
+		})
+		.then((res): User => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get user by login ${login}: not found`);
+				throw new NotFoundException(`Failed to get user by login ${login}: not found`);
+			}
+			if (res.length > 1) {
+				this.logger.debug(`Failed to get user by login ${login}: too many results`);
+				throw new InternalServerErrorException(`Failed to get user by login ${login}: too many results`);
+			}
+			return res[0];
+		})
 	}
 
 	/**
@@ -271,19 +295,15 @@ export class PostgresUserService {
 					SELECT chat_id
 					FROM "custom_users_chat"
 					WHERE user_id = $2
-				)
-				AND c."type" = 'inactive';`,
+				)`,
 			[id, friendId]
 		)
 		.catch((err) => {
 			throw err
 		});
 		console.log(chatList)
-		let chat;
-		if (chatList.length === 0){
-			chat = await this.postgresChatService.createChat(await this.getUserById(id), EChatType.friends, 'friends')
-		}
-		else {
+
+		if (chatList.length !== 0){
 			this.userRepository.query(`
 				UPDATE "chat" as c
 				SET "type" = 'friends'
@@ -305,7 +325,9 @@ export class PostgresUserService {
 			});
 			return 'ok'
 		}
-		await this.postgresChatService.addInChat(friendId, chat.id)
+
+		const chatId = await this.postgresChatService.createChat(user, EChatType.friends, 'friends')
+		await this.postgresChatService.addInChat(friendId, chatId)
 		return 'ok'
 	}
 

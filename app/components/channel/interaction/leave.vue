@@ -7,10 +7,14 @@ const props = defineProps({
 	},
 });
 
-const { selectedChannel } = useChannelStore();
+const { selectedChannel, leaveChannel } = useChannelStore();
 
-function leave() {
+async function leave() {
 	console.log("Leaving channel: " + selectedChannel.value?.id);
+	if (selectedChannel.value?.id){
+		await leaveChannel(selectedChannel.value.id);
+		navigateTo("/messages");
+	}
 	props.closeFunc();
 }
 
