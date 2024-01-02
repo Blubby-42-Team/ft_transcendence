@@ -237,6 +237,8 @@ export class PostgresUserService {
 		user.user42 = user42;
 		user.settings = settings;
 		user.stats = stats;
+		user.is2FA = false;
+		user.secret2FA = '';
 
 		return this.userRepository.save(user)
 		.then((res: User): number=> {
