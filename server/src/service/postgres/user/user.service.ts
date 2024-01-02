@@ -50,7 +50,6 @@ export class PostgresUserService {
 			}
 			return res[0];
 		})
-
 	}
 
 	async getUserByIdForWilla(userId: number) {
@@ -77,7 +76,32 @@ export class PostgresUserService {
 			}
 			return res[0];
 		})
+	}
 
+	async getUserByLogin(login: string) {
+		return this.userRepository.query(`
+			SELECT u.id, u.display_name, u.full_name, u.profile_picture, ft.login
+			FROM "user" as u
+			LEFT JOIN "user42" AS ft
+			ON ft.id = u."user42Id"
+			WHERE ft.login = $1`,
+			[login],
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get user by login ${login}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get user by login ${login}`);
+		})
+		.then((res): User => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get user by login ${login}: not found`);
+				throw new NotFoundException(`Failed to get user by login ${login}: not found`);
+			}
+			if (res.length > 1) {
+				this.logger.debug(`Failed to get user by login ${login}: too many results`);
+				throw new InternalServerErrorException(`Failed to get user by login ${login}: too many results`);
+			}
+			return res[0];
+		})
 	}
 
 	/**

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { DTO_addFriendById, DTO_getBlacklistedUserById, DTO_getUserById } from './user.dto';
+import { DTO_addFriendById, DTO_getBlacklistedUserById, DTO_getUserById, DTO_searchUserByLogin } from './user.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserService } from './user.service';
@@ -17,6 +17,13 @@ export class UserController {
 	async getUserById(@Param() params: DTO_getUserById) {
 		log(`Get user by id ${params.id}`);
 		return await this.userService.getUserById(params.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Get('/search/:login')
+	async getUserByLogin(@Param() params: DTO_searchUserByLogin) {
+		log(`Get user by login ${params.login}`);
+		return await this.userService.getUserByLogin(params.login);
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
