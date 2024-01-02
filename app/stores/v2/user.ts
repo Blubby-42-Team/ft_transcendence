@@ -89,7 +89,7 @@ export const useUserStore = defineStore('user', {
 					avatar:   response.profile_picture,
 				};
 			});
-			return data.value.id;
+			return data.value?.id ?? 0;
 		},
 		
 		async fetchStat(userId: number){
@@ -145,5 +145,15 @@ export const useUserStore = defineStore('user', {
 				this._friends[userId] = response.map((el) => el.id);
 			});
 		},
+
+		async removeFriend(userId: number){
+			if (userId === 0){
+				return;
+			}
+			const { data } = await fetchUserFriendDelete(this._primaryUser, userId);
+			await this.fetchFriends(this._primaryUser);
+			return data.value;
+		},
+
 	},
 })

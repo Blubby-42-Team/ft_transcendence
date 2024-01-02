@@ -145,7 +145,7 @@ export function fetchUserFriendDelete(
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/friends/${userId}`, {
+	return useFetch<"OK">(`${config.public.back.uri}/user/friends/${userId}`, {
 		method: 'DELETE',
 		body: {
 			'id': friendId
