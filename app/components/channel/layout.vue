@@ -10,6 +10,9 @@ const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
 const hasSideMenu = useState<boolean>('hasSideMenu');
 
 const openFindChannel = ref();
+const openCreateChannel = ref();
+const openChannelSettings = ref();
+const openChannelLeave = ref();
 
 </script>
 
@@ -53,21 +56,36 @@ const openFindChannel = ref();
 				
 				<div class="mx-2 border border-text-light bg-text-light"></div>
 
-				<template v-if="selectedChannel?.type !== EChatType.friends">
-					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+				<template v-if="([EChatType.group, EChatType.protected, EChatType.public] as EChatType[]).includes(selectedChannel?.type ?? EChatType.inactive)">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openChannelLeave?.open"
+					>
 						<Icon name="material-symbols:logout" class="w-full h-full"/>
 					</GenericButton>
 				</template>
+				<GenericModal ref="openChannelLeave">
+					<ChannelInteractionSearch :closeFunc="openChannelLeave?.close"/>
+				</GenericModal>
 				
-				<template v-if="selectedChannel?.type !== EChatType.friends">
-					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+				<template v-if="([EChatType.group, EChatType.protected, EChatType.public] as EChatType[]).includes(selectedChannel?.type ?? EChatType.inactive)">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openChannelSettings?.open"
+					>
 						<Icon name="material-symbols:settings" class="w-full h-full"/>
 					</GenericButton>
 				</template>
+				<GenericModal ref="openChannelSettings">
+					<ChannelInteractionSearch :closeFunc="openChannelSettings?.close"/>
+				</GenericModal>
 				
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1">
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+					@click="openCreateChannel?.open"
+				>
 					<Icon name="material-symbols:add" class="w-full h-full"/>
 				</GenericButton>
+				<GenericModal ref="openCreateChannel">
+					<ChannelInteractionSearch :closeFunc="openCreateChannel?.close"/>
+				</GenericModal>
 
 			</Teleport>
 		</ClientOnly>
