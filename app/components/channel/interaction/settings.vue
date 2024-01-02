@@ -9,7 +9,9 @@ const props = defineProps({
 
 const { selectedChannel } = useChannelStore();
 
-function remove() {
+const channelName = ref(selectedChannel.value?.name);
+
+function edit() {
 	console.log("Edit settings channel: " + selectedChannel.value?.id);
 	props.closeFunc();
 }
@@ -19,9 +21,9 @@ function remove() {
 <template>
 	<div class="w-[30vw] max-w-lg bg-background2 rounded-xl text-text">
 		<div class="grid grid-cols-2 gap-2 p-5 ">
-			<div class="col-span-2 text-center">Are you sure you want to edit {{ selectedChannel?.name }} ?</div>
-			<GenericButton class="self-end w-10 h-10 mb-2 ml-auto" :buttonStyle="1" @click="remove">Yes</GenericButton>
-			<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1" @click="props.closeFunc">No</GenericButton>
+			<input v-model="channelName" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Channel Name" />
+			<GenericButton class="h-16 px-5" :buttonStyle="1" @click="edit">Save</GenericButton>
+			<GenericButton class="h-16 px-5" :buttonStyle="1" @click="props.closeFunc">Exit</GenericButton>
 		</div>
 	</div>
 </template>
