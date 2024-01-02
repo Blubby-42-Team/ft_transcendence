@@ -14,8 +14,6 @@ if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
 	await selectChannel(primaryUser.value.id, channelId);
 }
 
-const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
-
 </script>
 
 <template>

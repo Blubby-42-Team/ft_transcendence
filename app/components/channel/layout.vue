@@ -2,12 +2,11 @@
 
 import { EChatType } from "#imports";
 
-const { selectedChannel, fetchChannelList } = useChannelStore();
+const { selectedChannel, fetchChannelList, activeType } = useChannelStore();
 const { primaryUser } = useUserStore();
 await fetchChannelList(primaryUser.value.id);
 
 const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
-const hasSideMenu = useState<boolean>('hasSideMenu');
 
 const openFindChannel = ref();
 const openCreateChannel = ref();
@@ -37,7 +36,7 @@ const openChannelLeave = ref();
 				
 				<div class="mx-2 border border-text-light bg-text-light"></div>
 
-				<template v-if="hasSideMenu">
+				<template v-if="activeType.hasSideMenu">
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
 						@click="isSideMenuOpen = !isSideMenuOpen"
 					>
