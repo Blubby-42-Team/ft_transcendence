@@ -2,6 +2,7 @@
 
 const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore()
 const { selectedChannel, channels } = useChannelStore()
+const { notif } = useNotifStore();
 
 const defaultSettings = {
 	maxPoint:			2,
