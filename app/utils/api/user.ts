@@ -1,9 +1,29 @@
+import { AsyncData } from "#app";
+import { BackEndUser } from "#imports";
+import { FetchError } from "ofetch"
+
 export function fetchUser(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: BackEndUser) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/${userId}`, {
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log('user fetched');
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function fetchUserByName(
+	name: string,
+	callback: (response: BackEndUser) => void = () => {},
+): AsyncData<BackEndUser, FetchError<any> | null> {
+	const config = useRuntimeConfig();
+	return useFetch(`${config.public.back.uri}/user/search/${name}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user fetched');

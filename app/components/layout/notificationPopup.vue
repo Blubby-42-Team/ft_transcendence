@@ -1,14 +1,6 @@
 <script setup lang="ts">
 
-const notif = useState<Array<{ id: number, message: string }>>('notif', () => [])
-
-function deleteNotif(id: number) {
-	notif.value = notif.value.filter((value) => value.id !== id);
-}
-
-function executeNotif(id: number) {
-	console.log(id);
-}
+const { notif, executeNotif, deleteNotif } = useNotifStore();
 
 </script>
 

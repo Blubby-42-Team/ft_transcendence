@@ -49,6 +49,14 @@ export enum UserTelemetryStatus {
 	InGame = 'ingame',
 }
 
+export type BackEndUser = {
+	id:					number,
+	display_name:		string,
+	full_name:			string,
+	login:				string,
+	profile_picture:	string,
+};
+
 export class UserTelemetryStatusWsDto {
 	@IsDefined()
 	@IsEnum(UserTelemetryStatus)
