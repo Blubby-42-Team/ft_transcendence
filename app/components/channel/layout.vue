@@ -64,7 +64,7 @@ const openChannelLeave = ref();
 					</GenericButton>
 				</template>
 				<GenericModal ref="openChannelLeave">
-					<ChannelInteractionSearch :closeFunc="openChannelLeave?.close"/>
+					<ChannelInteractionLeave :closeFunc="openChannelLeave?.close"/>
 				</GenericModal>
 				
 				<template v-if="([EChatType.group, EChatType.protected, EChatType.public] as EChatType[]).includes(selectedChannel?.type ?? EChatType.inactive)">
@@ -75,7 +75,7 @@ const openChannelLeave = ref();
 					</GenericButton>
 				</template>
 				<GenericModal ref="openChannelSettings">
-					<ChannelInteractionSearch :closeFunc="openChannelSettings?.close"/>
+					<ChannelInteractionSettings :closeFunc="openChannelSettings?.close"/>
 				</GenericModal>
 				
 				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
@@ -84,7 +84,7 @@ const openChannelLeave = ref();
 					<Icon name="material-symbols:add" class="w-full h-full"/>
 				</GenericButton>
 				<GenericModal ref="openCreateChannel">
-					<ChannelInteractionSearch :closeFunc="openCreateChannel?.close"/>
+					<ChannelInteractionCreate :closeFunc="openCreateChannel?.close"/>
 				</GenericModal>
 
 			</Teleport>

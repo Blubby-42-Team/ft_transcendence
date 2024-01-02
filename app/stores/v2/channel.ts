@@ -1,7 +1,5 @@
 import { EChatType, IShortChannel, BackChannelType, IChannel } from "#imports";	
 
-
-
 export const useChannelStore = defineStore('channel', {
 	state: () => ({
 		_selectedChannel: 0,

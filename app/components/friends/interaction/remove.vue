@@ -23,7 +23,7 @@ function remove() {
 </script>
 
 <template>
-	<div class="w-[30vw] max-w-lg bg-background2 rounded-xl">
+	<div class="w-[30vw] max-w-lg bg-background2 rounded-xl text-text">
 		<div class="grid grid-cols-2 gap-2 p-5 ">
 			<div class="col-span-2 text-center">Are you sure you want to remove {{ user.name }} as your friend ?</div>
 			<GenericButton class="self-end w-10 h-10 mb-2 ml-auto" :buttonStyle="1" @click="remove">Yes</GenericButton>
