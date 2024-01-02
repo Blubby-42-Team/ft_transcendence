@@ -1,8 +1,17 @@
 <script lang="ts" setup>
 
-const { selectedChannel, fetchChannelList } = useChannelStore();
+import { EChatType } from "#imports";
+
+const { selectedChannel, fetchChannelList, activeType } = useChannelStore();
 const { primaryUser } = useUserStore();
 await fetchChannelList(primaryUser.value.id);
+
+const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);
+
+const openFindChannel = ref();
+const openCreateChannel = ref();
+const openChannelSettings = ref();
+const openChannelLeave = ref();
 
 </script>
 
@@ -23,14 +32,61 @@ await fetchChannelList(primaryUser.value.id);
 		/>
 
 		<ClientOnly>
-			<teleport to="#additionalHeaderButton">
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12">
+			<Teleport to="#additionalHeaderButton">
+				
+				<div class="mx-2 border border-text-light bg-text-light"></div>
+
+				<template v-if="activeType.hasSideMenu">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
+						@click="isSideMenuOpen = !isSideMenuOpen"
+					>
+						<Icon name="material-symbols:menu" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+					@click="openFindChannel?.open"
+				>
 					<Icon name="material-symbols:search" class="w-full h-full"/>
 				</GenericButton>
-				<!-- <GenericModal ref="openFindFriend">
-					<ProfileRename :close="openFindFriend?.close"/>
-				</GenericModal> -->
-			</teleport>
+				<GenericModal ref="openFindChannel">
+					<ChannelInteractionSearch :closeFunc="openFindChannel?.close"/>
+				</GenericModal>
+				
+				<div class="mx-2 border border-text-light bg-text-light"></div>
+
+				<template v-if="([EChatType.group, EChatType.protected, EChatType.public] as EChatType[]).includes(selectedChannel?.type ?? EChatType.inactive)">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openChannelLeave?.open"
+					>
+						<Icon name="material-symbols:logout" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+				<GenericModal ref="openChannelLeave">
+					<ChannelInteractionLeave :closeFunc="openChannelLeave?.close"/>
+				</GenericModal>
+				
+				<template v-if="([EChatType.group, EChatType.protected, EChatType.public] as EChatType[]).includes(selectedChannel?.type ?? EChatType.inactive)">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openChannelSettings?.open"
+					>
+						<Icon name="material-symbols:settings" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+				<GenericModal ref="openChannelSettings">
+					<ChannelInteractionSettings :closeFunc="openChannelSettings?.close"/>
+				</GenericModal>
+				
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+					@click="openCreateChannel?.open"
+				>
+					<Icon name="material-symbols:add" class="w-full h-full"/>
+				</GenericButton>
+				<GenericModal ref="openCreateChannel">
+					<ChannelInteractionCreate :closeFunc="openCreateChannel?.close"/>
+				</GenericModal>
+
+			</Teleport>
 		</ClientOnly>
 	</div>
 </template>

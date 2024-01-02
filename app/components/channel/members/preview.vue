@@ -1,9 +1,16 @@
 <script setup lang="ts">
 
+const props = defineProps({
+	userId: {
+		type: Number as PropType<number>,
+		required: true
+	}
+});
+
 const { getUser, fetchUser, fetchHistory } = useUserStore();
-const user = getUser(computed(() => 42));
-await fetchUser(42);
-await fetchHistory(42);
+const user = getUser(computed(() => props.userId));
+await fetchUser(props.userId);
+await fetchHistory(props.userId);
 
 const test: Ref<Array<{ text: string, icon: string } | undefined>> = ref([
 	undefined,
@@ -18,7 +25,7 @@ const test: Ref<Array<{ text: string, icon: string } | undefined>> = ref([
 
 <template>
 	<div class="flex flex-col w-full px-2 py-4 text-sm border-4 rounded-b-lg rounded-tl-lg shadow-lg border-color1 bg-background1">
-		<GenericProfilePicture :imageSrc="user.avatar" class="self-center w-32 h-32"/>
+		<GenericProfilePicture :imageSrc="user?.avatar ?? '/pp.png'" class="self-center w-32 h-32"/>
 		<div class="w-full p-2 mt-3 text-xl">{{ user.name }}</div>
 		<template v-for="elem in test">
 			<template v-if="elem">
