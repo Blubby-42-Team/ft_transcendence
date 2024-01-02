@@ -2,7 +2,7 @@
 
 import { EChatType, IShortChannel } from "#imports"
 
-const { selectedChannel, channels, channelList, activeType } = useChannelStore()
+const { selectedChannel, channels, activeType } = useChannelStore()
 
 </script>
 

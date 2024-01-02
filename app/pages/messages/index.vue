@@ -4,7 +4,7 @@ definePageMeta({name: 'Message'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.MESSAGES); })
 
-const { channels, fetchChannelList, selectChannel } = useChannelStore();
+const { fetchChannelList, selectChannel } = useChannelStore();
 const { primaryUser } = useUserStore();
 
 await fetchChannelList(primaryUser.value.id);

@@ -1,39 +1,4 @@
-import { EChatType, IShortChannel, BackChannelType, IChannel, IChannelTypeSettings } from "#imports";	
-
-// const hasSideMenu = useState<boolean>('hasSideMenu', () => false);
-// const types = computed((): {[key: string]: IChannelTypeSettings} => ({
-// 	friend: { type: [EChatType.friends],                     name: 'Friends', open: true,  hasSideMenu: false, channels: [], icon: 'material-symbols:person' },
-// 	group:  { type: [EChatType.group],                       name: 'Groups',  open: true,  hasSideMenu: true,  channels: [], icon: 'material-symbols:diversity-4' },
-// 	chats:  { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true,  hasSideMenu: true,  channels: [], icon: 'material-symbols:groups' },
-// }));
-
-// for (const key in types.value){
-// 	types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type)) as (IShortChannel)[];
-// }
-
-// function update_channels(){
-// 	for (const key in types.value){
-// 		types.value[key].channels = channels.value.filter((channel) => channel !== undefined && types.value[key].type.includes(channel.type)) as (IShortChannel)[];
-// 	}
-// }
-
-// update_channels();
-// watch(channels, update_channels);
-
-// const activeType = useState('activeType', () => {
-// 	for (const key in types.value){
-// 		if (selectedChannel.value && types.value[key].type.includes(selectedChannel.value.type)){
-// 			return types.value[key];
-// 		}
-// 	}
-// 	return types.value.friend;
-// })
-
-// hasSideMenu.value = activeType.value.hasSideMenu;
-// watch(activeType, () => {
-// 	hasSideMenu.value = activeType.value.hasSideMenu;
-// })
-
+import { EChatType, IShortChannel, BackChannelType, IChannel, IChannelTypeSettings } from "#imports";
 
 export const useChannelStore = defineStore('channel', {
 	state: () => ({
@@ -49,8 +14,7 @@ export const useChannelStore = defineStore('channel', {
 	}),
 	getters: {
 		selectedChannel: (state) => computed(() => state._channels?.[state._selectedChannel] ?? null),
-		channels:        (state) => computed(() => state._channelList.map((id) => state._shortChannels[id])),
-		channelList:     (state) => computed(() => {
+		channels:        (state) => computed(() => {
 			const channels = state._channelList.map((id) => state._shortChannels[id]);
 			state._types.friends.channels = channels.filter((channel) => state._types.friends.type.includes(channel?.type as EChatType)) as IShortChannel[];
 			state._types.groups.channels  = channels.filter((channel) => state._types.groups .type.includes(channel?.type as EChatType)) as IShortChannel[];
