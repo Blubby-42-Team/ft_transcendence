@@ -1,6 +1,6 @@
 import { Exclude } from "class-transformer";
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty, IsNumber, IsEnum, ValidateNested} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsEnum, ValidateNested, IsBoolean} from 'class-validator';
 import { UserRoleType } from "src/auth/auth.class";
 import { User42 } from "./user42.class";
 import { Settings } from "../settings/settings.class";
@@ -76,6 +76,15 @@ export class User {
 	@IsNotEmpty()
 	@ValidateNested()
 	stats: Stats;
+
+	@Column()
+	@IsNotEmpty()
+	@IsBoolean()
+	is2FA: boolean;
+
+	@Column()
+	@IsNotEmpty()
+	secret2FA: string;
 
 	@OneToMany(type => History, (history) => history.player)
 	history: History[];
