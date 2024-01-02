@@ -109,5 +109,12 @@ export const useChannelStore = defineStore('channel', {
 			const { data } = await fetchCreateChatProtected(primaryUser.value.id, type, name, password);
 			return data.value ?? 0;
 		},
+
+		async leaveChannel(channelId: number){
+			const { primaryUser } = useUserStore();
+			const { data } = await fetchLeaveChat(primaryUser.value.id, channelId);
+			this.fetchChannelList(primaryUser.value.id);
+			return data.value ?? ':(';
+		},
 	}
 })

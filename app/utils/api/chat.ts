@@ -172,7 +172,7 @@ export function fetchLeaveChat(
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/chat/${userId}/leave`, {
+	return useFetch<"OK">(`${config.public.back.uri}/chat/${userId}/leave`, {
 		method: 'DELETE',
 		body: {
 			'id': chatId
