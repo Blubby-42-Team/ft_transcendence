@@ -1,9 +1,27 @@
+import { BackEndUser } from "#imports";
+
 export function fetchUser(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: BackEndUser) => void,
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/${userId}`, {
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log('user fetched');
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function fetchUserByName(
+	name: string,
+	callback: (response: BackEndUser) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch<BackEndUser>(`${config.public.back.uri}/user/search/${name}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user fetched');
@@ -32,7 +50,7 @@ export function fetchUserFriends(
 
 export function fetchUserWhitelist(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/whitelist/${userId}`, {
@@ -48,7 +66,7 @@ export function fetchUserWhitelist(
 
 export function fetchUserBlacklist(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
@@ -65,7 +83,7 @@ export function fetchUserBlacklist(
 export function fetchUserIsInBlacklist(
 	userId: number,
 	blacklistId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/blacklist/is_in/${userId}/${blacklistId}`, {
@@ -82,7 +100,7 @@ export function fetchUserIsInBlacklist(
 export function fetchUserWhitelistPost(
 	userId: number,
 	whitelistId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/whitelist/${userId}`, {
@@ -103,7 +121,7 @@ export function fetchUserWhitelistPost(
 export function fetchUserBlacklistPost(
 	userId: number,
 	blacklistId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
@@ -124,7 +142,7 @@ export function fetchUserBlacklistPost(
 export function fetchUserFriendDelete(
 	userId: number,
 	friendId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/friends/${userId}`, {
@@ -145,7 +163,7 @@ export function fetchUserFriendDelete(
 export function fetchUserBlacklistDelete(
 	userId: number,
 	blacklistId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/user/blacklists/${userId}`, {

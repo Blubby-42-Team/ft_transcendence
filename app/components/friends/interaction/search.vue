@@ -7,15 +7,31 @@ const props = defineProps({
 	}
 });
 
+const { notif } = useNotifStore();
+
 const { textarea, input } = useTextareaAutosize()
+const { getUserByName } = useUserStore();
 
 input.value = "";
 
-function search() {
+const { addNotif } = useNotifStore();
+
+async function search() {
 	const userLoginName = input.value;
 	input.value = "";
 	if (userLoginName && userLoginName.length > 0) {
 		console.log("searching for user: " + userLoginName);
+		await getUserByName(userLoginName)
+			.then((res) => {
+				console.log("found user: " + res);
+				navigateTo("/profile/" + res);
+				return res;
+			})
+			.catch(() => {
+				console.log("user not found");
+				addNotif("User not found");
+				return null;
+			});
 		props.closeFunc();
 	}
 }

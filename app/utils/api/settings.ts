@@ -2,7 +2,7 @@ import { ETheme } from '#imports'
 
 export function fetchSettings(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
@@ -20,7 +20,7 @@ export function fetchSettingsPatch(
 	userId: number,
 	theme: ETheme,
 	sound: boolean,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
