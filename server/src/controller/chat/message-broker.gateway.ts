@@ -1,13 +1,17 @@
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
-import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, ConnectedSocket } from '@nestjs/websockets';
+import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, ConnectedSocket } from '@nestjs/websockets';
 import { AuthService } from 'src/auth/auth.service';
 import { Server, Socket } from 'socket.io'
 import { UserAuthTokenDto } from 'src/auth/auth.class';
 import { AcknowledgmentWsDto } from '@shared/dto/ws.dto';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
-import { GetUserStatusOfWsDto, UserTelemetryStatus, UserTelemetryStatusWsDto } from '@shared/types/user/user';
-import { UserService } from 'src/controller/user/user.service';
+import { WSDTO_subcribeToChatUpdates } from './chat.dto';
+import { ChatService } from './chat.service';
+
+type subscribeToChatUpdatesWSResponse = {
+	listenTo: string;
+}
 
 @WebSocketGateway({
 	namespace: 'message-broker',
@@ -21,8 +25,8 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 
 	constructor(
 		private readonly authService: AuthService,
-		private readonly userControllerService: UserService,
-	) { }
+		private readonly chatService: ChatService,
+	) {}
 
 	// When a client connect to the server
 	handleConnection(client: Socket) {
@@ -110,10 +114,13 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 		@MessageBody() req: any,
 		@ConnectedSocket() socket: Socket
 	) {
-		// return this.handleRequest(socket, req, ReadyOrNotRequestDto, async (user, data): Promise<readyOrNotResponse> => {
-
-			// return 'ok';
-		// });
+		return this.handleRequest(socket, req, WSDTO_subcribeToChatUpdates, async (user, data): Promise<subscribeToChatUpdatesWSResponse> => {
+			this.logger.debug(`subcribe-to: ${user?.displayName} try to subcribe to ${data.chatId}`)
+			const chan =  await this.chatService.subscribteToChatUpdates(user.userId, data.chatId, socket);
+			return {
+				listenTo: chan
+			}
+		});
 	}
 }
 
