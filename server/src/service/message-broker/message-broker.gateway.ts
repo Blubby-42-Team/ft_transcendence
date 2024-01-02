@@ -7,7 +7,7 @@ import { Server } from "socket.io";
 		origin: '*',
 	}
 })
-export class MessageBrokerGateway {
+export class EmitMessageBrokerGateway {
 	@WebSocketServer()
 	server: Server;
 }

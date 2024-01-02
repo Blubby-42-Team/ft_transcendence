@@ -2,6 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ModelChatService } from 'src/model/chat/chat.service';
 import { ModelMuteService } from 'src/model/mute/mute.service';
 import { EChatType } from '@shared/types/chat'
+import { ModelMessageBrokerService } from 'src/model/message-broker/message-broker.service';
+import { Socket } from 'socket.io'
 
 @Injectable()
 export class ChatService {
@@ -9,6 +11,7 @@ export class ChatService {
 	constructor(
 		private readonly modelChatService: ModelChatService,
 		private readonly modelMuteService: ModelMuteService,
+		private readonly modelMessageBrokerService: ModelMessageBrokerService,
 	) {}
 
 	async createChat(
@@ -170,5 +173,13 @@ export class ChatService {
 		chatId: number,
 	) {
 		return await this.modelMuteService.isMuted(userId, chatId);
+	}
+
+	async subscribteToChatUpdates(
+		userId: number,
+		chatId: number,
+		socketClient: Socket,
+	) {
+		return await this.modelMessageBrokerService.subscribeToChatUpdates(userId, chatId, socketClient);
 	}
 }

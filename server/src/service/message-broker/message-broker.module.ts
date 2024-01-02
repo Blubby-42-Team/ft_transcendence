@@ -1,4 +1,4 @@
-import { MessageBrokerGateway } from './message-broker.gateway';
+import { EmitMessageBrokerGateway } from './message-broker.gateway';
 import { MessageBrokerService } from './message-broker.service';
 /*
 https://docs.nestjs.com/modules
@@ -10,10 +10,11 @@ import { Module } from '@nestjs/common';
 	imports: [],
 	providers: [
 		MessageBrokerService,
-		MessageBrokerGateway,
+		EmitMessageBrokerGateway,
 	],
 	exports: [
 		MessageBrokerService,
+		EmitMessageBrokerGateway,
 	],
 })
 export class MessageBrokerModule { }

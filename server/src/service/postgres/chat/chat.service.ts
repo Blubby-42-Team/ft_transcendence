@@ -6,6 +6,7 @@ import { Chat } from '../../../model/chat/chat.class';
 import { EChatType } from '@shared/types/chat';
 import { PostgresUserService } from "../user/user.service";
 import * as bcrypt from 'bcrypt'
+import { MessageBrokerService } from 'src/service/message-broker/message-broker.service';
 
 
 @Injectable()
@@ -18,6 +19,8 @@ export class PostgresChatService {
 		//TODO #79 Need to rework https://docs.nestjs.com/fundamentals/circular-dependency
 		@Inject(forwardRef(() => PostgresUserService))
 		private readonly postgresUserService: PostgresUserService,
+		// TODO #87 Rework message message broker
+		private readonly messageBrokerService: MessageBrokerService,
 	  ) {}
 
 	async createChat(
@@ -354,6 +357,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not update chat:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chat.id, `Chat type of ${chat?.name}:${chat?.id} changed to ${type}!`);
 			return res;
 		})
 	}
@@ -370,6 +375,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not update chat:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chat.id, `Chat name of ${chat?.name}:${chat?.id} changed to ${name}!`);
 			return res;
 		})
 	}
@@ -386,6 +393,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not update chat:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chat.id, `Chat picture of ${chat?.name}:${chat?.id} changed to ${picture}!`);
 			return res;
 		})
 	}
@@ -422,6 +431,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not add in chat:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chatId, `New user in ${chatId}!`);
 			return 'ok';
 		})
 	}
@@ -444,6 +455,8 @@ export class PostgresChatService {
 		).catch((err) => {
 			throw err
 		})
+		// TODO #87 Rework message message broker
+		this.messageBrokerService.emitMessageAlert(chatId, `User ${userId} left ${chatId}!`);
 		return 'ok'
 	}
 
@@ -487,6 +500,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not add in admins:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chatId, `New admin in ${chatId}!`);
 			return 'ok';
 		})
 	}
@@ -502,6 +517,8 @@ export class PostgresChatService {
 		).catch((err) => {
 			throw err
 		})
+		// TODO #87 Rework message message broker
+		this.messageBrokerService.emitMessageAlert(chatId, `User ${userId} is no longer admin in ${chatId}!`);
 		return 'ok'
 	}
 
@@ -520,6 +537,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not ban user:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chatId, `User ${userId} is banned in ${chatId}!`);
 			return 'ok';
 		})
 	}
@@ -535,6 +554,8 @@ export class PostgresChatService {
 		).catch((err) => {
 			throw err
 		})
+		// TODO #87 Rework message message broker
+		this.messageBrokerService.emitMessageAlert(chatId, `User ${userId} is no longer banned in ${chatId}!`);
 		return 'ok'
 	}
 
@@ -565,6 +586,8 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Could not update chat:" + err);
 		})
 		.then((res) => {
+			// TODO #87 Rework message message broker
+			this.messageBrokerService.emitMessageAlert(chatId, `Password of ${chatId}!`);
 			return res;
 		})
 	}

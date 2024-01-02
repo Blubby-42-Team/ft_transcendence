@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io'
-import { MessageBrokerGateway } from './message-broker.gateway';
+import { EmitMessageBrokerGateway } from './message-broker.gateway';
 
 @Injectable()
 export class MessageBrokerService {
@@ -8,16 +8,19 @@ export class MessageBrokerService {
 	private readonly logger = new Logger(MessageBrokerService.name);
 
 	constructor(
-		private readonly messageBrokerGateway: MessageBrokerGateway,
+		private readonly messageBrokerGateway: EmitMessageBrokerGateway,
 	) {}
 
 	/**
 	 * Subscribe to a message room
 	 * @param channelId The channel id
 	 * @param sockerCliet The socket client
+	 * @returns The channel name to subscribe
 	 */
 	async subscribeChannel(channelId: number, sockerCliet: Socket) {
-		return sockerCliet.join(`channel-${channelId}`);
+		const chan = `channel-${channelId}`;
+		await sockerCliet.join(chan)
+		return chan;
 	}
 
 	/**
