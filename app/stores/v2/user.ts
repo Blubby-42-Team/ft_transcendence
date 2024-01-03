@@ -40,7 +40,7 @@ export const useUserStore = defineStore('user', {
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
 		_friends: {} as { [key: number]: Array<number> | undefined },
-		_socket: new SocketClientUser,
+		_socket: null as SocketClientUser | null,
 	}),
 	getters: {
 		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
@@ -51,6 +51,21 @@ export const useUserStore = defineStore('user', {
 		getFriends:   (state) => (userId: Ref<number>) => computed(() => state._friends?.[userId.value] ?? []),
 	},
 	actions: {
+		setup(){
+			this._socket = new SocketClientUser();
+
+			for (const user of Object.values(this._users)){
+				if (!user){
+					return ;
+				}
+				this._socket.listenForPlayer(user.id, (data) => {
+					user.status = data.status;
+					console.log('user status updated', user.id, data.status)
+				});
+				this._socket.askForPlayerStatus(user.id);
+			}
+		},
+
 		async updatePrimaryUser(userId: number){
 			this._primaryUser = userId;
 		},
@@ -78,11 +93,13 @@ export const useUserStore = defineStore('user', {
 					avatar:   response.profile_picture,
 					status:   UserTelemetryStatus.Offline,
 				};
-				this._socket.askForPlayerStatus(userId);
-				this._socket.listenForPlayer(userId, (data) => {
-					this._users[userId]!.status = data.status;
-					console.log(this._users[userId])
-				});
+				if (process.client && this._socket){
+					this._socket.listenForPlayer(userId, (data) => {
+						this._users[userId]!.status = data.status;
+						console.log('user status updated', userId, data.status)
+					});
+					this._socket.askForPlayerStatus(userId);
+				}
 			});
 		},
 
