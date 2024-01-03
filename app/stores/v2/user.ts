@@ -1,11 +1,12 @@
-import { IUser, IShortUser, IStats, IHistory } from "#imports"
+import { IUser, IShortUser, IStats, IHistory, SocketClientUser, UserTelemetryStatus } from "#imports"
 
 const userPlaceHolder: IUser = {
-	id: 0,
-	name: '...',
+	id:       0,
+	name:     '...',
 	fullName: '...',
-	login42: '...',
-	avatar: '/pp.png',
+	login42:  '...',
+	avatar:   '/pp.png',
+	status:   UserTelemetryStatus.Offline,
 };
 
 const statsPlaceHolder: IStats = {
@@ -39,6 +40,7 @@ export const useUserStore = defineStore('user', {
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
 		_friends: {} as { [key: number]: Array<number> | undefined },
+		_socket: new SocketClientUser,
 	}),
 	getters: {
 		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
@@ -74,9 +76,14 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
+					status:   UserTelemetryStatus.Offline,
 				};
-			}
-			);
+				this._socket.askForPlayerStatus(userId);
+				this._socket.listenForPlayer(userId, (data) => {
+					this._users[userId]!.status = data.status;
+					console.log(this._users[userId])
+				});
+			});
 		},
 
 		async getUserByName(userName: string){
@@ -87,6 +94,7 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
+					status:   UserTelemetryStatus.Offline,
 				};
 			});
 			return data.value?.id ?? 0;
