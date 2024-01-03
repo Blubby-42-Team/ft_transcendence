@@ -101,34 +101,5 @@ export class Auth42Controller {
 			message: '42 Authentication successful',
 		});
 	}
-
-	@Roles([UserRoleType.Guest])
-	@Get('2fa')
-	async auth42Callback2FA(@Req() req: any, @Res() res: Response) {
-		const sessionCookie = req.cookies['2fa-session'];
-
-		if (!sessionCookie) {
-			this.logger.error('No 2FA session cookie found');
-			throw new BadRequestException('No 2FA session cookie found');
-		}
-
-		const session = await this.authService.validate2FASessionJwtAndGetPayload(sessionCookie);
-
-		if (!session) {
-			this.logger.error('2FA session cookie invalid');
-			throw new BadRequestException('2FA session cookie invalid');
-		}
-
-		const uuid = session.uuid;
-
-		//TODO query db and 2fa service
-
-		res.clearCookie('2fa-session');
-		res.status(HttpStatus.OK).json({
-			statusCode: HttpStatus.OK,
-			message: '2FA Authentication successful',
-		});
-	}
-
 }
 

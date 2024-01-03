@@ -1,5 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
 import { UUID } from "crypto";
+import { Put } from '@nestjs/common';
 
 export enum UserRoleType {
 	Admin		= 'ADMIN',
@@ -39,4 +40,19 @@ export class User2FASessionTokenDto {
 	@IsNotEmpty()
 	@IsUUID('4')
 	uuid: UUID;
+}
+
+export class Post2FADto {
+	@IsNotEmpty()
+	@IsString()
+	code: number;
+}
+
+export class Put2FADto {
+	@IsNotEmpty()
+	@IsString()
+	action: 'enable' | 'disable';
+
+	@IsNumber()
+	code: number;
 }

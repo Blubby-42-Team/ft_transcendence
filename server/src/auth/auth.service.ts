@@ -9,6 +9,7 @@ import { ModelUserService } from 'src/model/user/user.service';
 import { validateOrReject } from 'class-validator';
 import { UUID } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
+import { authenticator } from 'otplib';
 
 @Injectable()
 export class AuthService implements OnModuleInit, OnModuleDestroy {
@@ -99,6 +100,9 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
 		return true;
 	}
 
+	// async disable2FA(userid: number, ) {
+	// }
+
 	async generateUserToken(
 		userId: number,
 		user42DisplayName: string,
@@ -170,6 +174,17 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
 				return payload;
 			})
 
+	}
+
+	async getUser2FA(userid: number) {
+		const user = await this.modelUserService.getUserById(userid);
+		if (!user) {
+			return null;
+		}
+		return {
+			secret: user.secret2FA,
+			enabled: user.is2FA,
+		};
 	}
 }
 
