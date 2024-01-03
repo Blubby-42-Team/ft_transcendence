@@ -189,4 +189,8 @@ export class ChatService {
 		const id = await this.modelPictureService.uploadPicture(data, filename);
 		return await this.modelChatService.uploadPictureChat(data, filename, userId, chatId, id);
 	}
+
+	async changeName(userId: number, chatId: number, name:string) {
+		return await this.modelChatService.changeName(userId, chatId, name);
+	}
 }

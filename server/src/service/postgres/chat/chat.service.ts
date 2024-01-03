@@ -630,4 +630,19 @@ export class PostgresChatService {
 			return 'ok'
 		})
 	}
+
+	async changeName(
+		chat: Chat,
+		name: string,
+	) {
+		return await this.chatRepository.update(chat.id, {
+			name: name,
+		})
+		.catch(err => {
+			return err
+		})
+		.then(res => {
+			return 'ok'
+		})
+	}
 }

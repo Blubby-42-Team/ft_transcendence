@@ -383,4 +383,12 @@ export class ModelChatService {
 			throw new UnauthorizedException("You are not an admin.")
 		return this.postgresChatService.updatePicture(chat, `/picture/${pictureId}`)
 	}
+
+	async changeName(userId: number, chatId: number, name:string) {
+		await this.postgresUserService.getUserById(userId);
+		const chat = await this.postgresChatService.getChatByIdSystem(chatId)
+		if (!await this.postgresChatService.isAdmin(userId, chatId))
+			throw new UnauthorizedException("You are not an admin.")
+		return await this.postgresChatService.changeName(chat, name);
+	}
 }
