@@ -37,4 +37,15 @@ export class Auth42Service {
 			userRole,
 		)
 	}
+
+	async getUser2FA(userid: number) {
+		const user = await this.modelUserService.getUserById(userid);
+		if (!user) {
+			return null;
+		}
+		return {
+			secret: user.secret2FA,
+			enabled: user.is2FA,
+		};
+	}
 }
