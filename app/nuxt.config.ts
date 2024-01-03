@@ -32,8 +32,9 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			back: {
-				uri: 'http://localhost:3000', // can be overridden by NUXT_API_SECRET environment variable
-			}
+				uri: 'ws://localhost:3000',
+				ws: 'ws://localhost:3000',
+			},
 		}
 	},
 })

@@ -13,8 +13,8 @@ const selectedFriend = useState<number | null>('selectedFriend', () => null);
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-[4rem,1fr] grid-cols-[max-content,auto]">
-		<div class="col-span-2 bg-color1">
+	<div class="grid h-full grid-rows-[4rem_1fr] grid-cols-[16em_auto]">
+		<div class="w-full col-span-2 bg-color1">
 			<ClientOnly>
 				<Teleport to="#additionalHeaderButton">
 
@@ -54,7 +54,7 @@ const selectedFriend = useState<number | null>('selectedFriend', () => null);
 				</Teleport>
 			</ClientOnly>
 		</div>
-		<FriendsList class="scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track"/>
+		<FriendsList class="w-full scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track"/>
 		<template v-if="selectedFriend">
 			<Profile class="max-h-full overflow-hidden" :userId="selectedFriend" />
 		</template>

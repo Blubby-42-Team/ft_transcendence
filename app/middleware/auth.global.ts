@@ -8,6 +8,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
 	if (cookie.value === 0) {
 		if (!process.server){
+			console.log('could not find cookie');
 			window.location.href = `${config.public.back.uri}/auth42/login`;
 		}
 	}
@@ -18,6 +19,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
 	if (!res || res.error.value){
 		if (!process.server){
+			console.log('could not find user', res?.error.value);
 			window.location.href = `${config.public.back.uri}/auth42/login`;
 		}
 	}

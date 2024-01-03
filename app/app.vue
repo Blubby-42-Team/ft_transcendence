@@ -1,7 +1,8 @@
 <script setup lang="ts">
 
-const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore()
-const { selectedChannel, channels, activeType } = useChannelStore()
+const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore();
+const { setup } = useUserStore();
+const { selectedChannel, channels, activeType } = useChannelStore();
 const { notif } = useNotifStore();
 
 const defaultSettings = {
@@ -40,6 +41,10 @@ startLoopWaiting()
 const theme			= useState('theme', () => 'theme-dark');
 useState<gameSettingsType>('settings', () => defaultSettings);
 useState<gameTheme>('gameTheme', () => defaultTheme);
+
+if (process.client) {
+	setup();
+}
 
 </script>
 

@@ -28,7 +28,7 @@ watch(() => props.userId, async () => {
 <template>
 	<div class="grid h-full grid-cols-2 grid-rows-[max-content,max-content,1fr]">
 		<div class="flex justify-center p-5 overflow-hidden h-max w-max">
-			<GenericProfilePicture :imageSrc="user.avatar" class="w-64 h-64"/>
+			<GenericProfilePicture :imageSrc="user.avatar" class="w-64 h-64" showStatus/>
 		</div>
 		<div class="grid grid-cols-[3rem,auto] grid-rows-5">
 			<div class="col-span-2"></div>
