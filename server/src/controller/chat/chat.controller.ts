@@ -6,6 +6,7 @@ import { ChatService } from './chat.service';
 import { log } from 'console';
 import { EChatType } from '@shared/types/chat';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { DTO_name } from '../user/user.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -208,5 +209,15 @@ export class ChatController {
 		if (!file)
 			throw new BadRequestException('The file is empty.')
 		return await this.chatService.uploadPictureChat(file.buffer, file.originalname, params.id, params.chatId);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/:chatId/name/:id')
+	async changeName(
+		@Param() params: DTO_getChatById,
+		@Body() body: DTO_name,
+	) {
+		log(`mute ${params.id} from chat ${params.chatId}`);
+		return await this.chatService.changeName(params.id, params.chatId, body.name);
 	}
 }
