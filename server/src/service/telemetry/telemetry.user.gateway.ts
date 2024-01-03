@@ -3,9 +3,6 @@ import { Server } from "socket.io";
 
 @WebSocketGateway({
 	namespace: 'user',
-	cors: {
-		origin: '*',
-	}
 })
 export class TelemetryUserEmitGateway {
 	@WebSocketServer()

@@ -1,11 +1,12 @@
-import { IUser, IShortUser, IStats, IHistory } from "#imports"
+import { IUser, IShortUser, IStats, IHistory, SocketClientUser, UserTelemetryStatus } from "#imports"
 
 const userPlaceHolder: IUser = {
-	id: 0,
-	name: '...',
+	id:       0,
+	name:     '...',
 	fullName: '...',
-	login42: '...',
-	avatar: '/pp.png',
+	login42:  '...',
+	avatar:   '/pp.png',
+	status:   UserTelemetryStatus.Offline,
 };
 
 const statsPlaceHolder: IStats = {
@@ -39,6 +40,7 @@ export const useUserStore = defineStore('user', {
 		_stats: {} as { [key: number]: IStats | undefined },
 		_history: {} as { [key: number]: Array<IHistory> | undefined },
 		_friends: {} as { [key: number]: Array<number> | undefined },
+		_socket: null as SocketClientUser | null,
 	}),
 	getters: {
 		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
@@ -49,6 +51,21 @@ export const useUserStore = defineStore('user', {
 		getFriends:   (state) => (userId: Ref<number>) => computed(() => state._friends?.[userId.value] ?? []),
 	},
 	actions: {
+		setup(){
+			this._socket = new SocketClientUser();
+
+			for (const user of Object.values(this._users)){
+				if (!user){
+					return ;
+				}
+				this._socket.listenForPlayer(user.id, (data) => {
+					user.status = data.status;
+					console.log('user status updated', user.id, data.status)
+				});
+				this._socket.askForPlayerStatus(user.id);
+			}
+		},
+
 		async updatePrimaryUser(userId: number){
 			this._primaryUser = userId;
 		},
@@ -74,9 +91,16 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
+					status:   UserTelemetryStatus.Offline,
 				};
-			}
-			);
+				if (process.client && this._socket){
+					this._socket.listenForPlayer(userId, (data) => {
+						this._users[userId]!.status = data.status;
+						console.log('user status updated', userId, data.status)
+					});
+					this._socket.askForPlayerStatus(userId);
+				}
+			});
 		},
 
 		async getUserByName(userName: string){
@@ -87,9 +111,17 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
+					status:   UserTelemetryStatus.Offline,
 				};
+				if (process.client && this._socket){
+					this._socket.listenForPlayer(response.id, (data) => {
+						this._users[response.id]!.status = data.status;
+						console.log('user status updated', response.id, data.status)
+					});
+					this._socket.askForPlayerStatus(response.id);
+				}
 			});
-			return data.value.id;
+			return data.value?.id ?? 0;
 		},
 		
 		async fetchStat(userId: number){
@@ -145,5 +177,15 @@ export const useUserStore = defineStore('user', {
 				this._friends[userId] = response.map((el) => el.id);
 			});
 		},
+
+		async removeFriend(userId: number){
+			if (userId === 0){
+				return;
+			}
+			const { data } = await fetchUserFriendDelete(this._primaryUser, userId);
+			await this.fetchFriends(this._primaryUser);
+			return data.value;
+		},
+
 	},
 })

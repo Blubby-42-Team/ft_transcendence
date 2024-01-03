@@ -49,7 +49,7 @@ export class AuthGuard implements CanActivate {
 		}
 
 		// Decode the token
-		const user: UserAuthTokenDto = await this.authService.validateJwtAndGetPayload(token);
+		const user: UserAuthTokenDto = await this.authService.validateUserJwtAndGetPayload(token);
 
 		// Check if the user has the right role
 		if (!allowRoles.includes(user.role)) {
