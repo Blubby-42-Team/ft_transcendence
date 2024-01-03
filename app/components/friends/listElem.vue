@@ -23,7 +23,7 @@ function openProfile() {
 	<GenericButton class="w-full p-1" :buttonStyle="2"
 		@click="openProfile"
 	>
-		<GenericProfilePicture class="w-10 h-10" :imageSrc="user.avatar"/>
+		<GenericProfilePicture class="w-10 h-10" :imageSrc="user.avatar" showStatus/>
 		<div class="self-center pl-2">
 			{{ user.name }}
 		</div>

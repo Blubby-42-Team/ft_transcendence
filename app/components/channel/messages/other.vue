@@ -19,7 +19,7 @@ const user = getShortUser(computed(() => props.message.senderId));
 	<div class="inline-grid grid-rows-[auto,2em] p-5 grid-cols-[4em,70%,auto]" :key="props.message.id">
 		<div class="flex flex-col row-span-2">
 			<div class="mb-auto"></div>
-			<GenericProfilePicture class="flex w-14 h-14" :imageSrc="user.avatar"/>
+			<GenericProfilePicture class="flex w-14 h-14" :imageSrc="user.avatar" showStatus/>
 		</div>
 		<div class="flex float-right h-full p-2 break-all whitespace-pre-line bg-background1 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl">
 			{{ props.message.message }}

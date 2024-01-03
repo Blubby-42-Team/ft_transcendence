@@ -9,6 +9,7 @@ import { ModelUser42Service } from './user42.service';
 import { PostgresUser42Module } from 'src/service/postgres/user42/user42.module';
 import { PostgresChatModule } from 'src/service/postgres/chat/chat.module';
 import { TelemetryModule } from 'src/service/telemetry/telemetry.module';
+import { PostgresPictureModule } from 'src/service/postgres/picture/picture.module';
 
 @Module({
 	imports: [

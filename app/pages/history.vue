@@ -12,7 +12,7 @@ await fetchHistory(primaryUser.value.id);
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-[4rem,1fr]">
+	<div class="grid h-full grid-rows-[4rem_1fr]">
 		<div class="flex bg-color1">
 			<ClientOnly>
 				<Teleport to="#additionalHeaderButton">

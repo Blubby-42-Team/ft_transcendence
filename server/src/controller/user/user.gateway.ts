@@ -10,15 +10,13 @@ import { UserAuthTokenDto } from 'src/auth/auth.class';
 import { AcknowledgmentWsDto } from '@shared/dto/ws.dto';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
-import { GetUserStatusOfWsDto, UserTelemetryStatus, UserTelemetryStatusWsDto } from '@shared/types/user/user';
+import { UserTelemetryStatus } from '@shared/types/user/user';
+import { GetUserStatusOfWsDto, UserTelemetryStatusWsDto } from '@shared/types/user/ws';
 import { UserService } from 'src/controller/user/user.service';
 import * as cookie from 'cookie'
 
 @WebSocketGateway({
 	namespace: 'user',
-	cors: {
-		origin: '*',
-	},
 })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 

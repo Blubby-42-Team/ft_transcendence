@@ -10,6 +10,7 @@ import { ModelHistoryModule } from './history/history.module';
 import { ModelMessagesModule } from './messages/messages.module';
 import { ModelChatModule } from './chat/chat.module';
 import { ModelMuteModule } from './mute/mute.module';
+import { ModelPictureModule } from './picture/picture.module';
 import { ModelMessageBrokerModule } from './message-broker/message-broker.module';
 
 @Module({
@@ -20,6 +21,8 @@ import { ModelMessageBrokerModule } from './message-broker/message-broker.module
 		ModelHistoryModule,
 		ModelMessagesModule,
 		ModelChatModule,
+   		ModelMuteModule,
+		ModelPictureModule,
 		ModelMuteModule,
 		ModelMessageBrokerModule,
 	],

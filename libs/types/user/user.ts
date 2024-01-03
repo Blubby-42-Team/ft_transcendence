@@ -1,4 +1,4 @@
-import { IsDefined, IsEnum, IsNumber, Min } from "class-validator";
+
 
 export type IUser = {
 	id			: number,
@@ -6,6 +6,7 @@ export type IUser = {
 	fullName	: string,
 	login42		: string,
 	avatar		: string,
+	status		: UserTelemetryStatus,
 };
 
 export interface IShortUser {
@@ -56,15 +57,3 @@ export type BackEndUser = {
 	login:				string,
 	profile_picture:	string,
 };
-
-export class UserTelemetryStatusWsDto {
-	@IsDefined()
-	@IsEnum(UserTelemetryStatus)
-	status: UserTelemetryStatus;
-};
-
-export class GetUserStatusOfWsDto {
-	@IsNumber()
-	@Min(1)
-	id: number;
-}
