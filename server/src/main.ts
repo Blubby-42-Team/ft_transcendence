@@ -19,7 +19,7 @@ class MyWsAdapter extends IoAdapter {
 		options = {
 			...options,
 			cors: {
-				origin: this.cors,
+				origin: [this.cors, 'https://admin.socket.io'],
 				methods: ['GET', 'POST'],
 				credentials: true,
 			},
@@ -29,7 +29,6 @@ class MyWsAdapter extends IoAdapter {
 }
 
 async function bootstrap() {
-	// await tracer.start();
 
 	const app = await NestFactory.create(AppModule, {cors: true});
 
