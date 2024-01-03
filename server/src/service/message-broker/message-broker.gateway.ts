@@ -3,9 +3,6 @@ import { Server } from "socket.io";
 
 @WebSocketGateway({
 	namespace: 'message-broker',
-	cors: {
-		origin: '*',
-	}
 })
 export class EmitMessageBrokerGateway {
 	@WebSocketServer()

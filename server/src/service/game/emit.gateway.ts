@@ -3,9 +3,6 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
 @WebSocketGateway({
 	namespace: 'game',
-	cors: {
-		origin: '*',
-	}
 })
 export class EmitGateway {
 	@WebSocketServer()

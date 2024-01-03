@@ -16,9 +16,6 @@ import * as cookie from 'cookie'
 
 @WebSocketGateway({
 	namespace: 'user',
-	cors: {
-		origin: '*',
-	},
 })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
