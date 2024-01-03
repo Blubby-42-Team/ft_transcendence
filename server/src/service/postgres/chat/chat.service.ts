@@ -615,4 +615,19 @@ export class PostgresChatService {
 			throw new InternalServerErrorException("Failed to compare passwords: " + err);
 		})
 	}
+
+	async updatePicture(
+		chat: Chat,
+		picture: string,
+	) {
+		return await this.chatRepository.update(chat.id, {
+			chat_picture: picture,
+		})
+		.catch(err => {
+			return err
+		})
+		.then(res => {
+			return 'ok'
+		})
+	}
 }

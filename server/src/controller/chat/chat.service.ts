@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ModelChatService } from 'src/model/chat/chat.service';
 import { ModelMuteService } from 'src/model/mute/mute.service';
+import { ModelPictureService } from 'src/model/picture/picture.service';
 import { EChatType } from '@shared/types/chat'
 import { ModelMessageBrokerService } from 'src/model/message-broker/message-broker.service';
 import { Socket } from 'socket.io'
@@ -11,6 +12,7 @@ export class ChatService {
 	constructor(
 		private readonly modelChatService: ModelChatService,
 		private readonly modelMuteService: ModelMuteService,
+		private readonly modelPictureService: ModelPictureService,
 		private readonly modelMessageBrokerService: ModelMessageBrokerService,
 	) {}
 
@@ -181,5 +183,10 @@ export class ChatService {
 		socketClient: Socket,
 	) {
 		return await this.modelMessageBrokerService.subscribeToChatUpdates(userId, chatId, socketClient);
+	}
+
+	async uploadPictureChat(data: Buffer, filename: string, userId: number, chatId: number) {
+		const id = await this.modelPictureService.uploadPicture(data, filename);
+		return await this.modelChatService.uploadPictureChat(data, filename, userId, chatId, id);
 	}
 }

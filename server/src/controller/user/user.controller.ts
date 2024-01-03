@@ -1,5 +1,5 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { DTO_addFriendById, DTO_getBlacklistedUserById, DTO_getUserById, DTO_searchUserByLogin } from './user.dto';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { DTO_addFriendById, DTO_getBlacklistedUserById, DTO_getUserById, DTO_name, DTO_searchUserByLogin } from './user.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserService } from './user.service';
@@ -108,5 +108,15 @@ export class UserController {
 		if (!file)
 			throw new BadRequestException('The file is empty.')
 		return await this.userService.uploadPictureUser(file.buffer, file.originalname, params.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/name/:id')
+	async changeUsername(
+		@Param() params: DTO_getUserById,
+		@Body() body: DTO_name,
+	) {
+		log(`Add username to ${params.id} as ${body.name}`);
+		return await this.userService.changeUsername(params.id, body.name);
 	}
 }
