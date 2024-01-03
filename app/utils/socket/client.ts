@@ -5,36 +5,46 @@ export class SocketClient {
 
 	constructor(namespace: string) {
 		if (process.server){
+			return ;
 		}
-		else if(process.client && this.socket){
-			const config = useRuntimeConfig();
-			this.socket = io(`${config.public.back.ws}/${namespace}`, {
-				withCredentials: true
-			});
-	
-			this.socket.on('connect', () => {
-				console.log('Socket.io User connected');
-			});
-	
-			this.socket.on('disconnect', () => {
-				console.log('Socket.io User disconnected');
-			});
+		console.log('Socket.io User connecting')
+		const config = useRuntimeConfig();
+		this.socket = io(`${config.public.back.ws}/${namespace}`, {
+			withCredentials: true
+		});
+
+		if (this.socket.connected){
+			console.log('Socket.io User connected :D');
 		}
+
+		this.socket.on('connect', () => {
+			console.log('Socket.io User connected');
+		});
+
+		this.socket.on('disconnect', () => {
+			console.log('Socket.io User disconnected');
+		});
 	}
 
-	public emit<T>(eventName: string, body: T){
-		if (process.server){
+	public async emit<Res>(eventName: string, body: Object): Promise<Res | undefined> {
+		if (!this.socket){
+			return ;
 		}
-		else if(process.client && this.socket){
-			this.socket.emit(eventName, body);
-		}
+		return new Promise<Res>((resolve, reject) => {
+			const timeoutId = setTimeout(() => {
+				reject(new Error('Socket.io timeout: No response received within 5 seconds'));
+			}, 5000);
+			this.socket!.emit(eventName, body, (res: Res) => {
+				clearTimeout(timeoutId);
+				resolve(res);
+			});
+		});
 	}
 
 	public on<T>(eventName: string, callback: (data: T) => void){
-		if (process.server){
+		if (!this.socket){
+			return ;
 		}
-		else if(process.client && this.socket){
-			this.socket.on(eventName, callback);
-		}
+		this.socket.on(eventName, callback);
 	}
 };

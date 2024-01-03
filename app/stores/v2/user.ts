@@ -113,6 +113,13 @@ export const useUserStore = defineStore('user', {
 					avatar:   response.profile_picture,
 					status:   UserTelemetryStatus.Offline,
 				};
+				if (process.client && this._socket){
+					this._socket.listenForPlayer(response.id, (data) => {
+						this._users[response.id]!.status = data.status;
+						console.log('user status updated', response.id, data.status)
+					});
+					this._socket.askForPlayerStatus(response.id);
+				}
 			});
 			return data.value?.id ?? 0;
 		},

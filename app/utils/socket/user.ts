@@ -14,10 +14,14 @@ export class SocketClientUser extends SocketClient {
 		}
 	}
 
-	askForPlayerStatus(id: number){
-		this.emit('getStatusOf', {
-			id,
-		});
+	async askForPlayerStatus(id: number): Promise<UserTelemetryStatus> {
+		if (process.server){
+			return UserTelemetryStatus.Offline;
+		}
+		else {
+			const res = await this.emit<{ status: UserTelemetryStatus}>('getStatusOf', { id });
+			return res?.status ?? UserTelemetryStatus.Offline;
+		}
 	}
 
 	listenForPlayer(id: number, callback: (data: { status: UserTelemetryStatus }) => void){
