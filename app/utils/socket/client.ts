@@ -26,7 +26,14 @@ export class SocketClient {
 		});
 	}
 
-	public async emit<Res>(eventName: string, body: Object): Promise<Res | undefined> {
+	public async emit(eventName: string, body: Object) {
+		if (!this.socket){
+			return ;
+		}
+		this.socket!.emit(eventName, body);
+	}
+
+	public async request<Res>(eventName: string, body: Object): Promise<Res | undefined> {
 		if (!this.socket){
 			return ;
 		}
@@ -36,6 +43,7 @@ export class SocketClient {
 			}, 5000);
 			this.socket!.emit(eventName, body, (res: Res) => {
 				clearTimeout(timeoutId);
+				console.log(res)
 				resolve(res);
 			});
 		});

@@ -23,7 +23,7 @@ const user = getShortUser(computed(() => props.message.senderId));
 		</div>
 		<div class="flex flex-col row-span-2">
 			<div class="mb-auto"></div>
-			<GenericProfilePicture class="flex ml-2 w-14 h-14" :imageSrc="user.avatar" showStatus/>
+			<GenericProfilePicture class="flex ml-2 w-14 h-14" :imageSrc="user.avatar" :userId="props.message.senderId"/>
 		</div>
 		<br/>
 		<div class="flex float-left">
