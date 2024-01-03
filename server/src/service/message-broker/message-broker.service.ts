@@ -18,9 +18,11 @@ export class MessageBrokerService {
 	 * @returns The channel name to subscribe
 	 */
 	async subscribeChannel(channelId: number, sockerCliet: Socket) {
-		const chan = `channel-${channelId}`;
-		await sockerCliet.join(chan)
-		return chan;
+		await sockerCliet.join(`${channelId}`)
+
+		sockerCliet.emit(`channel-debug`, `You are connected to channel ${channelId}`);
+
+		return `channel-${channelId}`;
 	}
 
 	/**
@@ -29,14 +31,17 @@ export class MessageBrokerService {
 	 * @param sockerCliet The socket client
 	 */
 	async unsubscribeChannel(channelId: number, sockerCliet: Socket) {
-		return sockerCliet.leave(`channel-${channelId}`);
+		
+		sockerCliet.emit(`channel-debug`, `You are disconnected to channel ${channelId}`);
+
+		return sockerCliet.leave(`${channelId}`);
 	}
 
 	/**
 	 * Emmit new message alert to a channel
 	 */
 	async emitMessageAlert(channelId: number, message: string) {
-		return this.messageBrokerGateway.server.to(`channel-${channelId}`).emit('message-alert', message);
+		return this.messageBrokerGateway.server.to(`${channelId}`).emit(`channel-${channelId}`, message);
 	}
 
 }

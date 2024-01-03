@@ -18,7 +18,9 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
 	app.enableCors({
-		origin: [configService.get<string>('CORS_ORIGINS'), "https://admin.socket.io"],
+		origin: [
+			configService.get<string>('CORS_ORIGINS'),
+		],
 		credentials: true,
 	});
 
