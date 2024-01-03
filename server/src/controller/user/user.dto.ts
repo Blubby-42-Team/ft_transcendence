@@ -24,3 +24,10 @@ export class DTO_searchUserByLogin {
 	@IsString()
 	login: string;
 }
+
+export class DTO_name {
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	name: string;
+}

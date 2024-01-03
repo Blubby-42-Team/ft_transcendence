@@ -627,4 +627,35 @@ export class PostgresUserService {
 			return 'ok'
 		})
 	}
+
+	async isUsedUsername(username: string) {
+		return this.userRepository.query(`
+			SELECT *
+			FROM "user"
+			WHERE "user".display_name = $1
+		`,
+		[username])
+		.catch(err => {throw err})
+		.then(res => {
+			if (!res.length)
+				return false
+			else
+				return true
+		})
+	}
+
+	async changeUsername(
+		user: User,
+		username: string,
+	) {
+		return await this.userRepository.update(user.id, {
+			display_name: username,
+		})
+		.catch(err => {
+			return err
+		})
+		.then(res => {
+			return 'ok'
+		})
+	}
 }

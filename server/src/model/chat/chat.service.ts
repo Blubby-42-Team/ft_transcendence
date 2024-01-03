@@ -375,4 +375,12 @@ export class ModelChatService {
 			throw new BadGatewayException("Error while hashing: " + err.message);
 		}
 	}
+
+	async uploadPictureChat(data: Buffer, filename: string, userId: number, chatId: number, pictureId: number) {
+		await this.postgresUserService.getUserById(userId)
+		const chat = await this.postgresChatService.getChatByIdSystem(chatId)
+		if (!await this.postgresChatService.isAdmin(userId, chatId))
+			throw new UnauthorizedException("You are not an admin.")
+		return this.postgresChatService.updatePicture(chat, `/picture/${pictureId}`)
+	}
 }
