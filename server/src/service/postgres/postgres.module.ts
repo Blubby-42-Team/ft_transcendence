@@ -10,6 +10,14 @@ import { Messages } from 'src/model/messages/messages.class';
 import { Chat } from 'src/model/chat/chat.class';
 import { Mute } from 'src/model/mute/mute.class';
 import { Picture } from 'src/model/picture/picture.class';
+import { PostgresChatModule } from './chat/chat.module';
+import { PostgresHistoryModule } from './history/history.module';
+import { PostgresMessagesModule } from './messages/messages.module';
+import { PostgresMuteModule } from './mute/mute.module';
+import { PostgresSettingsModule } from './settings/settings.module';
+import { PostgresStatsModule } from './stats/stats.module';
+import { PostgresUser42Module } from './user42/user42.module';
+import { PostgresUserModule } from './user/user.module';
 
 @Module({
 	imports: [
@@ -40,6 +48,14 @@ import { Picture } from 'src/model/picture/picture.class';
 				}
 			},
 		}),
+		PostgresChatModule,
+		PostgresHistoryModule,
+		PostgresMessagesModule,
+		PostgresMuteModule,
+		PostgresSettingsModule,
+		PostgresStatsModule,
+		PostgresUserModule,
+		PostgresUser42Module,
 	],
 })
 export class PostgresModule {}

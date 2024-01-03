@@ -1,6 +1,6 @@
 export function fetchStats(
 	userId: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/stats/${userId}`, {
@@ -19,7 +19,7 @@ export function fetchClassicMatchEnd(
 	points_won: number,
 	points_lost: number,
 	opp_mmr: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/stats/end/match/classic/${userId}`, {
@@ -44,7 +44,7 @@ export function fetchRandomMatchEnd(
 	points_won: number,
 	points_lost: number,
 	opp_mmr: number,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/stats/end/match/random/${userId}`, {

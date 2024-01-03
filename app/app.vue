@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore()
+const { selectedChannel, channels, activeType } = useChannelStore()
+const { notif } = useNotifStore();
 
 const defaultSettings = {
 	maxPoint:			2,
@@ -12,11 +14,6 @@ const defaultSettings = {
 	initialBallSpeed:	0.5,
 	speedAcceleration:	0.1,
 };
-
-startLoopWaiting()
-
-const theme = useState('theme');
-useState<gameSettingsType>('settings', () => defaultSettings);
 
 const defaultTheme: gameTheme = {
 	fontColor:			'white',
@@ -37,10 +34,14 @@ const defaultTheme: gameTheme = {
 	player2Bottom:		{	type: 'color',	color: 'white'	},
 	player2Top:			{	type: 'color',	color: 'white'	},
 }
+
+startLoopWaiting()
+
+const theme			= useState('theme', () => 'theme-dark');
+useState<gameSettingsType>('settings', () => defaultSettings);
 useState<gameTheme>('gameTheme', () => defaultTheme);
 
 </script>
-
 
 <template>
 	<div class="w-screen h-screen" :class="theme ? theme : 'theme-light'">

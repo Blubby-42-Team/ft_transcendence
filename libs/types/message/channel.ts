@@ -59,4 +59,13 @@ export type BackChannelType = {
 	}>,
 	admins: Array<number>,
 	blacklist: Array<number>
-  }
+}
+
+export type IChannelTypeSettings = {
+	type: Array<EChatType>,
+	name: string,
+	open: boolean,
+	hasSideMenu: boolean,
+	channels?: Array<IShortChannel>,
+	icon: string,
+}

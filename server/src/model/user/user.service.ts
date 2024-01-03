@@ -26,6 +26,10 @@ export class ModelUserService {
 		return await this.postgresUserService.getUserByIdForWilla(id);
 	}
 
+	async getUserByLogin(login: string) {
+		return await this.postgresUserService.getUserByLogin(login);
+	}
+
 	/**
 	 * Create or update user with 42 data in database
 	 * @param id42 id of 42 user

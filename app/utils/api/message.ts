@@ -3,16 +3,15 @@ import { EMsgType } from '#imports';
 export function fetchPostMessage(
 	userId: number,
 	chatId: number,
-	type: EMsgType,
 	content: string,
-	callback: (response: any) => void,
+	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
 	return useFetch(`${config.public.back.uri}/messages/${userId}`, {
 		method: 'POST',
 		body: {
 			'chatId': chatId,
-			'type': type,
+			'type': 'user',
 			'content': content
 		},
 		onResponse: ({ request, response, options }) => {

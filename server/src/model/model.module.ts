@@ -11,6 +11,7 @@ import { ModelMessagesModule } from './messages/messages.module';
 import { ModelChatModule } from './chat/chat.module';
 import { ModelMuteModule } from './mute/mute.module';
 import { ModelPictureModule } from './picture/picture.module';
+import { ModelMessageBrokerModule } from './message-broker/message-broker.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,8 @@ import { ModelPictureModule } from './picture/picture.module';
 		ModelChatModule,
    		ModelMuteModule,
 		ModelPictureModule,
+		ModelMuteModule,
+		ModelMessageBrokerModule,
 	],
 	controllers: [],
 	providers: [],

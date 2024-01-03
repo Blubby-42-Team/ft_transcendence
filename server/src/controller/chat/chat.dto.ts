@@ -112,3 +112,11 @@ export class DTO_muteLength {
 	@IsNumber()
 	length: number;
 }
+
+export class WSDTO_subcribeToChatUpdates {
+	@IsDefined()
+	@IsNotEmpty()
+	@IsNumber()
+	@Min(1)
+	chatId: number;
+}

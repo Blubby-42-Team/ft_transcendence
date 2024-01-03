@@ -10,6 +10,14 @@ const props = defineProps({
 		type: Number,
 		default: 0
 	},
+	disabled: {
+		type: Boolean,
+		default: false,
+	},
+	selected: {
+		type: Boolean,
+		default: false,
+	},
 })
 
 const style = getStyle(props.buttonStyle);
@@ -19,7 +27,7 @@ const style = getStyle(props.buttonStyle);
 <template>
 	<NuxtLink :to="props.to"
 		class="flex items-center text-center place-content-center"
-		:class="style.normal + ' ' + style.unselected"
+		:class="style.normal + ' ' + (selected ? style.selected : style.unselected)"
 	>
 		<slot />
 	</NuxtLink>

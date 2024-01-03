@@ -21,7 +21,7 @@ export class ModelChatService {
 			userId: number,
 			type: EChatType,
 			name: string,
-		): Promise<Chat> {
+		): Promise<Number> {
 		const user = await this.postgresUserService.getUserById(userId);
 		return await this.postgresChatService.createChat(user, type, name);
 	}
@@ -33,10 +33,10 @@ export class ModelChatService {
 		password: string,
 	) {
 	const user = await this.postgresUserService.getUserById(userId);
-	const chat = await this.postgresChatService.createChat(user, type, name);
+	const chatId = await this.postgresChatService.createChat(user, type, name);
 	const hash = await this.hashPassword(password);
-	await this.postgresChatService.setPassword(chat.id, hash);
-	return chat;
+	await this.postgresChatService.setPassword(chatId, hash);
+	return chatId;
 }
 
 	async getChats(

@@ -3,6 +3,7 @@ import { PostgresChatService } from './chat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Chat } from '../../../model/chat/chat.class';
 import { PostgresUserModule } from '../user/user.module';
+import { MessageBrokerModule } from 'src/service/message-broker/message-broker.module';
 
 
 
@@ -13,6 +14,7 @@ import { PostgresUserModule } from '../user/user.module';
 		//TODO #79 Need to rework https://docs.nestjs.com/fundamentals/circular-dependency
 		forwardRef(() => PostgresUserModule),
 		// PostgresUserModule,
+		MessageBrokerModule,
 	],
 	exports: [PostgresChatService],
   })

@@ -96,7 +96,7 @@ function updateMenu(){
 	
 <template>
 	<template v-if="isOpen">
-		<teleport to='#modals'>
+		<Teleport to='#modals'>
 			<div class="absolute overflow-hidden h-max w-max" ref="menuRef"
 				:style="{
 					left: `${position.x}px`,
@@ -105,6 +105,6 @@ function updateMenu(){
 			>
 				<slot/>
 			</div>
-		</teleport>
+		</Teleport>
 	</template>
 </template>

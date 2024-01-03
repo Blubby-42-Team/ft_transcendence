@@ -15,6 +15,10 @@ export class UserService {
 		return await this.modelUserService.getUserByIdForWilla(id);
 	}
 
+	async getUserByLogin(login: string) {
+		return await this.modelUserService.getUserByLogin(login);
+	}
+
 	async getFriendsById(id: number) {
 		return await this.modelUserService.getFriendsById(id);
 	}

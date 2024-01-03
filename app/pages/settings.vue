@@ -4,17 +4,13 @@ definePageMeta({name: 'Settings'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.SETTINGS); })
 
-const themes = [
-	'theme-dark',
-	'theme-light',
-];
-
-const themeIndex	= useState('themeIndex',	() => 0);
-const theme			= useState('theme',			() => themes[themeIndex.value]);
-
+const theme = useState('theme');
 function changeTheme(){
-	themeIndex.value = themeIndex.value + 1 < themes.length ? themeIndex.value + 1 : 0;
-	theme.value = themes[themeIndex.value];
+	switch (theme.value) {
+		case 'theme-dark': theme.value = 'theme-light'; break;
+		case 'theme-light': theme.value = 'theme-dark';	break;
+		default: break;
+	}
 }
 
 const FormRef = ref()
@@ -24,35 +20,11 @@ const FormRef2 = ref()
 
 <template>
 	<div class="p-5">
-		<GenericModal ref="FormRef">
-			<div class="w-32 h-40">
-				Test1
-			</div>
-		</GenericModal>
-		<GenericModal ref="FormRef2">
-			<div class="w-32 h-40">
-				Test2
-			</div>
-		</GenericModal>
 		<GenericButton @click="() => changeTheme()"
 			:buttonStyle="1"
 			class="self-center h-12 pl-1 pr-1"
 		>
 			Change Theme
-		</GenericButton>
-		<GenericButton
-			@click="FormRef?.open()"
-			:buttonStyle="1"
-			class="self-center h-12 pl-1 pr-1"
-		>
-			Open Modal
-		</GenericButton>
-		<GenericButton
-			@click="FormRef2?.open()"
-			:buttonStyle="1"
-			class="self-center h-12 pl-1 pr-1"
-		>
-			Open Modal
 		</GenericButton>
 	</div>
 </template>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Socket.io Client</title>
+	<style>
+		.button {
+			background-color: pink;
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			transition: transform 0.3s;
+		}
+
+		.button:hover {
+			transform: scale(1.1);
+		}
+	</style>
+	<button class="button" onclick="askForMessage()">Click Me</button>
+</head>
+<body>
+
+<script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
+<script>
+    // Connect to the Socket.io server
+	console.log('Connecting to Socket.io server...');
+	
+	const socket = io('http://localhost:3000/message-broker', {
+		// Allow cookies to be sent from the client to the server
+		  withCredentials: true
+	});
+
+    // Listen for connection success
+    socket.on('connect', () => {
+        console.log('Socket.io connected');
+
+
+	});
+
+	function askForMessage() {
+		console.log('asking for a channel subscription...');
+		const channel = 1;
+
+		socket.emit('subcribe-to', {
+			"chatId": channel,
+		}, (ack) => {
+			if (ack?.status === 'ok') {
+				console.log(`channel subscription success`, ack)
+				socket.on(ack?.message?.listenTo, (data) => {
+					console.log('Message from server:', data);
+				});
+			} else {
+				console.error('channel subscription failed', ack);
+			}
+		});
+	}
+
+    // Listen for messages from the server
+    socket.on('message-alert', (data) => {
+        console.log('Message from server:', data);
+    });
+
+	socket.on('channel-debug', (data) => {
+		console.log('Debug message from server:', data);
+	});
+
+    // Listen for disconnection
+    socket.on('disconnect', () => {
+        console.log('Socket.io disconnected');
+    });
+
+	socket.on('error', (error) => {
+		console.error('Socket.io error:', error);
+	});
+</script>
+
+</body>
+</html>
