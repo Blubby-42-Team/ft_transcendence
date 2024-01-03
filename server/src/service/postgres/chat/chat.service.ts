@@ -359,7 +359,7 @@ export class PostgresChatService {
 		.then((res) => {
 			// TODO #87 Rework message message broker
 			this.messageBrokerService.emitMessageAlert(chat.id, `Chat type of ${chat?.name}:${chat?.id} changed to ${type}!`);
-			return res;
+			return 'ok';
 		})
 	}
 
