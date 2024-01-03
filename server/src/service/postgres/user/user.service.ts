@@ -138,6 +138,35 @@ export class PostgresUserService {
 	}
 
 	/**
+	 * Update user 2FA in database
+	 * @param idUser id of user to update
+	 * @param is2FA Is there is 2FA
+	 * @param secret2FA Secret of 2FA
+	 * @returns 
+	 */
+	async updateUser2FA (
+		idUser: number,
+		is2FA: boolean,
+		secret2FA: string,
+	) {
+		return this.userRepository.update(idUser, {
+			is2FA: is2FA,
+			secret2FA: secret2FA,
+		})
+		.catch((err) => {
+			this.logger.debug(`Failed to update User ${idUser}: ${err}`);
+			throw new InternalServerErrorException(`Failed to update User ${idUser}`);
+		})
+		.then((res)=> {
+			if (res.affected === 0) {
+				this.logger.debug(`Failed to update User ${idUser}: ${res}`);
+				throw new NotFoundException(`Failed to update User ${idUser}`);
+			}
+			return 'ok';
+		})
+	}
+
+	/**
 	 * Get user by 42 id
 	 * @param id42 id of 42 user
 	 * @returns `Promise` user
@@ -197,7 +226,7 @@ export class PostgresUserService {
 	 * @param displayName42 display name of 42 user
 	 * @param accessToken42 access token of 42 user
 	 * @param refreshToken42 refresh token of 42 user
-	 * @returns `Promise` id of user in database
+	 * @returns `Promise` user in database
 	 */
 	async createUserWith42Data(
 		id42: number,
@@ -205,7 +234,7 @@ export class PostgresUserService {
 		displayName42: string,
 		accessToken42: string,
 		refreshToken42: string,
-	): Promise<number> {
+	): Promise<User> {
 		const user42 = new User42();
 		user42.id = id42;
 		user42.login = login42;
@@ -241,8 +270,8 @@ export class PostgresUserService {
 		user.secret2FA = '';
 
 		return this.userRepository.save(user)
-		.then((res: User): number=> {
-			return res.id;
+		.then((res: User): User => {
+			return res;
 		})
 	}
 

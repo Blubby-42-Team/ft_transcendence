@@ -104,7 +104,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 
 			// Check if the jwt is valid and get the payload
-			const user = await this.authService.validateJwtAndGetPayload(authorization);
+			const user = await this.authService.validateUserJwtAndGetPayload(authorization);
 
 			if (!req) {
 				throw new BadRequestException('empty payload');

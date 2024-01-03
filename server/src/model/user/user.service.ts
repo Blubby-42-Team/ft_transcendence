@@ -38,7 +38,7 @@ export class ModelUserService {
 	 * @param accessToken42 access token of 42 user
 	 * @param refreshToken42 refresh token of 42 user
 	 * @param userRole user role, default is UserRoleType.User
-	 * @returns id of user in database
+	 * @returns user in database
 	 */
 	async addOrUpdateUserWith42data(
 		id42: number,
@@ -47,7 +47,7 @@ export class ModelUserService {
 		accessToken42: string,
 		refreshToken42: string,
 		userRole: UserRoleType = UserRoleType.User,
-	): Promise<number> {
+	): Promise<User> {
 		// First get user from database with 42 id
 		return await this.postgresUserService.getUserBy42Id(id42)
 		.then (async (res: User) => {
@@ -66,7 +66,7 @@ export class ModelUserService {
 				accessToken42,
 				refreshToken42,
 			);
-			return res.id;
+			return res;
 		})
 		.catch( async (err) => {
 			// If user not found in database, create it

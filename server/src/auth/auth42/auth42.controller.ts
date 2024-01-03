@@ -4,10 +4,11 @@ import { Auth42Guard } from './auth42.guard';
 import { Auth42Service } from './auth42.service';
 import { Response } from 'express';
 import { Roles } from '../role.decorator';
-import { UserRoleType } from '../auth.class';
+import { UserAuthTokenDto, UserRoleType } from '../auth.class';
 import { validate, validateOrReject } from 'class-validator';
 import { User42Dto } from './auth42.dto';
 import { UserService } from '../../controller/user/user.service';
+
 
 @Controller('auth42')
 export class Auth42Controller {
@@ -53,7 +54,7 @@ export class Auth42Controller {
 
 		const defaultRole = UserRoleType.User;
 
-		const userId = await this.Auth42Service.registerUserWith42Auth(
+		const userDB = await this.Auth42Service.registerUserWith42Auth(
 			user42?.id42,
 			user42?.login,
 			user42?.displayName,
@@ -62,22 +63,72 @@ export class Auth42Controller {
 			defaultRole,
 		);
 
+		if (!userDB) {
+			this.logger.error(`42 Authentication failed to store in database`);
+			throw new InternalServerErrorException(`42 Authentication failed to store in database`);
+		}
+
+		/**
+		 * If user has 2FA enabled, we create a temporary cookie and redirect to the 2FA page
+		 */
+		if (userDB.is2FA === true) {
+
+			const uuid = await this.authService.createNew2FASession();
+			const jwt2FA = await this.authService.generate2FASessionJwt(uuid, userDB.id);
+
+			res.cookie('2fa-session', jwt2FA, { httpOnly: true });
+
+			return res.status(HttpStatus.OK).json({
+				statusCode: HttpStatus.OK,
+				message: `42 Authentication successful, 2FA required. Redirect to /auth/2fa`,
+			});
+		}
+
 		const jwt = await this.authService.generateUserToken(
-			userId,
-			user42?.displayName,
-			defaultRole,
+			userDB?.id,
+			userDB?.display_name,
+			userDB?.role,
 			user42?.login,
 			user42?.id42,
-		)
+		);
 
 		res.cookie('user_auth', jwt, { httpOnly: true });
 		
-		res.cookie('user_id', userId, { httpOnly: false });
+		res.cookie('user_id', userDB.id, { httpOnly: false });
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,
 			message: '42 Authentication successful',
 		});
 	}
+
+	@Roles([UserRoleType.Guest])
+	@Get('2fa')
+	async auth42Callback2FA(@Req() req: any, @Res() res: Response) {
+		const sessionCookie = req.cookies['2fa-session'];
+
+		if (!sessionCookie) {
+			this.logger.error('No 2FA session cookie found');
+			throw new BadRequestException('No 2FA session cookie found');
+		}
+
+		const session = await this.authService.validate2FASessionJwtAndGetPayload(sessionCookie);
+
+		if (!session) {
+			this.logger.error('2FA session cookie invalid');
+			throw new BadRequestException('2FA session cookie invalid');
+		}
+
+		const uuid = session.uuid;
+
+		//TODO query db and 2fa service
+
+		res.clearCookie('2fa-session');
+		res.status(HttpStatus.OK).json({
+			statusCode: HttpStatus.OK,
+			message: '2FA Authentication successful',
+		});
+	}
+
 }
 
