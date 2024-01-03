@@ -6,12 +6,12 @@ import { ModelUser42Service } from './user42.service';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserTelemetryStatus } from '@shared/types/user/user';
 import { TelemetryService } from 'src/service/telemetry/telemetry.service';
+import { PostgresPictureService } from 'src/service/postgres/picture/picture.service';
 
 @Injectable()
 export class ModelUserService {
 	constructor (
 		private readonly postgresUserService: PostgresUserService,
-		private readonly postgresChatService: PostgresChatService,
 		private readonly modelUser42Service: ModelUser42Service,
 		private readonly telemetryService: TelemetryService,
 	) {}
@@ -169,6 +169,11 @@ export class ModelUserService {
 
 	async getUserStatus(id: number) {
 		return await this.telemetryService.getUserStatus(id);
+	}
+
+	async uploadPictureUser(data: Buffer, filename: string, userId: number, id: number) {
+		const user = await this.postgresUserService.getUserById(userId)
+		return this.postgresUserService.updatePicture(user, `/picture/${id}`)
 	}
 }
 

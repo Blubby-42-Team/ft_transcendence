@@ -612,4 +612,19 @@ export class PostgresUserService {
 		});
 		return is_in;
 	}
+
+	async updatePicture(
+		user: User,
+		picture: string,
+	) {
+		return await this.userRepository.update(user.id, {
+			profile_picture: picture,
+		})
+		.catch(err => {
+			return err
+		})
+		.then(res => {
+			return 'ok'
+		})
+	}
 }
