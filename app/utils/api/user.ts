@@ -180,3 +180,43 @@ export function fetchUserBlacklistDelete(
 		},
 	})
 }
+
+export function fetchChangeDisplayName(
+	userId: number,
+	name: string,
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch(`${config.public.back.uri}/user/name/${userId}`, {
+		method: 'PATCH',
+		body: {
+			'name': name
+		},
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log(`${userId} changed display name`);
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function changeUserPicture(
+	userId: number,
+	picture: FormData,
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch(`${config.public.back.uri}/user/${userId}`, {
+		method: 'POST',
+		body: picture,
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log(`changed user ${userId} picture`);
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}

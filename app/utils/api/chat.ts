@@ -363,3 +363,45 @@ export function fetchChangeChatType(
 		},
 	})
 }
+
+export function ChangeChatName(
+	userId: number,
+	chatId: number,
+	name: string,
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch(`${config.public.back.uri}/chat/${chatId}/name/${userId}`, {
+		method: 'PATCH',
+		body: {
+			'name': name
+		},
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log(`${userId} changed chat ${chatId} name`);
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function changeChatPicture(
+	userId: number,
+	chatId: number,
+	picture: FormData,
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch(`${config.public.back.uri}/chat/${chatId}/picture/${userId}`, {
+		method: 'POST',
+		body: picture,
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log(`changed chat ${chatId} picture`);
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
