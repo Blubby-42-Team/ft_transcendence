@@ -5,9 +5,6 @@ import { log } from 'console';
 
 @WebSocketGateway({
 	undefined,
-	cors: {
-		origin: '*',
-	},
 })
 
 export class AdminGateway {

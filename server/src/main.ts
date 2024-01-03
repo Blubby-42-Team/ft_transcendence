@@ -1,10 +1,32 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from './auth/auth.guard';
 import * as cookieParser from 'cookie-parser';
 import { AuthService } from './auth/auth.service';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+
+class MyWsAdapter extends IoAdapter {
+	private cors: any;
+
+	constructor(app: INestApplication<any>) {
+		super(app);
+		const configService: ConfigService = app.get<ConfigService>(ConfigService);
+		this.cors = configService.get<string>('CORS_ORIGINS')
+	}
+	create(port: number, options?: any): any {
+		options = {
+			...options,
+			cors: {
+				origin: this.cors,
+				methods: ['GET', 'POST'],
+				credentials: true,
+			},
+		};
+		return super.create(port, options);
+	}
+}
 
 async function bootstrap() {
 	// await tracer.start();
@@ -23,6 +45,8 @@ async function bootstrap() {
 		],
 		credentials: true,
 	});
+
+	app.useWebSocketAdapter(new MyWsAdapter(app));
 
 	const reflector = app.get(Reflector);
 	const authService = app.get(AuthService);

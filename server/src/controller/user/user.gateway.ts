@@ -16,9 +16,6 @@ import * as cookie from 'cookie'
 
 @WebSocketGateway({
 	namespace: 'user',
-	cors: {
-		origin: '*',
-	},
 })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
@@ -100,7 +97,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 
 			// Check if the jwt is valid and get the payload
-			const user = await this.authService.validateJwtAndGetPayload(authorization);
+			const user = await this.authService.validateUserJwtAndGetPayload(authorization);
 
 			if (!req) {
 				throw new BadRequestException('empty payload');
