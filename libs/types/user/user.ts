@@ -56,4 +56,5 @@ export type BackEndUser = {
 	full_name:			string,
 	login:				string,
 	profile_picture:	string,
+	status: 			UserTelemetryStatus,
 };

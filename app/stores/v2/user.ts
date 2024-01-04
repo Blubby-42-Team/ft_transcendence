@@ -91,14 +91,12 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
-					status:   UserTelemetryStatus.Offline,
+					status:   response.status,
 				};
 				if (process.client && this._socket){
 					this._socket.listenForPlayer(userId, (newStatus) => {
 						this._users[userId]!.status = newStatus;
-						console.log('user status updated', userId, newStatus);
 					});
-					this._socket.askForPlayerStatus(userId);
 				}
 			});
 		},
@@ -111,7 +109,7 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
-					status:   UserTelemetryStatus.Offline,
+					status:   response.status,
 				};
 				if (process.client && this._socket){
 					this._socket.listenForPlayer(response.id, (newStatus) => {
