@@ -208,7 +208,7 @@ export function changeUserPicture(
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/${userId}`, {
+	return useFetch(`${config.public.back.uri}/user/picture/${userId}`, {
 		method: 'POST',
 		body: picture,
 		onResponse: ({ request, response, options }) => {

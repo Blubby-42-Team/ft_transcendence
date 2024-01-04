@@ -29,10 +29,10 @@ await fetchStat(props.match.adversary);
 
 <template>
 	<div class="bg-background1 border-4 grid-flow-col border-color1 text-text rounded-2xl grid grid-rows-[repeat(6,max-content)] overflow-hidden gap-3 p-5">
-		<button class="flex flex-col items-center p-2 hover:bg-color1 hover:bg-opacity-30 rounded-xl">
+		<div class="flex flex-col items-center p-2 rounded-xl">
 			<GenericProfilePicture class="w-32 h-32" :imageSrc="user1.avatar"/>
 			<div class="pt-2 text-xl">{{ user1.name }}</div>
-		</button>
+		</div>
 		<div class="pt-5 text-right">{{ stat1.classic.matchPlayed }}</div>
 		<div class="text-right">#{{ stat1.classic.ranking }}</div>
 		<div class="text-right">{{ stat1.classic.mmr }}</div>
@@ -51,10 +51,10 @@ await fetchStat(props.match.adversary);
 		<div class="text-center">Winrate</div>
 		<div class="text-center">Average Point</div>
 				
-		<button class="flex flex-col items-center p-2 hover:bg-color1 hover:bg-opacity-30 rounded-xl">
+		<div class="flex flex-col items-center p-2 rounded-xl">
 			<GenericProfilePicture class="w-32 h-32" :imageSrc="user2.avatar"/>
 			<div class="pt-2 text-xl">{{ user2.name }}</div>
-		</button>
+		</div>
 		<div class="pt-5">{{ stat2.classic.matchPlayed }}</div>
 		<div class="">#{{ stat2.classic.ranking }}</div>
 		<div class="">{{ stat2.classic.mmr }}</div>
