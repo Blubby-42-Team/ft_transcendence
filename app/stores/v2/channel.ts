@@ -27,9 +27,10 @@ export const useChannelStore = defineStore('channel', {
 		}),
 		activeType:      (state) => computed((): IChannelTypeSettings => {
 			switch (state._channels?.[state._selectedChannel]?.type ?? null){
-				case EChatType.friends: return state._types.friends;
-				case EChatType.group:   return state._types.groups;
-				case EChatType.public:  return state._types.chats;
+				case EChatType.friends:   return state._types.friends;
+				case EChatType.group:     return state._types.groups;
+				case EChatType.public:    return state._types.chats;
+				case EChatType.protected: return state._types.chats;
 				default: return state._types.friends;
 			}
 		}),
@@ -64,16 +65,12 @@ export const useChannelStore = defineStore('channel', {
 			}
 			const { updateShortUser } = useUserStore();
 			return fetchChatsById(userId, channelId,
-				(response) => {
-					console.log('update channel', channelId, this._channels[channelId]);
-					
+				(response) => {		
 					updateShortUser(response.users.map((user) => ({
 						id: user.userId,
 						name: user.userName,
 						avatar: user.profile_picture,
 					})))
-
-					console.log('update channel1', channelId, this._channels[channelId]);
 					this._channels[channelId] = {
 						id: response.id,
 						name: response.name,
@@ -88,7 +85,6 @@ export const useChannelStore = defineStore('channel', {
 						})).reverse(),
 						members: response.users.map((user) => user.userId),
 					};
-					console.log('update channel2', channelId, this._channels[channelId]);
 				}
 			);
 		},
