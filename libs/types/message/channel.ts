@@ -10,6 +10,7 @@ export interface IMessage {
 	id			: number,
 	senderId	: number,
 	message		: string,
+	type        : "user" | "system",
 	time		: Date,
 }
 

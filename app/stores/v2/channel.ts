@@ -87,6 +87,7 @@ export const useChannelStore = defineStore('channel', {
 							senderId: message.userId,
 							message: message.content,
 							time: new Date(message.date),
+							type: message.type,
 						})).reverse(),
 						members: response.users.map((user) => user.userId),
 					};
