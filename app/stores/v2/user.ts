@@ -116,7 +116,6 @@ export const useUserStore = defineStore('user', {
 						this._users[response.id]!.status = newStatus;
 						console.log('user status updated', response.id, newStatus)
 					});
-					this._socket.askForPlayerStatus(response.id);
 				}
 			});
 			return data.value?.id ?? 0;

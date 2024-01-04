@@ -102,7 +102,7 @@ export class PostgresUserService {
 			this.logger.debug(`Failed to get user by login ${login}: ${err}`);
 			throw new InternalServerErrorException(`Failed to get user by login ${login}`);
 		})
-		.then((res): User => {
+		.then((res) => {
 			if (res.length === 0) {
 				this.logger.debug(`Failed to get user by login ${login}: not found`);
 				throw new NotFoundException(`Failed to get user by login ${login}: not found`);
@@ -111,7 +111,13 @@ export class PostgresUserService {
 				this.logger.debug(`Failed to get user by login ${login}: too many results`);
 				throw new InternalServerErrorException(`Failed to get user by login ${login}: too many results`);
 			}
-			return res[0];
+			return res[0] as {
+				id:					number,
+				display_name:		string,
+				full_name:			string,
+				login:				string,
+				profile_picture:	string,
+			};;
 		})
 	}
 
