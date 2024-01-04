@@ -21,8 +21,6 @@ export class SocketClientUser extends SocketClient {
 		});
 	}
 
-
-
 	async askForPlayerStatus(id: number): Promise<UserTelemetryStatus> {
 		if (process.server){
 			return UserTelemetryStatus.Offline;
@@ -33,13 +31,9 @@ export class SocketClientUser extends SocketClient {
 		}
 	}
 
-
-
 	listenForPlayer(id: number, callback: (status: UserTelemetryStatus) => void){
 		this.on(`telemetry.status.${id}`, callback);
 	}
-
-
 
 	loop(callback: () => void){
 		if (process.server){
@@ -47,11 +41,5 @@ export class SocketClientUser extends SocketClient {
 		}
 		callback();
 		setTimeout(() => this.loop(callback), 5000);
-	}
-
-
-
-	toJSON(){
-		return this.socket?.id;
 	}
 };
