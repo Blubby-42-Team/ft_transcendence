@@ -59,7 +59,6 @@ export const useUserStore = defineStore('user', {
 					return ;
 				}
 				this._socket.listenForPlayer(user.id, (data) => {
-					console.log('user status xs', user.id, data)
 					user.status = data;
 				});
 				this._socket.askForPlayerStatus(user.id);
@@ -114,7 +113,6 @@ export const useUserStore = defineStore('user', {
 				if (process.client && this._socket){
 					this._socket.listenForPlayer(response.id, (newStatus) => {
 						this._users[response.id]!.status = newStatus;
-						console.log('user status updated', response.id, newStatus)
 					});
 				}
 			});

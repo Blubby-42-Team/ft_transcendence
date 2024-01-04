@@ -7,22 +7,18 @@ export class SocketClient {
 		if (process.server){
 			return ;
 		}
-		console.log('Socket.io User connecting')
+		console.log(`Socket.io ${namespace} connecting`)
 		const config = useRuntimeConfig();
 		this.socket = io(`${config.public.back.ws}/${namespace}`, {
 			withCredentials: true
 		});
 
-		if (this.socket.connected){
-			console.log('Socket.io User connected :D');
-		}
-
-		this.socket.on('connect', () => {
-			console.log('Socket.io User connected');
+		this.socket.on(`connect`, () => {
+			console.log(`Socket.io ${namespace} connected`);
 		});
 
-		this.socket.on('disconnect', () => {
-			console.log('Socket.io User disconnected');
+		this.socket.on(`disconnect`, () => {
+			console.log(`Socket.io ${namespace} disconnected`);
 		});
 	}
 
@@ -43,7 +39,6 @@ export class SocketClient {
 			}, 5000);
 			this.socket!.emit(eventName, body, (res: Res) => {
 				clearTimeout(timeoutId);
-				console.log(res)
 				resolve(res);
 			});
 		});

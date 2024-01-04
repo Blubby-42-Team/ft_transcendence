@@ -70,6 +70,7 @@ export const useChannelStore = defineStore('channel', {
 			const { updateShortUser } = useUserStore();
 			return fetchChatsById(userId, channelId,
 				(response) => {
+					console.log('update channel', channelId);
 					updateShortUser(response.users.map((user) => ({
 						id: user.userId,
 						name: user.userName,
