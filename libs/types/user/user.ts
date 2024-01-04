@@ -1,4 +1,4 @@
-import { ETheme } from "#imports"
+import { ETheme } from "../settings"
 
 export type WS<T> = {
 	status: 'ok' | 'error' | 'debug',

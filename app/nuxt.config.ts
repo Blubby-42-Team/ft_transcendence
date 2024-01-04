@@ -32,8 +32,8 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			back: {
-				uri: 'ws://localhost:3000',
-				ws: 'ws://localhost:3000',
+				uri: 'http://localhost:3000',
+				ws: 'http://localhost:3000',
 			},
 		}
 	},
