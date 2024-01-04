@@ -17,7 +17,7 @@ export default {
 		require('flowbite/plugin'),
 		require('tw-elements/dist/plugin.cjs'),
 		createThemes({
-			'theme-dark': {
+			'dark': {
 				'text':				'#FFFFFF',
 				'text-dark':		'#000000',
 				'text-light':		'#FFFFFF',
@@ -32,7 +32,7 @@ export default {
 				'liveGame':			'#DC1B1B',
 
 			},	
-			'theme-light': {
+			'light': {
 				'text':				'#000000',
 				'text-dark':		'#000000',
 				'text-light':		'#FFFFFF',

@@ -16,8 +16,8 @@ const test: Ref<Array<{ text: string, icon: string } | undefined>> = ref([
 	undefined,
 	{ text: 'Profile',				icon: 'material-symbols:person' },
 	undefined,
-	{ text: 'Add to Friend',		icon: 'material-symbols:person-add' },
-	{ text: 'Add to Group',			icon: 'material-symbols:group-add' },
+	// { text: 'Add to Friend',		icon: 'material-symbols:person-add' },
+	// { text: 'Add to Group',			icon: 'material-symbols:group-add' },
 	{ text: 'Invite to Lobby',		icon: 'material-symbols:stadia-controller' },
 ])
 

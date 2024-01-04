@@ -2,10 +2,10 @@ import { ETheme } from '#imports'
 
 export function fetchSettings(
 	userId: number,
-	callback: (response: any) => void = () => {},
+	callback: (response: BackUserSettings) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
+	return useFetch<BackUserSettings>(`${config.public.back.uri}/settings/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('settings fetched');

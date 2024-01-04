@@ -1,3 +1,5 @@
+import { ETheme } from "#imports"
+
 export type WS<T> = {
 	status: 'ok' | 'error' | 'debug',
 	message: T,
@@ -61,3 +63,9 @@ export type BackEndUser = {
 	profile_picture:	string,
 	status: 			UserTelemetryStatus,
 };
+
+export type BackUserSettings = {
+	id: number,
+	theme: ETheme,
+	sound: boolean,
+}
