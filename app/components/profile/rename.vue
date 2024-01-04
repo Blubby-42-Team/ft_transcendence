@@ -22,7 +22,6 @@ function handleFileChange(event: Event) {
 }
 
 function uploadImage() {
-	console.log('ere')
     if (data.value.selectedFile) {
         const formData = new FormData();
         formData.append("file", data.value.selectedFile);

@@ -54,13 +54,8 @@ export const useChannelStore = defineStore('channel', {
 			return this.refreshChannel(userId, channelId);
 		},
 		postMessage(userId: number, message: string){
-			return fetchPostMessage(userId, this._selectedChannel, message, (response) => {
-				this._channels[this._selectedChannel]!.messages.push({
-					id: response.messageId,
-					senderId: response.userId,
-					message: response.content,
-					time: new Date(response.date),
-				});
+			return fetchPostMessage(userId, this._selectedChannel, message, () => {
+				this.refreshChannel(userId, this._selectedChannel);
 			});
 		},
 		refreshChannel(userId: number, channelId: number){
@@ -70,13 +65,15 @@ export const useChannelStore = defineStore('channel', {
 			const { updateShortUser } = useUserStore();
 			return fetchChatsById(userId, channelId,
 				(response) => {
-					console.log('update channel', channelId);
+					console.log('update channel', channelId, this._channels[channelId]);
+					
 					updateShortUser(response.users.map((user) => ({
 						id: user.userId,
 						name: user.userName,
 						avatar: user.profile_picture,
 					})))
 
+					console.log('update channel1', channelId, this._channels[channelId]);
 					this._channels[channelId] = {
 						id: response.id,
 						name: response.name,
@@ -91,6 +88,7 @@ export const useChannelStore = defineStore('channel', {
 						})).reverse(),
 						members: response.users.map((user) => user.userId),
 					};
+					console.log('update channel2', channelId, this._channels[channelId]);
 				}
 			);
 		},
