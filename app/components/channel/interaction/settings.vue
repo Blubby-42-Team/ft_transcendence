@@ -77,6 +77,8 @@ function changeType(){
 		>
 			{{ selectedChannel?.type === 'protected' ? 'Activate Password' : 'Deactivate Password' }}
 		</GenericButton>
-		<input type="password" v-model="input" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Password" />
+		<template v-if="selectedChannel?.type === 'protected'">
+			<input type="password" v-model="input" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Password" />
+		</template>
 	</div>
 </template>
