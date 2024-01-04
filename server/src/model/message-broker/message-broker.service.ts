@@ -15,6 +15,6 @@ export class ModelMessageBrokerService {
 	 */
 	async subscribeToChatUpdates(userId: number, chatId: number, socketClient: Socket) {
 		await this.chatService.isInChat(userId, chatId);
-		return this.messageBrokerService.subscribeChannel(userId, socketClient);
+		return this.messageBrokerService.subscribeChannel(chatId, socketClient);
 	}
 }

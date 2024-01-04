@@ -12,13 +12,15 @@ await fetchChannelList(primaryUser.value.id);
 if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
 	const channelId = parseInt(route.params.id);
 	await selectChannel(primaryUser.value.id, channelId);
-	onMounted(() => {
+
+	if (process.client) {
 		const socket = new SocketClientChannel()
 	
-		socket.listenForNewMessages(channelId, () => {
+		socket.subscribeToChannel(channelId, () => {
+			console.log("New message received");
 			refreshChannel(primaryUser.value.id, channelId);
 		});
-	})
+	}
 }
 
 

@@ -1,4 +1,7 @@
-
+export type WS<T> = {
+	status: 'ok' | 'error' | 'debug',
+	message: T,
+};
 
 export type IUser = {
 	id			: number,
