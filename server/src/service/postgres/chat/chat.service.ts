@@ -165,7 +165,11 @@ export class PostgresChatService {
 				ON ch.id = cuc.chat_id
 			WHERE (ch.type = 'public'
 				OR ch.type = 'protected')
-				AND cuc.user_id != $1;
+				AND cuc.chat_id NOT IN (
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $1
+				);
 			`,
 			[userId]
 		)

@@ -28,6 +28,8 @@ await fetchUser(props.userId);
 			:class="css.has({
 				'bg-color1': props.isSelected,
 			})"
-		>{{ user.name }}</div>
+		>
+			{{ user.name }}
+		</div>
 	</div>
 </template>

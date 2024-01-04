@@ -21,6 +21,32 @@ export function fetchAllChats(
 	})
 }
 
+export function fetchAllChatsUserCanJoin(
+	userId: number,
+	callback: (response: Array<{
+		id: number,
+		name: string,
+		type: EChatType,
+		chat_picture: string,
+	}>) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch<Array<{
+		id: number,
+		name: string,
+		type: EChatType,
+		chat_picture: string,
+	}>>(`${config.public.back.uri}/chat/list/${userId}`, {
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log('all chats fetched');
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
 export function fetchChatsByTypes(
 	userId: number,
 	chatType: EChatType,
@@ -300,13 +326,13 @@ export function fetchDeleteChat(
 	})
 }
 
-export function fetchJoinChat(
+export async function fetchJoinChat(
 	userId: number,
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/chat/${userId}/join/${chatId}`, {
+	return useFetch<"ok">(`${config.public.back.uri}/chat/${userId}/join/${chatId}`, {
 		method: 'PATCH',
 		body: {
 		},
@@ -320,14 +346,14 @@ export function fetchJoinChat(
 	})
 }
 
-export function fetchJoinProtectedChat(
+export async function fetchJoinProtectedChat(
 	userId: number,
 	chatId: number,
 	password: string,
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/chat/${userId}/join_protected/${chatId}`, {
+	return useFetch<"ok">(`${config.public.back.uri}/chat/${userId}/join_protected/${chatId}`, {
 		method: 'PATCH',
 		body: {
 			'password': password

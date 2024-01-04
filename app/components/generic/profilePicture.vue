@@ -2,7 +2,6 @@
 const props = defineProps({
 	imageSrc: {
 		type: String,
-		required: true,
 	},
 	userId: {
 		type: Number,
@@ -17,7 +16,7 @@ const user = getUser(computed(() => props.userId));
 
 <template>
 	<div class="grid grid-cols-[60%_30%_10%] grid-rows-[60%_30%_10%] overflow-hidden">
-		<img class="w-full h-full rounded-full pointer-events-none row-[1_/_4] col-[1_/_4]" :src="props.imageSrc">
+		<img class="w-full h-full rounded-full pointer-events-none row-[1_/_4] col-[1_/_4]" :src="props?.imageSrc ?? '/pp.png'">
 		<template v-if="props.userId !== 0">
 			<ClientOnly>
 				<div class="w-full h-full bg-background1 row-[2] col-[2] rounded-full p-[10%]">
