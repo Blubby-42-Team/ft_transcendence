@@ -108,51 +108,72 @@ export class PostgresChatService {
 	async getAllChats(
 		user: User,
 	) {
-	return await this.chatRepository.query(`
-		SELECT * FROM (
-			SELECT
-				ch.id,
-				ch.name,
-				ch.chat_picture,
-				ch.type
-			FROM chat AS ch
-			JOIN custom_users_chat AS cuc
-				ON ch.id = cuc.chat_id
-			WHERE cuc.user_id = $1
-				AND ch.type != 'inactive'
-				AND ch.type != 'friends'
-		)
-		UNION
-		SELECT * FROM (
-			SELECT 
-				ch.id,
-				cu2.display_name as name,
-				cu2.profile_picture as chat_picture,
-				ch.type
-			FROM chat AS ch
-			JOIN custom_users_chat AS cuc
-				ON ch.id = cuc.chat_id
-			JOIN "user" AS cu
-				ON cuc.user_id = cu.id
-			JOIN custom_users_chat AS cuc2
-				ON ch.id = cuc2.chat_id
-			JOIN "user" AS cu2
-				ON cuc2.user_id = cu2.id
-			WHERE cuc.user_id = $1
-				AND ch.type = 'friends'
-				AND cuc2.user_id != $1
+		return await this.chatRepository.query(`
+			SELECT * FROM (
+				SELECT
+					ch.id,
+					ch.name,
+					ch.chat_picture,
+					ch.type
+				FROM chat AS ch
+				JOIN custom_users_chat AS cuc
+					ON ch.id = cuc.chat_id
+				WHERE cuc.user_id = $1
+					AND ch.type != 'inactive'
+					AND ch.type != 'friends'
+			)
+			UNION
+			SELECT * FROM (
+				SELECT 
+					ch.id,
+					cu2.display_name as name,
+					cu2.profile_picture as chat_picture,
+					ch.type
+				FROM chat AS ch
+				JOIN custom_users_chat AS cuc
+					ON ch.id = cuc.chat_id
+				JOIN "user" AS cu
+					ON cuc.user_id = cu.id
+				JOIN custom_users_chat AS cuc2
+					ON ch.id = cuc2.chat_id
+				JOIN "user" AS cu2
+					ON cuc2.user_id = cu2.id
+				WHERE cuc.user_id = $1
+					AND ch.type = 'friends'
+					AND cuc2.user_id != $1
 			);`,
-		[user.id]
-	)
-	
-	.catch((err) => {
-		this.logger.debug("Could not get chats");
-		throw new InternalServerErrorException("Could not get chats");
-	})
-	.then((res) => {
-		return res;
-	})
-}
+			[user.id]
+		)
+		.catch((err) => {
+			this.logger.debug("Could not get chats");
+			throw new InternalServerErrorException("Could not get chats");
+		})
+		.then((res) => {
+			return res;
+		})
+	}
+
+	async getChatUserCanJoin(userId: number){
+		return await this.chatRepository.query(`
+			SELECT
+				DISTINCT ch.id,
+				ch.chat_picture,
+				ch.name,
+				ch.type
+			FROM "chat" AS ch
+			LEFT JOIN "custom_users_chat" AS cuc
+				ON ch.id = cuc.chat_id
+			WHERE (ch.type = 'public'
+				OR ch.type = 'protected')
+				AND cuc.user_id != $1;
+			`,
+			[userId]
+		)
+		.catch((err) => {
+			this.logger.debug("Could not get chats");
+			throw new InternalServerErrorException("Could not get chats");
+		});
+	}
 
 	async getChatById(
 		chatId: number,

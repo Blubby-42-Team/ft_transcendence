@@ -48,8 +48,12 @@ export class ChatService {
 
 	async getAllChats(
 		userId: number,
-		) {
+	) {
 		return await this.modelChatService.getAllChats(userId);
+	}
+
+	async getChatUserCanJoin(userId: number){
+		return await this.modelChatService.getChatUserCanJoin(userId);
 	}
 
 	async getChatById(

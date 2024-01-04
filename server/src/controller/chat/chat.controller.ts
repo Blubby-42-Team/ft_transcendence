@@ -54,6 +54,15 @@ export class ChatController {
 	}
 
 	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Get('/list/:id')
+	async getChatUserCanJoin(
+		@Param() params: DTO_getUserById,
+	) {
+		log(`get chats user ${params.id} can join`);
+		return await this.chatService.getChatUserCanJoin(params.id);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
 	@Get('/:id/chat/:chatId')
 	async getChatById(
 		@Param() params: DTO_getChatById,
