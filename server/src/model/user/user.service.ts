@@ -175,5 +175,12 @@ export class ModelUserService {
 		const user = await this.postgresUserService.getUserById(userId)
 		return this.postgresUserService.updatePicture(user, `/picture/${id}`)
 	}
+
+	async changeUsername (userId:number, username: string) {
+		const user = await this.postgresUserService.getUserById(userId);
+		if (await this.postgresUserService.isUsedUsername(username))
+			throw new UnauthorizedException("Name already taken.")
+		return await this.postgresUserService.changeUsername(user, username);
+	}
 }
 

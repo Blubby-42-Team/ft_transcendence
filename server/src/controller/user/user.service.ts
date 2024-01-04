@@ -67,4 +67,8 @@ export class UserService {
 		const id = await this.modelPictureService.uploadPicture(data, filename);
 		return await this.modelUserService.uploadPictureUser(data, filename, userId, id);
 	}
+
+	async changeUsername (userId:number, username: string) {
+		return await this.modelUserService.changeUsername(userId, username)
+	}
 }

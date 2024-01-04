@@ -1,10 +1,12 @@
-import { Controller, Param, Body, Post, Get, Patch, Delete } from '@nestjs/common';
+import { Controller, Param, Body, Post, Get, Patch, Delete, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { DTO_getUserById, DTO_chatFormat, DTO_chatRequest, DTO_chatAddUser, DTO_chatRemoveUser, DTO_chatAddAdmin, DTO_banUser, DTO_unbanUser, DTO_getChatById, DTO_protectedChatFormat, DTO_chatPassword, DTO_muteLength } from './chat.dto';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRoleType } from 'src/auth/auth.class';
 import { ChatService } from './chat.service';
 import { log } from 'console';
 import { EChatType } from '@shared/types/chat';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { DTO_name } from '../user/user.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -194,5 +196,28 @@ export class ChatController {
 	) {
 		log(`Is mute from ${params.chatId}`);
 		return await this.chatService.isMuted(params.id, params.chatId);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@UseInterceptors(FileInterceptor('file'))
+	@Post('/:chatId/picture/:id')
+	async addPicture(
+		@Param() params: DTO_getChatById,
+		@UploadedFile() file: Express.Multer.File,
+	) {
+		log(`Add picture`);
+		if (!file)
+			throw new BadRequestException('The file is empty.')
+		return await this.chatService.uploadPictureChat(file.buffer, file.originalname, params.id, params.chatId);
+	}
+
+	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
+	@Patch('/:chatId/name/:id')
+	async changeName(
+		@Param() params: DTO_getChatById,
+		@Body() body: DTO_name,
+	) {
+		log(`mute ${params.id} from chat ${params.chatId}`);
+		return await this.chatService.changeName(params.id, params.chatId, body.name);
 	}
 }
