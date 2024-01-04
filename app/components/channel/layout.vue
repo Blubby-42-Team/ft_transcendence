@@ -87,12 +87,13 @@ const openInviteToChannel = ref();
 					<ChannelInteractionSettings :closeFunc="openChannelSettings?.close"/>
 				</GenericModal>
 				
-				
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
-					@click="openInviteToChannel?.open"
-				>
-					<Icon name="material-symbols:group-add" class="w-full h-full"/>
-				</GenericButton>
+				<template v-if="selectedChannel?.type === EChatType.group">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openInviteToChannel?.open"
+					>
+						<Icon name="material-symbols:group-add" class="w-full h-full"/>
+					</GenericButton>
+				</template>
 				<GenericModal ref="openInviteToChannel">
 					<ChannelInteractionAdd :closeFunc="openInviteToChannel?.close"/>
 				</GenericModal>	

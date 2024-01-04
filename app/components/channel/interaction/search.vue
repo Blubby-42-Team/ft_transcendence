@@ -84,7 +84,7 @@ async function join() {
 				</template>
 			</div>
 			<template v-if="channelSelected.id !== 0 && channelSelected.type === EChatType.protected">
-				<input v-model="input" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Password" />
+				<input type="password" v-model="input" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Password" />
 			</template>
 			<template v-if="channelSelected.id !== 0">
 				<div class="col-span-2 text-center">Are you sure you want to join {{ channelSelected.name }} ?</div>

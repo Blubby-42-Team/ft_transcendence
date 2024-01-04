@@ -6,25 +6,30 @@ const props = defineProps({
 		required: true
 	},
 });
-
 const { selectedChannel } = useChannelStore();
+const { getUser, fetchUser } = useUserStore();
+const { addNotif } = useNotifStore();
+
 const { getFriends, fetchFriends, primaryUser } = useUserStore();
 const friends = getFriends(computed(() => primaryUser.value.id));
 await fetchFriends(primaryUser.value.id);
 
-async function invite() {
-	console.log("Leaving channel: " + selectedChannel.value?.id);
-	if (selectedChannel.value?.id){
-		
-	}
-	props.closeFunc();
-}
-
 const selectedUser = ref(0);
-const { getUser, fetchUser } = useUserStore();
 const user = getUser(selectedUser);
 await fetchUser(selectedUser.value);
 
+async function invite() {
+	console.log("Leaving channel: " + selectedChannel.value?.id);
+	if (selectedChannel.value?.id !== 0){
+		fetchAddInChat(primaryUser.value.id, selectedUser.value, selectedChannel.value?.id ?? 0, (res) => {
+			if (res.error){
+				addNotif(`Could not add user to ${selectedChannel.value?.name}`);
+				return ;
+			}
+		});
+	}
+	props.closeFunc();
+}
 
 </script>
 
