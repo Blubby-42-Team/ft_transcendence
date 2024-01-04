@@ -7,8 +7,9 @@ const props = defineProps({
 	},
 });
 
-const { selectedChannel, refreshChannel } = useChannelStore();
+const { selectedChannel, refreshChannel, fetchChannelList } = useChannelStore();
 const { primaryUser, fetchUser } = useUserStore();
+const { input } = useTextareaAutosize()
 
 const channelName = ref(selectedChannel.value?.name);
 const data = ref({
@@ -33,22 +34,49 @@ function uploadImage() {
         console.log(formData.get("file"));
 		changeChatPicture(primaryUser.value.id, selectedChannel.value?.id ?? 0, formData, () => {
 			refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
+			fetchChannelList(primaryUser.value.id);
 		});
     }
+	props.closeFunc();
+}
+
+function changeType(){
+	if (selectedChannel.value?.type === "public"){
+		fetchChangeChatType(primaryUser.value.id, selectedChannel.value?.id ?? 0, "xxx", () => {
+			refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
+			fetchChannelList(primaryUser.value.id);
+		})
+	}
+	else if (selectedChannel.value?.type === "protected"){
+		const password = input.value;
+		input.value = "";
+		fetchChangeChatType(primaryUser.value.id, selectedChannel.value?.id ?? 0, password, () => {
+			refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
+			fetchChannelList(primaryUser.value.id);
+		})
+	}
+	props.closeFunc();
 }
 
 </script>
 
 <template>
-	<div class="w-[30vw] max-w-lg bg-background2 rounded-xl text-text p-5">
-		<div class="text-sm">
+	<div class="w-[50vw] grid grid-cols-[auto,4em] max-w-lg bg-background2 rounded-xl text-text p-5">
+		<div class="">
 			<label class="p-2" for="avatar">Choose a profile picture</label>
 			<input id="avatar" type="file" placeholder="test" @change="handleFileChange">
 		</div>
-		<GenericButton class="self-end w-10 h-10 mb-2" :buttonStyle="1"
+		<GenericButton class="self-end w-10 h-10 mb-10" :buttonStyle="1"
 			@click="uploadImage"
 		>
 			<Icon name="material-symbols:edit" class="w-10 h-10"/>
 		</GenericButton>
+
+		<GenericButton class="self-end w-full h-10 col-span-2 mb-2" :buttonStyle="1"
+			@click="changeType"
+		>
+			{{ selectedChannel?.type === 'protected' ? 'Activate Password' : 'Deactivate Password' }}
+		</GenericButton>
+		<input type="password" v-model="input" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Password" />
 	</div>
 </template>
