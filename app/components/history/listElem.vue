@@ -4,6 +4,10 @@
 import { format } from 'date-fns'
 
 const props = defineProps({
+	userId: {
+		type: Number,
+		required: true,
+	},
 	match: {
 		type: Object as PropType<IHistory>,
 		required: true,
@@ -34,14 +38,16 @@ const openMatchHistoryPreview = ref();
 			{{ user.name }}
 		</div>
 		<div class="flex items-center justify-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
-			{{ match.scoreAdv }}-{{ match.score }}
+			{{ match.score }}-{{ match.scoreAdv }}
 		</div>
 		<div class="flex items-center h-12 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
-			<Icon name="material-symbols:trophy" class="w-10 h-10 text-text-custom"/>
+			<template v-if="match.score > match.scoreAdv">
+				<Icon name="material-symbols:trophy" class="w-10 h-10 text-text-custom"/>
+			</template>
 		</div>
 
 		<GenericModal ref="openMatchHistoryPreview">
-			<HistoryMatch/>
+			<HistoryMatch :match="match" :userId="props.userId"/>
 		</GenericModal>
 	</button>
 </template>

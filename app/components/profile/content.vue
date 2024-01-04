@@ -40,7 +40,7 @@ await fetchHistory(props.userId);
 			</div>
 		</div>
 		<div class="h-full col-span-2 overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">
-			<HistoryList :matchList="history"/>
+			<HistoryList :matchList="history" :userId="props.userId"/>
 		</div>
 	</div>
 </template>

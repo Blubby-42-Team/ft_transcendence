@@ -27,7 +27,7 @@ await fetchHistory(primaryUser.value.id);
 		</div>
 		<div class="flex justify-center h-full p-5 overflow-hidden">
 			<div class="p-5 rounded-3xl bg-background1 w-[60rem] h-full">
-				<HistoryList :matchList="history"/>
+				<HistoryList :matchList="history" :userId="primaryUser.id"/>
 			</div>
 		</div>
 	</div>
