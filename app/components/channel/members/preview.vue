@@ -34,14 +34,12 @@ const buttonList = computed(() => {
 		{ type: 'bar', 									condition: !isPrimaryUser,						},
 		{ type: 'button',	text: 'Add to Friend',		condition: !isPrimaryUser && !isFriend,							func: async () => {
 			await fetchUserWhitelistPost(primaryUser.value.id, props.userId)
-				.then((res) => {
+				.then(() => {
 					addNotif("Invitation sent");
-					return res;
 				})
 				.catch((err) => {
 					console.warn("Error fetchUserWhitelistPost: ", err);
 					addNotif("User not found or already in your friend list");
-					return null;
 				});
 		}, icon: 'material-symbols:person-add' },
 		{ type: 'button',	text: 'Block User',			condition: !isPrimaryUser, 										func: async () => {}, icon: 'material-symbols:no-accounts' },
@@ -49,63 +47,41 @@ const buttonList = computed(() => {
 		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,	},
 		{ type: 'button',	text: 'Mute from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: async () => {
 			await fetchMuteUser(primaryUser.value.id, props.userId, selectedChannel.value?.id ?? 0, 5)
-				.then((res) => {
+				.then(() => {
 					addNotif("User muted");
-					return res;
 				})
 				.catch((err) => {
 					console.warn("Error fetchMuteUser: ", err);
 					addNotif("User not found or already muted");
-					return null;
 				});
 		}, icon: 'material-symbols:voice-selection' },
 		{ type: 'button',	text: 'Kick from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: async () => {
 			await fetchRemoveFromChat(primaryUser.value.id, props.userId, selectedChannel.value?.id ?? 0)
-				.then((res) => {
-					addNotif("User kicked");
-					return res;
-				})
 				.catch((err) => {
 					console.warn("Error fetchRemoveFromChat: ", err);
 					addNotif("User not found or already kicked");
-					return null;
 				});
 		}, icon: 'material-symbols:group-remove' },
 		{ type: 'button',	text: 'Ban from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: async () => {
 			await fetchBanUser(primaryUser.value.id, props.userId, selectedChannel.value?.id ?? 0)
-				.then((res) => {
-					addNotif("User banned");
-					return res;
-				})
 				.catch((err) => {
 					console.warn("Error fetchBanUser: ", err);
 					addNotif("User not found or already banned");
-					return null;
 				});
 		}, icon: 'material-symbols:group-off' },
 		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,	},
 		{ type: 'button',	text: 'Promote to admin',	condition: !isPrimaryUser && primaryIsAdmin && !userIsAdmin,	func: async () => {
 			await fetchAddAdminChat(primaryUser.value.id, props.userId, selectedChannel.value?.id ?? 0)
-				.then((res) => {
-					addNotif("User promoted");
-					return res;
-				})
 				.catch((err) => {
 					console.warn("Error fetchAddAdminChat: ", err);
 					addNotif("User not found or already admin");
-					return null;
 				});
 		}, icon: 'material-symbols:stat-3' },
 		{ type: 'button',	text: 'Demote',				condition: !isPrimaryUser && primaryIsAdmin && userIsAdmin,		func: async () => {
 			await fetchRemoveAdminFromChat(primaryUser.value.id, props.userId, selectedChannel.value?.id ?? 0)
-				.then((res) => {
-					addNotif("User demoted");
-					return res;
-				})
 				.catch((err) => {
 					console.warn("Error fetchRemoveAdminChat: ", err);
 					addNotif("User not found or already admin");
-					return null;
 				});
 		}, icon: 'material-symbols:stat-minus-3' },
 	] as Array<{

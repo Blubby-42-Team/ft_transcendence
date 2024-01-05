@@ -179,7 +179,7 @@ export function fetchRemoveFromChat(
 	return useFetch(`${config.public.back.uri}/chat/${userId}/remove`, {
 		method: 'DELETE',
 		body: {
-			'toRemove': toRemoveId,
+			'toRemoveId': toRemoveId,
 			'chatId': chatId
 		},
 		onResponse: ({ request, response, options }) => {
