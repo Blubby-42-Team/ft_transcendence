@@ -15,12 +15,13 @@ export interface IMessage {
 }
 
 export interface IChannel {
-	id:		number,
-	type:	EChatType
-	name:	string,
-	avatar: string,
-	members: Array<number>,
-	messages: Array<IMessage>,
+	id:			number,
+	type:		EChatType
+	name:		string,
+	avatar: 	string,
+	members: 	Array<number>,
+	messages: 	Array<IMessage>,
+	admin:  	Array<number>,
 }
 
 export interface IShortChannel {

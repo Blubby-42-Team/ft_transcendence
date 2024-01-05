@@ -84,6 +84,7 @@ export const useChannelStore = defineStore('channel', {
 							type: message.type,
 						})).reverse(),
 						members: response.users.map((user) => user.userId),
+						admin: response.admins,
 					};
 				}
 			);
