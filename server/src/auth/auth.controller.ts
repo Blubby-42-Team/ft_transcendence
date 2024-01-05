@@ -21,6 +21,7 @@ export class AuthController {
 	@Get('logout')
 	async auth42Logout(@Req() req: any, @Res() res: Response) {
 		res.clearCookie('user_auth');
+		res.clearCookie('user_id');
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,
