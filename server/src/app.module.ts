@@ -31,6 +31,7 @@ import * as Joi from 'joi';
 				SERVER_HOST: Joi.string().default('localhost'),
 				PORT: Joi.number().default(3000),
 				CORS_ORIGINS: Joi.string().required(),
+				BACK_PREFIX_IMAGE: Joi.string().required(),
 
 				/**
 				 * Postgres configuration

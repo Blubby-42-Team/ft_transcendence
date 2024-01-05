@@ -1,12 +1,11 @@
 import { HttpException, HttpStatus, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from './user.class';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
-import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { ModelUser42Service } from './user42.service';
 import { UserRoleType } from 'src/auth/auth.class';
 import { UserTelemetryStatus } from '@shared/types/user/user';
 import { TelemetryService } from 'src/service/telemetry/telemetry.service';
-import { PostgresPictureService } from 'src/service/postgres/picture/picture.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ModelUserService {
@@ -14,6 +13,7 @@ export class ModelUserService {
 		private readonly postgresUserService: PostgresUserService,
 		private readonly modelUser42Service: ModelUser42Service,
 		private readonly telemetryService: TelemetryService,
+		private readonly configService: ConfigService,
 	) {}
 	
 	private readonly logger = new Logger(ModelUserService.name);
@@ -191,7 +191,7 @@ export class ModelUserService {
 
 	async uploadPictureUser(data: Buffer, filename: string, userId: number, id: number) {
 		const user = await this.postgresUserService.getUserById(userId)
-		return this.postgresUserService.updatePicture(user, `/picture/${id}`)
+		return this.postgresUserService.updatePicture(user, `${this.configService.get<string>('BACK_PREFIX_IMAGE')}/picture/${id}`)
 	}
 
 	async changeUsername (userId:number, username: string) {
