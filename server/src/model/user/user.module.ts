@@ -10,6 +10,7 @@ import { PostgresUser42Module } from 'src/service/postgres/user42/user42.module'
 import { PostgresChatModule } from 'src/service/postgres/chat/chat.module';
 import { TelemetryModule } from 'src/service/telemetry/telemetry.module';
 import { PostgresPictureModule } from 'src/service/postgres/picture/picture.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import { PostgresPictureModule } from 'src/service/postgres/picture/picture.modu
 		PostgresUser42Module,
 		PostgresChatModule,
 		TelemetryModule,
+		ConfigModule,
 	],
 	providers: [ModelUserService, ModelUser42Service],
 	exports: [ModelUserService, ModelUser42Service]
