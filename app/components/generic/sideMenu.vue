@@ -51,45 +51,16 @@ defineExpose({
 })
 
 function updateMenu(){
-	if (!buttonRef || !buttonRef.value || !menuRef.value){
-		return;
-	}
-	const button = buttonRef.value.getBoundingClientRect();
-	const menu = menuRef.value.getBoundingClientRect();
-	
-	switch (props.direction) {
-		case 'vertical':
-		case 'bottom':
-		case 'top':
-			switch (props.alignDirection) {
-				case 'right':	position.value.x = (button.left < window.innerWidth - menu.width ? button.left : window.innerWidth - menu.width); break;
-				case 'left':	position.value.x = (button.left + button.width - menu.width > 0 ? position.value.x = button.left + button.width - menu.width : 0); break;
-				case 'middle':	position.value.x = button.left + button.width / 2 - menu.width / 2; break;
-				default: break;
-			}
-			break;
-		case 'horizontal':
-		case 'right':
-		case 'left':
-			switch (props.alignDirection) {
-				case 'bottom':	position.value.y = (button.top < window.innerHeight - menu.height ? button.top : window.innerHeight - menu.height); break;
-				case 'top':		position.value.y = (button.top + button.height - menu.height > 0 ? position.value.x = button.top + button.height - menu.height : 0); break;
-				case 'middle':	position.value.y = button.top + button.height / 2 - menu.height / 2; break;
-				default: break;
-			}
-		default:
-			break;
-	}
+	setTimeout(() => {
+		if (!buttonRef || !buttonRef.value || !menuRef.value){
+			return;
+		}
 
-	switch (props.direction) {
-		case 'vertical':	position.value.y = (2 * button.top + button.height < window.innerHeight ? button.top + button.height : button.top - menu.height); break;
-		case 'bottom':		position.value.y = button.top + button.height; break;
-		case 'top':			position.value.y = button.top - menu.height; break;
-		case 'horizontal':	position.value.x = (2 * button.left + button.width < window.innerWidth ? button.left + button.width : button.left - menu.width); break;
-		case 'right':		position.value.x = button.left + button.width; break;
-		case 'left':		position.value.x = button.left - menu.width; break;
-		default: break;
-	}
+		const button = buttonRef.value.getBoundingClientRect();
+		const menu = menuRef.value.getBoundingClientRect();
+		position.value = getPositionForSideMenu(button, menu, props.direction, props.alignDirection);
+	}, 100); // TODO - find a better way to do this, this is horrible
+	
 }
 
 </script>
