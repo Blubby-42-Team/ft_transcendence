@@ -11,11 +11,14 @@ const props = defineProps({
 	},
 });
 
-const { primaryUser, getUser, fetchUser, fetchHistory,getFriends } = useUserStore();
+const { addNotif } = useNotifStore();
+
+const { primaryUser, getUser, fetchUser, fetchHistory, getFriends, fetchFriends } = useUserStore();
 const user = getUser(computed(() => props.userId));
-const friend = getFriends(computed(() => props.userId));
+const friend = getFriends(computed(() => primaryUser.value.id));
 await fetchUser(props.userId);
 await fetchHistory(props.userId);
+await fetchFriends(primaryUser.value.id);
 
 const { selectedChannel } = useChannelStore();
 selectedChannel.value?.admin.includes(props.userId);
@@ -26,24 +29,36 @@ const buttonList = computed(() => {
 	const isFriend = friend.value.includes(user.value.id);
 	const isPrimaryUser = primaryUser.value.id === props.userId;
 	return [
-		{ type: 'bar',									condition: true 												},
-		{ type: 'button',	text: 'Profile',			condition: true, 												icon: 'material-symbols:person' },
-		{ type: 'bar', 									condition: !isPrimaryUser,										},
-		{ type: 'button',	text: 'Add to Friend',		condition: !isPrimaryUser && !isFriend,							icon: 'material-symbols:person-add' },
-		{ type: 'button',	text: 'Block User',			condition: !isPrimaryUser, 										icon: 'material-symbols:no-accounts' },
-		{ type: 'button',	text: 'Invite to Lobby',	condition: !isPrimaryUser, 										icon: 'material-symbols:stadia-controller' },
-		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,					},
-		{ type: 'button',	text: 'Mute from channel',	condition: !isPrimaryUser && primaryIsAdmin,					icon: 'material-symbols:voice-selection' },
-		{ type: 'button',	text: 'Kick from channel',	condition: !isPrimaryUser && primaryIsAdmin,					icon: 'material-symbols:group-remove' },
-		{ type: 'button',	text: 'Ban from channel',	condition: !isPrimaryUser && primaryIsAdmin,					icon: 'material-symbols:group-off' },
-		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,					},
-		{ type: 'button',	text: 'Promote to admin',	condition: !isPrimaryUser && primaryIsAdmin && !userIsAdmin,	icon: 'material-symbols:stat-3' },
-		{ type: 'button',	text: 'Demote',				condition: !isPrimaryUser && primaryIsAdmin && userIsAdmin,		icon: 'material-symbols:stat-minus-3' },
+		{ type: 'bar',									condition: true, 								},
+		{ type: 'button',	text: 'Profile',			condition: true, 												func: () => { navigateTo(`/profile/${props.userId}`) }, icon: 'material-symbols:person' },
+		{ type: 'bar', 									condition: !isPrimaryUser,						},
+		{ type: 'button',	text: 'Add to Friend',		condition: !isPrimaryUser && !isFriend,							func: async () => {
+			await fetchUserWhitelistPost(primaryUser.value.id, props.userId)
+				.then((res) => {
+					addNotif("Invitation sent");
+					return res;
+				})
+				.catch((err) => {
+					console.warn("Error fetchUserWhitelistPost: ", err);
+					addNotif("User not found or already in your friend list");
+					return null;
+				});
+		}, icon: 'material-symbols:person-add' },
+		{ type: 'button',	text: 'Block User',			condition: !isPrimaryUser, 										func: () => {}, icon: 'material-symbols:no-accounts' },
+		{ type: 'button',	text: 'Invite to Lobby',	condition: !isPrimaryUser, 										func: () => {}, icon: 'material-symbols:stadia-controller' },
+		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,	},
+		{ type: 'button',	text: 'Mute from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: () => {}, icon: 'material-symbols:voice-selection' },
+		{ type: 'button',	text: 'Kick from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: () => {}, icon: 'material-symbols:group-remove' },
+		{ type: 'button',	text: 'Ban from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: () => {}, icon: 'material-symbols:group-off' },
+		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,	},
+		{ type: 'button',	text: 'Promote to admin',	condition: !isPrimaryUser && primaryIsAdmin && !userIsAdmin,	func: () => {}, icon: 'material-symbols:stat-3' },
+		{ type: 'button',	text: 'Demote',				condition: !isPrimaryUser && primaryIsAdmin && userIsAdmin,		func: () => {}, icon: 'material-symbols:stat-minus-3' },
 	] as Array<{
 		type: 'button',
 		condition: boolean,
 		text: string,
-		icon: string
+		icon: string,
+		func: () => void,
 	} | {
 		type: 'bar',
 		condition: boolean
@@ -59,7 +74,9 @@ const buttonList = computed(() => {
 		<template v-for="elem in buttonList">
 			<template v-if="elem.condition">
 				<template v-if="elem.type === 'button'">
-					<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-accent1 hover:text-text-dark">
+					<button class="flex px-2 py-1 rounded cursor-pointer hover:bg-accent1 hover:text-text-dark"
+						@click="elem.func"
+					>
 						<div class="w-5">
 							<Icon :name="elem.icon" class="w-8 h-8"/>
 						</div>
