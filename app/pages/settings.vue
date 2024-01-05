@@ -4,17 +4,22 @@ definePageMeta({name: 'Settings'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.SETTINGS); })
 
+const { primaryUser } = useUserStore();
+
 const theme = useState('theme');
 function changeTheme(){
 	switch (theme.value) {
-		case 'theme-dark': theme.value = 'theme-light'; break;
-		case 'theme-light': theme.value = 'theme-dark';	break;
+		case ETheme.Dark:
+			theme.value = ETheme.Light;
+			fetchSettingsPatch(primaryUser.value.id, ETheme.Light, false);
+			break;
+		case ETheme.Light:
+			theme.value = ETheme.Dark;
+			fetchSettingsPatch(primaryUser.value.id, ETheme.Dark, false);
+			break;
 		default: break;
 	}
 }
-
-const FormRef = ref()
-const FormRef2 = ref()
 
 </script>
 

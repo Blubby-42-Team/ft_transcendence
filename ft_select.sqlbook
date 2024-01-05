@@ -167,3 +167,31 @@ LEFT JOIN public.user AS usr
     ON usr.id != 1
 WHERE cuc.user_id = 1
     AND ch.type != 'inactive';
+
+-- SQLBook: Code
+-- Active: 1703750171894@@127.0.0.1@5432@willa
+SELECT
+    DISTINCT ch.id,
+    ch.chat_picture,
+    ch.name,
+    ch.type
+FROM "chat" AS ch
+LEFT JOIN "custom_users_chat" AS cuc
+    ON ch.id = cuc.chat_id
+WHERE (ch.type = 'public'
+    OR ch.type = 'protected')
+    AND cuc.chat_id NOT IN (
+        SELECT chat_id
+        FROM "custom_users_chat"
+        WHERE user_id = 1
+    );
+-- SQLBook: Code
+SELECT chat_id
+FROM "custom_users_chat"
+WHERE user_id = 1
+-- SQLBook: Code
+SELECT *
+FROM "chat" AS ch
+LEFT JOIN "custom_users_chat" AS cuc
+	ON ch.id = cuc.chat_id
+WHERE cuc.user_id = 1

@@ -21,17 +21,13 @@ async function search() {
 	input.value = "";
 	if (userLoginName && userLoginName.length > 0) {
 		console.log("searching for user: " + userLoginName);
-		await getUserByName(userLoginName)
-			.then((res) => {
-				console.log("found user: " + res);
-				navigateTo("/profile/" + res);
-				return res;
-			})
-			.catch(() => {
-				console.log("user not found");
-				addNotif("User not found");
-				return null;
-			});
+		const res = await getUserByName(userLoginName).catch(() => null);
+		if (res){
+			navigateTo("/profile/" + res);
+		}
+		else {
+			addNotif("The user you are looking for does not exist");
+		}
 		props.closeFunc();
 	}
 }

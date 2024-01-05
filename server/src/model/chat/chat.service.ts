@@ -54,6 +54,11 @@ export class ModelChatService {
 		return await this.postgresChatService.getAllChats(user);
 	}
 
+	async getChatUserCanJoin(userId: number){
+		const user = await this.postgresUserService.getUserById(userId);
+		return await this.postgresChatService.getChatUserCanJoin(user.id);
+	}
+
 	async getChatById(
 		userId: number,
 		chatId: number,

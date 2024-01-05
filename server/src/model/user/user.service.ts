@@ -23,11 +23,29 @@ export class ModelUserService {
 	}
 
 	async getUserByIdForWilla(id: number) {
-		return await this.postgresUserService.getUserByIdForWilla(id);
+		const user = await this.postgresUserService.getUserByIdForWilla(id);
+		const status = await this.telemetryService.getUserStatus(id);
+		return {
+			id:					user.id,
+			display_name:		user.display_name,
+			full_name:			user.full_name,
+			login:				user.login,
+			profile_picture:	user.profile_picture,
+			status: 			status,
+		};
 	}
 
 	async getUserByLogin(login: string) {
-		return await this.postgresUserService.getUserByLogin(login);
+		const user = await this.postgresUserService.getUserByLogin(login);
+		const status = await this.telemetryService.getUserStatus(user.id);
+		return {
+			id:					user.id,
+			display_name:		user.display_name,
+			full_name:			user.full_name,
+			login:				user.login,
+			profile_picture:	user.profile_picture,
+			status: 			status,
+		};
 	}
 
 	/**

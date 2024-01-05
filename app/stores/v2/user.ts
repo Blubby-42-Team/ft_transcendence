@@ -59,8 +59,7 @@ export const useUserStore = defineStore('user', {
 					return ;
 				}
 				this._socket.listenForPlayer(user.id, (data) => {
-					user.status = data.status;
-					console.log('user status updated', user.id, data.status)
+					user.status = data;
 				});
 				this._socket.askForPlayerStatus(user.id);
 			}
@@ -91,14 +90,12 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
-					status:   UserTelemetryStatus.Offline,
+					status:   response.status,
 				};
 				if (process.client && this._socket){
-					this._socket.listenForPlayer(userId, (data) => {
-						this._users[userId]!.status = data.status;
-						console.log('user status updated', userId, data.status)
+					this._socket.listenForPlayer(userId, (newStatus) => {
+						this._users[userId]!.status = newStatus;
 					});
-					this._socket.askForPlayerStatus(userId);
 				}
 			});
 		},
@@ -111,14 +108,12 @@ export const useUserStore = defineStore('user', {
 					fullName: response.full_name,
 					login42:  response.login,
 					avatar:   response.profile_picture,
-					status:   UserTelemetryStatus.Offline,
+					status:   response.status,
 				};
 				if (process.client && this._socket){
-					this._socket.listenForPlayer(response.id, (data) => {
-						this._users[response.id]!.status = data.status;
-						console.log('user status updated', response.id, data.status)
+					this._socket.listenForPlayer(response.id, (newStatus) => {
+						this._users[response.id]!.status = newStatus;
 					});
-					this._socket.askForPlayerStatus(response.id);
 				}
 			});
 			return data.value?.id ?? 0;
@@ -187,5 +182,10 @@ export const useUserStore = defineStore('user', {
 			return data.value;
 		},
 
+		changeStatus(status: UserTelemetryStatus){
+			if (this._socket){
+				this._socket.status = status;
+			}
+		}
 	},
 })

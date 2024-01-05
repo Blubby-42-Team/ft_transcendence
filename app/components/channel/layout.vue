@@ -12,6 +12,7 @@ const openFindChannel = ref();
 const openCreateChannel = ref();
 const openChannelSettings = ref();
 const openChannelLeave = ref();
+const openInviteToChannel = ref();
 
 </script>
 
@@ -52,6 +53,15 @@ const openChannelLeave = ref();
 				<GenericModal ref="openFindChannel">
 					<ChannelInteractionSearch :closeFunc="openFindChannel?.close"/>
 				</GenericModal>
+
+				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+					@click="openCreateChannel?.open"
+				>
+					<Icon name="material-symbols:add" class="w-full h-full"/>
+				</GenericButton>
+				<GenericModal ref="openCreateChannel">
+					<ChannelInteractionCreate :closeFunc="openCreateChannel?.close"/>
+				</GenericModal>
 				
 				<div class="mx-2 border border-text-light bg-text-light"></div>
 
@@ -77,16 +87,18 @@ const openChannelLeave = ref();
 					<ChannelInteractionSettings :closeFunc="openChannelSettings?.close"/>
 				</GenericModal>
 				
-				<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
-					@click="openCreateChannel?.open"
-				>
-					<Icon name="material-symbols:add" class="w-full h-full"/>
-				</GenericButton>
-				<GenericModal ref="openCreateChannel">
-					<ChannelInteractionCreate :closeFunc="openCreateChannel?.close"/>
-				</GenericModal>
-
+				<template v-if="selectedChannel?.type === EChatType.group">
+					<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
+						@click="openInviteToChannel?.open"
+					>
+						<Icon name="material-symbols:group-add" class="w-full h-full"/>
+					</GenericButton>
+				</template>
+				<GenericModal ref="openInviteToChannel">
+					<ChannelInteractionAdd :closeFunc="openInviteToChannel?.close"/>
+				</GenericModal>	
 			</Teleport>
 		</ClientOnly>
 	</div>
 </template>
+

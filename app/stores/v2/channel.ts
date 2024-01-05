@@ -27,9 +27,10 @@ export const useChannelStore = defineStore('channel', {
 		}),
 		activeType:      (state) => computed((): IChannelTypeSettings => {
 			switch (state._channels?.[state._selectedChannel]?.type ?? null){
-				case EChatType.friends: return state._types.friends;
-				case EChatType.group:   return state._types.groups;
-				case EChatType.public:  return state._types.chats;
+				case EChatType.friends:   return state._types.friends;
+				case EChatType.group:     return state._types.groups;
+				case EChatType.public:    return state._types.chats;
+				case EChatType.protected: return state._types.chats;
 				default: return state._types.friends;
 			}
 		}),
@@ -54,13 +55,8 @@ export const useChannelStore = defineStore('channel', {
 			return this.refreshChannel(userId, channelId);
 		},
 		postMessage(userId: number, message: string){
-			return fetchPostMessage(userId, this._selectedChannel, message, (response) => {
-				this._channels[this._selectedChannel]!.messages.push({
-					id: response.messageId,
-					senderId: response.userId,
-					message: response.content,
-					time: new Date(response.date),
-				});
+			return fetchPostMessage(userId, this._selectedChannel, message, () => {
+				this.refreshChannel(userId, this._selectedChannel);
 			});
 		},
 		refreshChannel(userId: number, channelId: number){
@@ -69,13 +65,12 @@ export const useChannelStore = defineStore('channel', {
 			}
 			const { updateShortUser } = useUserStore();
 			return fetchChatsById(userId, channelId,
-				(response) => {
+				(response) => {		
 					updateShortUser(response.users.map((user) => ({
 						id: user.userId,
 						name: user.userName,
 						avatar: user.profile_picture,
 					})))
-
 					this._channels[channelId] = {
 						id: response.id,
 						name: response.name,
@@ -86,8 +81,10 @@ export const useChannelStore = defineStore('channel', {
 							senderId: message.userId,
 							message: message.content,
 							time: new Date(message.date),
+							type: message.type,
 						})).reverse(),
 						members: response.users.map((user) => user.userId),
+						admin: response.admins,
 					};
 				}
 			);

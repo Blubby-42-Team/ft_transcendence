@@ -1,4 +1,9 @@
+import { ETheme } from "../settings"
 
+export type WS<T> = {
+	status: 'ok' | 'error' | 'debug',
+	message: T,
+};
 
 export type IUser = {
 	id			: number,
@@ -56,4 +61,11 @@ export type BackEndUser = {
 	full_name:			string,
 	login:				string,
 	profile_picture:	string,
+	status: 			UserTelemetryStatus,
 };
+
+export type BackUserSettings = {
+	id: number,
+	theme: ETheme,
+	sound: boolean,
+}
