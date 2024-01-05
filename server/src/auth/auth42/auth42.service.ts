@@ -1,13 +1,5 @@
-import { Injectable, Controller, Logger, HttpStatus } from '@nestjs/common';
-import { User } from 'src/model/user/user.class';
+import { Injectable, Logger } from '@nestjs/common';
 import { ModelUserService } from '../../model/user/user.service';
-import { AuthService } from '../auth.service';
-import { Response } from 'express';
-import { classToPlain, instanceToPlain } from 'class-transformer';
-import { object } from 'joi';
-import { User42Dto } from './auth42.dto';
-import { ModelUser42Service } from 'src/model/user/user42.service';
-import { JwtService } from '@nestjs/jwt';
 import { UserRoleType } from '../auth.class';
 
 @Injectable()
@@ -15,7 +7,6 @@ export class Auth42Service {
 
 	constructor(
 		private modelUserService: ModelUserService,
-		private readonly jwt: JwtService,
 	) {}
 
 	private readonly logger = new Logger(Auth42Service.name);
@@ -38,14 +29,4 @@ export class Auth42Service {
 		)
 	}
 
-	async getUser2FA(userid: number) {
-		const user = await this.modelUserService.getUserById(userid);
-		if (!user) {
-			return null;
-		}
-		return {
-			secret: user.secret2FA,
-			enabled: user.is2FA,
-		};
-	}
 }
