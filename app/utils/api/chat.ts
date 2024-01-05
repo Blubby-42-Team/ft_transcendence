@@ -431,3 +431,27 @@ export function changeChatPicture(
 		},
 	})
 }
+
+export function fetchMuteUser(
+	userId: number,
+	toMute: number,
+	chatId: number,
+	length: number,
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+	return useFetch(`${config.public.back.uri}/chat/${userId}/mute/${chatId}`, {
+		method: 'PATCH',
+		body: {
+			'toMute': toMute,
+			'length': length
+		},
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log('add admin to chat fetched');
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
