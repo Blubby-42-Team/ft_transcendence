@@ -83,12 +83,12 @@ export function fetchUserBlacklist(
 export function fetchUserIsInBlacklist(
 	userId: number,
 	blacklistId: number,
-	callback: (response: any) => void = () => {},
+	callback: (response: boolean) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/blacklist/is_in/${userId}/${blacklistId}`, {
+	return useFetch<'true' | 'false'>(`${config.public.back.uri}/user/blacklist/is_in/${userId}/${blacklistId}`, {
 		onResponse: ({ request, response, options }) => {
-			callback(response._data);
+			callback(response._data === 'true');
 			console.log('user is in blacklist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
@@ -166,7 +166,7 @@ export function fetchUserBlacklistDelete(
 	callback: (response: any) => void = () => {},
 ){
 	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/blacklists/${userId}`, {
+	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
 		method: 'DELETE',
 		body: {
 			'id': blacklistId

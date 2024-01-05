@@ -42,7 +42,16 @@ const buttonList = computed(() => {
 					addNotif("User not found or already in your friend list");
 				});
 		}, icon: 'material-symbols:person-add' },
-		{ type: 'button',	text: 'Block User',			condition: !isPrimaryUser, 										func: async () => {}, icon: 'material-symbols:no-accounts' },
+		{ type: 'button',	text: 'Block User',			condition: !isPrimaryUser, 										func: async () => {
+			await fetchUserBlacklistPost(primaryUser.value.id, props.userId)
+				.then(() => {
+					addNotif("User blocked");
+				})
+				.catch((err) => {
+					console.warn("Error fetchUserBlacklistPost: ", err);
+					addNotif("User not found or already blocked");
+				});
+		}, icon: 'material-symbols:no-accounts' },
 		{ type: 'button',	text: 'Invite to Lobby',	condition: !isPrimaryUser, 										func: async () => {}, icon: 'material-symbols:stadia-controller' },
 		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,	},
 		{ type: 'button',	text: 'Mute from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: async () => {
