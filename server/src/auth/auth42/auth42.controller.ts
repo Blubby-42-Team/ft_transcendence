@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, HttpStatus, InternalServerErrorException, Logger, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, HttpStatus, InternalServerErrorException, Logger, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { Auth42Guard } from './auth42.guard';
 import { Auth42Service } from './auth42.service';
@@ -26,6 +26,18 @@ export class Auth42Controller {
 
 	@Roles([UserRoleType.Guest])
 	@Get('callback')
+	async auth42CallbackGet(@Query('code') code: string, @Res() res: Response) {
+		res.status(HttpStatus.METHOD_NOT_ALLOWED).json({
+			statusCode: HttpStatus.METHOD_NOT_ALLOWED,
+			message: {
+				error: `Method not allowed GET, should be POST`,
+				code: code,
+			}
+		});
+	}
+
+	@Roles([UserRoleType.Guest])
+	@Post('callback')
 	@UseGuards(Auth42Guard)
 	async auth42Callback(@Req() req: any, @Res() res: Response) {
 		res.clearCookie('user_auth');
@@ -80,7 +92,10 @@ export class Auth42Controller {
 
 			return res.status(HttpStatus.OK).json({
 				statusCode: HttpStatus.OK,
-				message: `42 Authentication successful, 2FA required. Redirect to /auth/2fa`,
+				message: {
+					requires2fa: true,
+					message: `42 authentication successful, 2fa required`,
+				},
 			});
 		}
 
@@ -98,7 +113,10 @@ export class Auth42Controller {
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,
-			message: '42 Authentication successful',
+			message: {
+				requires2fa: false,
+				message: `42 authentication successful`,
+			},
 		});
 	}
 }

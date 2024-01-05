@@ -45,7 +45,7 @@ export class User2FASessionTokenDto {
 export class Post2FADto {
 	@IsNotEmpty()
 	@IsString()
-	code: number;
+	code: string;
 }
 
 export class Put2FADto {
@@ -53,6 +53,7 @@ export class Put2FADto {
 	@IsString()
 	action: 'enable' | 'disable';
 
-	@IsNumber()
-	code: number;
+	@IsNotEmpty()
+	@IsString()
+	code: string;
 }

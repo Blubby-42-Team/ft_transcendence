@@ -69,10 +69,10 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
 	 * @param userid id of the user
 	 * @returns jwt of the 2FA session
 	 */
-	async generate2FASessionJwt(uuid: UUID, userid: number) {
-		const payload = {
+	async generate2FASessionJwt(uuid: UUID, userId: number) {
+		const payload: User2FASessionTokenDto = {
 			uuid,
-			userid,
+			userId,
 		};
 
 		return await this.jtwService.signAsync(
@@ -99,9 +99,6 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
 
 		return true;
 	}
-
-	// async disable2FA(userid: number, ) {
-	// }
 
 	async generateUserToken(
 		userId: number,
@@ -185,6 +182,18 @@ export class AuthService implements OnModuleInit, OnModuleDestroy {
 			secret: user.secret2FA,
 			enabled: user.is2FA,
 		};
+	}
+
+	async check2FACode(code: string, secret: string) {
+		try {
+			const isValid = authenticator.verify({ token: code, secret: secret });
+			if (isValid === false) {
+				throw new UnauthorizedException('Invalid 2FA code');
+			}
+		} catch (err) {
+			this.logger.error('Invalid 2FA code');
+			throw new UnauthorizedException('Invalid 2FA code');
+		}
 	}
 }
 
