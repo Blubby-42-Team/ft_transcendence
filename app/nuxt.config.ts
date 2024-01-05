@@ -34,6 +34,7 @@ export default defineNuxtConfig({
 			back: {
 				uri: 'http://localhost:3000',
 				ws: 'http://localhost:3000',
+				auth: 'http://localhost:3000/auth/login42',
 			},
 		}
 	},

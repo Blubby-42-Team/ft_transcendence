@@ -6,7 +6,7 @@ import { Auth42Service } from './auth42/auth42.service';
 import { AuthGuard, PassportModule } from '@nestjs/passport';
 import { FortyTwoStrategy } from './auth42/auth42.strategy';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ModelUserModule } from 'src/model/user/user.module';
 
 @Module({
@@ -23,6 +23,7 @@ import { ModelUserModule } from 'src/model/user/user.module';
 				}
 			},
 		}),
+		ConfigModule,
 	],
 	providers: [AuthService, Auth42Service, FortyTwoStrategy, JwtService],
 	controllers: [
