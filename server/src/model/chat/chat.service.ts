@@ -1,11 +1,11 @@
-import { BadGatewayException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PostgresChatService } from 'src/service/postgres/chat/chat.service';
 import { EChatType } from '@shared/types/chat';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
-import { Chat } from './chat.class';
 import * as bcrypt from 'bcrypt'
 import { PostgresMessagesService } from 'src/service/postgres/messages/messages.service';
 import { EMsgType } from '@shared/types/messages';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ModelChatService {
@@ -13,6 +13,7 @@ export class ModelChatService {
 		private readonly postgresChatService: PostgresChatService,
 		private readonly postgresUserService: PostgresUserService,
 		private readonly postgresMessageService: PostgresMessagesService,
+		private readonly configService: ConfigService,
 	) {}
 	
 	private readonly logger = new Logger(ModelChatService.name);
@@ -386,7 +387,7 @@ export class ModelChatService {
 		const chat = await this.postgresChatService.getChatByIdSystem(chatId)
 		if (!await this.postgresChatService.isAdmin(userId, chatId))
 			throw new UnauthorizedException("You are not an admin.")
-		return this.postgresChatService.updatePicture(chat, `/picture/${pictureId}`)
+		return this.postgresChatService.updatePicture(chat, `${this.configService.get<string>('BACK_PREFIX_IMAGE')}/picture/${pictureId}`)
 	}
 
 	async changeName(userId: number, chatId: number, name:string) {

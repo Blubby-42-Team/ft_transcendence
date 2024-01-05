@@ -37,7 +37,7 @@ export class PostgresChatService {
 		chat.owner = user;
 		chat.admins = [];
 		chat.admins.push(user);
-		chat.chat_picture = '/picture/2';
+		chat.chat_picture = '/chat_default.png';
 		chat.blacklist = [];
 		chat.password = "default";
 		
