@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+### Database ###
+  db:
+    container_name: postgres
+    image: postgres:16.0
+    restart: always
+    environment:
+     - POSTGRES_PASSWORD=test
+     - POSTGRES_USER=test
+     - POSTGRES_DB=test
+    ports:
+      - "5432:5432"
+    volumes:
+    # //TODO check if this is the right path
+      - db_data:/var/lib/postgresql
+    networks:
+      - protected
+### Backend ###
+  back:
+    container_name: back
+    build: docker/back
+    depends_on:
+      - db
+    env_file:
+      - back.env
+    networks:
+      - protected
+### Frontend ###
+  front:
+    container_name: front
+    build: docker/front
+    depends_on:
+      - db
+      - back
+    env_file:
+      - front.env
+    networks:
+      - protected
+### nginx ###
+# //TODO https://gist.github.com/JarenGlover/d7ffab312ea756834218
+  nginx:
+    container_name: nginx
+    build: docker/nginx
+    depends_on:
+      - front
+    ports:
+      - "80:80"
+    networks:
+      - protected
+      - public
+### Volumes ###
+volumes:
+  db_data:
+### Networks ###
+networks:
+  - protected
+  - public
