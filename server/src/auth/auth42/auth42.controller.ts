@@ -41,6 +41,7 @@ export class Auth42Controller {
 	@UseGuards(Auth42Guard)
 	async auth42Callback(@Req() req: any, @Res() res: Response) {
 		res.clearCookie('user_auth');
+		res.clearCookie('user_id');
 
 		// req.user is the user returned from the validate() function in the FortyTwoStrategy class
 		const user42 = req?.user;
