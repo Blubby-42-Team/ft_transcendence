@@ -6,6 +6,12 @@ type authResponse = {
     }
 }
 
+type qrCodeResponse = {
+    statusCode: number,
+    message: string,
+    otpauthUrl: string,
+}
+
 import { appendResponseHeader, H3Event } from 'h3'
 
 export function fetchAuth(
@@ -29,6 +35,45 @@ export function fetchAuth(
 				}
 			}
 
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function fetchGetQRCode(
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+
+	return useFetch<qrCodeResponse>(`${config.public.back.uri}/auth/2fa`, {
+		credentials: 'include',
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function fetchChange2fa(
+	status: boolean,
+	code: string,
+	callback: (response: any) => void = () => {},
+){
+	const config = useRuntimeConfig();
+
+	return useFetch(`${config.public.back.uri}/auth/2fa`, {
+		method: 'PUT',
+		credentials: 'include',
+		body: {
+			action: status ? 'enable' : 'disable',
+			code: code,
+		},
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
 		},
 		onRequestError: ({ request, error, options }) => {
 			console.warn('error', error);
