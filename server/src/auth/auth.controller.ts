@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Get, HttpStatus, Logger, NotFoun
 import { Roles } from './role.decorator';
 import { Post2FADto, Put2FADto, UserAuthTokenDto, UserRoleType } from './auth.class';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { PostgresUserService } from '../service/postgres/user/user.service';
 import { UserAuthTOkentPayload } from './auth.decorator';
@@ -9,13 +10,17 @@ import { authenticator } from 'otplib';
 
 @Controller('auth')
 export class AuthController {
-
-	private readonly logger = new Logger(AuthController.name);
+	private redirectUrl: string;
 
 	constructor(
+		private configService: ConfigService,
 		private readonly authService: AuthService,
 		private readonly postgresUserService: PostgresUserService,
-	) {}
+	) {
+		this.redirectUrl = configService.get<string>('CORS_ORIGINS');
+	}
+
+	private readonly logger = new Logger(AuthController.name);
 
 	@Roles([UserRoleType.User])
 	@Get('logout')
@@ -23,10 +28,11 @@ export class AuthController {
 		res.clearCookie('user_auth');
 		res.clearCookie('user_id');
 
-		return res.status(HttpStatus.OK).json({
-			statusCode: HttpStatus.OK,
-			message: '42 Logout successful',
-		});
+		res.redirect(this.redirectUrl);
+		// return res.status(HttpStatus.OK).json({
+		// 	statusCode: HttpStatus.OK,
+		// 	message: '42 Logout successful',
+		// });
 	}
 
 

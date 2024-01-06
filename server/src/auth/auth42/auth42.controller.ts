@@ -7,15 +7,20 @@ import { Roles } from '../role.decorator';
 import { UserAuthTokenDto, UserRoleType } from '../auth.class';
 import { validate, validateOrReject } from 'class-validator';
 import { User42Dto } from './auth42.dto';
-import { UserService } from '../../controller/user/user.service';
+import { ConfigService } from '@nestjs/config';
 
 
 @Controller('auth42')
 export class Auth42Controller {
+	private redirectUrl: string;
+
 	constructor(
 		private Auth42Service: Auth42Service,
 		private authService: AuthService,
-	) {}
+		private configService: ConfigService,
+	) {
+		this.redirectUrl = configService.get<string>('CORS_ORIGINS');
+	}
 
 	private readonly logger = new Logger(Auth42Controller.name);
 
@@ -108,9 +113,9 @@ export class Auth42Controller {
 			user42?.id42,
 		);
 
-		res.cookie('user_auth', jwt, { httpOnly: true });
+		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'none', domain: 'localhost', secure: true});
 		
-		res.cookie('user_id', userDB.id, { httpOnly: false });
+		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'none', domain: 'localhost', secure: true});
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,

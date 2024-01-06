@@ -15,8 +15,8 @@ export function fetchHistory(
 	userId: number,
 	callback: (response: TFetchHistoryResponse) => void,
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/history/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/history/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('history fetched');
@@ -37,7 +37,7 @@ export function fetchSaveGame(
 	duration: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
+	const back = getBackPath();
 	return useFetch(`localhost:5000/history/game/save/${userId}`, {
 		method: 'POST',
 		body: {

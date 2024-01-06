@@ -1,5 +1,5 @@
 -- SQLBook: Code
--- Active: 1703161905752@@127.0.0.1@5432@masterminds
+-- Active: 1704466992792@@127.0.0.1@5432@test
 SELECT * FROM "user"
 -- SQLBook: Code
 SELECT * FROM "user42"

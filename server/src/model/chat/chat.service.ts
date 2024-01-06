@@ -348,7 +348,7 @@ export class ModelChatService {
 			throw new UnauthorizedException("You are not allowed to change the type of this chat.")
 		else if (await this.postgresChatService.isOwner(userId, chatId)) {
 			if (chat.type === EChatType.public) {
-				await this.postgresChatService.setPassword(chatId, password);
+				await this.postgresChatService.setPassword(chatId, await this.hashPassword(password));
 				return await this.postgresChatService.changeChatType(chat, EChatType.protected)
 				.then(res => {
 					if (res === 'ok')

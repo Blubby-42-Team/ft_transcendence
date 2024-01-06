@@ -30,7 +30,7 @@ class MyWsAdapter extends IoAdapter {
 
 async function bootstrap() {
 
-	const app = await NestFactory.create(AppModule, {cors: true});
+	const app = await NestFactory.create(AppModule/*, {cors: true}*/);
 
 	const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
@@ -39,9 +39,7 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
 	app.enableCors({
-		origin: [
-			configService.get<string>('CORS_ORIGINS'),
-		],
+		origin: configService.get<string>('CORS_ORIGINS'),
 		credentials: true,
 	});
 

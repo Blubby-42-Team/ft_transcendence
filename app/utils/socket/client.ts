@@ -8,8 +8,8 @@ export class SocketClient {
 			return ;
 		}
 		console.log(`Socket.io ${namespace} connecting`)
-		const config = useRuntimeConfig();
-		this.socket = io(`${config.public.back.ws}/${namespace}`, {
+		const back = getBackPath();
+		this.socket = io(`${back}/${namespace}`, {
 			withCredentials: true
 		});
 

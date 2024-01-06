@@ -42,15 +42,15 @@ function uploadImage() {
 
 function changeType(){
 	if (selectedChannel.value?.type === "public"){
-		fetchChangeChatType(primaryUser.value.id, selectedChannel.value?.id ?? 0, "xxx", () => {
+		const password = input.value;
+		input.value = "";
+		fetchChangeChatType(primaryUser.value.id, selectedChannel.value?.id ?? 0, password, () => {
 			refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
 			fetchChannelList(primaryUser.value.id);
 		})
 	}
 	else if (selectedChannel.value?.type === "protected"){
-		const password = input.value;
-		input.value = "";
-		fetchChangeChatType(primaryUser.value.id, selectedChannel.value?.id ?? 0, password, () => {
+		fetchChangeChatType(primaryUser.value.id, selectedChannel.value?.id ?? 0, "default", () => {
 			refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
 			fetchChannelList(primaryUser.value.id);
 		})
@@ -75,9 +75,9 @@ function changeType(){
 		<GenericButton class="self-end w-full h-10 col-span-2 mb-2" :buttonStyle="1"
 			@click="changeType"
 		>
-			{{ selectedChannel?.type === 'protected' ? 'Activate Password' : 'Deactivate Password' }}
+			{{ selectedChannel?.type === 'protected' ? 'Deactivate Password' : 'Activate Password' }}
 		</GenericButton>
-		<template v-if="selectedChannel?.type === 'protected'">
+		<template v-if="selectedChannel?.type === 'public'">
 			<input type="password" v-model="input" class="w-full h-16 col-span-2 px-5 bg-background1 rounded-2xl text-text focus-border-none focus:ring-0" placeholder="Password" />
 		</template>
 	</div>

@@ -21,7 +21,8 @@ export class ModelMuteService {
 		chatId: number,
 		length: number,
 	) {
-		const toMute = await this.postgresUserService.getUserById(userId);
+		const user = await this.postgresUserService.getUserById(userId);
+		const toMute = await this.postgresUserService.getUserById(toMuteId);
 		const chat = await this.postgresChatService.getChatByIdSystem(chatId);
 		console.log(await this.postgresChatService.isAdmin(userId, chatId), userId, chatId)
 		if (!(await this.postgresChatService.isAdmin(userId, chatId)) || await this.postgresChatService.isOwner(toMuteId, chatId))
