@@ -2,8 +2,8 @@ export function fetchStats(
 	userId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/stats/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/stats/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('stats fetched');
@@ -21,8 +21,8 @@ export function fetchClassicMatchEnd(
 	opp_mmr: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/stats/end/match/classic/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/stats/end/match/classic/${userId}`, {
 		method: 'PATCH',
 		body: {
 			'points_won': points_won,
@@ -46,8 +46,8 @@ export function fetchRandomMatchEnd(
 	opp_mmr: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/stats/end/match/random/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/stats/end/match/random/${userId}`, {
 		method: 'PATCH',
 		body: {
 			'points_won': points_won,

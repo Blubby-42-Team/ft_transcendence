@@ -3,7 +3,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		return ;
 	}
 	
-	const config = useRuntimeConfig();
+	const auth = getAuthPath();
 
 	const cookie = useCookie('user_id', {
 		default: () => 0,
@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	});
 
 	if (cookie.value === 0) {
-		await navigateTo(config.public.back.auth, {
+		await navigateTo(auth, {
 			external: true
 		})
 	}
@@ -21,7 +21,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	const res = await fetchUser(cookie.value);
 
 	if (!res || res.error.value){
-		await navigateTo(config.public.back.auth, {
+		await navigateTo(auth, {
 			external: true
 		})
 	}

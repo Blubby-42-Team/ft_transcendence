@@ -19,9 +19,9 @@ export function fetchAuth(
 	code: string,
 	callback: (response: authResponse) => void = () => {},
 ){
-	const config = useRuntimeConfig();
+	const back = getBackPath();
 
-	return useFetch<authResponse>(`${config.public.back.uri}/auth42/callback?code=${code}`, {
+	return useFetch<authResponse>(`${back}/auth42/callback?code=${code}`, {
 		method: 'POST',
 		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
@@ -45,9 +45,9 @@ export function fetchAuth(
 export function fetchGetQRCode(
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
+	const back = getBackPath();
 
-	return useFetch<qrCodeResponse>(`${config.public.back.uri}/auth/2fa`, {
+	return useFetch<qrCodeResponse>(`${back}/auth/2fa`, {
 		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
@@ -63,9 +63,9 @@ export function fetchChange2fa(
 	code: string,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
+	const back = getBackPath();
 
-	return useFetch(`${config.public.back.uri}/auth/2fa`, {
+	return useFetch(`${back}/auth/2fa`, {
 		method: 'PUT',
 		credentials: 'include',
 		body: {
