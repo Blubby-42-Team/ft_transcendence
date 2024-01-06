@@ -32,7 +32,6 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		back: {
 			uri: 'http://localhost:3000',
-			auth: 'http://localhost:3000/auth/login42',
 		},
 		public: {
 			back: {

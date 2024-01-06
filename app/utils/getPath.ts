@@ -10,10 +10,5 @@ export function getBackPath(){
 
 export function getAuthPath(){
 	const config = useRuntimeConfig();
-	if (process.client){
-		return config.public.back.auth;
-	}
-	else {
-		return config.back.auth;
-	}
+	return config.public.back.auth;
 }

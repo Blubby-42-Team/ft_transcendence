@@ -12,6 +12,12 @@ type qrCodeResponse = {
     otpauthUrl: string,
 }
 
+type xxResponse = {
+    statusCode: number,
+    message: string,
+}
+
+
 import { appendResponseHeader, H3Event } from 'h3'
 
 export function fetchAuth(
@@ -65,11 +71,32 @@ export function fetchChange2fa(
 ){
 	const back = getBackPath();
 
-	return useFetch(`${back}/auth/2fa`, {
+	return useFetch<xxResponse>(`${back}/auth/2fa`, {
 		method: 'PUT',
 		credentials: 'include',
 		body: {
 			action: status ? 'enable' : 'disable',
+			code: code,
+		},
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+export function fetchSubmitCode(
+	code: string,
+	callback: (response: any) => void = () => {},
+){
+	const back = getBackPath();
+
+	return useFetch(`${back}/auth/2fa`, {
+		method: 'POST',
+		credentials: 'include',
+		body: {
 			code: code,
 		},
 		onResponse: ({ request, response, options }) => {
