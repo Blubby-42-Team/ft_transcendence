@@ -15,7 +15,7 @@ type subscribeToChatUpdatesWSResponse = {
 }
 
 @WebSocketGateway({
-	namespace: 'message-broker',
+	namespace: '/api/message-broker',
 })
 export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisconnect {
 

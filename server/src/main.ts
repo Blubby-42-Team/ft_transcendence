@@ -23,6 +23,7 @@ class MyWsAdapter extends IoAdapter {
 				methods: ['GET', 'POST'],
 				credentials: true,
 			},
+			transports: ['websocket'],
 		};
 		return super.create(port, options);
 	}

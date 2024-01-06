@@ -11,7 +11,7 @@ import * as cookie from 'cookie'
 
 
 @WebSocketGateway({
-	namespace: 'game',
+	namespace: '/api/game',
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 

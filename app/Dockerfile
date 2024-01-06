@@ -66,8 +66,8 @@ FROM node:18-alpine As production
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/.output/server ./dist
+COPY --chown=node:node --from=build /usr/src/app/.output ./dist
 
 # Start the server using the production build
-CMD [ "node", "dist/index.mjs" ]
+CMD [ "node", "dist/server/index.mjs" ]
 

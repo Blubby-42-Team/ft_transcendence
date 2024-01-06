@@ -16,7 +16,7 @@ import { UserService } from 'src/controller/user/user.service';
 import * as cookie from 'cookie'
 
 @WebSocketGateway({
-	namespace: 'user',
+	namespace: '/api/user',
 })
 export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 

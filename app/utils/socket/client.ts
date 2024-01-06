@@ -10,13 +10,17 @@ export class SocketClient {
 		console.log(`Socket.io ${namespace} connecting`)
 		const back = getBackPath();
 		this.socket = io(`${back}/${namespace}`, {
-			withCredentials: true
+			withCredentials: true,
+			rejectUnauthorized: false,
+			transports: ['websocket'],
 		});
 
 		this.socket.on(`connect`, () => {
 			console.log(`Socket.io ${namespace} connected`);
 		});
-
+		this.socket.on('error', function(error) {
+			console.error('WebSocket error:', error);
+		});
 		this.socket.on(`disconnect`, () => {
 			console.log(`Socket.io ${namespace} disconnected`);
 		});
