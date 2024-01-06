@@ -11,43 +11,49 @@ services:
      - POSTGRES_PASSWORD=test
      - POSTGRES_USER=test
      - POSTGRES_DB=test
-    ports:
-      - "5432:5432"
-    volumes:
+    # ports:
+      # - "5432:5432"
+    # volumes:
     # //TODO check if this is the right path
-      - db_data:/var/lib/postgresql
+      # - db_data:/var/lib/postgresql
     networks:
       - protected
 ### Backend ###
   back:
     container_name: back
-    build: docker/back
+    build:
+      context: .
+      dockerfile: server/Dockerfile
     depends_on:
       - db
     env_file:
-      - back.env
+      - server_prod.env
     networks:
       - protected
 ### Frontend ###
   front:
     container_name: front
-    build: docker/front
+    build:
+      context: .
+      dockerfile: app/Dockerfile
     depends_on:
       - db
       - back
     env_file:
-      - front.env
+      - app_prod.env
     networks:
       - protected
 ### nginx ###
 # //TODO https://gist.github.com/JarenGlover/d7ffab312ea756834218
   nginx:
     container_name: nginx
-    build: docker/nginx
-    depends_on:
-      - front
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+    - ./ping.nginxconf:/etc/nginx/conf.d/default.conf
     ports:
-      - "80:80"
+    - "8080:443"
     networks:
       - protected
       - public
@@ -56,5 +62,5 @@ volumes:
   db_data:
 ### Networks ###
 networks:
-  - protected
-  - public
+  protected:
+  public:

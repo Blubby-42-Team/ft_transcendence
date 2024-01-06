@@ -54,6 +54,8 @@ async function bootstrap() {
 
 	app.use(cookieParser());
 
+	app.setGlobalPrefix('api');
+
 	await app.listen(
 		configService.get<number>('PORT'),
 		configService.get<string>('SERVER_HOST'),
