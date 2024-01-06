@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, HttpStatus, InternalServerErrorException, Logger, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, HttpStatus, InternalServerErrorException, Logger, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { Auth42Guard } from './auth42.guard';
 import { Auth42Service } from './auth42.service';
@@ -31,9 +31,22 @@ export class Auth42Controller {
 
 	@Roles([UserRoleType.Guest])
 	@Get('callback')
+	async auth42CallbackGet(@Query('code') code: string, @Res() res: Response) {
+		res.status(HttpStatus.METHOD_NOT_ALLOWED).json({
+			statusCode: HttpStatus.METHOD_NOT_ALLOWED,
+			message: {
+				error: `Method not allowed GET, should be POST`,
+				code: code,
+			}
+		});
+	}
+
+	@Roles([UserRoleType.Guest])
+	@Post('callback')
 	@UseGuards(Auth42Guard)
 	async auth42Callback(@Req() req: any, @Res() res: Response) {
 		res.clearCookie('user_auth');
+		res.clearCookie('user_id');
 
 		// req.user is the user returned from the validate() function in the FortyTwoStrategy class
 		const user42 = req?.user;
@@ -85,7 +98,10 @@ export class Auth42Controller {
 
 			return res.status(HttpStatus.OK).json({
 				statusCode: HttpStatus.OK,
-				message: `42 Authentication successful, 2FA required. Redirect to /auth/2fa`,
+				message: {
+					requires2fa: true,
+					message: `42 authentication successful, 2fa required`,
+				},
 			});
 		}
 
@@ -101,41 +117,13 @@ export class Auth42Controller {
 		
 		res.cookie('user_id', userDB.id, { httpOnly: false });
 
-		res.redirect(this.redirectUrl);
-
-		// return res.status(HttpStatus.OK).json({
-		// 	statusCode: HttpStatus.OK,
-		// 	message: '42 Authentication successful',
-		// });
-	}
-
-	@Roles([UserRoleType.Guest])
-	@Get('2fa')
-	async auth42Callback2FA(@Req() req: any, @Res() res: Response) {
-		const sessionCookie = req.cookies['2fa-session'];
-
-		if (!sessionCookie) {
-			this.logger.error('No 2FA session cookie found');
-			throw new BadRequestException('No 2FA session cookie found');
-		}
-
-		const session = await this.authService.validate2FASessionJwtAndGetPayload(sessionCookie);
-
-		if (!session) {
-			this.logger.error('2FA session cookie invalid');
-			throw new BadRequestException('2FA session cookie invalid');
-		}
-
-		const uuid = session.uuid;
-
-		//TODO query db and 2fa service
-
-		res.clearCookie('2fa-session');
-		res.status(HttpStatus.OK).json({
+		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,
-			message: '2FA Authentication successful',
+			message: {
+				requires2fa: false,
+				message: `42 authentication successful`,
+			},
 		});
 	}
-
 }
 

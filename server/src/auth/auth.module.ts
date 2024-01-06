@@ -8,10 +8,12 @@ import { FortyTwoStrategy } from './auth42/auth42.strategy';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ModelUserModule } from 'src/model/user/user.module';
+import { PostgresUserModule } from 'src/service/postgres/user/user.module';
 
 @Module({
 	imports: [
 		ModelUserModule,
+		PostgresUserModule,
 		PassportModule.register({ defaultStrategy: '42' }),
 		JwtModule.registerAsync({
 			inject: [ConfigService],
