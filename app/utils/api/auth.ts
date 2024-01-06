@@ -14,6 +14,9 @@ export function fetchAuth(
 	return useFetch<authResponse>(`${config.public.back.uri}/auth42/callback?code=${code}`, {
 		method: 'POST',
 		onResponse: ({ request, response, options }) => {
+			console.log(request);
+			console.log(response, response.headers);
+			console.log(options);
 			callback(response._data);
 			console.log('all chats fetched');
 		},
