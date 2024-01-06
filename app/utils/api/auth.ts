@@ -13,6 +13,7 @@ export function fetchAuth(
 	const config = useRuntimeConfig();
 	return useFetch<authResponse>(`${config.public.back.uri}/auth42/callback?code=${code}`, {
 		method: 'POST',
+		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
 			console.log(request);
 			console.log(response, response.headers);
