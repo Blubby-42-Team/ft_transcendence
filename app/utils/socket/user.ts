@@ -11,7 +11,7 @@ export class SocketClientUser extends SocketClient {
 		super('user');
 		for (const elem of this.backlogFromBack){
 			this.listenForPlayer(elem.id, elem.callback);
-			this.askForPlayerStatus(elem.id);
+			// this.askForPlayerStatus(elem.id);
 		}
 
 		this.loop(() => {

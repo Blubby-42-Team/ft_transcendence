@@ -7,7 +7,9 @@ const props = defineProps({
 	},
 });
 
-const { selectedChannel, leaveChannel } = useChannelStore();
+const channelStore = useChannelStore();
+const { selectedChannel } = storeToRefs(channelStore);
+const { leaveChannel } = channelStore;
 
 async function leave() {
 	console.log("Leaving channel: " + selectedChannel.value?.id);

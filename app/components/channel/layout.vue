@@ -2,7 +2,9 @@
 
 import { EChatType } from "#imports";
 
-const { selectedChannel, fetchChannelList, activeType } = useChannelStore();
+const channelStore = useChannelStore();
+const { fetchChannelList } = channelStore;
+const { selectedChannel, activeType } = storeToRefs(channelStore);
 const { primaryUser } = useUserStore();
 await fetchChannelList(primaryUser.value.id);
 

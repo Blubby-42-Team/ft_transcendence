@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 		],
 	},
 	devServer: {
-		port: 4001,
+		port: 3000,
 	},
 	devtools: { enabled: false },
 	modules: [
@@ -25,14 +25,13 @@ export default defineNuxtConfig({
 		'@vueuse/nuxt',
 		'@morev/vue-transitions/nuxt',
 		['@pinia/nuxt', {
-			autoImports: ['defineStore']
+			autoImports: ['defineStore', 'storeToRefs']
 		}],
 		'nuxt-icon',
 	],
 	runtimeConfig: {
 		back: {
 			uri: 'http://localhost:3000',
-			auth: 'http://localhost:3000/auth/login42',
 		},
 		public: {
 			back: {

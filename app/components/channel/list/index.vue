@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 
 import { EChatType, IShortChannel } from "#imports"
+import { storeToRefs } from 'pinia'
 
-const { selectedChannel, channels, activeType } = useChannelStore()
+const channelStore = useChannelStore()
+
+const { selectedChannel, channels, activeType } = storeToRefs(channelStore);
 
 </script>
 
 <template>
 	<div class="w-full h-full overflow-x-hidden scrollbar scrollbar-w-0 bg-background1">
-		<template v-for="ctype in channels">
+		<template v-for="ctype in channels" :key="ctype.name">
 			<template v-if="ctype.channels && ctype.channels.length > 0">
 				<div class="border-b-[1px] border-background2"></div>
 				
@@ -25,7 +28,7 @@ const { selectedChannel, channels, activeType } = useChannelStore()
 				<TransitionExpand>
 					<template v-if="ctype.open">
 						<div class="pb-4">
-							<template v-for="channel in ctype.channels">
+							<template v-for="channel in ctype.channels" :key="channel?.id ?? 0">
 								<GenericNuxtLink class="w-full px-3 py-1 place-content-start" :buttonStyle="2"
 									:selected="(channel?.id === selectedChannel?.id)"
 									:to="`/messages/${channel?.id ?? 0}`"

@@ -56,7 +56,7 @@ if (process.client) {
 </script>
 
 <template>
-	<div class="w-screen h-screen" :class="theme ? theme : 'theme-light'">
+	<div class="w-screen h-screen" :class="theme ? theme : 'light'">
 		<NuxtLayout>
 			<!-- :transition="{
 				name: 'bounce',

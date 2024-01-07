@@ -2,8 +2,11 @@
 
 const { textarea, input } = useTextareaAutosize()
 
-const { postMessage, refreshChannel, selectedChannel } = useChannelStore()
 const { primaryUser } = useUserStore()
+
+const channelStore = useChannelStore();
+const { postMessage, refreshChannel } = channelStore;
+const { selectedChannel } = storeToRefs(channelStore);
 
 input.value = '';
 

@@ -20,7 +20,8 @@ await fetchUser(props.userId);
 await fetchHistory(props.userId);
 await fetchFriends(primaryUser.value.id);
 
-const { selectedChannel } = useChannelStore();
+const channelStore = useChannelStore();
+const { selectedChannel } = storeToRefs(channelStore);
 selectedChannel.value?.admin.includes(props.userId);
 
 const buttonList = computed(() => {

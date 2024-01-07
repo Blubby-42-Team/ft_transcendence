@@ -7,7 +7,9 @@ const props = defineProps({
 	},
 });
 
-const { selectedChannel, refreshChannel, fetchChannelList } = useChannelStore();
+const channelStore = useChannelStore();
+const { selectedChannel } = storeToRefs(channelStore);
+const { refreshChannel, fetchChannelList } = channelStore;
 const { primaryUser, fetchUser } = useUserStore();
 const { input } = useTextareaAutosize()
 
