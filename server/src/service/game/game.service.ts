@@ -111,6 +111,40 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		this.lobbys[lobby_id].startLobby();
 	}
 
+	async joinA2UserPrivateGame (roomId: string, userId: number, socket: Socket) {
+		await this.joinPlayerToLobby(roomId, userId, socket);
+
+		// Check if the two players is connected
+
+		const lobby = await this.getLobby(roomId);
+
+		const players = lobby.getPlayers();
+
+		// Get id of connected players
+		const playersConnected = [];
+		for (const id in players) {
+			if (players[id]?.wsClient?.connected === true) {
+				playersConnected.push(id);
+			}
+		}
+
+		if (playersConnected.length === 2) {
+			// Start the game
+
+			this.logger.debug(`joinAPrivateGame: match found ${playersConnected[0]} ${playersConnected[1]}`);
+
+			this.emitGAteway.server.in(roomId).emit(emitName.matchMakingStatus, {
+				status: ELobbyStatus.FOUND_AND_WAIT,
+				msg: "Match found, waiting for players to be ready",
+				data: [playersConnected[0], playersConnected[1]]
+			} as matchMakingWSResponse<Array<number>>);
+
+			this.logger.debug('Starting lobby')
+			lobby.startLobby();
+
+		}
+	}
+
 	async getAndPopFristPlayerFromTwoUserMatchMaking(): Promise<{userId: number, socket: Socket}> {
 		return this.twoUserMatchMakingQueue.shift();
 	}
@@ -136,7 +170,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		} as matchMakingWSResponse)
 	}
 
-	async playerMove(userId: number, move: boolean, key_press: boolean) {
+	async playerMove(userId: number, move: boolean, key_press: boolean, launch: boolean) {
 		const lobby = await this.findUserInLobbys(userId)
 
 		if (lobby === undefined) {
@@ -144,7 +178,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new NotFoundException(`User ${userId} is not in a lobby`);
 		}
 
-		lobby.movePlayer(userId, move, key_press);
+		lobby.movePlayer(userId, move, key_press, launch);
 	}
 
 	/**

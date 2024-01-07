@@ -1,14 +1,13 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { Roles } from 'src/auth/role.decorator';
-import { UserRoleType } from 'src/auth/auth.class';
-import { GatewayGameService } from './gateway.game.service';
+import { UserAuthTokenDto, UserRoleType } from 'src/auth/auth.class';
 import { ModelGameService } from 'src/model/game/game.service';
+import { UserAuthTOkentPayload } from 'src/auth/auth.decorator';
 
 @Controller('game')
 export class GameController {
 
 	constructor (
-		private readonly gatewayGameService: GatewayGameService,
 		private readonly modelGameService: ModelGameService,
 	) {}
 
@@ -19,15 +18,13 @@ export class GameController {
 	}
 
 	@Roles([UserRoleType.Guest])
-	@Get('/room/:id')
-	async getRoomData() {
+	@Post('/private/:invitedUserId')
+	async inviteUser(
+		@Param('invitedUserId') invitedUserId: number,
+		@UserAuthTOkentPayload() user: UserAuthTokenDto,
+	) {
+		const roomId = await this.modelGameService.createAGame(user.userId);
+		await this.modelGameService.addPlayerToMyGame(user.userId, invitedUserId);
+		return roomId;
 	}
-
-	@Roles([UserRoleType.Guest])
-	@Delete('/room/:id')
-	async deleteRoom(@Param('id') id: string) {
-		// await this.gatewayGameService.deleteLobby(id);//TODO WIP
-		return 'ok'
-	}
-
 }
