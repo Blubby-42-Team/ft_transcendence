@@ -30,7 +30,7 @@ const graphic = new GraphicEngine('canvasDiv', theme.value, () => gameState.valu
 				graphic.drawGame(ctx);
 				break ;
 			case gameStatusType.GAMEOVER:
-				graphic.drawGameOver(ctx, 1);
+				navigateTo('/');
 				break ;
 		}
 });

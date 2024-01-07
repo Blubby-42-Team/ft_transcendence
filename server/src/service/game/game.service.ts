@@ -518,10 +518,13 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				connectedClients: this.usersInLobby[userId].connectedClients?.map((e) => e?.id),
 			};
 		}
+
+		const twoUserMatchMakingQueue = this.twoUserMatchMakingQueue.map((e) => e.userId);
 		
 		const res = JSON.parse(JSON.stringify({
 			lobbys: lobbysPublicData,
 			players: playerPublicData,
+			matchmaking: twoUserMatchMakingQueue,
 		}));
 
 		this.logger.debug(res);

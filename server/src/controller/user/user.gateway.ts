@@ -53,7 +53,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	): Promise<AcknowledgmentWsDto<OutputType>> {
 		try {
 
-			this.logger.debug(req, socket?.handshake?.headers);
+			// this.logger.debug(req, socket?.handshake?.headers);
 
 			if (!socket) {
 				throw new BadGatewayException('missing socket');
@@ -78,7 +78,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					authorization = socket?.handshake?.headers?.authorization;
 			} else {
 
-				this.logger.debug(`raw cookie: ${rawCookie}`);
+				// this.logger.debug(`raw cookie: ${rawCookie}`);
 
 				try {
 
@@ -91,7 +91,7 @@ export class UserGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				}
 			}
 
-			this.logger.debug(`authorization: ${authorization}`);
+			// this.logger.debug(`authorization: ${authorization}`);
 
 			if (!authorization) {
 				throw new ForbiddenException('missing authorization header');
