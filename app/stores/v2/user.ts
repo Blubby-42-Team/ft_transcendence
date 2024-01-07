@@ -61,7 +61,7 @@ export const useUserStore = defineStore('user', {
 				this._socket.listenForPlayer(user.id, (data) => {
 					user.status = data;
 				});
-				this._socket.askForPlayerStatus(user.id);
+				// this._socket.askForPlayerStatus(user.id);
 			}
 		},
 

@@ -14,6 +14,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		await navigateTo(auth, {
 			external: true
 		})
+		return ;
 	}
 
 	const { fetchUser, updatePrimaryUser } = useUserStore();
@@ -24,6 +25,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		await navigateTo(auth, {
 			external: true
 		})
+		return ;
 	}
 
 	updatePrimaryUser(cookie.value);
