@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 		],
 	},
 	devServer: {
-		port: 4001,
+		port: 3000,
 	},
 	devtools: { enabled: false },
 	modules: [

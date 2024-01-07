@@ -1,41 +1,59 @@
 import { EChatType, IShortChannel, BackChannelType, IChannel, IChannelTypeSettings } from "#imports";
 
+type test = {
+	friends: IChannelTypeSettings,
+	groups:  IChannelTypeSettings,
+	chats:   IChannelTypeSettings,
+}
+
 export const useChannelStore = defineStore('channel', {
 	state: () => ({
 		_selectedChannel: 0,
 		_types:         {
-			friends: { type: [EChatType.friends],                     name: 'Friends', open: true, hasSideMenu: false, icon: 'material-symbols:person' } as IChannelTypeSettings,
-			groups:  { type: [EChatType.group],                       name: 'Groups',  open: true, hasSideMenu: true,  icon: 'material-symbols:diversity-4' } as IChannelTypeSettings,
-			chats:   { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true, hasSideMenu: true,  icon: 'material-symbols:groups' } as IChannelTypeSettings,
-		},
+			friends: { type: [EChatType.friends],                     name: 'Friends', open: true, hasSideMenu: false, icon: 'material-symbols:person' },
+			groups:  { type: [EChatType.group],                       name: 'Groups',  open: true, hasSideMenu: true,  icon: 'material-symbols:diversity-4' },
+			chats:   { type: [EChatType.public, EChatType.protected], name: 'Chats',   open: true, hasSideMenu: true,  icon: 'material-symbols:groups' },
+		} as test,
 		_channelList:   [] as Array<number>,
 		_channels:      {} as { [key: number]: IChannel | undefined },
 		_shortChannels: {} as { [key: number]: IShortChannel | undefined },
+
+
+		// Getters
+		_selectedChannelGet: null as IChannel | null,
+		_activeType:    {
+			type: [EChatType.friends],
+			name: 'Friends',
+			open: true,
+			hasSideMenu: false,
+			icon: 'material-symbols:person',
+		} as IChannelTypeSettings,
 	}),
 	getters: {
-		selectedChannel: (state) => computed(() => state._channels?.[state._selectedChannel] ?? null),
-		channels:        (state) => computed((): {
-			friends: IChannelTypeSettings,
-			groups:  IChannelTypeSettings,
-			chats:   IChannelTypeSettings,
-		} => {
-			const channels = state._channelList.map((id) => state._shortChannels[id]);
-			state._types.friends.channels = channels.filter((channel) => state._types.friends.type.includes(channel?.type as EChatType)) as IShortChannel[];
-			state._types.groups.channels  = channels.filter((channel) => state._types.groups .type.includes(channel?.type as EChatType)) as IShortChannel[];
-			state._types.chats.channels   = channels.filter((channel) => state._types.chats  .type.includes(channel?.type as EChatType)) as IShortChannel[];
-			return state._types;
-		}),
-		activeType:      (state) => computed((): IChannelTypeSettings => {
-			switch (state._channels?.[state._selectedChannel]?.type ?? null){
-				case EChatType.friends:   return state._types.friends;
-				case EChatType.group:     return state._types.groups;
-				case EChatType.public:    return state._types.chats;
-				case EChatType.protected: return state._types.chats;
-				default: return state._types.friends;
-			}
-		}),
+		selectedChannel: (state) => computed(() => state._selectedChannelGet),
+		channels:        (state) => computed((): test => state._types),
+		activeType:      (state) => computed((): IChannelTypeSettings => state._activeType),
 	},
 	actions: {
+		refresh(){
+			this._selectedChannelGet = this._channels?.[this._selectedChannel] ?? null;
+			this._activeType = (() => {
+				switch (this._selectedChannelGet?.type){
+					case EChatType.friends:   return this._types.friends;
+					case EChatType.group:     return this._types.groups;
+					case EChatType.public:    return this._types.chats;
+					case EChatType.protected: return this._types.chats;
+					default: return this._types.friends;
+				};
+			})() as IChannelTypeSettings;
+			const channels = this._channelList.map((id) => this._shortChannels[id]);
+			this._types.friends.channels = channels.filter((channel) => this._types.friends.type.includes(channel?.type as EChatType)) as IShortChannel[];
+			this._types.groups.channels  = channels.filter((channel) => this._types.groups .type.includes(channel?.type as EChatType)) as IShortChannel[];
+			this._types.chats.channels   = channels.filter((channel) => this._types.chats  .type.includes(channel?.type as EChatType)) as IShortChannel[];
+			console.log(this._activeType);
+			// console.log(this._types);
+			console.log(this._selectedChannelGet);
+		},
 		fetchChannelList(userId: number){
 			return fetchAllChats(userId, (response) => {
 				
@@ -48,6 +66,7 @@ export const useChannelStore = defineStore('channel', {
 					};
 				};
 				this._channelList = response.map((chat) => chat.id);
+				this.refresh();
 			});
 		},
 		selectChannel(userId: number, channelId: number){
@@ -86,6 +105,8 @@ export const useChannelStore = defineStore('channel', {
 						members: response.users.map((user) => user.userId),
 						admin: response.admins,
 					};
+
+					this.refresh();
 				}
 			);
 		},

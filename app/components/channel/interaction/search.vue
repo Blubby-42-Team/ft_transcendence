@@ -64,7 +64,7 @@ async function join() {
 	<div class="w-[60vw] max-w-lg bg-background2 rounded-xl">
 		<div class="grid grid-cols-2 gap-2 p-5 ">
 			<div class="grid grid-cols-[4em_auto] col-span-2 grid-rows-[4em] text-text">
-				<template v-for="channel in (res?.data?.value ?? [])">
+				<template v-for="channel in (res?.data?.value ?? [])" :key="channel?.id">
 					<div class="contents group"
 						@click="channelSelected = channel"
 					>
