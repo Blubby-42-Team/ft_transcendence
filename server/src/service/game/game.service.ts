@@ -7,7 +7,8 @@ import { LobbyInstance } from '../../model/game/game.class';
 import { EmitGateway } from './emit.gateway';
 import { AuthService } from 'src/auth/auth.service';
 import { Socket } from 'socket.io';
-import { disconnectClientFromTheLobbyWSResponse, matchMakingWSResponse, playerReadyOrNotWSResponse } from '@shared/dto/ws.dto';
+import { ELobbyStatus, matchMakingWSResponse, emitName } from '@shared/dto/ws.dto';
+import { gameStateType } from '@shared/types/game/game';
 
 @Injectable()
 export class GameService implements OnModuleInit, OnModuleDestroy {
@@ -65,11 +66,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	 */
 	async matchMakingTwoPlayers() {
 		if (this.twoUserMatchMakingQueue && this.twoUserMatchMakingQueue.length < 2) {
-			const res: matchMakingWSResponse = {
-				status: "WaitingForPlayers",
+			this.emitGAteway.server.to('matchMaking').emit(emitName.matchMakingStatus, {
+				status: ELobbyStatus.WAITING_IN_QUEUE,
 				msg: "Waiting for players to join the match making",
-			}
-			this.emitGAteway.server.to('matchMaking').emit('matchMakingStatus', res);
+			} as matchMakingWSResponse);
 			return;
 		}
 
@@ -96,10 +96,11 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		player1.socket.leave('matchMaking');
 		player2.socket.leave('matchMaking');
 
-		this.emitGAteway.server.in(lobby_id).emit('matchMakingStatus', {
-			status: "ok",
+		this.emitGAteway.server.in(lobby_id).emit(emitName.matchMakingStatus, {
+			status: ELobbyStatus.FOUND_AND_WAIT,
 			msg: "Match found, waiting for players to be ready",
-		});
+			data: [player1.userId, player2.userId]
+		} as matchMakingWSResponse<Array<number>>);
 
 		// TODO WIP @Matthew-Dreemurr
 		// Emit to the two players that we found an opponent and start the game
@@ -128,12 +129,11 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			lobby.onPlayerNotReady(userId);
 		}
 
-		const res : playerReadyOrNotWSResponse = 
-		{
-			userId: userId,
-			ready: ready,
-		}
-		await this.emitToRoom(lobby.room_id, 'playerReady', res)
+		// await this.emitToRoom(lobby.room_id, 'playerReady', res)
+		await this.emitGAteway.server.in(lobby.room_id).emit(emitName.matchMakingStatus, {
+			status: ELobbyStatus.NTFY,
+			msg: `Player ${userId} is ${ready ? 'ready' : 'not ready'}`,
+		} as matchMakingWSResponse)
 	}
 
 	async playerMove(userId: number, move: boolean, key_press: boolean) {
@@ -187,11 +187,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		const socket = this.twoUserMatchMakingQueue.find((e) => e.userId === userId)?.socket;
 
 		if (socket !== undefined && socket.connected === true) {
-			const res: matchMakingWSResponse = {
-				status: "DisconnectedByServer",
+			socket.emit(emitName.matchMakingStatus, {
+				status: ELobbyStatus.ERROR,
 				msg: "You have been removed from the match making",
-			}
-			socket.emit('matchMakingStatus', res);
+			} as matchMakingWSResponse);
 			socket.disconnect();
 		}
 
@@ -209,7 +208,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		const newRoomId = this.generateUniqueRoomId(6);
 
-		const newLobby = new LobbyInstance(newRoomId, this.emitGAteway.server, userId, ()=>{});
+		const newLobby = new LobbyInstance(newRoomId, userId, (newGameState: gameStateType) => {
+			this.logger.debug(newGameState)
+			this.emitGAteway.server.to(newRoomId).emit(emitName.stateGame, newGameState)
+		});
 		this.lobbys[newRoomId] = newLobby;
 
 		this.usersInLobby[userId] = {
@@ -253,13 +255,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 					this.logger.debug(`disconnect WS client ${client} of user ${userId}`);
 
-					// Emit to the client that he is disconnected
-					const msg: disconnectClientFromTheLobbyWSResponse = {
-						reason: "DuplicateConnection",
+					this.emitGAteway.server.to(client.id).emit(emitName.matchMakingStatus, {
+						status: ELobbyStatus.ERROR,
 						msg: "You are connected from another device, you have been disconnected",
-					}
-
-					this.emitGAteway.server.to(client.id).emit('disconnectClientFromTheLobby', msg);
+					} as matchMakingWSResponse);
 
 					this.emitGAteway.server.in(client.id).socketsLeave(roomId)
 
@@ -294,7 +293,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		}
 
 		this.usersInLobby[userId].connectedClients.push(socket);
-		this.emitGAteway.server.in(roomId).emit('newPlayerInLobby', userId);
 
 		this.logger.debug(`joinPlayerToLobby ${roomId} ${userId}`);
 	}
@@ -340,11 +338,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	 * @returns void Promise
 	 * @throws NotFoundException if the lobby does not exist
 	 */
-	async disconnectAllPlayersFromLobby(roomId: string, disconnectMessage: disconnectClientFromTheLobbyWSResponse) {
+	async disconnectAllPlayersFromLobby(roomId: string, disconnectMessage: string) {
 		const lobby = await this.getLobby(roomId)
-		.then((lobby) => {
-			return lobby;
-		})
 		.catch((err) => {
 			if (err instanceof NotFoundException) {
 				this.logger.debug(`Lobby ${roomId} not found`);
@@ -365,7 +360,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			const player = players[id];
 
 			if (player?.wsClient?.connected === true) {
-				player.wsClient.emit("disconnectClientFromTheLobby", disconnectMessage);
+				player.wsClient.emit(emitName.matchMakingStatus, {
+					status: ELobbyStatus.ERROR,
+					msg: disconnectMessage,
+				} as matchMakingWSResponse);
 				this.logger.debug(`disconnectAllPlayersFromLobby ${roomId}: disconnect user ${id}`);
 			}
 		}
@@ -431,17 +429,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	// 	return lobby.room_id;
 
 	// }
-
-
-	/**
-	 * Emit to all players in the room
-	 * @param roomId room id 
-	 * @param event event name
-	 * @param data data to send
-	 */
-	async emitToRoom(roomId: string, event: string, data: any) {
-		this.emitGAteway.server.in(roomId).emit(event, data);
-	}
 
 	/**
 	 * 

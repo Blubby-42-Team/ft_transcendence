@@ -75,7 +75,6 @@ export class moveRequestDto extends WsRequestDto {
 	press: boolean;
 }
 
-export type GameRoomStatus = 'waiting' | 'playing' | 'finished';
 
 export type joinGameResponse = 'ok';
 export type readyOrNotResponse = 'ok';
@@ -88,22 +87,22 @@ export type createGameRoomResponse = {
 export type deleteGameRoomWSResponse = 'ok';
 export type addOrRemovePlayerToWhiteListWSResponse = 'ok';
 
-export type disconnectClientFromTheLobbyWSResponse = {
-	reason: 'KickByOwner' | 'DuplicateConnection' | 'KickByAdmin' | 'PlayerLeftTheGame' | 'DisconnectedByServer',
+export type matchMakingWSResponse<T = undefined> = {
+	status: ELobbyStatus,
 	msg: string,
+	data: T,
 }
 
-export type matchMakingWSResponse = {
-	status: 'FoundMatch' | 'NoMatchFound'| 'WaitingForPlayers' | 'DisconnectedByServer',
-	msg: string,
+export enum emitName {
+	matchMakingStatus	= 'matchMakingStatus',
+	stateGame			= 'stateGame',
 }
 
-export type playerGameStateTypeWSResponse = {
-	status: GameRoomStatus,
-	msg: string,
-}
-
-export type playerReadyOrNotWSResponse = {
-	userId: number,
-	ready: boolean,
+export enum ELobbyStatus {
+	WAITING_IN_QUEUE	= 'waitingInQueue',
+	FOUND_AND_WAIT		= 'foundAndWait',
+	START_GAME			= 'startGame',
+	STOP_GAME			= 'stopGame',
+	NTFY				= 'ntfy',
+	ERROR				= 'error',
 }

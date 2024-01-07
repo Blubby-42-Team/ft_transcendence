@@ -3,18 +3,20 @@ import { Direction } from '@shared/types/game/utils'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { Server, Socket} from 'socket.io'
-import { playerGameStateTypeWSResponse } from '@shared/dto/ws.dto';
 
 
 export class LobbyInstance {
 
 	private readonly logger: undefined | Logger;
 
-	constructor (room_id: string, io: Server, owner_id: number, updateState: (state: gameStateType) => void ) {
+	constructor (
+		room_id: string,
+		owner_id: number, 
+		private updateState: (state: gameStateType) => void
+	) {
 
 		this.room_id = room_id;
 		this.owner_id = owner_id;
-		this.io = io;
 		this.gameSettings = undefined;
 		this.game = undefined;
 		this.slots = 1;
@@ -69,16 +71,7 @@ export class LobbyInstance {
 			speedAcceleration:		0.1,
 		};
 		await this.checkBeforeStart();
-		this.game = new GameEngine(
-			this.gameSettings,
-			(newGameState: gameStateType) => {
-				this.gameState = newGameState;
-				this.logger.log(this.gameState)
-				this.io.to(this.room_id).emit("stateGame", this.gameState)
-			},
-			(state) => {
-				state = this.gameState;
-		});
+		this.game = new GameEngine(this.gameSettings, this.updateState);
 	}
 
 	async startGame() {
@@ -189,12 +182,6 @@ export class LobbyInstance {
 		}
 
 		this.logger.log(`User ${userId} is ready`);
-
-		const res : playerGameStateTypeWSResponse = {
-			status: 'waiting',
-			msg: `Waiting for ${playerNotReady.join(', ')} to be ready`,
-		}
-		this.io.to(this.room_id).emit("playerGameState", res)
 	}
 
 	/**

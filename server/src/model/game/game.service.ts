@@ -6,7 +6,6 @@ import { BadGatewayException, BadRequestException, Injectable, Logger, NotFoundE
 import { GameService } from '../../service/game/game.service';
 import { Socket } from 'socket.io';
 import { EmitGateway } from 'src/service/game/emit.gateway';
-import { disconnectClientFromTheLobbyWSResponse } from '@shared/dto/ws.dto';
 import { PostgresUserService } from 'src/service/postgres/user/user.service';
 
 @Injectable()
@@ -84,12 +83,7 @@ export class ModelGameService {
 		})
 
 		// Disconnect all players from the lobby before deleting it
-		const disconnectMessage: disconnectClientFromTheLobbyWSResponse = {
-			reason: 'PlayerLeftTheGame',
-			msg: `Player ${user_diplay_name} left the game`,
-		}
-
-		await this.gameService.disconnectAllPlayersFromLobby(lobby.room_id, disconnectMessage)
+		await this.gameService.disconnectAllPlayersFromLobby(lobby.room_id, `Player ${user_diplay_name} left the game`)
 		.catch((err) => {
 			if (err instanceof NotFoundException) {
 				this.logger.debug(`Lobby ${lobby.room_id} not found`);
