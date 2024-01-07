@@ -12,7 +12,7 @@ async function submit(){
 	const newCode = code.value;
 	code.value = '';
 
-	const { data, error } = await fetchSubmitCode(newCode, (res) => {
+	await fetchSubmitCode(newCode, (res) => {
 		if (res.statusCode === 200){
 			navigateTo('/');
 		}
