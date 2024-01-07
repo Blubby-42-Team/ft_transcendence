@@ -34,12 +34,12 @@ export function fetchAuth(
 			// console.log('cookie', response.headers);
 			callback(response._data);
 
-			if (process.server){
-				const cookies = (response.headers.get('set-cookie') || '').split(',')
-				for (const cookie of cookies) {
-					appendResponseHeader(event, 'set-cookie', cookie)
-				}
-			}
+			// if (process.server){
+			// 	const cookies = (response.headers.get('set-cookie') || '').split(',')
+			// 	for (const cookie of cookies) {
+			// 		appendResponseHeader(event, 'set-cookie', cookie)
+			// 	}
+			// }
 
 		},
 		onRequestError: ({ request, error, options }) => {
