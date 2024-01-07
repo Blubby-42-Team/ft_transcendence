@@ -3,6 +3,7 @@ import { emitName, EClientEmits } from '#imports';
 export class SocketClientGame extends SocketClient {
 	constructor(
 		private start_animation: (players: Array<number>) => void,
+		private updateGameState: (state: gameStateType) => void,
 		private ntfy: (msg: string) => void,
 		private error: (msg: string) => void,
 	) {
@@ -38,6 +39,10 @@ export class SocketClientGame extends SocketClient {
 			console.log(data.msg, data.status);
 			console.log(data);
 		});
+	}
+
+	listenForGameStatus(){
+		this.on(emitName.stateGame, this.updateGameState);
 	}
 
 	joinMatchMaking(){
