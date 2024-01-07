@@ -12,6 +12,7 @@ export class SocketClientGame extends SocketClient {
 		}
 		super('game');
 		this.listenForLobbyStatus();
+		this.listenForGameStatus();
 	}
 
 	listenForLobbyStatus(){
