@@ -4,8 +4,8 @@ export function fetchUser(
 	userId: number,
 	callback: (response: BackEndUser) => void,
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user fetched');
@@ -20,8 +20,8 @@ export function fetchUserByName(
 	name: string,
 	callback: (response: BackEndUser) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch<BackEndUser>(`${config.public.back.uri}/user/search/${name}`, {
+	const back = getBackPath();
+	return useFetch<BackEndUser>(`${back}/user/search/${name}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user fetched');
@@ -36,8 +36,8 @@ export function fetchUserFriends(
 	userId: number,
 	callback: (response: Array<{id: number, display_name: string, profile_picture: string}>) => void,
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/friends/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/friends/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user friends fetched');
@@ -52,8 +52,8 @@ export function fetchUserWhitelist(
 	userId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/whitelist/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/whitelist/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user whitelist fetched');
@@ -68,8 +68,8 @@ export function fetchUserBlacklist(
 	userId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/blacklist/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user blacklist fetched');
@@ -85,8 +85,8 @@ export function fetchUserIsInBlacklist(
 	blacklistId: number,
 	callback: (response: boolean) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch<'true' | 'false'>(`${config.public.back.uri}/user/blacklist/is_in/${userId}/${blacklistId}`, {
+	const back = getBackPath();
+	return useFetch<'true' | 'false'>(`${back}/user/blacklist/is_in/${userId}/${blacklistId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data === 'true');
 			console.log('user is in blacklist fetched');
@@ -102,8 +102,8 @@ export function fetchUserWhitelistPost(
 	whitelistId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/whitelist/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/whitelist/${userId}`, {
 		method: 'POST',
 		body: {
 			'id': whitelistId
@@ -123,8 +123,8 @@ export function fetchUserBlacklistPost(
 	blacklistId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/blacklist/${userId}`, {
 		method: 'POST',
 		body: {
 			'id': blacklistId
@@ -144,8 +144,8 @@ export function fetchUserFriendDelete(
 	friendId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch<"OK">(`${config.public.back.uri}/user/friends/${userId}`, {
+	const back = getBackPath();
+	return useFetch<"OK">(`${back}/user/friends/${userId}`, {
 		method: 'DELETE',
 		body: {
 			'id': friendId
@@ -165,8 +165,8 @@ export function fetchUserBlacklistDelete(
 	blacklistId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/blacklist/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/blacklist/${userId}`, {
 		method: 'DELETE',
 		body: {
 			'id': blacklistId
@@ -186,8 +186,8 @@ export function fetchChangeDisplayName(
 	name: string,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/name/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/name/${userId}`, {
 		method: 'PATCH',
 		body: {
 			'name': name
@@ -207,8 +207,8 @@ export function changeUserPicture(
 	picture: FormData,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/user/picture/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/user/picture/${userId}`, {
 		method: 'POST',
 		body: picture,
 		onResponse: ({ request, response, options }) => {

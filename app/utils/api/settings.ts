@@ -4,8 +4,8 @@ export function fetchSettings(
 	userId: number,
 	callback: (response: BackUserSettings) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch<BackUserSettings>(`${config.public.back.uri}/settings/${userId}`, {
+	const back = getBackPath();
+	return useFetch<BackUserSettings>(`${back}/settings/${userId}`, {
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('settings fetched');
@@ -22,8 +22,8 @@ export function fetchSettingsPatch(
 	sound: boolean,
 	callback: (response: any) => void = () => {},
 ){
-	const config = useRuntimeConfig();
-	return useFetch(`${config.public.back.uri}/settings/${userId}`, {
+	const back = getBackPath();
+	return useFetch(`${back}/settings/${userId}`, {
 		method: 'PATCH',
 		body: {
 			'theme': theme,

@@ -23,6 +23,7 @@ class MyWsAdapter extends IoAdapter {
 				methods: ['GET', 'POST'],
 				credentials: true,
 			},
+			transports: ['websocket'],
 		};
 		return super.create(port, options);
 	}
@@ -30,7 +31,7 @@ class MyWsAdapter extends IoAdapter {
 
 async function bootstrap() {
 
-	const app = await NestFactory.create(AppModule, {cors: true});
+	const app = await NestFactory.create(AppModule/*, {cors: true}*/);
 
 	const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
@@ -39,9 +40,7 @@ async function bootstrap() {
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
 	app.enableCors({
-		origin: [
-			configService.get<string>('CORS_ORIGINS'),
-		],
+		origin: configService.get<string>('CORS_ORIGINS'),
 		credentials: true,
 	});
 
@@ -53,6 +52,8 @@ async function bootstrap() {
 	app.useGlobalGuards(new AuthGuard(reflector, authService));
 
 	app.use(cookieParser());
+
+	app.setGlobalPrefix('api');
 
 	await app.listen(
 		configService.get<number>('PORT'),
