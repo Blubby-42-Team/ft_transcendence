@@ -60,8 +60,13 @@ export class ModelGameService {
 		})
 
 		if (userId === undefined) {
+			this.logger.warn(`Skipping disconnecting client ${client.id} because no user id found`);
 			return;
 		}
+
+		// Check if user was in matchmaking
+
+		await this.gameService.removePlayerFromTwoUserMatchMaking(userId);
 
 		// Try to find the lobby of the user
 		const lobby = await this.gameService.findUserInLobbys(userId)
@@ -87,8 +92,7 @@ export class ModelGameService {
 			if (err instanceof NotFoundException) {
 				this.logger.debug(`User ${userId} not found`);
 
-				//TODO REMOVE @Matthew-Dreemurr this is a temp fix
-				return '//TODO REMOVE @Matthew-Dreemurr this is a temp fix'
+				return `User ${userId}`
 			}
 			throw err;
 		})
