@@ -25,7 +25,7 @@ export default defineNuxtConfig({
 		'@vueuse/nuxt',
 		'@morev/vue-transitions/nuxt',
 		['@pinia/nuxt', {
-			autoImports: ['defineStore']
+			autoImports: ['defineStore', 'storeToRefs']
 		}],
 		'nuxt-icon',
 	],

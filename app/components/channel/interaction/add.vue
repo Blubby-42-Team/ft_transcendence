@@ -6,7 +6,8 @@ const props = defineProps({
 		required: true
 	},
 });
-const { selectedChannel } = useChannelStore();
+const channelStore = useChannelStore();
+const { selectedChannel } = storeToRefs(channelStore);
 const { getUser, fetchUser } = useUserStore();
 const { addNotif } = useNotifStore();
 

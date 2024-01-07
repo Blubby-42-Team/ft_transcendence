@@ -30,9 +30,9 @@ export const useChannelStore = defineStore('channel', {
 		} as IChannelTypeSettings,
 	}),
 	getters: {
-		selectedChannel: (state) => computed(() => state._selectedChannelGet),
-		channels:        (state) => computed((): test => state._types),
-		activeType:      (state) => computed((): IChannelTypeSettings => state._activeType),
+		selectedChannel: (state) => state._selectedChannelGet,
+		channels:        (state): test => state._types,
+		activeType:      (state): IChannelTypeSettings => state._activeType,
 	},
 	actions: {
 		refresh(){
@@ -50,13 +50,9 @@ export const useChannelStore = defineStore('channel', {
 			this._types.friends.channels = channels.filter((channel) => this._types.friends.type.includes(channel?.type as EChatType)) as IShortChannel[];
 			this._types.groups.channels  = channels.filter((channel) => this._types.groups .type.includes(channel?.type as EChatType)) as IShortChannel[];
 			this._types.chats.channels   = channels.filter((channel) => this._types.chats  .type.includes(channel?.type as EChatType)) as IShortChannel[];
-			console.log(this._activeType);
-			// console.log(this._types);
-			console.log(this._selectedChannelGet);
 		},
 		fetchChannelList(userId: number){
 			return fetchAllChats(userId, (response) => {
-				
 				for (const chat of response){
 					this._shortChannels[chat.id] = {
 						id: chat.id,

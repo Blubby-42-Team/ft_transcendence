@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 
 import { EChatType, IShortChannel } from "#imports"
+import { storeToRefs } from 'pinia'
 
-const { selectedChannel, channels, activeType } = useChannelStore()
+const channelStore = useChannelStore()
+
+const { selectedChannel, channels, activeType } = storeToRefs(channelStore);
 
 </script>
 
@@ -39,7 +42,6 @@ const { selectedChannel, channels, activeType } = useChannelStore()
 				</TransitionExpand>
 			</template>
 		</template>
-		{{ activeType }}
 	</div>
 </template>
 
