@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { LobbyStatus } from '#imports';
+import { ELobbyStatusClient } from '#imports';
 
 const props = defineProps({
 	endFunc: {
@@ -12,24 +12,26 @@ const props = defineProps({
 const { waitingString } = usePageStore();
 
 const hoverButton = ref(false);
-const timer = new SearchGame(props.endFunc);
+const lobbyStore = useLobbyStore();
+const { startMatchMaking, cancelMatchMaking } = lobbyStore;
+const { status } = toRefs(lobbyStore);
 
 </script>
 
 <template>
-	<template v-if="timer.status.value === LobbyStatus.NOT_STARTED">
+	<template v-if="status === ELobbyStatusClient.NOT_STARTED">
 		<GenericButton class="w-full h-16" :buttonStyle="1"
-		@click="timer.play()"
+		@click="startMatchMaking"
 		>
 			Play
 		</GenericButton>
 	</template>
-	<template v-else-if="timer.status.value === LobbyStatus.STARTING">
+	<template v-else-if="status === ELobbyStatusClient.ON_HOLD">
 		<GenericButton class="w-full h-16 text-black hover:bg-opacity-70" :buttonStyle="3"
 			:selected="true"
 			@mouseover="hoverButton = false"
 			@mouseleave="hoverButton = true"
-			@click="timer.cancel()"
+			@click="cancelMatchMaking"
 		>
 			<template v-if="hoverButton">
 				Finding other players {{ waitingString }}
@@ -39,7 +41,7 @@ const timer = new SearchGame(props.endFunc);
 			</template>
 		</GenericButton>
 	</template>
-	<template v-else-if="timer.status.value === LobbyStatus.STARTED">
+	<template v-else-if="status === ELobbyStatusClient.STARTING">
 		<GenericButton class="w-full h-16 text-black" :buttonStyle="3" :selected="true" :disabled="true">
 			Starting...
 		</GenericButton>

@@ -5,6 +5,11 @@ const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 
 const { addNotif } = useNotifStore();
+const lobbyStore = useLobbyStore();
+
+onMounted(() => {
+	lobbyStore.reset();
+})
 
 </script>
 
