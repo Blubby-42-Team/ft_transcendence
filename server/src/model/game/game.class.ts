@@ -90,6 +90,7 @@ export class LobbyInstance {
 
 		if (this.game === undefined) {
 			this.logger.warn(`No game instance to stop in lobby ${this.room_id}`);
+			return 'ok';
 			// throw new Error(`No game instance to stop in lobby ${this.room_id}`);
 		}
 
@@ -98,7 +99,8 @@ export class LobbyInstance {
 		//TODO save game state to DB
 	}
 
-	async movePlayer (userId: number, sens: boolean, key_press: boolean) {
+	async movePlayer (userId: number, sens: boolean, key_press: boolean, launch: boolean) {
+		this.game.startRound(launch);
 		this.game.move(this.players[userId].dir, sens, key_press);
 	}
 

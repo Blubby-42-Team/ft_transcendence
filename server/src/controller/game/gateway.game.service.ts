@@ -18,6 +18,10 @@ export class GatewayGameService {
 		return this.modelGameService.clientDisconnect(client);
 	}
 
+	async joinAGame(roomId: string, userId: number, Socket: Socket) {
+		return this.modelGameService.joinAGame(roomId, userId, Socket);
+	}
+
 	/**
 	 * Will try to match the user with another user
 	 * @param userId Id of the user
@@ -32,8 +36,8 @@ export class GatewayGameService {
 		return this.modelGameService.readyOrNot(userId, ready);
 	}
 
-	async move(userId: number, direction: boolean, press: boolean) {
-		return this.modelGameService.move(userId, direction, press);
+	async move(userId: number, direction: boolean, press: boolean, launch: boolean) {
+		return this.modelGameService.move(userId, direction, press, launch);
 	}
 
 	//  // TODO Feature temporarily disabled #39

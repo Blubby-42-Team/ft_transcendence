@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsBoolean} from 'class-validator'
+import { IsNotEmpty, IsString, IsNumber, IsBoolean, IsOptional} from 'class-validator'
 import { Min } from 'class-validator';
 
 export class AcknowledgmentWsDto<T> {
@@ -40,6 +40,8 @@ export class JoinGameRoomRequestDto extends WsRequestDto {
 }
 
 export class MatchMakingRequestDto extends WsRequestDto {
+	@IsOptional()
+	party_id: string | undefined;
 }
 
 export class ReadyOrNotRequestDto extends WsRequestDto {
@@ -73,6 +75,9 @@ export class moveRequestDto extends WsRequestDto {
 
 	@IsNotEmpty()
 	press: boolean;
+
+	@IsOptional()
+	launch: boolean | undefined;
 }
 
 

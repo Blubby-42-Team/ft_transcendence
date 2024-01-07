@@ -19,13 +19,16 @@ export class ModelGameService {
 		private readonly userService: PostgresUserService,
 	) {}
 
+	async joinAGame(roomId: string, userId: number, socket: Socket) {
+		await this.gameService.joinA2UserPrivateGame(roomId, userId, socket);
+	}
 
 	async readyOrNot(userId: number, ready: boolean) {
 		return this.gameService.readyOrNot(userId, ready);
 	}
 
-	async move(userId: number, direction: boolean, press: boolean) {
-		return this.gameService.playerMove(userId, direction, press);
+	async move(userId: number, direction: boolean, press: boolean, launch: boolean) {
+		return this.gameService.playerMove(userId, direction, press, launch);
 	}
 
 	/**
@@ -130,14 +133,26 @@ export class ModelGameService {
 	 * 
 	 * @param userId Id of the user that want to create a lobby
 	 * @returns return the room_id of the lobby
-	 * @throws BadRequestException if the user is allready in a lobby
 	 */
 	async createAGame(userId: number) {
 		return await this.gameService.findUserInLobbys(userId)
-		.then((lobby) => {
+		.then( async (lobby) => {
 			if (lobby !== undefined) {
-				this.logger.debug(`User ${userId} is allready in the lobby ${lobby.room_id}`);
-				throw new BadRequestException(`User ${userId} is allready in the lobby ${lobby.room_id}`);
+				this.logger.debug(`User ${userId} is already in a lobby, disconnect him first before creating a new one`);
+				const disconnectedUser = await this.userService.getUserById(userId)
+				.then((user) => {
+					return user.display_name;
+				})
+				.catch((err) => {
+					if (err instanceof NotFoundException) {
+						this.logger.debug(`User ${userId} not found`);
+						return userId;
+					}
+					throw err;
+				})
+				this.gameService.disconnectAllPlayersFromLobby(lobby.room_id, `Player ${disconnectedUser} left the game`);
+				this.gameService.deleteLobby(lobby.room_id);
+				throw new NotFoundException(`User ${userId} is already in a lobby, disconnect him first before creating a new one`);
 			}
 			this.logger.error(`getLobbyByUserId(${userId}) return undefined?!`);
 			throw new BadGatewayException(`Create lobby failed!, see logs or contact an admin`);

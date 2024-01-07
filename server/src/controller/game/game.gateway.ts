@@ -211,6 +211,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	) {
 		return this.handleRequest(socket, req, MatchMakingRequestDto, async (user, data): Promise<joinGameResponse> => {
 
+			if (data.party_id !== undefined) {
+				await this.gatewayGameService.joinAGame(data.party_id, user.userId, socket);
+				return 'ok';
+			}
+
 			await this.gatewayGameService.matchMakingTwoPlayers(user.userId, socket);
 			return 'ok';
 		});
@@ -243,7 +248,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.handleRequest(socket, req, moveRequestDto, async (user, data): Promise<void> => {
 				this.logger.debug(`move: ${data.dir}, press: ${data.press}`);
 				try {
-					this.gatewayGameService.move(user.userId, data.dir, data.press)
+					this.gatewayGameService.move(user.userId, data.dir, data.press, data?.launch ?? false)
 				} catch (error) {
 					this.logger.error(error);
 				}
