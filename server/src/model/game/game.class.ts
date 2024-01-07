@@ -1,4 +1,4 @@
-import { BotDifficulty, gameSettingsType, gameStateType } from '@shared/types/game/game'
+import { BotDifficulty, gameSettingsType, gameStateType, gameStatusType } from '@shared/types/game/game'
 import { Direction } from '@shared/types/game/utils'
 import { GameEngine } from '@shared/game/game';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
@@ -45,13 +45,10 @@ export class LobbyInstance {
 
 	private whiteList: number[] = [];
 
-	private game: GameEngine | undefined;
-
-	private gameState: gameStateType | undefined;
+	//TODO rework and pass to private
+	public game: GameEngine | undefined;
 
 	private gameSettings: gameSettingsType;
-
-	private io: Server;
 
 	async checkBeforeStart() {
 		if (this.slots !== this.gameSettings.numPlayer) {
@@ -100,8 +97,11 @@ export class LobbyInstance {
 	}
 
 	async movePlayer (userId: number, sens: boolean, key_press: boolean, launch: boolean) {
-		this.game.startRound(launch);
-		this.game.move(this.players[userId].dir, sens, key_press);
+		if (launch === true) {
+			this.game.startRound(launch);
+		} else {
+			this.game.move(this.players[userId].dir, sens, key_press);
+		}
 	}
 
 	/**

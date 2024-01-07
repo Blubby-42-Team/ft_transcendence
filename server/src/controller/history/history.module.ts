@@ -14,5 +14,8 @@ import { ModelHistoryModule } from 'src/model/history/history.module';
 	providers: [
 		HistoryService,
 	],
+	exports: [
+		HistoryService,
+	],
 })
 export class ControllerHistoryModule { }

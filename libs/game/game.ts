@@ -10,7 +10,7 @@ const speedAcceleration = 0.0005;
 const initialBallSpeed = 0.25;
 
 export class GameEngine extends Controller {
-	private gamestate: gameStateType;
+	public gamestate: gameStateType;
 	private continueLoop = false;
 	private needsSleep = false;
 	private datewip = new Date;
