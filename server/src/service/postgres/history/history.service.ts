@@ -61,8 +61,8 @@ export class PostgresHistoryService {
 		
 		return this.historyRepository.save(match)
 		.catch((err) => {
-			throw new InternalServerErrorException("Could not add match history");
 			this.logger.debug("Could not add match history");
+			throw new InternalServerErrorException("Could not add match history");
 		})
 		.then((res) => {
 			return res.id;
