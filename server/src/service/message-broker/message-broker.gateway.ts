@@ -2,7 +2,7 @@ import { WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server } from "socket.io";
 
 @WebSocketGateway({
-	namespace: 'message-broker',
+	namespace: '/api/message-broker',
 })
 export class EmitMessageBrokerGateway {
 	@WebSocketServer()

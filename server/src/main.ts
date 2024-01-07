@@ -23,6 +23,7 @@ class MyWsAdapter extends IoAdapter {
 				methods: ['GET', 'POST'],
 				credentials: true,
 			},
+			transports: ['websocket'],
 		};
 		return super.create(port, options);
 	}
@@ -51,6 +52,8 @@ async function bootstrap() {
 	app.useGlobalGuards(new AuthGuard(reflector, authService));
 
 	app.use(cookieParser());
+
+	app.setGlobalPrefix('api');
 
 	await app.listen(
 		configService.get<number>('PORT'),

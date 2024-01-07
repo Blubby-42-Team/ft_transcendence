@@ -1,0 +1,66 @@
+version: '3.1'
+## User context https://stackoverflow.com/a/45353241
+
+services:
+### Database ###
+  db:
+    container_name: postgres
+    image: postgres:16.0
+    restart: always
+    environment:
+     - POSTGRES_PASSWORD=test
+     - POSTGRES_USER=test
+     - POSTGRES_DB=test
+    # ports:
+      # - "5432:5432"
+    # volumes:
+    # //TODO check if this is the right path
+      # - db_data:/var/lib/postgresql
+    networks:
+      - protected
+### Backend ###
+  back:
+    container_name: back
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    depends_on:
+      - db
+    env_file:
+      - server_prod.env
+    networks:
+      - protected
+### Frontend ###
+  front:
+    container_name: front
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    depends_on:
+      - db
+      - back
+    env_file:
+      - app_prod.env
+    networks:
+      - protected
+### nginx ###
+# //TODO https://gist.github.com/JarenGlover/d7ffab312ea756834218
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+    - ./ping.nginxconf:/etc/nginx/conf.d/default.conf
+    ports:
+    - "8080:443"
+    networks:
+      - protected
+      - public
+### Volumes ###
+volumes:
+  db_data:
+### Networks ###
+networks:
+  protected:
+  public:

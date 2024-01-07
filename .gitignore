@@ -2,9 +2,4 @@ node_modules/
 .nuxt/
 dist
 .output/
-.env
-server/test/gameWS/asdfasdfa.ts
-server/test/gameWS/package-lock.json
-server/test/gameWS/package.json
-server/test/gameWS/tempCodeRunnerFile.ts
-server/test/gameWS/tsconfig.json
+*.env

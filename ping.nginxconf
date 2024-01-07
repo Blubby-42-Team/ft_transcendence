@@ -1,0 +1,46 @@
+server {
+
+	listen 443 ssl;
+	server_name localhost:8080;
+
+	ssl_certificate /etc/nginx/ssl/inception.crt;
+	ssl_certificate_key /etc/nginx/ssl/inception.key;
+	location / {
+				# requests on '/' will be proxy_pass 
+				#proxy server for sending data to node.js
+				proxy_pass http://front:3000;
+	}
+
+	location /api {
+		# requests to the API will be proxy_pass to the backend API infra
+		# read this -> http://en.wikipedia.org/wiki/X-Forwarded-For
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
+		
+		# pass the host header from the client to help with redirects 
+		proxy_set_header Host $http_host;
+		
+		# stops nginx from doing something silly
+		proxy_redirect off;
+		
+		# proxy_pass to backend API Django in my case
+		proxy_pass http://back:3000;
+		
+		# send the IP address and remote server address for secuirty 
+		proxy_set_header X-Real-IP $remote_addr;
+		
+		# Adds headers to the HTTP response 
+		# add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';  
+	}
+
+	location /socket.io/ {
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $host;
+
+		proxy_pass http://back:3000;
+
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+	
+}
