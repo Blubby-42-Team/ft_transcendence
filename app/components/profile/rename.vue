@@ -3,6 +3,8 @@
 const { textarea, input } = useTextareaAutosize()
 
 const { primaryUser, fetchUser } = useUserStore();
+const { addNotif } = useNotifStore();
+
 
 const props = defineProps({
 	close: {
@@ -33,13 +35,16 @@ function uploadImage() {
     }
 }
 
-function changeName(){
+async function changeName(){
 	const name = newName.value;
 	newName.value = "";
 	if (name && name.length > 0){
-		fetchChangeDisplayName(primaryUser.value.id, name, () => {
+		const res = await fetchChangeDisplayName(primaryUser.value.id, name, () => {
 			fetchUser(primaryUser.value.id);
 		});
+		if (res.data.value !== "ok"){
+			addNotif("Could not change name");;
+		}
 	}
 }
 
