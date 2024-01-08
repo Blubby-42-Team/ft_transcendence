@@ -68,6 +68,10 @@ export class SocketClientGame extends SocketClient {
 	}
 
 	startRound(press: boolean){
-		// this.emit(EClientEmits.StartMatchMaking, {});
+		this.emit(EClientEmits.Move, {
+			dir: false,
+			press: false,
+			launch: press,
+		});
 	}
 };
