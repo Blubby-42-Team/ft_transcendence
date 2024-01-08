@@ -2,6 +2,7 @@
 
 const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore();
 const { setup, primaryUser } = useUserStore();
+const { setup: setup2 } = useLobbyStore();
 const { selectedChannel, channels, activeType } = useChannelStore();
 const { notif } = useNotifStore();
 
@@ -36,8 +37,6 @@ const defaultTheme: gameTheme = {
 	player2Top:			{	type: 'color',	color: 'white'	},
 }
 
-startLoopWaiting()
-
 const theme			= useState('theme', () => 'dark');
 fetchSettings(primaryUser.value.id, (settings) => {
 	console.log(settings)
@@ -51,6 +50,8 @@ useState<gameTheme>('gameTheme', () => defaultTheme);
 
 if (process.client) {
 	setup();
+	setup2();
+	startLoopWaiting();
 }
 
 </script>

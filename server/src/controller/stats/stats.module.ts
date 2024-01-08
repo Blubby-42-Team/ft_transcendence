@@ -14,5 +14,8 @@ import { ModelStatsModule } from 'src/model/stats/stats.module';
 	providers: [
 		StatsService,
 	],
+	exports: [
+		StatsService,
+	],
 })
 export class ControllerStatsModule { }

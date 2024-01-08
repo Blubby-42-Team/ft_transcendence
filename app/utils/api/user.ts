@@ -187,7 +187,7 @@ export function fetchChangeDisplayName(
 	callback: (response: any) => void = () => {},
 ){
 	const back = getBackPath();
-	return useFetch(`${back}/user/name/${userId}`, {
+	return useFetch<"ok">(`${back}/user/name/${userId}`, {
 		method: 'PATCH',
 		body: {
 			'name': name

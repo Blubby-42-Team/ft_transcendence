@@ -2,7 +2,7 @@ import { gameStateType, gameStatusType, BotDifficulty, gameSettingsType } from "
 import { Direction } from '../types/game/utils';
 
 
-const gameState4PlayersDefault: gameStateType = {
+export const gameState4PlayersDefault: gameStateType = {
 	status:					gameStatusType.ON_HOLD,
 	aispeed:				0.1,
 	playerspeed:			0.5,
@@ -24,7 +24,7 @@ const gameState4PlayersDefault: gameStateType = {
 	}
 }
 
-const gameState2PlayersDefault: gameStateType = {
+export const gameState2PlayersDefault: gameStateType = {
 	status:				gameStatusType.ON_HOLD,
 	aispeed:			0.1,
 	playerspeed:		0.5,
