@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsString } from "class-validator/types/decorator/decorators";
+import { IsDefined, IsNotEmpty, IsString } from "class-validator";
 
 export class JoinPartyDto {
 	@IsDefined()

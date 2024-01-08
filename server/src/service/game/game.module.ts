@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { EmitGateway } from './emit.gateway';
+import { InGameGateway } from './socket/in.gateway';
 import { AuthModule } from 'src/auth/auth.module';
 import { GameService } from './game.service';
 import { ModelUserModule } from 'src/model/user/user.module';
+import { IdManagerService } from './idManager.service';
+import { OutGameGateway } from './socket/out.gateway';
 
 @Module({
 
@@ -12,11 +14,12 @@ import { ModelUserModule } from 'src/model/user/user.module';
 	],
 	providers: [
 		GameService,
-		EmitGateway,
+		IdManagerService,
+		InGameGateway,
+		OutGameGateway,
 	],
 	exports: [
 		GameService,
-		EmitGateway
 	],
 })
 export class GameModule { }

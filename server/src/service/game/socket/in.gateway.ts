@@ -1,31 +1,32 @@
 import { Server, Socket } from 'socket.io';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
-import { ESocketServerEventName, GameResponse, WS } from '@shared/dto/ws.dto';
+import { WS } from '@shared/dto/ws.dto';
 import { ESocketClientEventName } from '@shared/dto/ws.dto';
-import { gameStateType } from '@shared/types/game/game';
 import { BadGatewayException, ForbiddenException, BadRequestException, HttpException, Logger } from '@nestjs/common';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
 import { AuthService } from 'src/auth/auth.service';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as cookie from 'cookie'
-import { IdManagerService } from './idManager.service';
-import { JoinPartyDto } from './game.dto';
+import { IdManagerService } from '../idManager.service';
+import { JoinPartyDto } from '../game.dto';
+import { GameService } from '../game.service';
 
 @WebSocketGateway({
 	namespace: '/api/game',
 })
-export class EmitGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(
 		private readonly authService: AuthService,
 		private readonly idManagerService: IdManagerService,
+		private readonly gameService: GameService,
 	) {}
 
 	@WebSocketServer()
 	server: Server;
 
-	readonly logger = new Logger(EmitGateway.name);
+	readonly logger = new Logger(InGameGateway.name);
 
 	async handleAuth(socket: Socket) {
 		this.logger.debug(socket?.handshake?.headers);
@@ -157,14 +158,12 @@ export class EmitGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} join the matchmaking`);
-		this.handleRequest(
-			client,
-			req,
-			undefined,
-			async (user): Promise<string> => {
-				return "ok"
-			}
-		);
+		return this.handleRequest(client, req, undefined, async (user) => {
+			this.idManagerService.executePrimaryAction(client, user.userId, async () => {
+				this.gameService.joinMatchmaking(user.userId);
+			});
+			return "ok"
+		});
 	}
 
 	@SubscribeMessage(ESocketClientEventName.leaveMatchMaking)
@@ -173,11 +172,10 @@ export class EmitGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} leave the matchmaking`);
-		this.handleRequest(
-			client,
-			req,
-			undefined,
-			async (user): Promise<string> => {
+		return this.handleRequest(client, req, undefined,
+			async (user) => {
+				this.gameService.leaveMatchmaking(user.userId);
+				this.idManagerService.resetUserPrimarySocket(client, user.userId);
 				return "ok"
 			}
 		);
@@ -189,10 +187,7 @@ export class EmitGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} is ready`);
-		this.handleRequest(
-			client,
-			req,
-			JoinPartyDto,
+		return this.handleRequest(client, req, JoinPartyDto,
 			async (user, data): Promise<string> => {
 				return "ok"
 			}
@@ -217,25 +212,5 @@ export class EmitGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				return "ok"
 			}
 		);
-	}
-
-	/************************************************************************ */
-	/*								 	                               */
-	/************************************************************************ */
-
-	emitToRoom<T>(
-		roomId: string,
-		data: GameResponse<T>,
-	) {
-		this.server.in(roomId)
-			.emit(ESocketServerEventName.matchmakingStatus, data);
-	}
-	
-	emitGameState(
-		roomId: string,
-		newGameState: gameStateType
-	){
-		this.server.to(roomId)
-			.emit(ESocketServerEventName.matchState, newGameState);
 	}
 }
