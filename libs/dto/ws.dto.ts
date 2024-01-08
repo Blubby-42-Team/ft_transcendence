@@ -15,6 +15,11 @@ export class AcknowledgmentWsDto<T> {
 	message: T;
 }
 
+export interface WS<T> {
+	status: 'ok' | 'error' | 'debug',
+	message: T,
+};
+
 export type GameResponse<T = undefined> = {
 	status: ELobbyStatus,
 	msg: string,

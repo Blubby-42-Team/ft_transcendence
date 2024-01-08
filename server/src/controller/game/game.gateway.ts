@@ -1,6 +1,6 @@
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io'
-import { AcknowledgmentWsDto } from '@shared/dto/ws.dto'
+import { AcknowledgmentWsDto, WS } from '@shared/dto/ws.dto'
 import { BadGatewayException, BadRequestException, ForbiddenException, HttpException, Logger } from '@nestjs/common';
 import { AuthService } from '../../auth/auth.service';
 import { GatewayGameService } from './gateway.game.service';
@@ -43,7 +43,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		req: any,
 		dtoClass: new () => InputDTO,
 		callback: (user: UserAuthTokenDto, data: InputDTO) => Promise<OutputType>
-	): Promise<AcknowledgmentWsDto<OutputType>> {
+	): Promise<WS<OutputType | string>> {
 		try {
 
 			this.logger.debug(req, socket?.handshake?.headers);
@@ -109,18 +109,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			});
 
 			const res = await callback(user, dto);
-			return new AcknowledgmentWsDto<OutputType>('ok', res);
-
-		} catch (error) {
-
+			return {
+				status: 'ok',
+				message: res,
+			};
+		}
+		catch (error) {
 			this.logger.error(error);
 
 			// Check if the error is a HttpException
 			if (error instanceof HttpException) {
-				return new AcknowledgmentWsDto<any>('error', error?.message ?? 'unknown error, check logs');
+				return {
+					status: 'error',
+					message: error?.message ?? 'unknown error, check logs',
+				};
 			}
 
-			return new AcknowledgmentWsDto<any>('error', error);
+			return {
+				status: 'error',
+				message: error,
+			};
 		}
 	}
 }
