@@ -113,9 +113,9 @@ export class Auth42Controller {
 			user42?.id42,
 		);
 
-		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'none', domain: 'localhost', secure: true});
+		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'lax', domain: 'localhost' });
 		
-		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'none', domain: 'localhost', secure: true});
+		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'lax', domain: 'localhost' });
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,
