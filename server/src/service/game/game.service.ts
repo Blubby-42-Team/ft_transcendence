@@ -216,6 +216,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			socket.join('matchMaking');
 			// Erase the old socket with the new one
 			this.usersClients[userId].connectedClients = [socket];
+			this.twoUserMatchMakingQueue.find((e) => e.userId === userId).socket = socket;
 			return;
 		}
 
