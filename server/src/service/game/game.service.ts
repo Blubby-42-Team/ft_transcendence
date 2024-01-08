@@ -24,7 +24,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		[key: string]: LobbyInstance;
 	} = {};
 
-	private usersInLobby: Map<number, {
+	private usersClients: Map<number, {
 		room_id: string,
 		connectedClients: Socket[],
 	}> = new Map();
@@ -188,8 +188,40 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	 */
 	async addPlayerToTwoUserMatchMaking(userId: number, socket: Socket) {
 
+		// Check if the user is already in the match making
+		//TODO FIX!!
 
-		const checkIfPlayerIsAlreadyInLobby = await this.findUserInLobbys(userId)
+		const checkIfPlayerIsAlreadyInMatchMaking = this.twoUserMatchMakingQueue.find((e) => e.userId === userId);
+
+		if (checkIfPlayerIsAlreadyInMatchMaking !== undefined) {
+			this.logger.debug(`User ${userId} is already in the match making`);
+			this.logger.debug(socket.id)
+			
+			// Check if the user use the same socket
+			if (checkIfPlayerIsAlreadyInMatchMaking.socket.id === socket.id) {
+				// Ignore the request if the user is already in the match making with the same socket
+				this.logger.debug(`User ${userId} is already in the match making with the same socket`);
+				socket.join('matchMaking');
+				return;
+			}
+
+			// Remove from room the older socket if he is still connected
+			checkIfPlayerIsAlreadyInMatchMaking.socket.emit(emitName.matchMakingStatus, {
+				status: ELobbyStatus.ERROR,
+				msg: "You have been removed from the match making, duplicate connection",
+			} as matchMakingWSResponse);
+			checkIfPlayerIsAlreadyInMatchMaking.socket.leave('matchMaking');
+
+			// Join the new socket to the match making
+			socket.join('matchMaking');
+			// Erase the old socket with the new one
+			this.usersClients[userId].connectedClients = [socket];
+			return;
+		}
+
+		// Check if the user is already in a lobby
+
+		await this.findUserInLobbys(userId)
 		.then((lobby) => {
 			this.logger.debug(`User ${userId} is already in a lobby ${lobby.room_id}`);
 			throw new BadRequestException(`User ${userId} is already in a lobby ${lobby.room_id}`);
@@ -202,16 +234,15 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			// User is not in a lobby, continue
 		})
 
-		const checkIfUserIsAlreadyInMatchMaking = this.twoUserMatchMakingQueue.find((e) => e.userId === userId);
-		if (checkIfUserIsAlreadyInMatchMaking !== undefined) {
-			this.logger.log(`User ${userId} is already in the match making, ignoring`);
-			return;
-		}
 		this.twoUserMatchMakingQueue.push({
 			userId: userId,
 			socket: socket,
 		});
 		socket.join('matchMaking');
+		this.usersClients[userId] = {
+			room_id: 'matchMaking',
+			connectedClients: [socket],
+		};
 		this.logger.debug(`addPlayerToTwoUserMatchMaking ${userId}`);
 	}
 
@@ -228,8 +259,13 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			socket.disconnect();
 		}
 
+		// Remove the user from the map
+
 		// Remove the user from the array using filter
 		this.twoUserMatchMakingQueue = this.twoUserMatchMakingQueue.filter((e) => e.userId !== userId);
+
+		// Remove the user from the map
+		delete this.usersClients[userId];
 	}
 
 	/**
@@ -248,7 +284,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		});
 		this.lobbys[newRoomId] = newLobby;
 
-		this.usersInLobby[userId] = {
+		this.usersClients[userId] = {
 			room_id: newRoomId,
 			connectedClients: [],
 		};
@@ -276,7 +312,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new BadRequestException(`User ${userId} is not in the white list of lobby ${roomId}`);
 		}
 
-		const checkUserWsConnectedClient = this.usersInLobby[userId]?.connectedClients;
+		const checkUserWsConnectedClient = this.usersClients[userId]?.connectedClients;
 		if (checkUserWsConnectedClient !== undefined) {
 
 			// Check if the user have already a client connected
@@ -297,7 +333,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					this.emitGAteway.server.in(client.id).socketsLeave(roomId)
 
 					// Remove the client from the array using filter
-					this.usersInLobby[userId].connectedClients = this.usersInLobby[userId].connectedClients.filter(c => c !== client);
+					this.usersClients[userId].connectedClients = this.usersClients[userId].connectedClients.filter(c => c !== client);
 				}
 			}
 		}
@@ -319,14 +355,14 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		});
 
 		// Add the client to the user map if he is not already in
-		if (this.usersInLobby[userId] === undefined) {
-			this.usersInLobby[userId] = {
+		if (this.usersClients[userId] === undefined) {
+			this.usersClients[userId] = {
 				room_id: roomId,
 				connectedClients: [],
 			};
 		}
 
-		this.usersInLobby[userId].connectedClients.push(socket);
+		this.usersClients[userId].connectedClients.push(socket);
 
 		this.logger.debug(`joinPlayerToLobby ${roomId} ${userId}`);
 	}
@@ -354,11 +390,11 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		const players = this.lobbys[roomId].getPlayers();
 
 		for (const player_id of Object.keys(players)) {
-			if (this.usersInLobby[player_id] === undefined) {
+			if (this.usersClients[player_id] === undefined) {
 				this.logger.error(`User ${player_id} is in the lobby ${roomId} but not in the user map!?`);
 				throw new BadGatewayException(`[${roomId}][${player_id}] Failed to delete lobby, see logs or contact an admin`);
 			}
-			delete this.usersInLobby[player_id];
+			delete this.usersClients[player_id];
 		}
 
 		delete this.lobbys[roomId];
@@ -487,13 +523,13 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	async findUserInLobbys(userId: number): Promise<LobbyInstance> {
 		
 		// I use a user map that make the link between the user and the lobby
-		const user = this.usersInLobby[userId];
+		const user = this.usersClients[userId];
 		if (user === undefined) {
 			this.logger.debug(`User ${userId} does not exist`);
 			throw new NotFoundException(`User ${userId} does not exist`);
 		}
 
-		return this.lobbys[user.room_id];
+		return this.lobbys[user?.room_id];
 	}
 
 	/**
@@ -502,8 +538,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	 * @returns Socket of the user
 	 */
 	async findUserIdOfActiveSocket(socketId: string): Promise<number> {
-		for (const userId of Object.keys(this.usersInLobby)) {
-			for (const socket of this.usersInLobby[userId].connectedClients) {
+		for (const userId of Object.keys(this.usersClients)) {
+			for (const socket of this.usersClients[userId].connectedClients) {
 				if (socket.id === socketId) {
 					return parseInt(userId);
 				}
@@ -546,10 +582,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		}
 
 		const playerPublicData = {};
-		for (const userId of Object.keys(this.usersInLobby)) {
+		for (const userId of Object.keys(this.usersClients)) {
 			playerPublicData[userId] = {
-				room_id: this.usersInLobby[userId].room_id,
-				connectedClients: this.usersInLobby[userId].connectedClients?.map((e) => e?.id),
+				room_id: this.usersClients[userId].room_id,
+				connectedClients: this.usersClients[userId].connectedClients?.map((e) => e?.id),
 			};
 		}
 
