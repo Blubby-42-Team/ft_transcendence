@@ -30,16 +30,18 @@ export enum ESocketRooms {
 	matchMaking	= 'matchMaking',
 }
 
-export enum ESocketEventName {
-	matchMakingStatus	= 'matchMakingStatus',
-	stateGame			= 'stateGame',
+export enum ESocketClientEventName {
+	joinMatchMaking		= 'joinMatchMaking',
+	leaveMatchMaking	= 'leaveMatchMaking',
+	ready 				= 'ready',
+	joinParty			= 'joinParty',
+}
+
+export enum ESocketServerEventName {
+	matchmakingStatus	= 'matchmakingStatus',
+	matchState			= 'matchState',
 }
 
 export enum ELobbyStatus {
-	WAITING_IN_QUEUE	= 'waitingInQueue',
-	FOUND_AND_WAIT		= 'foundAndWait',
-	START_GAME			= 'startGame',
-	STOP_GAME			= 'stopGame',
-	NTFY				= 'ntfy',
-	ERROR				= 'error',
+	
 }
