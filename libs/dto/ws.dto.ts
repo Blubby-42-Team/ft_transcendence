@@ -34,6 +34,9 @@ export enum ESocketClientEventName {
 	leaveMatchMaking	= 'leaveMatchMaking',
 	readyToPlay 		= 'readyToPlay',
 	joinParty			= 'joinParty',
+
+	movePlayer			= 'movePlayer',
+	startRound			= 'startRound',
 }
 
 export enum ESocketServerEventName {
@@ -45,4 +48,12 @@ export enum ESocketServerEventName {
 export enum ELobbyStatus {
 	WaitingForPlayers	= 'WaitingForPlayers',
 	AllPlayersReady		= 'AllPlayersReady',
+	LobbyEnded			= 'LobbyEnded',
 }
+
+export enum ESocketActionType {
+	Primary		= 'Primary',
+	WeakPrimary	= 'WeakPrimary',
+	Secondary	= 'Secondary',
+}
+

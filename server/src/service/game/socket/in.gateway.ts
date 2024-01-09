@@ -1,7 +1,8 @@
 import { Server, Socket } from 'socket.io';
+
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
-import { AcknowledgmentWsDto, ESocketServerEventName, WS } from '@shared/dto/ws.dto';
+import { AcknowledgmentWsDto, ESocketActionType, ESocketServerEventName, WS } from '@shared/dto/ws.dto';
 import { ESocketClientEventName } from '@shared/dto/ws.dto';
 import { BadGatewayException, ForbiddenException, BadRequestException, HttpException, Logger } from '@nestjs/common';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
@@ -10,7 +11,7 @@ import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as cookie from 'cookie'
 import { IdManagerService } from '../idManager.service';
-import { JoinPartyDto } from '../game.dto';
+import { DTO_PlayerMove, DTO_StartRound, JoinPartyDto } from '../game.dto';
 import { GameService } from '../game.service';
 
 @WebSocketGateway({
@@ -87,7 +88,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		socket: Socket,
 		req: any,
 		dtoClass: new () => InputDTO,
-		isPrimary: boolean,
+		actionType: ESocketActionType,
 		callback: (user: UserAuthTokenDto, data: InputDTO) => Promise<OutputType>
 	): Promise<WS<OutputType | string>> {
 		try {
@@ -102,17 +103,17 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 
 			const execCallback = async (dto: InputDTO | undefined) => {
-				if (isPrimary){
-					this.logger.debug(`is primary socket`);
-					return this.idManagerService.executePrimaryActionAndSetPrimaySocket(socket, user.userId, async () => {
-						return callback(user, dto);
-					});
-				}
-				else {
-					this.logger.debug(`is secondary socket`);
-					return this.idManagerService.executeSecondaryAction(socket, user.userId, async () => {
-						return callback(user, dto);
-					});
+				switch (actionType) {
+					case ESocketActionType.Primary:
+						this.idManagerService.setUserPrimarySocket(socket, user.userId);
+					case ESocketActionType.WeakPrimary:
+						return this.idManagerService.executePrimaryAction(socket, user.userId, async () => {
+							return callback(user, dto);
+						});
+					case ESocketActionType.Secondary:
+						return this.idManagerService.executeSecondaryAction(socket, user.userId, async () => {
+							return callback(user, dto);
+						});
 				}
 			}
 
@@ -186,7 +187,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} join the matchmaking`);
-		return await this.handleRequest(client, req, undefined, true, async (user) => {
+		return await this.handleRequest(client, req, undefined, ESocketActionType.Primary, async (user) => {
 			return this.gameService.joinMatchmaking(user.userId);
 		});
 	}
@@ -197,9 +198,9 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} leave the matchmaking`);
-		return this.handleRequest(client, req, undefined, false, async (user) => {
+		return this.handleRequest(client, req, undefined, ESocketActionType.Primary, async (user) => {
 			this.gameService.leaveMatchmaking(user.userId);
-			this.idManagerService.resetUserPrimarySocket(client, user.userId);
+			this.idManagerService.resetUserPrimarySocket(user.userId);
 			return "ok"
 		});
 	}
@@ -210,15 +211,13 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} is ready`);
-		return this.handleRequest(client, req, JoinPartyDto, false,
-			async (user, data): Promise<string> => {
-				return "ok"
-			}
-		);
+		return this.handleRequest(client, req, undefined, ESocketActionType.WeakPrimary, async (user) => {
+			return this.gameService.isReady(user.userId);
+		});
 	}
 
 	/************************************************************************ */
-	/*								 Party                               */
+	/*								 Party                      	         */
 	/************************************************************************ */
 
 	@SubscribeMessage(ESocketClientEventName.joinParty)
@@ -227,14 +226,34 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} join the party`);
-		this.handleRequest(
-			client,
-			req,
-			JoinPartyDto,
-			false,
-			async (user, data): Promise<string> => {
-				return "ok"
-			}
-		);
+		return this.handleRequest(client, req, JoinPartyDto, ESocketActionType.Primary, async (user, data) => {
+			return "ok"
+		});
+	}
+
+	/************************************************************************ */
+	/*								 Game                	               */
+	/************************************************************************ */
+
+	@SubscribeMessage(ESocketClientEventName.movePlayer)
+	movePlayer(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() req: any,
+	) {
+		this.logger.debug(`client ${client.id} send a game event`);
+		return this.handleRequest(client, req, DTO_PlayerMove, ESocketActionType.WeakPrimary, async (user, data) => {
+			return this.gameService.move(user.userId, data.direction, data.press);
+		});
+	}
+
+	@SubscribeMessage(ESocketClientEventName.startRound)
+	startRound(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() req: any,
+	) {
+		this.logger.debug(`client ${client.id} start the round`);
+		return this.handleRequest(client, req, DTO_StartRound, ESocketActionType.WeakPrimary, async (user, data) => {
+			return this.gameService.startRound(user.userId, data.press);
+		});
 	}
 }

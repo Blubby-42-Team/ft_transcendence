@@ -229,7 +229,7 @@ export class IdManagerService {
 	 * @throws UnauthorizedException if the socket is not the primary socket
 	 * @returns The result of the function
 	 */
-	async executePrimaryActionAndSetPrimaySocket<T>(socket: Socket, userId: number, func: () => Promise<T>): Promise<T> {
+	async executePrimaryAction<T>(socket: Socket, userId: number, func: () => Promise<T>): Promise<T> {
 		const user = this.socketToUserCache.get(userId);
 
 		if (user === undefined){
@@ -238,8 +238,7 @@ export class IdManagerService {
 		}
 
 		if (user.primary === null){
-			user.primary = socket;
-			this.logger.debug(`User ${userId} try to execute primary action bur has no primary socket, set to ${socket.id}`)
+			throw new NotFoundException(`No primary socket for user ${userId}, set to ${socket.id}`);
 		}
 
 		if (user?.primary.id !== socket.id){
@@ -255,12 +254,39 @@ export class IdManagerService {
 	}
 
 	/**
+	 * Set the primary socket for a user
+	 * @param userId
+	 * @param socketId
+	 */
+	setUserPrimarySocket(socket: Socket, userId: number) {
+		const user = this.socketToUserCache.get(userId);
+
+		if (user === undefined){
+			this.logger.debug(`User ${userId} not found in cache`);
+			throw new NotFoundException(`User ${userId} not found`);
+		}
+
+		if (socket === undefined){
+			this.logger.debug(`Socket ${socket.id} not found in cache for user ${userId}`);
+			throw new NotFoundException(`Socket ${socket.id} not found for user ${userId}`);
+		}
+
+		if (user.primary !== null && user.primary.id !== socket.id) {
+			this.logger.warn(`Primary socket for user ${userId} already set`);
+			throw new NotFoundException(`You can't execute this action from another device`);
+		}
+
+		user.primary = socket;
+		this.logger.verbose(`Primary socket for user ${userId} set to ${socket.id}`);
+	}
+
+	/**
 	 * Reset the primary socket for a user
 	 * @param userId
 	 * @param socketId
 	 * @throws NotFoundException if user not found
 	 */
-	async resetUserPrimarySocket(socket: Socket, userId: number) {
+	async resetUserPrimarySocket(userId: number) {
 		const user = this.socketToUserCache.get(userId);
 
 		if (user === undefined){
@@ -273,7 +299,7 @@ export class IdManagerService {
 			return;
 		}
 
-		this.logger.verbose(`Reset primary socket for user ${userId} from ${user.primary.id} to ${socket.id}`);
+		this.logger.verbose(`Reset primary socket for user ${userId} from ${user.primary.id}`);
 		user.primary = null;
 	}
 }

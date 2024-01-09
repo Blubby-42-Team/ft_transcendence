@@ -56,20 +56,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		return uuidv4();
 	}
 
-	joinMatchmaking(userId: number){
-		if (this.matchmakingList.includes(userId)){
-			throw new UnauthorizedException(`User ${userId} is already in matchmaking`);
-		}
-		this.matchmakingList.push(userId);
-	}
-
-	leaveMatchmaking(userId: number){
-		if (!this.matchmakingList.includes(userId)){
-			throw new UnauthorizedException(`User ${userId} is not in matchmaking`);
-		}
-		this.matchmakingList = this.matchmakingList.filter(id => id !== userId);
-	}
-
 	async matchmakingLoop(){
 		if (!this.continueMatchmaking){
 			return;
@@ -90,17 +76,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				this.party.delete(roomId);
 			}
 
-			await this.idManager.subscribePrimaryUserToRoom(player1, roomId)
-				.catch(player1DisconnectLobby);
-			await this.idManager.subscribePrimaryUserToRoom(player2, roomId)
-				.catch(player2DisconnectLobby);
-
-			await this.idManager.setOnDisconnectCallback(player1, player1DisconnectLobby)
-				.catch(player1DisconnectLobby);
-			await this.idManager.setOnDisconnectCallback(player2, player2DisconnectLobby)
-				.catch(player2DisconnectLobby);
-			
-
 			this.party.set(roomId, {
 				players: [
 					{ id: player1, ready: false },
@@ -118,6 +93,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 						this.party.delete(roomId);
 						// send victory message to player 1
 						// add match history to user 1 and 2
+						this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
+							msg: "Game has finished"
+						})
 						await this.idManager.unsetOnDisconnectCallback(player1).catch(() => {});
 						await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 						await this.idManager.unsubscribePrimaryUserToRoom(player1, roomId).catch(() => {});
@@ -125,9 +103,20 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					}
 				)
 			});
+			
+			await this.idManager.subscribePrimaryUserToRoom(player1, roomId)
+				.catch(player1DisconnectLobby);
+			await this.idManager.subscribePrimaryUserToRoom(player2, roomId)
+				.catch(player2DisconnectLobby);
+
+			await this.idManager.setOnDisconnectCallback(player1, player1DisconnectLobby)
+				.catch(player1DisconnectLobby);
+			await this.idManager.setOnDisconnectCallback(player2, player2DisconnectLobby)
+				.catch(player2DisconnectLobby);
 
 			this.lobbyLoop(roomId);
 		}
+		this.logger.verbose(JSON.stringify(this.toJSON()))
 		setTimeout(() => this.matchmakingLoop(), 1000);
 	}
 
@@ -157,6 +146,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				party.instance.stop();
 				// send error message to player 2
 				// add match history to user 1 and 2
+				this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
+					msg: "The other player has disconnected"
+				})
 				await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 				await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
 				this.party.delete(roomId);
@@ -165,6 +157,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				party.instance.stop();
 				// send error message to player 1
 				// add match history to user 1 and 2
+				this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
+					msg: "The other player has disconnected"
+				})
 				await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 				await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
 				this.party.delete(roomId);
@@ -194,10 +189,37 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	isReady(userId: number){
+		if (!this.getRoomId(userId)){
+			throw new UnauthorizedException(`User ${userId} is not in a room`);
+		}
 		const roomId = this.getRoomId(userId);
+		this.logger.verbose(`isReady ${userId} ${roomId}`)
 		this.party.get(roomId).players.find(({ id }) => id === userId).ready = true;
 	}
 
+
+
+
+
+	joinMatchmaking(userId: number){
+		if (this.matchmakingList.includes(userId)){
+			throw new UnauthorizedException(`User ${userId} is already in matchmaking`);
+		}
+		if (this.getRoomId(userId)){
+			throw new UnauthorizedException(`User ${userId} is already in a room`);
+		}
+		this.matchmakingList.push(userId);
+	}
+
+	leaveMatchmaking(userId: number){
+		if (!this.matchmakingList.includes(userId)){
+			throw new UnauthorizedException(`User ${userId} is not in matchmaking`);
+		}
+		if (this.getRoomId(userId)){
+			throw new UnauthorizedException(`User ${userId} is already in a room`);
+		}
+		this.matchmakingList = this.matchmakingList.filter(id => id !== userId);
+	}
 
 
 
@@ -251,7 +273,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 	toJSON(){
 		return {
-			rooms: [...this.party.entries()].map(([roomId, { players }]) => ({ roomId, players }))
+			rooms: [...this.party.entries()].map(([roomId, { players }]) => ({ roomId, players })),
+			matchmaking: this.matchmakingList,
 		}
 	}
 }
