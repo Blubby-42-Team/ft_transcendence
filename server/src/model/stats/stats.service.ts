@@ -73,7 +73,7 @@ export class ModelStatsService {
 	}
 
 	async ModifyClassicMMR(userId: number, score: number, oppMMR: number) {
-		return await this.postgresStatsService.ModifyClassicMMR(userId, score, oppMMR);
+		return await this.postgresStatsService.ModifyClassicMMR(userId, score);
 	}
 
 	async ModifyRandomMMR(userId: number, score: number, oppMMR: number) {

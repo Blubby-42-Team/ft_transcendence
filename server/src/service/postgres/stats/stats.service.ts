@@ -209,10 +209,7 @@ export class PostgresStatsService {
 		})
 	}
 
-	async ModifyClassicMMR(userId: number, score: number, oppMMR: number) {
-		const old = await this.getStatsByUserId(userId)
-
-		let newMMR = Math.max(old.classic_mmr + 32 * (score - 1/(1 + 10**((oppMMR - old.classic_mmr)/400))), 100)
+	async ModifyClassicMMR(userId: number, newMMR: number) {
 		return await this.statsRepository.update(userId, {
 			classic_mmr: Math.floor(newMMR),
 		})
@@ -293,6 +290,34 @@ export class PostgresStatsService {
 		`,
 		[userId])
 		return res[0].ranking
+	}
+
+	async getMMRByUserId(
+		userId: number,
+	) {
+		const res = await this.statsRepository.query(`
+		SELECT s.classic_mmr
+			FROM public.user as u
+			LEFT JOIN public.stats AS s
+			ON u."statsId" = s.id
+			WHERE u.id = $1`,
+			[userId]
+		)
+		.catch((err) => {
+			this.logger.debug(`Failed to get mmr by userId ${userId}: ${err}`);
+			throw new InternalServerErrorException(`Failed to get mmr by user id ${userId}`);
+		})
+		.then((res): Stats => {
+			if (res.length === 0) {
+				this.logger.debug(`Failed to get mmr by userId ${userId}: not found`);
+				throw new NotFoundException(`Failed to get mmr by user id ${userId}: not found`);
+			}
+			if (res.length > 1) {
+				this.logger.debug(`Failed to get mmr by userId ${userId}: too many results`);
+				throw new InternalServerErrorException(`Failed to get mmr by user id ${userId}: too many results`);
+			}
+			return res[0];
+		})
 	}
 }
 
