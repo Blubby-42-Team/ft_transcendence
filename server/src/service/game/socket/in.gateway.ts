@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
-import { WS } from '@shared/dto/ws.dto';
+import { AcknowledgmentWsDto, ESocketServerEventName, WS } from '@shared/dto/ws.dto';
 import { ESocketClientEventName } from '@shared/dto/ws.dto';
 import { BadGatewayException, ForbiddenException, BadRequestException, HttpException, Logger } from '@nestjs/common';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
@@ -29,7 +29,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	readonly logger = new Logger(InGameGateway.name);
 
 	async handleAuth(socket: Socket) {
-		this.logger.debug(socket?.handshake?.headers);
+		// this.logger.debug(socket?.handshake?.headers);
 
 		if (!socket) {
 			throw new BadGatewayException('missing socket');
@@ -79,6 +79,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	 * @param socket ws client
 	 * @param req client request
 	 * @param dtoClass dto class to validate the request
+	 * @param isPrimary if true, the request will be executed only if the socket is the primary socket of the user
 	 * @param callback callback to handle the request and return the response
 	 * @returns AcknowledgmentWsDto with the response
 	 */
@@ -86,6 +87,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		socket: Socket,
 		req: any,
 		dtoClass: new () => InputDTO,
+		isPrimary: boolean,
 		callback: (user: UserAuthTokenDto, data: InputDTO) => Promise<OutputType>
 	): Promise<WS<OutputType | string>> {
 		try {
@@ -99,8 +101,23 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				throw new BadRequestException(`invalid payload type: ${typeof req}, expected json`);
 			}
 
+			const execCallback = async (dto: InputDTO | undefined) => {
+				if (isPrimary){
+					this.logger.debug(`is primary socket`);
+					return this.idManagerService.executePrimaryActionAndSetPrimaySocket(socket, user.userId, async () => {
+						return callback(user, dto);
+					});
+				}
+				else {
+					this.logger.debug(`is secondary socket`);
+					return this.idManagerService.executeSecondaryAction(socket, user.userId, async () => {
+						return callback(user, dto);
+					});
+				}
+			}
+
 			if (!dtoClass) {
-				const res = await callback(user, req);
+				const res = await execCallback(undefined);
 				return {
 					status: 'ok',
 					message: res,
@@ -113,7 +130,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					throw errors.map(error => Object.values(error.constraints)).join(', ');
 				});
 
-			const res = await callback(user, dto);
+			const res = await execCallback(dto);
 			return {
 				status: 'ok',
 				message: res,
@@ -139,13 +156,24 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	// When a client connect to the server
 	async handleConnection(client: Socket) {
-		const user = await this.handleAuth(client);
-		this.idManagerService.connect(client, user.userId);
+		await this.handleAuth(client)
+		.then( async (user) => {
+			await this.idManagerService.connect(client, user.userId);
+		})
+		.catch(error => {
+			this.logger.debug(`error: ${error}`);
+			const ack: AcknowledgmentWsDto<string> = {
+				status: 'error',
+				message: error?.message ?? 'unknown error, check logs or contact the administrator'
+			};
+			client.emit(ESocketServerEventName.error, ack);
+			client.disconnect();
+		});
 	}
 
 	// When a client disconnect from the server
 	async handleDisconnect(client: Socket) {
-		this.idManagerService.disconnect(client);
+		await this.idManagerService.disconnect(client);
 	}
 
 	/************************************************************************ */
@@ -153,16 +181,13 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	/************************************************************************ */
 
 	@SubscribeMessage(ESocketClientEventName.joinMatchMaking)
-	joinMatchMaking(
+	async joinMatchMaking(
 		@ConnectedSocket() client: Socket,
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} join the matchmaking`);
-		return this.handleRequest(client, req, undefined, async (user) => {
-			this.idManagerService.executePrimaryAction(client, user.userId, async () => {
-				this.gameService.joinMatchmaking(user.userId);
-			});
-			return "ok"
+		return await this.handleRequest(client, req, undefined, true, async (user) => {
+			return this.gameService.joinMatchmaking(user.userId);
 		});
 	}
 
@@ -172,22 +197,20 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} leave the matchmaking`);
-		return this.handleRequest(client, req, undefined,
-			async (user) => {
-				this.gameService.leaveMatchmaking(user.userId);
-				this.idManagerService.resetUserPrimarySocket(client, user.userId);
-				return "ok"
-			}
-		);
+		return this.handleRequest(client, req, undefined, false, async (user) => {
+			this.gameService.leaveMatchmaking(user.userId);
+			this.idManagerService.resetUserPrimarySocket(client, user.userId);
+			return "ok"
+		});
 	}
 
-	@SubscribeMessage(ESocketClientEventName.ready)
+	@SubscribeMessage(ESocketClientEventName.readyToPlay)
 	ready(
 		@ConnectedSocket() client: Socket,
 		@MessageBody() req: any,
 	) {
 		this.logger.debug(`client ${client.id} is ready`);
-		return this.handleRequest(client, req, JoinPartyDto,
+		return this.handleRequest(client, req, JoinPartyDto, false,
 			async (user, data): Promise<string> => {
 				return "ok"
 			}
@@ -208,6 +231,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client,
 			req,
 			JoinPartyDto,
+			false,
 			async (user, data): Promise<string> => {
 				return "ok"
 			}

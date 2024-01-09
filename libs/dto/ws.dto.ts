@@ -22,8 +22,7 @@ export interface WS<T> {
 
 export type GameResponse<T = undefined> = {
 	status: ELobbyStatus,
-	msg: string,
-	data?: T,
+	data: T,
 }
 
 export enum ESocketRooms {
@@ -33,15 +32,17 @@ export enum ESocketRooms {
 export enum ESocketClientEventName {
 	joinMatchMaking		= 'joinMatchMaking',
 	leaveMatchMaking	= 'leaveMatchMaking',
-	ready 				= 'ready',
+	readyToPlay 		= 'readyToPlay',
 	joinParty			= 'joinParty',
 }
 
 export enum ESocketServerEventName {
 	matchmakingStatus	= 'matchmakingStatus',
 	matchState			= 'matchState',
+	error				= 'error',
 }
 
 export enum ELobbyStatus {
-	
+	WaitingForPlayers	= 'WaitingForPlayers',
+	AllPlayersReady		= 'AllPlayersReady',
 }

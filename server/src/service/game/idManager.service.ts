@@ -8,9 +8,9 @@ export class IdManagerService {
 	private readonly logger = new Logger(IdManagerService.name);
 
 
-	/****************************************************************/
-	/* Socket to User Cache Utils
-	/****************************************************************/
+	//****************************************************************
+	// Socket to User Cache Utils
+	//****************************************************************
 
 	private socketToUserCache: Map<
 		number,	// UserId
@@ -19,7 +19,8 @@ export class IdManagerService {
 			primary: Socket | null,
 
 			// SocketIds of the UserId
-			ids: Array<Socket> 
+			ids: Array<Socket>,
+			onDisconnect: (() => void) | null
 		}
 	> = new Map();
 
@@ -44,21 +45,28 @@ export class IdManagerService {
 	 *          due to circular references with Socket object
 	 */
 	cacheToStr(){
-		let cache = 'Cache: \n';
-		for (const [userId, value] of this.socketToUserCache.entries()) {
-			cache += `userId: ${userId} \n`;
-			cache += `primary: ${value.primary?.id} \n`;
-			cache += `ids: ${value.ids.map(s => s.id)} \n`;
+		try {
+			let cache = 'Cache: \n';
+			for (const [userId, value] of this.socketToUserCache.entries()) {
+				cache += `userId: ${userId} \n`;
+				cache += `primary: ${value?.primary?.id} \n`;
+				cache += `ids: ${value?.ids?.map(s => s?.id)} \n`;
+				cache += `onDisconnect: ${value?.onDisconnect} \n`;
+			}
+			return cache;
+
+		} catch (error) {
+			this.logger.error(`Error while printing cache: ${error}`);
 		}
-		return cache;
+		return 'Error while printing cache';
 	}
 
 
-	/****************************************************************/
-	/* User to Socket Cache
-	/****************************************************************/
+	//****************************************************************
+	// User to Socket Cache
+	//****************************************************************
 
-	connect(socket: Socket, userId: number){
+	async connect(socket: Socket, userId: number){
 
 		// Check if user is already connected
 		const user = this.socketToUserCache.get(userId);
@@ -67,7 +75,8 @@ export class IdManagerService {
 		if (user === undefined){
 			this.socketToUserCache.set(userId, {
 				primary: null,
-				ids: [socket]
+				ids: [socket],
+				onDisconnect: null
 			});
 			this.logger.debug(`New first socket ${socket.id} stored in cache for user ${userId}`)
 			this.logger.verbose(this.cacheToStr());
@@ -80,7 +89,7 @@ export class IdManagerService {
 		this.logger.verbose(this.cacheToStr());
 	}
 
-	disconnect(socket: Socket){
+	async disconnect(socket: Socket){
 		const userId = this.getUserIdFromSocketId(socket.id);
 
 		if (userId === undefined){
@@ -88,7 +97,6 @@ export class IdManagerService {
 			return;
 		}
 
-		// Remove socket from user
 		const user = this.socketToUserCache.get(userId);
 
 		if (user === undefined){
@@ -97,7 +105,16 @@ export class IdManagerService {
 		}
 
 		// If the socket was the primary socket, set the primary socket to null
-		user.primary = null;
+		if (user.primary?.id === socket.id) {
+			// Call onDisconnect callback if set
+			try {
+				await user.onDisconnect?.();
+			} catch (error) {
+				this.logger.error(`Error while calling onDisconnect callback for user ${userId}: ${error}`);
+			}
+			this.unsetOnDisconnectCallback(userId);
+			user.primary = null;
+		}
 
 		// Remove socket from user from ids
 		user.ids = user.ids.filter(s => s.id !== socket.id);
@@ -105,16 +122,12 @@ export class IdManagerService {
 		this.logger.verbose(this.cacheToStr());
 	}
 
-	// A primary action is an action that can be executed while your are the primary socket
-	// will block if call by a secondary socket
 	/**
-	 * Execute a primary action
-	 * @param socket 
-	 * @param userId
-	 * @param func The function to execute if the socket is the primary socket
-	 * @returns The result of the function
+	 * Set callback on primary socket disconnection
+	 * @param callback()
+	 * @throws NotFoundException if user not found
 	 */
-	async executePrimaryAction<T>(socket: Socket, userId: number, func: () => Promise<T>) {
+	async setOnDisconnectCallback(userId: number, callback: () => void){
 		const user = this.socketToUserCache.get(userId);
 
 		if (user === undefined){
@@ -122,7 +135,113 @@ export class IdManagerService {
 			throw new NotFoundException(`User ${userId} not found`);
 		}
 
-		// If the socket is not the primary socket, block
+		if (user.primary === null){
+			this.logger.verbose(`No primary socket for user ${userId}, ignoring and set the callback`);
+		}
+
+		if (user.onDisconnect !== null){
+			this.logger.verbose(`onDisconnect callback already set for user ${userId}, overriding`);
+		}
+
+		user.onDisconnect = callback;
+		return;
+	}
+
+	/**
+	 * Unset callback on primary socket disconnection
+	 * @param userId
+	 * @throws NotFoundException if user not found
+	 */
+	async unsetOnDisconnectCallback(userId: number){
+		const user = this.socketToUserCache.get(userId);
+
+		if (user === undefined){
+			this.logger.debug(`User ${userId} not found in cache`);
+			throw new NotFoundException(`User ${userId} not found`);
+		}
+
+		if (user.primary === null){
+			this.logger.verbose(`No primary socket for user ${userId}, ignoring and unset the callback`);
+		}
+
+		if (user.onDisconnect === null){
+			this.logger.verbose(`onDisconnect callback already unset for user ${userId}, ignoring`);
+		}
+
+		user.onDisconnect = null;
+		return;
+	}
+
+	/**
+	 * Subscribe primary user socket to a room
+	 * @param userId
+	 * @throws NotFoundException if user not found
+	 * @throws NotFoundException if no primary socket found
+	 */
+	async subscribePrimaryUserToRoom(userId: number, room: string){
+		const user = this.socketToUserCache.get(userId);
+
+		if (user === undefined){
+			this.logger.debug(`User ${userId} not found in cache`);
+			throw new NotFoundException(`User ${userId} not found`);
+		}
+
+		if (user.primary === null){
+			this.logger.warn(`No primary socket for user ${userId} to subscribe to room ${room}, ignoring`);
+			throw new NotFoundException(`No primary socket for user ${userId} to subscribe to room ${room}`);
+		}
+
+		user.primary.join(room);
+		return;
+	}
+
+	/**
+	 * Unsubscribe primary user socket to a room
+	 * @param userId
+	 * @throws NotFoundException if user not found
+	 * @throws NotFoundException if no primary socket found
+	 */
+	async unsubscribePrimaryUserToRoom(userId: number, room: string){
+		const user = this.socketToUserCache.get(userId);
+
+		if (user === undefined){
+			this.logger.debug(`User ${userId} not found in cache`);
+			throw new NotFoundException(`User ${userId} not found`);
+		}
+
+		if (user.primary === null){
+			this.logger.warn(`No primary socket for user ${userId} to unsubscribe to room ${room}, ignoring`);
+			throw new NotFoundException(`No primary socket for user ${userId} to unsubscribe to room ${room}`);
+		}
+
+		user.primary.leave(room);
+		return;
+	}
+
+	/**
+	 * Execute a primary action
+	 * @warning If the primary socket is not set the for the user
+	 * it will set with the given socket
+	 * @param socket 
+	 * @param userId
+	 * @param func The function to execute if the socket is the primary socket
+	 * @throws NotFoundException if user not found
+	 * @throws UnauthorizedException if the socket is not the primary socket
+	 * @returns The result of the function
+	 */
+	async executePrimaryActionAndSetPrimaySocket<T>(socket: Socket, userId: number, func: () => Promise<T>): Promise<T> {
+		const user = this.socketToUserCache.get(userId);
+
+		if (user === undefined){
+			this.logger.debug(`User ${userId} not found in cache`);
+			throw new NotFoundException(`User ${userId} not found`);
+		}
+
+		if (user.primary === null){
+			user.primary = socket;
+			this.logger.debug(`User ${userId} try to execute primary action bur has no primary socket, set to ${socket.id}`)
+		}
+
 		if (user?.primary.id !== socket.id){
 			this.logger.debug(`Socket ${socket.id} is not the primary socket for user ${userId}`);
 			throw new UnauthorizedException(`You are already perfoming an action from another device`);
@@ -131,7 +250,7 @@ export class IdManagerService {
 	}
 
 	// A secondary action is an action that can be executed anytime by anyone
-	executeSecondaryAction<T>(socket: Socket, userId: number, func: () => Promise<T>){
+	async executeSecondaryAction<T>(socket: Socket, userId: number, func: () => Promise<T>): Promise<T>{
 		return func()
 	}
 
@@ -139,8 +258,9 @@ export class IdManagerService {
 	 * Reset the primary socket for a user
 	 * @param userId
 	 * @param socketId
+	 * @throws NotFoundException if user not found
 	 */
-	resetUserPrimarySocket(socket: Socket, userId: number) {
+	async resetUserPrimarySocket(socket: Socket, userId: number) {
 		const user = this.socketToUserCache.get(userId);
 
 		if (user === undefined){
@@ -148,11 +268,12 @@ export class IdManagerService {
 			throw new NotFoundException(`User ${userId} not found`);
 		}
 
-		if (user.primary?.id !== null) {
-			this.logger.warn(`No primary socket for user ${userId} to reset, ignoring`);
+		if (user.primary === null) {
+			this.logger.warn(`There is no primary socket for user ${userId} to reset, ignoring`);
 			return;
 		}
 
+		this.logger.verbose(`Reset primary socket for user ${userId} from ${user.primary.id} to ${socket.id}`);
 		user.primary = null;
 	}
 }
