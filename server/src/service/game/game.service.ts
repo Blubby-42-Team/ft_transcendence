@@ -91,8 +91,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					async (scores) => {
 						this.party.get(roomId).instance.stop();
 						this.party.delete(roomId);
-						// send victory message to player 1
-						// add match history to user 1 and 2
+						//TODO send victory message to player 1
+						//TODO add match history to user 1 and 2
 						this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 							msg: "Game has finished"
 						})
@@ -144,8 +144,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		else {
 			const player1DisconnectGame = async () => {
 				party.instance.stop();
-				// send error message to player 2
-				// add match history to user 1 and 2
+				//TODO send error message to player 2
+				//TODO add match history to user 1 and 2
 				this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 					msg: "The other player has disconnected"
 				})
@@ -155,8 +155,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			};
 			const player2DisconnectGame = async () => {
 				party.instance.stop();
-				// send error message to player 1
-				// add match history to user 1 and 2
+				//TODO send error message to player 1
+				//TODO add match history to user 1 and 2
 				this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 					msg: "The other player has disconnected"
 				})
@@ -231,8 +231,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	joinPrivateParty(partyId: string, userId: number){
-		// Check if party is full
-		// If not add him
+		//TODO Check if party is full
+		//TODO If not add him
 	}
 
 	inviteToPrivateParty(partyId: string, userId: number){
