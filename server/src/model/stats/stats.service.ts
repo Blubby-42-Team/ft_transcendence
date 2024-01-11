@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Stats } from './stats.class';
 import { PostgresStatsService } from 'src/service/postgres/stats/stats.service';
 
 @Injectable()

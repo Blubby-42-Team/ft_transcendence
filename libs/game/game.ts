@@ -20,6 +20,7 @@ export class GameEngine extends Controller {
 		gameSettings: gameSettingsType,
 		public sendGameStateUpdate:	(newGameState: gameStateType) => void = () => {},
 		public editLocalState:		(state: gameStateType) => void = () => {},
+		public onGameOver:			(player: Array<number>) => void | null = null,
 	){
 		super();
 		this.gameSettings = JSON.parse(JSON.stringify(gameSettings));
@@ -38,6 +39,12 @@ export class GameEngine extends Controller {
 					this.moveBall();
 					break ;
 				case gameStatusType.GAMEOVER:
+					if (this.onGameOver){
+						this.onGameOver([
+							(this.gamestate.player_left.active ? this.gamestate.player_left.score : 0),
+							(this.gamestate.player_right.active ? this.gamestate.player_right.score : 0),
+						]);
+					}
 					if (this.needsSleep){
 						this.needsSleep = false;
 						this.datewip = new Date((new Date).getTime() + 10000);

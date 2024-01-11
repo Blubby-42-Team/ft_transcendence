@@ -1,11 +1,11 @@
-import { emitName, EClientEmits } from '#imports';
+import { ESocketServerEventName, ESocketClientEventName, ELobbyStatus } from '#imports';
 
 export class SocketClientGame extends SocketClient {
 	constructor(
 		private start_animation: (players: Array<number>) => void,
 		private updateGameState: (state: gameStateType) => void,
-		private ntfy: (msg: string) => void,
-		private error: (msg: string) => void,
+		// private ntfy: (msg: string) => void,
+		private end_lobby: (msg: string) => void,
 	) {
 		if (process.server){
 			return ;
@@ -16,62 +16,59 @@ export class SocketClientGame extends SocketClient {
 	}
 
 	listenForLobbyStatus(){
-		this.on(emitName.matchMakingStatus, (data: matchMakingWSResponse<unknown>) => {
-			console.log(data)
-			if (data.status === ELobbyStatus.START_GAME){
-				console.log('Start game');
+		this.on(ESocketServerEventName.matchmakingStatus, (data: GameResponse<{
+			msg: string,
+			players?: Array<number>
+		}>) => {
+			if (data.status === ELobbyStatus.InQueue){
+				console.log(data.data.msg);
+			}
+			else if (data.status === ELobbyStatus.AllPlayersReady){
+				console.log(data.data.msg);
 				// redirect to game
 			}
-			else if (data.status === ELobbyStatus.FOUND_AND_WAIT){
-				this.start_animation(data.data as Array<number>);
+			else if (data.status === ELobbyStatus.WaitingForPlayers){
+				console.log(data.data.msg);
+				this.start_animation(data.data.players as Array<number>);
 			}
-			else if (data.status === ELobbyStatus.WAITING_IN_QUEUE){
-				console.log('Waiting in queue');
-			}
-			else if (data.status === ELobbyStatus.NTFY){
-				this.ntfy(data.msg);
-			}
-			else if (data.status === ELobbyStatus.ERROR){
-				this.error(data.msg);
+			else if (data.status === ELobbyStatus.LobbyEnded){
+				this.end_lobby(data.data.msg);
 			}
 			else {
 				console.log('Unknown status');
 			}
-			console.log(data.msg, data.status);
-			console.log(data);
+			console.log(data.data, data.status);
 		});
 	}
 
 	listenForGameStatus(){
-		this.on(emitName.stateGame, this.updateGameState);
+		this.on(ESocketServerEventName.matchState, this.updateGameState);
 	}
 
 	joinMatchMaking(){
-		this.emit(EClientEmits.StartMatchMaking, {});
+		this.emit(ESocketClientEventName.joinMatchMaking, {});
 	}
 
 	cancelMatchMaking(){
-
+		this.emit(ESocketClientEventName.leaveMatchMaking, {});
 	}
 
 	readyOrNot(status: boolean){
-		this.emit(EClientEmits.ReadyOrNot, {
+		this.emit(ESocketClientEventName.readyToPlay, {
 			ready: status,
 		});
 	}
 
-	move(dir: boolean, press: boolean){
-		this.emit(EClientEmits.Move, {
-			dir,
+	move(direction: boolean, press: boolean){
+		this.emit(ESocketClientEventName.movePlayer, {
+			direction,
     		press,
 		});
 	}
 
 	startRound(press: boolean){
-		this.emit(EClientEmits.Move, {
-			dir: false,
-			press: false,
-			launch: press,
+		this.emit(ESocketClientEventName.startRound, {
+			press,
 		});
 	}
 };

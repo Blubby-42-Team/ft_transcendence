@@ -1,10 +1,10 @@
-import { SocketClientGame, ELobbyStatusClient } from "#imports"
+import { SocketClientGame, ELobbyStatus } from "#imports"
 import { gameState4PlayersDefault } from '../../../libs/game/getNewStateWithGameSettings'
 
 export const useLobbyStore = defineStore('lobby', {
 	state: () => ({
 		_socket: null as SocketClientGame | null,
-		_status: ELobbyStatusClient.NOT_STARTED,
+		_status: ELobbyStatus.NoLobby,
 		_otherPlayer: 0 as number,
 		_gameState: gameState4PlayersDefault as gameStateType,
 	}),
@@ -19,7 +19,7 @@ export const useLobbyStore = defineStore('lobby', {
 				(players) => {
 					const { primaryUser } = useUserStore();
 					this._otherPlayer = players.find((player) => player !== primaryUser.value.id) ?? 0;
-					this._status = ELobbyStatusClient.STARTING;
+					this._status = ELobbyStatus.AllPlayersReady;
 					setTimeout(() => {
 						if (this._socket){
 							this._socket.readyOrNot(true);
@@ -30,10 +30,11 @@ export const useLobbyStore = defineStore('lobby', {
 				(state) => {
 					this._gameState = state;
 				},
+				// (msg) => {
+				// 	console.log('ntfy', msg);
+				// },
 				(msg) => {
-					console.log('ntfy', msg);
-				},
-				(msg) => {
+					this._status = ELobbyStatus.NoLobby;
 					const { addNotif } = useNotifStore();
 					addNotif(msg);
 					navigateTo('/');
@@ -41,19 +42,19 @@ export const useLobbyStore = defineStore('lobby', {
 			);
 		},
 		reset(){
-			this._status = ELobbyStatusClient.NOT_STARTED;
+			this._status = ELobbyStatus.NoLobby;
 			this._otherPlayer = 0;
 		},
 		startMatchMaking(){
 			if (this._socket){
-				this._status = ELobbyStatusClient.ON_HOLD;
+				this._status = ELobbyStatus.InQueue;
 				this._socket.joinMatchMaking();
 			}
 		},
 		cancelMatchMaking(){
 			if (this._socket){
-				this._status = ELobbyStatusClient.NOT_STARTED;
-				// this._socket.readyOrNot(false);
+				this._status = ELobbyStatus.NoLobby;
+				this._socket.cancelMatchMaking();
 			}
 		},
 		move(dir: boolean, press: boolean){

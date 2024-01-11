@@ -18,7 +18,7 @@ export const usePageStore = defineStore('page', {
 		_lobby: [
 			{ id: EGameMode.Classic,	name: 'Ranked',	path: '/lobby/classic'},
 			// { id: EGameMode.Random,		name: 'Random',		path: '/lobby/random'},
-			// { id: EGameMode.Custom,		name: 'Custom',		path: '/lobby/custom'},
+			{ id: EGameMode.Custom,		name: 'Custom',		path: '/lobby/custom'},
 			{ id: EGameMode.Local,		name: 'Local',		path: '/lobby/local'},
 		],
 		_waiting: 1,

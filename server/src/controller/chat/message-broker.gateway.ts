@@ -3,12 +3,12 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 import { AuthService } from 'src/auth/auth.service';
 import { Server, Socket } from 'socket.io'
 import { UserAuthTokenDto } from 'src/auth/auth.class';
-import { AcknowledgmentWsDto } from '@shared/dto/ws.dto';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { WSDTO_subcribeToChatUpdates } from './chat.dto';
 import { ChatService } from './chat.service';
 import * as cookie from 'cookie'
+import { WS } from '@shared/types/ws';
 
 type subscribeToChatUpdatesWSResponse = {
 	listenTo: string;
@@ -42,14 +42,14 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 	 * @param req client request
 	 * @param dtoClass dto class to validate the request
 	 * @param callback callback to handle the request and return the response
-	 * @returns AcknowledgmentWsDto with the response
+	 * @returns WS with the response
 	 */
 	async handleRequest<InputDTO extends object, OutputType>(
 		socket: Socket,
 		req: any,
 		dtoClass: new () => InputDTO,
 		callback: (user: UserAuthTokenDto, data: InputDTO) => Promise<OutputType>
-	): Promise<AcknowledgmentWsDto<OutputType>> {
+	): Promise<WS<OutputType>> {
 		try {
 
 			this.logger.debug(req, socket?.handshake?.headers);
@@ -63,11 +63,9 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 			 */
 
 			let authorization: string;
-
 			let rawCookie = socket?.handshake?.headers?.cookie;
 
 			if (rawCookie === undefined) {
-
 				if (!socket?.handshake?.headers?.authorization) {
 					throw new ForbiddenException('missing authorization header');
 				}
@@ -75,8 +73,8 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 					this.logger.warn(`If you are using a browser, you should use the cookie instead of the header`)
 					this.logger.warn(`If you using a client (postman, insomnia, ...) you can ignore this warning`)
 					authorization = socket?.handshake?.headers?.authorization;
-			} else {
-
+			}
+			else {
 				this.logger.debug(`raw cookie: ${rawCookie}`);
 
 				try {
@@ -115,18 +113,27 @@ export class MessageBrokerGateway implements OnGatewayConnection, OnGatewayDisco
 			});
 
 			const res = await callback(user, dto);
-			return new AcknowledgmentWsDto<OutputType>('ok', res);
-
-		} catch (error) {
+			return {
+				status: 'ok',
+				message: res
+			}
+		}
+		catch (error) {
 
 			this.logger.error(error);
 
 			// Check if the error is a HttpException
 			if (error instanceof HttpException) {
-				return new AcknowledgmentWsDto<any>('error', error?.message ?? 'unknown error, check logs');
+				return {
+					status: 'error',
+					message: error?.message ?? 'unknown error, check logs',
+				}
 			}
 
-			return new AcknowledgmentWsDto<any>('error', error);
+			return {
+				status: 'error',
+				message: error,
+			}
 		}
 	}
 	// Inject the server instance

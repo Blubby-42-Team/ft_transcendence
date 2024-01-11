@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ELobbyStatusClient } from '#imports';
+import { ELobbyStatus } from '#imports';
 
 const props = defineProps({
 	endFunc: {
@@ -19,14 +19,14 @@ const { status } = toRefs(lobbyStore);
 </script>
 
 <template>
-	<template v-if="status === ELobbyStatusClient.NOT_STARTED">
+	<template v-if="status === ELobbyStatus.NoLobby">
 		<GenericButton class="w-full h-16" :buttonStyle="1"
 		@click="startMatchMaking"
 		>
 			Play
 		</GenericButton>
 	</template>
-	<template v-else-if="status === ELobbyStatusClient.ON_HOLD">
+	<template v-else-if="status === ELobbyStatus.InQueue">
 		<GenericButton class="w-full h-16 text-black hover:bg-opacity-70" :buttonStyle="3"
 			:selected="true"
 			@mouseover="hoverButton = false"
@@ -41,7 +41,7 @@ const { status } = toRefs(lobbyStore);
 			</template>
 		</GenericButton>
 	</template>
-	<template v-else-if="status === ELobbyStatusClient.STARTING">
+	<template v-else-if="status === ELobbyStatus.WaitingForPlayers">
 		<GenericButton class="w-full h-16 text-black" :buttonStyle="3" :selected="true" :disabled="true">
 			Starting...
 		</GenericButton>
