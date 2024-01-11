@@ -9,7 +9,11 @@ import { PostgresUserModule } from 'src/service/postgres/user/user.module';
 import { PostgresStatsModule } from 'src/service/postgres/stats/stats.module';
 
 @Module({
-	imports: [PostgresHistoryModule, PostgresUserModule, PostgresStatsModule],
+	imports: [
+		PostgresUserModule,
+		PostgresStatsModule,
+		PostgresHistoryModule,
+	],
 	providers: [ModelHistoryService],
 	exports: [ModelHistoryService]
 })

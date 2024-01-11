@@ -5,12 +5,14 @@ import { GameService } from './game.service';
 import { ModelUserModule } from 'src/model/user/user.module';
 import { IdManagerService } from './idManager.service';
 import { OutGameGateway } from './socket/out.gateway';
+import { ModelHistoryModule } from 'src/model/history/history.module';
 
 @Module({
 
 	imports: [
 		AuthModule,
-		ModelUserModule
+		ModelUserModule,
+		ModelHistoryModule
 	],
 	providers: [
 		GameService,

@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit, UnauthorizedException, forwardRef } from '@nestjs/common';
 import { gameSettingsType } from '@shared/types/game/game';
 import { GameEngine } from '@shared/game/game';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,6 +8,8 @@ import { OutGameGateway } from './socket/out.gateway';
 import { ELobbyStatus } from '@shared/types/game/socket';
 import { IdManagerService } from './idManager.service';
 import { Direction } from '@shared/types/game/utils';
+import { ModelHistoryService } from 'src/model/history/history.service';
+import { HistoryService } from 'src/controller/history/history.service';
 
 const defaultSettings: gameSettingsType = {
 	maxPoint:			5,
@@ -25,6 +27,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	constructor(
 		private readonly io: OutGameGateway,
 		private readonly idManager: IdManagerService,
+    	// private readonly historyServide: HistoryService,
 	) { }
 
 	private readonly logger = new Logger(GameService.name);
@@ -97,12 +100,20 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					// on game end
 					async (scores) => {
 						this.party.get(roomId).instance.stop();
-						this.party.delete(roomId);
+						// await this.historyServide.addHistoryByUserId(
+						// 	player1,
+						// 	player2,
+						// 	EGameType.Classic,
+						// 	scores[0],
+						// 	scores[1],
+						// 	0,
+						// );
 						//TODO send victory message to player 1
 						//TODO add match history to user 1 and 2
 						this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 							msg: "Game has finished"
 						})
+						this.party.delete(roomId);
 						await this.idManager.unsetOnDisconnectCallback(player1).catch(() => {});
 						await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 						await this.idManager.unsubscribePrimaryUserToRoom(player1, roomId).catch(() => {});
