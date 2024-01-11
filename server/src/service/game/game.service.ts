@@ -107,6 +107,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 						await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 						await this.idManager.unsubscribePrimaryUserToRoom(player1, roomId).catch(() => {});
 						await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
+						await this.idManager.resetUserPrimarySocket(player1).catch(() => {});
+						await this.idManager.resetUserPrimarySocket(player2).catch(() => {});
 					}
 				)
 			});

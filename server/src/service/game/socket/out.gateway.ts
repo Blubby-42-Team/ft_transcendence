@@ -25,14 +25,16 @@ export class OutGameGateway {
 	}
 
 	emitToPlayer<T>(
-		playerSocket: Socket,
+		playerSocket: Socket | null,
 		status: ELobbyStatus,
 		data: T,
 	){
-		playerSocket.emit(ESocketServerEventName.matchmakingStatus, {
-			status: status,
-			data: data,
-		});
+		if (playerSocket){
+			playerSocket.emit(ESocketServerEventName.matchmakingStatus, {
+				status: status,
+				data: data,
+			});
+		}
 	}
 	
 	emitGameState(
