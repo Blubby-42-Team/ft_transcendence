@@ -13,6 +13,8 @@ const props = defineProps({
 	},
 })
 
+const refInvitePlayerToLobby = ref()
+
 </script>
 
 <template>
@@ -25,9 +27,14 @@ const props = defineProps({
 					</div>
 				</div>
 				<div v-else-if="props.card === CardType.ADD" class="absolute w-full h-full align-top card">
-					<GenericButton class="w-full h-full overflow-hidden border-4 text-color2 bg-color1 border-color2 hover:bg-opacity-80 rounded-2xl">
+					<GenericButton class="w-full h-full overflow-hidden border-4 text-color2 bg-color1 border-color2 hover:bg-opacity-80 rounded-2xl"
+						@click="refInvitePlayerToLobby?.open"
+					>
 						<Icon name="material-symbols:add" class="w-full h-full"/>
 					</GenericButton>
+					<GenericModal ref="refInvitePlayerToLobby">
+						<GameLobbyInvite :closeFunc="refInvitePlayerToLobby?.close"/>
+					</GenericModal>
 				</div>
 				<div v-else-if="props.card === CardType.PLAYER" class="absolute w-full h-full align-top card">
 					<GameLobbyCardPlayer :userId="props.id"/>

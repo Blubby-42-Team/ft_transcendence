@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-
+const route = useRoute()
 definePageMeta({
 	name: 'Lobby Custom 2',
 	layout: 'lobby',
 })
 
-const { setPageDataLobby, waitingString } = usePageStore();
+const { setPageDataLobby } = usePageStore();
 const { reset } = useLobbyStore();
 
 const { primaryUser } = useUserStore();
@@ -13,6 +13,8 @@ const { primaryUser } = useUserStore();
 const lobbyStore = useLobbyStore();
 const { otherPlayer } = toRefs(lobbyStore);
 
+
+const x = route.params.id as string;
 
 onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
