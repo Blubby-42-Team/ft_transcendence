@@ -1,18 +1,23 @@
 <script lang="ts" setup>
 
 definePageMeta({
-	name: 'Lobby Local',
+	name: 'Lobby Custom',
 	layout: 'lobby',
 })
 
 const { setPageDataLobby } = usePageStore();
-onMounted(() => { setPageDataLobby(EPageCategories.GAME, EGameMode.Local); })
+const { reset } = useLobbyStore();
+
+onMounted(() => {
+	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
+});
+
 
 </script>
 
 <template>
 	<div class="grid h-full grid-cols-[max-content_repeat(1,auto)]">
-		<GameLobbySettingsLocal :preview="false"/>
+		<GameLobbySettingsCustom :preview="false"/>
 		<div class="flex w-full h-full p-5">
 			<GameInstancePreview uniqueToken="previewLocal"/>
 		</div>
