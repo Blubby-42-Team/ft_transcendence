@@ -6,9 +6,12 @@ import { ModelUserModule } from 'src/model/user/user.module';
 import { IdManagerService } from './idManager.service';
 import { OutGameGateway } from './socket/out.gateway';
 import { ModelHistoryModule } from 'src/model/history/history.module';
+import { GameController } from './game.controller';
 
 @Module({
-
+	controllers: [
+		GameController,
+	],
 	imports: [
 		AuthModule,
 		ModelUserModule,

@@ -35,21 +35,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 	private matchmakingList: Array<number> = [];
 
-	private matchmakingRooms: Map<
-		// RoomId
-		string,
-
-		// Players id
-		{
-			players: Array<{
-				id: number,
-				ready: boolean,
-			}>
-			instance: GameEngine,
-		}
-	> = new Map();
-
-	private privateRooms: Map<
+	private rooms: Map<
 		// RoomId
 		string,
 
@@ -63,6 +49,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			instance: GameEngine,
 		}
 	> = new Map();
+
 
 
 
@@ -98,14 +85,15 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			// add to user 1 and 2 disconnect function
 			const player1DisconnectLobby = () => {
 				// send error message to player 2
-				this.matchmakingRooms.delete(roomId);
+				this.rooms.delete(roomId);
 			}
 			const player2DisconnectLobby = () => {
 				// send error message to player 1
-				this.matchmakingRooms.delete(roomId);
+				this.rooms.delete(roomId);
 			}
 
-			this.matchmakingRooms.set(roomId, {
+			this.rooms.set(roomId, {
+				whiteList: [],
 				players: [
 					{ id: player1, ready: false },
 					{ id: player2, ready: false },
@@ -118,7 +106,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					undefined,
 					// on game end
 					async (scores) => {
-						this.matchmakingRooms.get(roomId).instance.stop();
+						this.rooms.get(roomId).instance.stop();
 						// await this.historyServide.addHistoryByUserId(
 						// 	player1,
 						// 	player2,
@@ -132,7 +120,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 						this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 							msg: "Game has finished"
 						})
-						this.matchmakingRooms.delete(roomId);
+						this.rooms.delete(roomId);
 						await this.idManager.unsetOnDisconnectCallback(player1).catch(() => {});
 						await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 						await this.idManager.unsubscribePrimaryUserToRoom(player1, roomId).catch(() => {});
@@ -156,12 +144,12 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			this.lobbyLoop(roomId);
 		}
 		
-		this.logger.verbose(JSON.stringify(this.toJSON()))
+		this.logger.verbose(JSON.stringify(this))
 		setTimeout(() => this.matchmakingLoop(), 1000);
 	}
 
 	async lobbyLoop(roomId: string){
-		const room = this.matchmakingRooms.get(roomId);
+		const room = this.rooms.get(roomId);
 		if (!room){
 			return;
 		}
@@ -201,7 +189,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				})
 				await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 				await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
-				this.matchmakingRooms.delete(roomId);
+				this.rooms.delete(roomId);
 			};
 			const player2DisconnectGame = async () => {
 				room.instance.stop();
@@ -212,7 +200,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				})
 				await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
 				await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
-				this.matchmakingRooms.delete(roomId);
+				this.rooms.delete(roomId);
 			};
 
 			await this.idManager.setOnDisconnectCallback(player1, player1DisconnectGame)
@@ -229,7 +217,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	getRoomId(userId: number){
-		for (const [roomId, { players }] of this.matchmakingRooms.entries()){
+		for (const [roomId, { players }] of this.rooms.entries()){
 			if (players.some(({ id }) => id === userId)){
 				return roomId;
 			}
@@ -243,7 +231,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		}
 		const roomId = this.getRoomId(userId);
 		this.logger.verbose(`isReady ${userId} ${roomId}`)
-		this.matchmakingRooms.get(roomId).players.find(({ id }) => id === userId).ready = true;
+		this.rooms.get(roomId).players.find(({ id }) => id === userId).ready = true;
 	}
 
 
@@ -274,20 +262,26 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 
 
-	getPrivatePartyId(roomId: string){
-		return this.privateRooms.get(roomId);
-	}
 
-	createPrivateParty(userId: number, settings: gameSettingsType){
+
+	createPrivateParty(
+		userId: number,
+		settings: Partial<gameSettingsType>,
+	){
+		const newSettings: gameSettingsType = JSON.parse(JSON.stringify(defaultSettings));
+		newSettings.maxPoint = settings.maxPoint ?? newSettings.maxPoint;
+		newSettings.ballSize = settings.ballSize ?? newSettings.ballSize;
+		newSettings.padSize = settings.padSize ?? newSettings.padSize;
+
 		if (this.getRoomId(userId)){
 			throw new UnauthorizedException(`User ${userId} is already in a room`);
 		}
 
 		const roomId = this.getNewRoomId();
-		this.privateRooms.set(roomId, {
+		this.rooms.set(roomId, {
 			whiteList: [userId],
 			players: [],
-			instance: new GameEngine(settings,
+			instance: new GameEngine(newSettings,
 				// on game tick
 				(state) => {
 					this.io.emitGameState(roomId, state);
@@ -295,7 +289,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				undefined,
 				// on game end
 				async (scores) => {
-					this.privateRooms.get(roomId).instance.stop();
+					this.rooms.get(roomId).instance.stop();
+					// TODO add match history to user 1 and 2
 					// await this.historyServide.addHistoryByUserId(
 					// 	player1,
 					// 	player2,
@@ -304,12 +299,11 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					// 	scores[1],
 					// 	0,
 					// );
-					//TODO send victory message to player 1
-					//TODO add match history to user 1 and 2
+					
 					this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 						msg: "Game has finished"
 					})
-					this.privateRooms.delete(roomId);
+					this.rooms.delete(roomId);
 					await this.idManager.unsetOnDisconnectCallback(userId).catch(() => {});
 					await this.idManager.unsubscribePrimaryUserToRoom(userId, roomId).catch(() => {});
 					await this.idManager.resetUserPrimarySocket(userId).catch(() => {});
@@ -321,7 +315,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	joinPrivateParty(partyId: string, userId: number){
-		const room = this.privateRooms.get(partyId);
+		const room = this.rooms.get(partyId);
 		if (!room){
 			throw new UnauthorizedException(`Party ${partyId} does not exist`);
 		}
@@ -346,7 +340,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	}
 
 	inviteToPrivateParty(partyId: string, userId: number){
-		const room = this.privateRooms.get(partyId);
+		const room = this.rooms.get(partyId);
 		if (!room){
 			throw new UnauthorizedException(`Party ${partyId} does not exist`);
 		}
@@ -372,7 +366,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		if (!roomId){
 			return ;
 		}
-		const room = this.matchmakingRooms.get(roomId);
+		const room = this.rooms.get(roomId);
 		if (room.players?.[0]?.id ?? 0 === userId){
 			room.instance.move(Direction.LEFT, direction, press);
 		}
@@ -386,7 +380,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		if (!roomId){
 			return ;
 		}
-		const room = this.matchmakingRooms.get(roomId);
+		const room = this.rooms.get(roomId);
 		room.instance.startRound(press);
 	}
 
@@ -396,7 +390,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 	toJSON(){
 		return {
-			rooms: [...this.matchmakingRooms.entries()].map(([roomId, { players }]) => ({ roomId, players })),
+			rooms: [...this.rooms.entries()].map(([roomId, { players, whiteList }]) => ({ roomId, players, whiteList })),
 			matchmaking: this.matchmakingList,
 		}
 	}

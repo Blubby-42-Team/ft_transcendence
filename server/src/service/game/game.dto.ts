@@ -1,4 +1,4 @@
-import { IsBoolean, IsDefined, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsDefined, IsNotEmpty, IsNumber, IsPositive, IsString } from "class-validator";
 
 export class JoinPartyDto {
 	@IsDefined()
@@ -25,4 +25,30 @@ export class DTO_StartRound {
 	@IsNotEmpty()
 	@IsBoolean()
 	press: boolean;
+}
+
+export class DTO_CreateRoom {
+	@IsNotEmpty()
+	@IsDefined()
+	@IsNumber()
+	@IsPositive()
+	userId: number;
+	
+	@IsNotEmpty()
+	@IsDefined()
+	@IsNumber()
+	@IsPositive()
+	max_round: number;
+
+	@IsNotEmpty()
+	@IsDefined()
+	@IsNumber()
+	@IsPositive()
+	ball_size: number;
+
+	@IsNotEmpty()
+	@IsDefined()
+	@IsNumber()
+	@IsPositive()
+	pad_size: number;
 }

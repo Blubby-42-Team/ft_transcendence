@@ -230,7 +230,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	) {
 		this.logger.debug(`client ${client.id} join the party`);
 		return this.handleRequest(client, req, JoinPartyDto, ESocketActionType.Primary, async (user, data) => {
-			return "ok"
+			return this.gameService.joinPrivateParty(data.roomId, user.userId);
 		});
 	}
 
