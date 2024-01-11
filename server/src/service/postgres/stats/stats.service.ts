@@ -179,8 +179,8 @@ export class PostgresStatsService {
 
 	async getMMRByUserId(
 		userId: number,
-	) {
-		const res = await this.statsRepository.query(`
+	) : Promise<number> {
+		return await this.statsRepository.query(`
 		SELECT s.classic_mmr
 			FROM public.user as u
 			LEFT JOIN public.stats AS s
@@ -192,7 +192,7 @@ export class PostgresStatsService {
 			this.logger.debug(`Failed to get mmr by userId ${userId}: ${err}`);
 			throw new InternalServerErrorException(`Failed to get mmr by user id ${userId}`);
 		})
-		.then((res): Stats => {
+		.then((res): number => {
 			if (res.length === 0) {
 				this.logger.debug(`Failed to get mmr by userId ${userId}: not found`);
 				throw new NotFoundException(`Failed to get mmr by user id ${userId}: not found`);
