@@ -320,12 +320,12 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new UnauthorizedException(`Party ${partyId} does not exist`);
 		}
 
-		if (!room.whiteList.includes(userId)){
-			throw new UnauthorizedException(`User ${userId} is not invited to the party ${partyId}`);
-		}
-
 		if (room.players.some(({ id }) => id === userId)){
 			throw new UnauthorizedException(`User ${userId} is already in party ${partyId}`);
+		}
+
+		if (!room.whiteList.includes(userId)){
+			throw new UnauthorizedException(`User ${userId} is not invited to the party ${partyId}`);
 		}
 
 		if (room.players.length >= 2){
@@ -345,13 +345,14 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new UnauthorizedException(`Party ${partyId} does not exist`);
 		}
 
+		if (room.players.some(({ id }) => id === userId)){
+			throw new UnauthorizedException(`User ${userId} is already in party ${partyId}`);
+		}
+		
 		if (room.whiteList.includes(userId)){
 			throw new UnauthorizedException(`User ${userId} is already invited to the party ${partyId}`);
 		}
 
-		if (room.players.some(({ id }) => id === userId)){
-			throw new UnauthorizedException(`User ${userId} is already in party ${partyId}`);
-		}
 
 		room.whiteList.push(userId);
 	}
