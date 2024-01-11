@@ -40,6 +40,22 @@ export class IdManagerService {
 	}
 
 	/**
+	 * Get the primary socket for a user
+	 * @param userId
+	 * @returns primary socket or undefined if not found
+	 */
+	getUserPrimarySocket(userId: number): Socket | undefined {
+		const user = this.socketToUserCache.get(userId);
+
+		if (user === undefined){
+			this.logger.debug(`User ${userId} not found in cache`);
+			return undefined;
+		}
+
+		return user.primary;
+	}
+
+	/**
 	 * Print all cache
 	 * @warning Dont use JSON.stringify on the cache, it will crash
 	 *          due to circular references with Socket object
@@ -302,4 +318,5 @@ export class IdManagerService {
 		this.logger.verbose(`Reset primary socket for user ${userId} from ${user.primary.id}`);
 		user.primary = null;
 	}
+
 }

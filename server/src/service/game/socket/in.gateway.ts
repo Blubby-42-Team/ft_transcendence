@@ -1,18 +1,21 @@
 import { Server, Socket } from 'socket.io';
 
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-
-import { AcknowledgmentWsDto, ESocketActionType, ESocketServerEventName, WS } from '@shared/dto/ws.dto';
-import { ESocketClientEventName } from '@shared/dto/ws.dto';
 import { BadGatewayException, ForbiddenException, BadRequestException, HttpException, Logger } from '@nestjs/common';
-import { UserAuthTokenDto } from 'src/auth/auth.class';
-import { AuthService } from 'src/auth/auth.service';
+
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as cookie from 'cookie'
+
 import { IdManagerService } from '../idManager.service';
-import { DTO_PlayerMove, DTO_StartRound, JoinPartyDto } from '../game.dto';
+import { AuthService } from 'src/auth/auth.service';
 import { GameService } from '../game.service';
+
+import { WS } from '@shared/types/ws';
+import { ESocketActionType, ESocketServerEventName, ESocketClientEventName } from '@shared/types/game/socket';
+import { UserAuthTokenDto } from 'src/auth/auth.class';
+import { DTO_PlayerMove, DTO_StartRound, JoinPartyDto } from '../game.dto';
+
 
 @WebSocketGateway({
 	namespace: '/api/game',
@@ -82,7 +85,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	 * @param dtoClass dto class to validate the request
 	 * @param isPrimary if true, the request will be executed only if the socket is the primary socket of the user
 	 * @param callback callback to handle the request and return the response
-	 * @returns AcknowledgmentWsDto with the response
+	 * @returns WS<string> with the response
 	 */
 	async handleRequest<InputDTO extends object, OutputType>(
 		socket: Socket,
@@ -90,7 +93,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		dtoClass: new () => InputDTO,
 		actionType: ESocketActionType,
 		callback: (user: UserAuthTokenDto, data: InputDTO) => Promise<OutputType>
-	): Promise<WS<OutputType | string>> {
+	): Promise<WS<OutputType>> {
 		try {
 			const user = await this.handleAuth(socket);
 
@@ -163,7 +166,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		})
 		.catch(error => {
 			this.logger.debug(`error: ${error}`);
-			const ack: AcknowledgmentWsDto<string> = {
+			const ack: WS<string> = {
 				status: 'error',
 				message: error?.message ?? 'unknown error, check logs or contact the administrator'
 			};

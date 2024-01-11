@@ -1,7 +1,7 @@
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 
-import { ELobbyStatus, ESocketServerEventName, GameResponse } from '@shared/dto/ws.dto';
+import { ELobbyStatus, ESocketServerEventName, GameResponse } from '@shared/types/game/socket';
 import { gameStateType } from '@shared/types/game/game';
 
 @WebSocketGateway({
@@ -22,6 +22,17 @@ export class OutGameGateway {
 				status: status,
 				data: data,
 			});
+	}
+
+	emitToPlayer<T>(
+		playerSocket: Socket,
+		status: ELobbyStatus,
+		data: T,
+	){
+		playerSocket.emit(ESocketServerEventName.matchmakingStatus, {
+			status: status,
+			data: data,
+		});
 	}
 	
 	emitGameState(

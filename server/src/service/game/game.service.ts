@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UUID } from 'crypto';
 import { BotDifficulty } from '@shared/types/game/game';
 import { OutGameGateway } from './socket/out.gateway';
-import { ELobbyStatus } from '@shared/dto/ws.dto';
+import { ELobbyStatus } from '@shared/types/game/socket';
 import { IdManagerService } from './idManager.service';
 import { Direction } from '@shared/types/game/utils';
 
@@ -60,7 +60,14 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		if (!this.continueMatchmaking){
 			return;
 		}
-		if ((this.matchmakingList?.length ?? 0) >= 2){
+		if ((this.matchmakingList?.length ?? 0) < 2){
+			this.matchmakingList.forEach(userId => {
+				this.io.emitToPlayer(this.idManager.getUserPrimarySocket(userId), ELobbyStatus.InQueue, {
+					msg: 'Waiting for players',
+				})
+			});
+		}
+		else {
 			const player1 = this.matchmakingList.shift();
 			const player2 = this.matchmakingList.shift();
 
@@ -116,6 +123,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 			this.lobbyLoop(roomId);
 		}
+		
 		this.logger.verbose(JSON.stringify(this.toJSON()))
 		setTimeout(() => this.matchmakingLoop(), 1000);
 	}
@@ -132,7 +140,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		// If everyone is not ready
 		if (!party.players.every(({ ready }) => ready)){
 			this.io.emitToRoom(roomId, ELobbyStatus.WaitingForPlayers, {
-				msg: 'Waiting for players',
+				msg: 'Waiting for players to be ready',
 				players: party.players.map(({ id }) => id),
 			});
 
