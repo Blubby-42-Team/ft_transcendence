@@ -137,78 +137,6 @@ export class PostgresStatsService {
 		})
 	}
 
-	async addRandomWon(userId: number) {
-		const old = await this.getStatsByUserId(userId)
-		return this.statsRepository.update(userId, {
-			random_match_won: old.random_match_won + 1,
-		})
-		.catch((err) => {
-			this.logger.debug(`Failed to update won matchs of ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update won matchs of ${userId}`);
-		})
-		.then((res) => {
-			if (res.affected === 0) {
-				this.logger.debug(`Failed to update won matchs of ${userId}: ${res}`);
-				throw new NotFoundException(`Failed to update won matchs of ${userId}:`);
-			}
-			return 'ok';
-		})
-	}
-
-	async addRandomLose(userId: number) {
-		const old = await this.getStatsByUserId(userId)
-		return this.statsRepository.update(userId, {
-			random_match_lost: old.random_match_lost + 1,
-		})
-		.catch((err) => {
-			this.logger.debug(`Failed to update lost matchs of ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update lost matchs ${userId}`);
-		})
-		.then((res) => {
-			if (res.affected === 0) {
-				this.logger.debug(`Failed to update lost matchs of ${userId}: ${res}`);
-				throw new NotFoundException(`Failed to update lost matchs of ${userId}:`);
-			}
-			return 'ok';
-		})
-	}
-
-	async addRandomPointWon(userId: number) {
-		const old = await this.getStatsByUserId(userId)
-		return this.statsRepository.update(userId, {
-			random_match_points_won: old.random_match_points_won + 1,
-		})
-		.catch((err) => {
-			this.logger.debug(`Failed to update won points of ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update won points ${userId}`);
-		})
-		.then((res) => {
-			if (res.affected === 0) {
-				this.logger.debug(`Failed to update won points of ${userId}: ${res}`);
-				throw new NotFoundException(`Failed to update won points of ${userId}:`);
-			}
-			return 'ok';
-		})
-	}
-
-	async addRandomPointLost(userId: number) {
-		const old = await this.getStatsByUserId(userId)
-		return this.statsRepository.update(userId, {
-			random_match_points_lost: old.random_match_points_lost + 1,
-		})
-		.catch((err) => {
-			this.logger.debug(`Failed to update lost points of ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update lost points ${userId}`);
-		})
-		.then((res) => {
-			if (res.affected === 0) {
-				this.logger.debug(`Failed to update lost points of ${userId}: ${res}`);
-				throw new NotFoundException(`Failed to update lost points of ${userId}:`);
-			}
-			return 'ok';
-		})
-	}
-
 	async ModifyClassicMMR(userId: number, newMMR: number) {
 		return await this.statsRepository.update(userId, {
 			classic_mmr: Math.floor(newMMR),
@@ -226,26 +154,6 @@ export class PostgresStatsService {
 		})
 	}
 
-	async ModifyRandomMMR(userId: number, score: number, oppMMR: number) {
-		const old = await this.getStatsByUserId(userId)
-
-		let newMMR = Math.max(old.random_mmr + 32 * (score - 1/(1 + 10**((oppMMR - old.random_mmr)/400))), 100)
-		return await this.statsRepository.update(userId, {
-			random_mmr: Math.floor(newMMR),
-		})
-		.catch((err) => {
-			this.logger.debug(`Failed to update random Matchmaking Ranking of ${userId}: ${err}`);
-			throw new InternalServerErrorException(`Failed to update random Matchmaking Ranking ${userId}`);
-		})
-		.then((res) => {
-			if (res.affected === 0) {
-				this.logger.debug(`Failed to update random Matchmaking Ranking of ${userId}: ${res}`);
-				throw new NotFoundException(`Failed to update random Matchmaking Ranking of ${userId}:`);
-			}
-			return 'ok';
-		})
-	}
-
 	async getClassicRankByUserId(
 		userId: number,
 	) {
@@ -256,29 +164,6 @@ export class PostgresStatsService {
 			(
 				SELECT
 					RANK() OVER (ORDER BY classic_mmr DESC) AS ranking,
-					u.id AS user_id
-				FROM
-					"user" u
-				JOIN
-					stats s ON u."statsId" = s.id
-			) AS user_ranking
-		WHERE
-			user_id = $1;
-		`,
-		[userId])
-		return res[0].ranking
-	}
-
-	async getRandomRankByUserId(
-		userId: number,
-	) {
-		const res = await this.statsRepository.query(`
-		SELECT
-			ranking
-		FROM
-			(
-				SELECT
-					RANK() OVER (ORDER BY random_mmr DESC) AS ranking,
 					u.id AS user_id
 				FROM
 					"user" u

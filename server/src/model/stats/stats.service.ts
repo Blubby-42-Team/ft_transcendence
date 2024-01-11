@@ -18,21 +18,12 @@ export class ModelStatsService {
 			classic_mmr: stats.classic_mmr,
 			classic_winrate: (stats.classic_match_won / (stats.classic_match_won + stats.classic_match_lost)) * 100,
 			classic_average_point: stats.classic_match_points_won / (stats.classic_match_won + stats.classic_match_lost),
-			random_match_played: stats.random_match_won + stats.random_match_lost,
-			random_ranking: await this.postgresStatsService.getRandomRankByUserId(userId),
-			random_mmr: stats.random_mmr,
-			random_winrate: (stats.random_match_won / (stats.random_match_won + stats.random_match_lost)) * 100,
-			random_average_point: stats.random_match_points_won / (stats.random_match_won + stats.random_match_lost),
 		}
 
 		if (!res.classic_winrate)
 			res.classic_winrate = 0;
 		if (!res.classic_average_point)
 			res.classic_average_point = 0;
-		if (!res.random_winrate)
-			res.random_winrate = 0;
-		if (!res.random_winrate)
-			res.random_average_point = 0;
 		return res;
 	}
 
@@ -56,27 +47,7 @@ export class ModelStatsService {
 		return await this.postgresStatsService.addClassicPointLost(userId);
 	}
 
-	async addRandomWon(userId: number) {
-		return await this.postgresStatsService.addRandomWon(userId);
-	}
-
-	async addRandomLose(userId: number) {
-		return await this.postgresStatsService.addRandomLose(userId);
-	}
-
-	async addRandomPointWon(userId: number) {
-		return await this.postgresStatsService.addRandomPointWon(userId);
-	}
-
-	async addRandomPointLost(userId: number) {
-		return await this.postgresStatsService.addRandomPointLost(userId);
-	}
-
 	async ModifyClassicMMR(userId: number, score: number, oppMMR: number) {
 		return await this.postgresStatsService.ModifyClassicMMR(userId, score);
-	}
-
-	async ModifyRandomMMR(userId: number, score: number, oppMMR: number) {
-		return await this.postgresStatsService.ModifyRandomMMR(userId, score, oppMMR);
 	}
 }

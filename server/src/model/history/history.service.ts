@@ -26,12 +26,11 @@ export class ModelHistoryService {
 			game_type: EGameType,
 			player_score: number,
 			opp_score: number,
-			duration: number,
 		) {
 			await this.postgresUserService.getUserById(userId);
 			await this.postgresUserService.getUserById(opp_id);
-			await this.postgresHistoryService.addHistory(userId, opp_id, game_type, player_score, opp_score, duration);
-			await this.postgresHistoryService.addHistory(opp_id, userId, game_type, opp_score, player_score, duration);
+			await this.postgresHistoryService.addHistory(userId, opp_id, game_type, player_score, opp_score);
+			await this.postgresHistoryService.addHistory(opp_id, userId, game_type, opp_score, player_score);
 			await this.postgresStatsService.addPlayedMatch(userId);
 			await this.postgresStatsService.addPlayedMatch(opp_id);
 			const player_mmr = await this.postgresStatsService.getMMRByUserId(userId);
@@ -50,14 +49,14 @@ export class ModelHistoryService {
 			for(let i = 0; i < player_score; i++) {
 				await this.postgresStatsService.addClassicPointLost(opp_id);
 			}
-			// if (player_score > opp_score){
-			// 	newPlayerMMR = Math.max(player_mmr + 32 * (1 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
-			// 	newOppMMR = Math.max(opp_mmr + 32 * (0 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
-			// }
-			// else {
-			// 	newPlayerMMR = Math.max(player_mmr + 32 * (0 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
-			// 	newOppMMR = Math.max(opp_mmr + 32 * (1 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
-			// }
+			if (player_score > opp_score){
+				newPlayerMMR = Math.max(player_mmr + 32 * (1 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
+				newOppMMR = Math.max(opp_mmr + 32 * (0 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
+			}
+			else {
+				newPlayerMMR = Math.max(player_mmr + 32 * (0 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
+				newOppMMR = Math.max(opp_mmr + 32 * (1 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
+			}
 			await this.postgresStatsService.ModifyClassicMMR(userId, newPlayerMMR);
 			await this.postgresStatsService.ModifyClassicMMR(opp_id, newOppMMR);
 
