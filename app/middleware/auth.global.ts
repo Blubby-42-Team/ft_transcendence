@@ -3,8 +3,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		return ;
 	}
 	
-	const auth = getAuthPath();
-
 	const cookie = useCookie('user_id', {
 		watch: false
 	});
@@ -12,10 +10,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	const userId = parseInt(cookie.value ?? '0');
 
 	if (userId === 0) {
-		await navigateTo(auth, {
-			external: true
-		})
-		return ;
+		return navigateTo('/login', { redirectCode: 301 })
 	}
 
 	const { fetchUser, updatePrimaryUser } = useUserStore();
@@ -23,10 +18,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	const res = await fetchUser(userId);
 
 	if (!res || res.error.value){
-		await navigateTo(auth, {
-			external: true
-		})
-		return ;
+		return navigateTo('/login', { redirectCode: 301 })
 	}
 
 	updatePrimaryUser(userId);

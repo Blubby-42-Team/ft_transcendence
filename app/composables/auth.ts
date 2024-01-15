@@ -23,7 +23,7 @@ import { appendResponseHeader, H3Event } from 'h3'
 export function fetchAuth(
 	event: H3Event,
 	code: string,
-	callback: (response: authResponse) => void = () => {},
+	callback: (res: authResponse) => void = () => {},
 ){
 	const back = getBackPath();
 
@@ -31,14 +31,12 @@ export function fetchAuth(
 		method: 'POST',
 		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
-			// console.log('cookie', response.headers);
 			callback(response._data);
-
-			// if (process.server){
-			// 	const cookies = (response.headers.get('set-cookie') || '').split(',')
-			// 	for (const cookie of cookies) {
-			// 		appendResponseHeader(event, 'set-cookie', cookie)
-			// 	}
+			// console.log('cookie', response.headers);
+			//appendResponseHeader
+			// const setCookieHeader = response.headers.get('Set-Cookie');
+			// if (setCookieHeader) {
+			// 	appendResponseHeader(event, 'Set-Cookie', setCookieHeader);
 			// }
 
 		},
