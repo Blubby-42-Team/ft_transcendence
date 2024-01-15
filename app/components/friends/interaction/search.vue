@@ -7,14 +7,13 @@ const props = defineProps({
 	}
 });
 
-const { notif } = useNotifStore();
+const notifStore = useNotifStore();
+const { notif } = storeToRefs(notifStore);
 
 const { textarea, input } = useTextareaAutosize()
 const { getUserByName } = useUserStore();
 
 input.value = "";
-
-const { addNotif } = useNotifStore();
 
 async function search() {
 	const userLoginName = input.value;
@@ -26,7 +25,7 @@ async function search() {
 			navigateTo("/profile/" + res);
 		}
 		else {
-			addNotif("The user you are looking for does not exist");
+			notifStore.addNotif("The user you are looking for does not exist");
 		}
 		props.closeFunc();
 	}
