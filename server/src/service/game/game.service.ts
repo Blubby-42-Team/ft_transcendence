@@ -10,6 +10,7 @@ import { IdManagerService } from './idManager.service';
 import { Direction } from '@shared/types/game/utils';
 import { ModelHistoryService } from 'src/model/history/history.service';
 import { HistoryService } from 'src/controller/history/history.service';
+import { EGameType } from '@shared/types/history';
 
 const defaultSettings: gameSettingsType = {
 	maxPoint:			5,
@@ -27,7 +28,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	constructor(
 		private readonly io: OutGameGateway,
 		private readonly idManager: IdManagerService,
-    	// private readonly historyServide: HistoryService,
+    	private readonly historyServide: ModelHistoryService,
 	) { }
 
 	private readonly logger = new Logger(GameService.name);
@@ -81,14 +82,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			const player2 = this.matchmakingList.shift();
 
 			const roomId = this.getNewRoomId();
-
-			// add to user 1 and 2 disconnect function
-			const player1DisconnectLobby = () => {
-				this.endMatch(roomId, null, "Player has disconnected");
-			}
-			const player2DisconnectLobby = () => {
-				this.endMatch(roomId, null, "Player has disconnected");
-			}
 
 			this.rooms.set(roomId, {
 				whiteList: [],
@@ -299,11 +292,11 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			return ;
 		}
 		const room = this.rooms.get(roomId);
-		if (room.players?.[0]?.id ?? 0 === userId){
-			room.instance.move(Direction.LEFT, direction, press);
-		}
-		else if (room.players?.[1]?.id ?? 0 === userId){
-			room.instance.move(Direction.RIGHT, direction, press);
+		for (let i = 0; i < room.players.length; i++) {
+			if (room.players[i].id === userId){
+				room.instance.move(i, direction, press);
+				return ;
+			}
 		}
 	}
 
@@ -340,27 +333,26 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		console.log(scores)
 
 		// TODO add match history to user 1 and 2
-		// if (scores !== null){
-		// 	await this.historyServide.addHistoryByUserId(
-		// 		player1,
-		// 		player2,
-		// 		EGameType.Classic,
-		// 		scores[0],
-		// 		scores[1],
-		// 		0,
-		// 	);
-		// }
+		if (scores !== null){
+			await this.historyServide.addHistoryByUserId(
+				room.players[0].id,
+				room.players[1].id,
+				EGameType.Classic,
+				scores[0],
+				scores[1],
+			);
+		}
 
 		this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 			msg: message
 		})
 		
+		await this.idManager.resetUserPrimarySocket(room.players[0].id).catch(() => {});
+		await this.idManager.resetUserPrimarySocket(room.players[1].id).catch(() => {});
 		await this.idManager.unsetOnDisconnectCallback(room.players[0].id).catch(() => {});
 		await this.idManager.unsetOnDisconnectCallback(room.players[1].id).catch(() => {});
 		await this.idManager.unsubscribePrimaryUserToRoom(room.players[0].id, roomId).catch(() => {});
 		await this.idManager.unsubscribePrimaryUserToRoom(room.players[1].id, roomId).catch(() => {});
-		await this.idManager.resetUserPrimarySocket(room.players[0].id).catch(() => {});
-		await this.idManager.resetUserPrimarySocket(room.players[1].id).catch(() => {});
 		this.rooms.delete(roomId);
 	}
 
@@ -369,9 +361,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		if (!room){
 			throw new UnauthorizedException(`User ${userId} is not in a room`);
 		}
+		await this.idManager.resetUserPrimarySocket(userId).catch(() => {});
 		await this.idManager.unsetOnDisconnectCallback(userId).catch(() => {});
 		await this.idManager.unsubscribePrimaryUserToRoom(userId, room).catch(() => {});
-		await this.idManager.resetUserPrimarySocket(userId).catch(() => {});
 		return this.endMatch(room, null, "Player has left the game");
 	}
 

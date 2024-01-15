@@ -222,10 +222,12 @@ export class IdManagerService {
 
 		if (user === undefined){
 			this.logger.debug(`User ${userId} not found in cache`);
+			this.logger.error(`HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`);
 			throw new NotFoundException(`User ${userId} not found`);
 		}
 
 		if (user.primary === null){
+			this.logger.error(`HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`);
 			this.logger.warn(`No primary socket for user ${userId} to unsubscribe to room ${room}, ignoring`);
 			throw new NotFoundException(`No primary socket for user ${userId} to unsubscribe to room ${room}`);
 		}
