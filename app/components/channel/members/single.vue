@@ -7,8 +7,9 @@ const props = defineProps({
 	},
 });
 
-const { getShortUser } = useUserStore();
-const user = getShortUser(computed(() => props.member));
+const userStore = useUserStore();
+const { getShortUser } = storeToRefs(userStore);
+const user = getShortUser.value(props.member);
 
 const viewProfile = ref();
 const testButton = ref();

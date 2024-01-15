@@ -11,12 +11,13 @@ const props = defineProps({
 	},
 });
 
-const { getUser, fetchUser } = useUserStore();
-const user = getUser(computed(() => props.userId));
-await fetchUser(props.userId);
+const userStore = useUserStore();
+const { getUser } = storeToRefs(userStore);
+const user = getUser.value(props.userId);
+await userStore.fetchUser(props.userId);
 
 function invite() {
-	console.log("inviting for user: " + user.value.id);
+	console.log("inviting for user: " + user.id);
 	props.closeFunc();
 }
 

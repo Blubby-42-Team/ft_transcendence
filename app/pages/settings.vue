@@ -4,7 +4,8 @@ definePageMeta({name: 'Settings'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.SETTINGS); })
 
-const { primaryUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 const theme = useState('theme');
 function changeTheme(){

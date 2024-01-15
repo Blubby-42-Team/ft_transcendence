@@ -7,17 +7,19 @@ const props = defineProps({
 	},
 });
 const channelStore = useChannelStore();
-const { selectedChannel } = storeToRefs(channelStore);
-const { getUser, fetchUser } = useUserStore();
+const userStore = useUserStore();
 const { addNotif } = useNotifStore();
 
-const { getFriends, fetchFriends, primaryUser } = useUserStore();
-const friends = getFriends(computed(() => primaryUser.value.id));
-await fetchFriends(primaryUser.value.id);
+const { selectedChannel } = storeToRefs(channelStore);
+const { getFriends, primaryUser, getUser } = storeToRefs(userStore);
+
 
 const selectedUser = ref(0);
-const user = getUser(selectedUser);
-await fetchUser(selectedUser.value);
+const friends = getFriends.value(primaryUser.value.id);
+const user = getUser.value(selectedUser.value);
+
+await userStore.fetchFriends(primaryUser.value.id);
+await userStore.fetchUser(selectedUser.value);
 
 async function invite() {
 	console.log("Leaving channel: " + selectedChannel.value?.id);

@@ -9,12 +9,13 @@ const props = defineProps({
 	}
 });
 
-const { waitingString } = usePageStore();
+const pageStore = usePageStore();
+const { waitingString } = storeToRefs(pageStore);
 
 const hoverButton = ref(false);
 const lobbyStore = useLobbyStore();
 const { startMatchMaking, cancelMatchMaking } = lobbyStore;
-const { status } = toRefs(lobbyStore);
+const { status } = storeToRefs(lobbyStore);
 
 </script>
 

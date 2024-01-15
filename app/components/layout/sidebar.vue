@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { EPageCategories } from '#imports'
-const { selectedCategory, selectedLobby, lobby } = usePageStore();
+const pageStore = usePageStore();
+const { selectedCategory } = storeToRefs(pageStore);
 
 enum EType {
 	CATEGORY			= 0,

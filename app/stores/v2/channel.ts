@@ -108,19 +108,25 @@ export const useChannelStore = defineStore('channel', {
 		},
 
 		async addNewChannel(name: string, type: EChatType){
-			const { primaryUser } = useUserStore();
+			const userStore = useUserStore();
+			const { primaryUser } = storeToRefs(userStore);
+
 			const { data } = await fetchCreateChat(primaryUser.value.id, type, name);
 			return data.value ?? 0;
 		},
 
 		async addNewProtectedChannel(name: string, password: string, type: EChatType){
-			const { primaryUser } = useUserStore();
+			const userStore = useUserStore();
+			const { primaryUser } = storeToRefs(userStore);
+
 			const { data } = await fetchCreateChatProtected(primaryUser.value.id, type, name, password);
 			return data.value ?? 0;
 		},
 
 		async leaveChannel(channelId: number){
-			const { primaryUser } = useUserStore();
+			const userStore = useUserStore();
+			const { primaryUser } = storeToRefs(userStore);
+			
 			const { data } = await fetchLeaveChat(primaryUser.value.id, channelId);
 			this.fetchChannelList(primaryUser.value.id);
 			return data.value ?? ':(';

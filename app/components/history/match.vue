@@ -13,16 +13,17 @@ const props = defineProps({
 	},
 })
 
-const { getUser, fetchUser, fetchStat, getStat, primaryUser } = useUserStore();
-const user1 = getUser(computed(() => props.userId));
-const user2 = getUser(computed(() => props.match.adversary));
-const stat1 = getStat(computed(() => props.userId));
-const stat2 = getStat(computed(() => props.match.adversary));
-await fetchUser(props.userId);
-await fetchUser(props.match.adversary);
-await fetchStat(props.userId);
-await fetchStat(props.match.adversary);
 
+const userStore = useUserStore();
+const { getUser, getStat } = storeToRefs(userStore);
+const user1 = getUser.value(props.userId);
+const user2 = getUser.value(props.match.adversary);
+await userStore.fetchUser(props.userId);
+await userStore.fetchUser(props.match.adversary);
+const stat1 = getStat.value(props.userId);
+const stat2 = getStat.value(props.match.adversary);
+await userStore.fetchStat(props.userId);
+await userStore.fetchStat(props.match.adversary);
 
 // TODO Deferinceate between if match is mine or other and remove hover effect if yes
 </script>

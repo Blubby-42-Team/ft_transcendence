@@ -4,10 +4,10 @@ definePageMeta({name: 'History'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.HISTORY); })
 
-const { getHistory, fetchHistory, primaryUser } = useUserStore();
-let history = getHistory(computed(() => primaryUser.value.id));
-
-await fetchHistory(primaryUser.value.id);
+const userStore = useUserStore();
+const { primaryUser, getHistory } = storeToRefs(userStore);
+const history = getHistory.value(primaryUser.value.id);
+await userStore.fetchHistory(primaryUser.value.id);
 
 </script>
 
@@ -18,7 +18,7 @@ await fetchHistory(primaryUser.value.id);
 				<Teleport to="#additionalHeaderButton">
 					<div class="mx-2 border border-text-light bg-text-light"></div>
 					<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
-						@click="fetchHistory(primaryUser.id)"
+						@click="userStore.fetchHistory(primaryUser.id)"
 					>
 						<Icon name="material-symbols:refresh" class="w-full h-full"/>
 					</GenericButton>

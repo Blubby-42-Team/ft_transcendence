@@ -43,12 +43,12 @@ export const useUserStore = defineStore('user', {
 		_socket: null as SocketClientUser | null,
 	}),
 	getters: {
-		primaryUser:  (state) => computed(() => state._users?.[state._primaryUser] ?? userPlaceHolder),
-		getUser:      (state) => (userId: Ref<number>) => computed(() => state._users?.[userId.value] ?? userPlaceHolder),
-		getShortUser: (state) => (userId: Ref<number>) => computed(() => state._shortUsers?.[userId.value] ?? shortUserPlaceHolder),
-		getStat:      (state) => (userId: Ref<number>) => computed(() => state._stats?.[userId.value] ?? statsPlaceHolder),
-		getHistory:   (state) => (userId: Ref<number>) => computed(() => state._history?.[userId.value] ?? []),
-		getFriends:   (state) => (userId: Ref<number>) => computed(() => state._friends?.[userId.value] ?? []),
+		primaryUser:  (state) => state._users?.[state._primaryUser] ?? userPlaceHolder,
+		getUser:      (state) => (userId: number) => state._users?.[userId] ?? userPlaceHolder,
+		getShortUser: (state) => (userId: number) => state._shortUsers?.[userId] ?? shortUserPlaceHolder,
+		getStat:      (state) => (userId: number) => state._stats?.[userId] ?? statsPlaceHolder,
+		getHistory:   (state) => (userId: number) => state._history?.[userId] ?? [],
+		getFriends:   (state) => (userId: number) => state._friends?.[userId] ?? [],
 	},
 	actions: {
 		setup(){

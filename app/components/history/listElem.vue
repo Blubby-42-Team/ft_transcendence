@@ -14,9 +14,10 @@ const props = defineProps({
 	},
 })
 
-const { getUser, fetchUser } = useUserStore();
-const user = getUser(computed(() => props.match.adversary));
-await fetchUser(props.match.adversary);
+const userStore = useUserStore();
+const { getUser } = storeToRefs(userStore);
+const user = getUser.value(props.userId);
+await userStore.fetchUser(props.match.adversary);
 
 const openMatchHistoryPreview = ref();
 

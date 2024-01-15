@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-const { primaryUser, fetchPrimaryUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 const defaultSettings = {
 	maxPoint:			2,
@@ -15,7 +16,7 @@ const defaultSettings = {
 
 const settings = useState<gameSettingsType>('settings', () => defaultSettings);
 
-await fetchPrimaryUser();
+await userStore.fetchPrimaryUser();
 
 const props = defineProps({
 	preview: {

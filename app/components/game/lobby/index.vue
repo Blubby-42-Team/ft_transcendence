@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 
-const { lobby, selectedLobby } = usePageStore();
+const pageStore = usePageStore();
+const { lobby, selectedLobby } = storeToRefs(pageStore);
 
 </script>
 	

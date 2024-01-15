@@ -11,15 +11,16 @@ const props = defineProps({
 	},
 });
 
-const { getUser, fetchUser, removeFriend } = useUserStore();
-const user = getUser(computed(() => props.userId));
-await fetchUser(props.userId);
+const userStore = useUserStore();
+const { getUser } = storeToRefs(userStore);
+const user = getUser.value(props.userId);
+await userStore.fetchUser(props.userId);
 
 const selectedFriend = useState<number | null>('selectedFriend');
 
 async function remove() {
-	console.log("Removing friends for user: " + user.value.id);
-	await removeFriend(props.userId);
+	console.log("Removing friends for user: " + user.id);
+	await userStore.removeFriend(props.userId);
 	selectedFriend.value = null;
 	props.closeFunc();
 }

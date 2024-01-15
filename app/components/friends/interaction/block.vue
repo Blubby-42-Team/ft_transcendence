@@ -16,9 +16,10 @@ const props = defineProps({
 });
 
 const { addNotif } = useNotifStore();
-const { getUser, fetchUser, primaryUser } = useUserStore();
-const user = getUser(computed(() => props.userId));
-await fetchUser(props.userId);
+const userStore = useUserStore();
+const { getUser, primaryUser } = storeToRefs(userStore);
+const user = getUser.value(props.userId);
+await userStore.fetchUser(props.userId);
 
 async function block() {
 	await fetchUserBlacklistPost(primaryUser.value.id, props.userId)

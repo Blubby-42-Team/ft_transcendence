@@ -7,8 +7,10 @@ onMounted(() => { setSelectedCategory(EPageCategories.MESSAGES); })
 const channelStore = useChannelStore();
 const { fetchChannelList, selectChannel, refreshChannel } = channelStore;
 const { selectedChannel } = storeToRefs(channelStore);
-const { primaryUser } = useUserStore();
 const route = useRoute();
+
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 await fetchChannelList(primaryUser.value.id);
 if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){

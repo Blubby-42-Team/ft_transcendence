@@ -3,9 +3,12 @@
 import { EChatType } from "#imports";
 
 const channelStore = useChannelStore();
+const userStore = useUserStore();
+
 const { fetchChannelList } = channelStore;
 const { selectedChannel, activeType } = storeToRefs(channelStore);
-const { primaryUser } = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
+
 await fetchChannelList(primaryUser.value.id);
 
 const isSideMenuOpen = useState<boolean>('isSideMenuOpen', () => true);

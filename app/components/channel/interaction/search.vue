@@ -13,8 +13,10 @@ const { textarea, input } = useTextareaAutosize()
 
 input.value = "";
 
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
+await userStore.fetchUser(primaryUser.value.id);
 
-const { primaryUser } = useUserStore();
 const res = await fetchAllChatsUserCanJoin(primaryUser.value.id, (dara) => {
 	console.log("error", dara);
 });

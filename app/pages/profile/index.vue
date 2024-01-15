@@ -4,7 +4,8 @@ definePageMeta({name: 'My Profil'})
 const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.NONE); })
 
-const { primaryUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 const openFindFriend = ref();
 

@@ -5,7 +5,8 @@ const { setSelectedCategory } = usePageStore();
 onMounted(() => { setSelectedCategory(EPageCategories.MESSAGES); })
 
 const { fetchChannelList, selectChannel } = useChannelStore();
-const { primaryUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 await fetchChannelList(primaryUser.value.id);
 await selectChannel(primaryUser.value.id, 0);

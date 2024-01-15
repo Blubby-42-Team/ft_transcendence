@@ -20,7 +20,9 @@ export const useLobbyStore = defineStore('lobby', {
 			}
 			this._socket = new SocketClientGame(
 				(players) => {
-					const { primaryUser } = useUserStore();
+					const userStore = useUserStore();
+					const { primaryUser } = storeToRefs(userStore);
+
 					this._otherPlayer = players.find((player) => player !== primaryUser.value.id) ?? 0;
 					this._status = ELobbyStatus.AllPlayersReady;
 					setTimeout(() => {

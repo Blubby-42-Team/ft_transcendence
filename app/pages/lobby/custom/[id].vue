@@ -8,10 +8,11 @@ definePageMeta({
 const { setPageDataLobby } = usePageStore();
 const { reset } = useLobbyStore();
 
-const { primaryUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 const lobbyStore = useLobbyStore();
-const { otherPlayer } = toRefs(lobbyStore);
+const { otherPlayer } = storeToRefs(lobbyStore);
 
 
 const x = route.params.id as string;

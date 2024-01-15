@@ -7,15 +7,14 @@ const props = defineProps({
 	},
 });
 
-const { getUser, getStat, getHistory, fetchStat, fetchUser, fetchHistory } = useUserStore();
-const userId = computed(() => props.userId);
-const user = getUser(userId);
-const stats = ref(getStat(userId));
-const history = ref(getHistory(userId));
-
-await fetchUser(props.userId);
-await fetchStat(props.userId);
-await fetchHistory(props.userId);
+const userStore = useUserStore();
+const { getUser, getStat, getHistory } = storeToRefs(userStore);
+const user = getUser.value(props.userId);
+const stats = getStat.value(props.userId);
+const history = getHistory.value(props.userId);
+await userStore.fetchUser(props.userId);
+await userStore.fetchStat(props.userId);
+await userStore.fetchHistory(props.userId);
 
 </script>
 

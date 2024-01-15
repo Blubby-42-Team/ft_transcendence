@@ -2,7 +2,9 @@
 
 const { textarea, input } = useTextareaAutosize()
 
-const { primaryUser, fetchUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
+
 const { addNotif } = useNotifStore();
 
 
@@ -30,7 +32,7 @@ function uploadImage() {
         formData.append("file", data.value.selectedFile);
         console.log(formData.get("file"));
 		changeUserPicture(primaryUser.value.id, formData, () => {
-			fetchUser(primaryUser.value.id);
+			userStore.fetchUser(primaryUser.value.id);
 		});
     }
 }
@@ -40,7 +42,7 @@ async function changeName(){
 	newName.value = "";
 	if (name && name.length > 0){
 		const res = await fetchChangeDisplayName(primaryUser.value.id, name, () => {
-			fetchUser(primaryUser.value.id);
+			userStore.fetchUser(primaryUser.value.id);
 		});
 		if (res.data.value !== "ok"){
 			addNotif("Could not change name");;

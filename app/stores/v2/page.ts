@@ -24,10 +24,10 @@ export const usePageStore = defineStore('page', {
 		_waiting: 1,
 	}),
 	getters: {
-		selectedCategory:	(state) => computed(() => state._selectedCategory),
-		selectedLobby:		(state) => computed(() => state._selectedLobby),
+		selectedCategory:	(state) => state._selectedCategory,
+		selectedLobby:		(state) => state._selectedLobby,
 		lobby:				(state) => state._lobby,
-		waitingString:		(state) => computed(() => '.'.repeat(state._waiting)),
+		waitingString:		(state) => '.'.repeat(state._waiting),
 	},
 	actions: {
 		startLoopWaiting(){

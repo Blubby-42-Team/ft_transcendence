@@ -7,15 +7,16 @@ const props = defineProps({
 	},
 });
 
-const { addNotif } = useNotifStore();
-const { getUser, fetchUser, getFriends, fetchFriends, primaryUser } = useUserStore();
-
-const friends = getFriends(computed(() => primaryUser.value.id));
-await fetchFriends(primaryUser.value.id);
-
 const selectedUser = ref(0);
-const user = getUser(selectedUser);
-await fetchUser(selectedUser.value);
+const { addNotif } = useNotifStore();
+
+const userStore = useUserStore();
+const { getUser, primaryUser, getFriends } = storeToRefs(userStore);
+const user = getUser.value(selectedUser.value);
+await userStore.fetchUser(selectedUser.value);
+
+const friends = getFriends.value(primaryUser.value.id);
+await userStore.fetchFriends(primaryUser.value.id);
 
 async function invite() {
 	props.closeFunc();

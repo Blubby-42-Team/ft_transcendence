@@ -2,7 +2,8 @@
 
 const { textarea, input } = useTextareaAutosize()
 
-const { primaryUser } = useUserStore()
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 const channelStore = useChannelStore();
 const { postMessage, refreshChannel } = channelStore;

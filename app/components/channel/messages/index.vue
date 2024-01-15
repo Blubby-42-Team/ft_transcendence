@@ -9,7 +9,8 @@ defineProps({
 	},
 })
 
-const { primaryUser } = useUserStore()
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
 
 </script>
 

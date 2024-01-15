@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 
-const { fetchFriends, getFriends, primaryUser } = useUserStore();
-const friends = getFriends(computed(() => primaryUser.value.id));
-await fetchFriends(primaryUser.value.id);
+const userStore = useUserStore();
+const { primaryUser, getFriends } = storeToRefs(userStore);
 
-console.log(friends.value);
+const friends = getFriends.value(primaryUser.value.id);
+await userStore.fetchFriends(primaryUser.value.id);
+
+console.log(friends);
 
 </script>
 

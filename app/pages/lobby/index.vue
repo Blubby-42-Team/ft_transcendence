@@ -1,9 +1,11 @@
 <script setup lang="ts">
 
-const { selectedLobby, lobby } = usePageStore()
+const pageStore = usePageStore();
+const { selectedLobby, lobby } = storeToRefs(pageStore);
+
 
 onMounted(() => {
-	navigateTo(lobby.find(elem => elem.id === selectedLobby.value)?.path ?? '/lobby/classic')
+	navigateTo(lobby.value.find(elem => elem.id === selectedLobby.value)?.path ?? '/lobby/classic')
 })
 
 </script>

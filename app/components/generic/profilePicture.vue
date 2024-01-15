@@ -9,8 +9,9 @@ const props = defineProps({
 	},
 })
 
-const { getUser } = useUserStore();
-const user = getUser(computed(() => props.userId));
+const userStore = useUserStore();
+const { getUser } = storeToRefs(userStore);
+const user = getUser.value(props.userId);
 
 </script>
 

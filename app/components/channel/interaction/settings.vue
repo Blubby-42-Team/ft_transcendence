@@ -10,7 +10,10 @@ const props = defineProps({
 const channelStore = useChannelStore();
 const { selectedChannel } = storeToRefs(channelStore);
 const { refreshChannel, fetchChannelList } = channelStore;
-const { primaryUser, fetchUser } = useUserStore();
+const userStore = useUserStore();
+const { primaryUser } = storeToRefs(userStore);
+await userStore.fetchUser(primaryUser.value.id);
+
 const { input } = useTextareaAutosize()
 
 const channelName = ref(selectedChannel.value?.name);

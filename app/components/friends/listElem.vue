@@ -7,8 +7,9 @@ const props = defineProps({
 	},
 })
 
-const { getShortUser } = useUserStore()
-const user = getShortUser(computed(() => props.userId));
+const userStore = useUserStore();
+const { getShortUser } = storeToRefs(userStore);
+const user = getShortUser.value(props.userId);
 
 const selectedFriend = useState<number | null>('selectedFriend');
 

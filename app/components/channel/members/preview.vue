@@ -13,9 +13,14 @@ const props = defineProps({
 
 const { addNotif } = useNotifStore();
 
-const { primaryUser, getUser, fetchUser, fetchHistory, getFriends, fetchFriends } = useUserStore();
-const user = getUser(computed(() => props.userId));
-const friend = getFriends(computed(() => primaryUser.value.id));
+
+const userStore = useUserStore();
+const { fetchUser, fetchHistory, fetchFriends } = userStore;
+const { primaryUser, getFriends, getUser } = storeToRefs(userStore);
+
+const user = getUser.value(props.userId);
+const friend = getFriends.value(primaryUser.value.id);
+
 await fetchUser(props.userId);
 await fetchHistory(props.userId);
 await fetchFriends(primaryUser.value.id);
@@ -27,7 +32,7 @@ selectedChannel.value?.admin.includes(props.userId);
 const buttonList = computed(() => {
 	const primaryIsAdmin = selectedChannel.value?.admin.includes(primaryUser.value.id) ?? false;
 	const userIsAdmin = selectedChannel.value?.admin.includes(props.userId) ?? false;
-	const isFriend = friend.value.includes(user.value.id);
+	const isFriend = friend.includes(user.id);
 	const isPrimaryUser = primaryUser.value.id === props.userId;
 	return [
 		{ type: 'bar',									condition: true, 								},

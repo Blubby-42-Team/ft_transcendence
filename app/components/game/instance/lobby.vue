@@ -9,7 +9,7 @@ const screenSize = ref({
 })
 
 const lobbyStore = useLobbyStore();
-const { gameState } = toRefs(lobbyStore);
+const { gameState } = storeToRefs(lobbyStore);
 
 const emptyFunction = (status: boolean) => {};
 const controller: gameControllerType = {
