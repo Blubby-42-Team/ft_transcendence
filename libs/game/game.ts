@@ -20,11 +20,18 @@ export class GameEngine extends Controller {
 		gameSettings: gameSettingsType,
 		public sendGameStateUpdate:	(newGameState: gameStateType) => void = () => {},
 		public editLocalState:		(state: gameStateType) => void = () => {},
-		public onGameOver:			(player: Array<number>) => void | null = null,
+		public onGameOver:			((player: Array<number>) => void) | null = null,
 	){
 		super();
 		this.gameSettings = JSON.parse(JSON.stringify(gameSettings));
 		this.gamestate = getNewStateWithGameSettings(this.gameSettings, editLocalState);
+	}
+
+	public getScores(): Array<number> {
+		return [
+			(this.gamestate.player_left.active ? this.gamestate.player_left.score : 0),
+			(this.gamestate.player_right.active ? this.gamestate.player_right.score : 0),
+		]
 	}
 	
 	private async loop() {
@@ -40,10 +47,7 @@ export class GameEngine extends Controller {
 					break ;
 				case gameStatusType.GAMEOVER:
 					if (this.onGameOver){
-						this.onGameOver([
-							(this.gamestate.player_left.active ? this.gamestate.player_left.score : 0),
-							(this.gamestate.player_right.active ? this.gamestate.player_right.score : 0),
-						]);
+						this.onGameOver(this.getScores());
 					}
 					if (this.needsSleep){
 						this.needsSleep = false;

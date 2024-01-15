@@ -15,6 +15,7 @@ export enum ESocketClientEventName {
 
 	movePlayer			= 'movePlayer',
 	startRound			= 'startRound',
+	leaveGame			= 'leaveGame',
 }
 
 export enum ESocketServerEventName {

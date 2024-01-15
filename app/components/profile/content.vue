@@ -36,7 +36,13 @@ await fetchHistory(props.userId);
 			<div class="grid w-full grid-cols-[1fr,2rem,1fr] h-max">
 				<ProfileStat name="Classic" :stat="stats.classic"/>
 				<br>
-				<ProfileStat name="Random" :stat="stats.random"/>
+				<ProfileStat name="Random" :stat="{
+					matchPlayed: 0,
+					ranking: 0,
+					mmr: 0,
+					winrate: 0,
+					averagePointPerGame: 0,
+				}"/>
 			</div>
 		</div>
 		<div class="h-full col-span-2 overflow-auto scrollbar scrollbar-w-2 scrollbar-h-2 scrollbar-thumb-color1 scrollbar-thumb-rounded-full scrollbar-track">

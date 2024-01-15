@@ -71,4 +71,8 @@ export class SocketClientGame extends SocketClient {
 			press,
 		});
 	}
+
+	leaveMatch(){
+		this.emit(ESocketClientEventName.leaveGame, {});
+	}
 };

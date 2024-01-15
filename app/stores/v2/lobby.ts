@@ -70,5 +70,10 @@ export const useLobbyStore = defineStore('lobby', {
 				this._socket.startRound(press);
 			}
 		},
+		endMatch(){
+			if (this._socket){
+				this._socket.leaveMatch();
+			}
+		}
 	},
 })

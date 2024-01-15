@@ -84,12 +84,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 			// add to user 1 and 2 disconnect function
 			const player1DisconnectLobby = () => {
-				// send error message to player 2
-				this.rooms.delete(roomId);
+				this.endMatch(roomId, null, "Player has disconnected");
 			}
 			const player2DisconnectLobby = () => {
-				// send error message to player 1
-				this.rooms.delete(roomId);
+				this.endMatch(roomId, null, "Player has disconnected");
 			}
 
 			this.rooms.set(roomId, {
@@ -106,40 +104,16 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					undefined,
 					// on game end
 					async (scores) => {
-						this.rooms.get(roomId).instance.stop();
-						// await this.historyServide.addHistoryByUserId(
-						// 	player1,
-						// 	player2,
-						// 	EGameType.Classic,
-						// 	scores[0],
-						// 	scores[1],
-						// 	0,
-						// );
-						//TODO send victory message to player 1
-						//TODO add match history to user 1 and 2
-						this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
-							msg: "Game has finished"
-						})
-						this.rooms.delete(roomId);
-						await this.idManager.unsetOnDisconnectCallback(player1).catch(() => {});
-						await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
-						await this.idManager.unsubscribePrimaryUserToRoom(player1, roomId).catch(() => {});
-						await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
-						await this.idManager.resetUserPrimarySocket(player1).catch(() => {});
-						await this.idManager.resetUserPrimarySocket(player2).catch(() => {});
+						this.endMatch(roomId, scores, "Game has finished");
 					}
 				)
 			});
 			
-			await this.idManager.subscribePrimaryUserToRoom(player1, roomId)
-				.catch(player1DisconnectLobby);
-			await this.idManager.subscribePrimaryUserToRoom(player2, roomId)
-				.catch(player2DisconnectLobby);
+			await this.idManager.subscribePrimaryUserToRoom(player1, roomId).catch(() => this.surrenderMatch(player1));
+			await this.idManager.subscribePrimaryUserToRoom(player2, roomId).catch(() => this.surrenderMatch(player2));
 
-			await this.idManager.setOnDisconnectCallback(player1, player1DisconnectLobby)
-				.catch(player1DisconnectLobby);
-			await this.idManager.setOnDisconnectCallback(player2, player2DisconnectLobby)
-				.catch(player2DisconnectLobby);
+			await this.idManager.setOnDisconnectCallback(player1, () => this.surrenderMatch(player1)).catch(() => this.surrenderMatch(player1));
+			await this.idManager.setOnDisconnectCallback(player2, () => this.surrenderMatch(player2)).catch(() => this.surrenderMatch(player2));
 
 			this.lobbyLoop(roomId);
 		}
@@ -180,33 +154,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			const player1 = room.players[0].id;
 			const player2 = room.players[1].id;
 
-			const player1DisconnectGame = async () => {
-				room.instance.stop();
-				//TODO send error message to player 2
-				//TODO add match history to user 1 and 2
-				this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
-					msg: "The other player has disconnected"
-				})
-				await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
-				await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
-				this.rooms.delete(roomId);
-			};
-			const player2DisconnectGame = async () => {
-				room.instance.stop();
-				//TODO send error message to player 1
-				//TODO add match history to user 1 and 2
-				this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
-					msg: "The other player has disconnected"
-				})
-				await this.idManager.unsetOnDisconnectCallback(player2).catch(() => {});
-				await this.idManager.unsubscribePrimaryUserToRoom(player2, roomId).catch(() => {});
-				this.rooms.delete(roomId);
-			};
-
-			await this.idManager.setOnDisconnectCallback(player1, player1DisconnectGame)
-				.catch(player1DisconnectGame);
-			await this.idManager.setOnDisconnectCallback(player2, player2DisconnectGame)
-				.catch(player2DisconnectGame);
+			await this.idManager.setOnDisconnectCallback(player1, () => this.surrenderMatch(player1)).catch(() => this.surrenderMatch(player1));
+			await this.idManager.setOnDisconnectCallback(player2, () => this.surrenderMatch(player2)).catch(() => this.surrenderMatch(player2));
 			
 
 			this.io.emitToRoom(roomId, ELobbyStatus.AllPlayersReady, {
@@ -289,24 +238,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				undefined,
 				// on game end
 				async (scores) => {
-					this.rooms.get(roomId).instance.stop();
-					// TODO add match history to user 1 and 2
-					// await this.historyServide.addHistoryByUserId(
-					// 	player1,
-					// 	player2,
-					// 	EGameType.Classic,
-					// 	scores[0],
-					// 	scores[1],
-					// 	0,
-					// );
-					
-					this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
-						msg: "Game has finished"
-					})
-					this.rooms.delete(roomId);
-					await this.idManager.unsetOnDisconnectCallback(userId).catch(() => {});
-					await this.idManager.unsubscribePrimaryUserToRoom(userId, roomId).catch(() => {});
-					await this.idManager.resetUserPrimarySocket(userId).catch(() => {});
+					await this.endMatch(roomId, scores, "Game has finished");
 				}
 			)
 		});
@@ -353,7 +285,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new UnauthorizedException(`User ${userId} is already invited to the party ${partyId}`);
 		}
 
-
 		room.whiteList.push(userId);
 	}
 
@@ -385,7 +316,64 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		room.instance.startRound(press);
 	}
 
+	async surrenderMatch(userId: number){
+		const roomId = this.getRoomId(userId);
+		if (!roomId){
+			return ;
+		}
+		const room = this.rooms.get(roomId);
+		for (let i = 0; i < room.players.length; i++) {
+			if (room.players[i].id !== userId){
+				const scores = room.instance.getScores();
+				scores[i] = 10;
+				this.endMatch(roomId, scores, "Player has surrendered");
+				return ;
+			}
+		}
+		await this.endMatch(roomId, null, "Player has surrendered");
+	}
 
+	async endMatch(roomId: string, scores: number[] | null, message: string){
+		const room = this.rooms.get(roomId);
+		room.instance.stop();
+
+		console.log(scores)
+
+		// TODO add match history to user 1 and 2
+		// if (scores !== null){
+		// 	await this.historyServide.addHistoryByUserId(
+		// 		player1,
+		// 		player2,
+		// 		EGameType.Classic,
+		// 		scores[0],
+		// 		scores[1],
+		// 		0,
+		// 	);
+		// }
+
+		this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
+			msg: message
+		})
+		
+		await this.idManager.unsetOnDisconnectCallback(room.players[0].id).catch(() => {});
+		await this.idManager.unsetOnDisconnectCallback(room.players[1].id).catch(() => {});
+		await this.idManager.unsubscribePrimaryUserToRoom(room.players[0].id, roomId).catch(() => {});
+		await this.idManager.unsubscribePrimaryUserToRoom(room.players[1].id, roomId).catch(() => {});
+		await this.idManager.resetUserPrimarySocket(room.players[0].id).catch(() => {});
+		await this.idManager.resetUserPrimarySocket(room.players[1].id).catch(() => {});
+		this.rooms.delete(roomId);
+	}
+
+	async leaveMatch(userId: number){
+		const room = this.getRoomId(userId);
+		if (!room){
+			throw new UnauthorizedException(`User ${userId} is not in a room`);
+		}
+		await this.idManager.unsetOnDisconnectCallback(userId).catch(() => {});
+		await this.idManager.unsubscribePrimaryUserToRoom(userId, room).catch(() => {});
+		await this.idManager.resetUserPrimarySocket(userId).catch(() => {});
+		return this.endMatch(room, null, "Player has left the game");
+	}
 
 
 
