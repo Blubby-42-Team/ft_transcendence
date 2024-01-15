@@ -269,11 +269,6 @@ export class PostgresUserService {
 		stats.classic_match_points_won = 0;
 		stats.classic_match_points_lost = 0;
 		stats.classic_mmr = 1000;
-		stats.random_match_won = 0;
-		stats.random_match_lost = 0;
-		stats.random_match_points_won = 0;
-		stats.random_match_points_lost = 0;
-		stats.random_mmr = 1000;
 
 		const user = new User();
 		user.display_name = login42;

@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { IsNotEmpty, IsNumber, IsBoolean, IsDate, MATCHES} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsDate} from 'class-validator';
 import { EGameType } from "@shared/types/history";
 import { Type } from "class-transformer";
 import { User } from "../user/user.class";
@@ -37,12 +37,6 @@ export class History {
 	@IsDate()
 	@Type(() => Date)
 	date: Date;
-
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	duration: number;
-
 }
 
 

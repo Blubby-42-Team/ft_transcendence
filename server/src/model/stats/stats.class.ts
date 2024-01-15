@@ -38,29 +38,4 @@ export class Stats {
 	@IsNotEmpty()
 	@IsNumber()
 	classic_mmr: number;
-
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	random_match_won: number;
-
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	random_match_lost: number;
-
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	random_match_points_won: number;
-
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	random_match_points_lost: number;
-
-	@Column()
-	@IsNotEmpty()
-	@IsNumber()
-	random_mmr: number;
 }
