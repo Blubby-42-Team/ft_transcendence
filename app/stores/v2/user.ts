@@ -52,6 +52,9 @@ export const useUserStore = defineStore('user', {
 	},
 	actions: {
 		setup(){
+			if (this._socket && this._socket.socket?.connected){
+				return ;
+			}
 			this._socket = new SocketClientUser();
 
 			for (const user of Object.values(this._users)){

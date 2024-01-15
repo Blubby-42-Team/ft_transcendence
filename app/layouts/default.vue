@@ -1,5 +1,15 @@
 <script setup lang='ts'>
 
+const { startLoopWaiting } = usePageStore();
+const { setup } = useUserStore();
+const { setup: setup2 } = useLobbyStore();
+
+if (process.client) {
+	setup();
+	setup2();
+	startLoopWaiting();
+}
+
 </script>
 	
 <template>

@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
 export class SocketClient {
-	protected socket: Socket | null = null;
+	public socket: Socket | null = null;
 
 	constructor(namespace: string) {
 		if (process.server){

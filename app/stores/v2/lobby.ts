@@ -15,6 +15,9 @@ export const useLobbyStore = defineStore('lobby', {
 	},
 	actions: {
 		setup(){
+			if (this._socket && this._socket.socket?.connected){
+				return ;
+			}
 			this._socket = new SocketClientGame(
 				(players) => {
 					const { primaryUser } = useUserStore();

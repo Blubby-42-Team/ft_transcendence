@@ -48,12 +48,6 @@ fetchSettings(primaryUser.value.id, (settings) => {
 useState<gameSettingsType>('settings', () => defaultSettings);
 useState<gameTheme>('gameTheme', () => defaultTheme);
 
-if (process.client) {
-	setup();
-	setup2();
-	startLoopWaiting();
-}
-
 </script>
 
 <template>
