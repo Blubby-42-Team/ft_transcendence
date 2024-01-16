@@ -10,11 +10,6 @@ export class JoinPartyDto {
 export class InviteToPartyDTO {
 	@IsDefined()
 	@IsNotEmpty()
-	@IsString()
-	roomId: string;
-
-	@IsDefined()
-	@IsNotEmpty()
 	@IsNumber()
 	@IsPositive()
 	userId: number;

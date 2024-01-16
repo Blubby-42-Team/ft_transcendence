@@ -80,5 +80,10 @@ export const useLobbyStore = defineStore('lobby', {
 				this._socket.joinParty(lobbyId);
 			}
 		},
+		inviteToParty(userId: number){
+			if (this._socket){
+				this._socket.inviteToParty(userId);
+			}
+		}
 	},
 })

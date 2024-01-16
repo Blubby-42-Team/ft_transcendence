@@ -45,6 +45,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		// Players id
 		{
+			owner: number,
 			whiteList: Array<number>,
 			players: Array<{
 				id: number,
@@ -87,6 +88,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			const roomId = this.getNewRoomId();
 
 			this.rooms.set(roomId, {
+				owner: 0,
 				whiteList: [],
 				players: [
 					{ id: player1, ready: false },
@@ -114,7 +116,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			this.lobbyLoop(roomId);
 		}
 		
-		this.logger.verbose(JSON.stringify(this))
+		this.logger.verbose(JSON.stringify(this, null, 2))
 		setTimeout(() => this.matchmakingLoop(), 1000);
 	}
 
@@ -209,7 +211,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 
 
-	createPrivateParty(
+	async createPrivateParty(
 		userId: number,
 		settings: Partial<gameSettingsType>,
 	){
@@ -222,8 +224,21 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			throw new UnauthorizedException(`User ${userId} is already in a room`);
 		}
 
+		for (const [roomId, { owner }] of this.rooms.entries()){
+			if (owner === userId){
+				const room = this.rooms.get(roomId);
+				for (const { id } of room.players){
+					await this.idManager.resetUserPrimarySocket(id).catch(() => {});
+					await this.idManager.unsetOnDisconnectCallback(id).catch(() => {});
+					await this.idManager.unsubscribePrimaryUserToRoom(id, roomId).catch(() => {});
+				}
+				this.rooms.delete(roomId);
+			}
+		}
+
 		const roomId = this.getNewRoomId();
 		this.rooms.set(roomId, {
+			owner: userId,
 			whiteList: [userId],
 			players: [],
 			instance: new GameEngine(newSettings,
@@ -265,11 +280,26 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			ready: false,
 		});
 		room.whiteList = room.whiteList.filter(id => id !== userId);
-		this.idManager.subscribePrimaryUserToRoom(userId, partyId).catch(() => this.surrenderMatch(userId));
-		this.idManager.setOnDisconnectCallback(userId, () => this.surrenderMatch(userId)).catch(() => this.surrenderMatch(userId));
+
+		const removePlayerIfDisconnectAndDeleteRoomIfEmpty = async () => {
+			room.players = room.players.filter(({ id }) => id !== userId);
+			if (room.players.length === 0){
+				this.rooms.delete(partyId);
+			}
+		}
+
+		this.idManager.subscribePrimaryUserToRoom(userId, partyId)
+			.catch(removePlayerIfDisconnectAndDeleteRoomIfEmpty);
+		this.idManager.setOnDisconnectCallback(userId, removePlayerIfDisconnectAndDeleteRoomIfEmpty)
+			.catch(removePlayerIfDisconnectAndDeleteRoomIfEmpty);
 	}
 
-	async inviteToPrivateParty(partyId: string, invitedId: number, userId: number){
+	async inviteToPrivateParty(invitedId: number, userId: number){
+		const partyId = this.getRoomId(userId);
+		if (!partyId){
+			throw new UnauthorizedException(`User ${userId} is not in a party`);
+		}
+
 		const room = this.rooms.get(partyId);
 		if (!room){
 			throw new UnauthorizedException(`Party ${partyId} does not exist`);

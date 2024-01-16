@@ -9,6 +9,7 @@ const props = defineProps({
 
 const { addNotif } = useNotifStore();
 const { getUser, fetchUser, getFriends, fetchFriends, primaryUser } = useUserStore();
+const { inviteToParty } = useLobbyStore();
 
 const friends = getFriends(computed(() => primaryUser.value.id));
 await fetchFriends(primaryUser.value.id);
@@ -18,6 +19,7 @@ const user = getUser(selectedUser);
 await fetchUser(selectedUser.value);
 
 async function invite() {
+	inviteToParty(selectedUser.value);
 	props.closeFunc();
 }
 

@@ -81,4 +81,10 @@ export class SocketClientGame extends SocketClient {
 			roomId: lobbyId,
 		});
 	}
+
+	inviteToParty(userId: number){
+		this.emit(ESocketClientEventName.inviteToParty, {
+			userId: userId,
+		});
+	}
 };
