@@ -49,7 +49,9 @@ function createLobby(){
 		settings.value.ballSize,
 		settings.value.padSize,
 		(lobbyId) => {
-			navigateTo(`/lobby/custom/${lobbyId}`);
+			if (typeof lobbyId === 'string'){
+				navigateTo(`/lobby/custom/${lobbyId}`);
+			}
 		},
 	)
 };
