@@ -306,12 +306,14 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			return ;
 		}
 		const room = this.rooms.get(roomId);
-		for (let i = 0; i < room.players.length; i++) {
-			if (room.players[i].id === userId){
-				room.instance.move(i, direction, press);
-				return ;
+		const playerPos = (() => {
+			switch (userId) {
+				case room.players[0].id: return Direction.LEFT;
+				case room.players[1].id: return Direction.RIGHT;
+				default: return Direction.NONE;
 			}
-		}
+		})()
+		room.instance.move(playerPos, direction, press);
 	}
 
 	startRound(userId: number, press: boolean){
