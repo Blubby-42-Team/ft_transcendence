@@ -19,7 +19,7 @@ const test = () => testButton;
 
 <template>
 	<GenericButton class="w-full p-1" :buttonStyle="2" @click="viewProfile?.open" ref="testButton">
-		<GenericProfilePicture class="w-10 h-10" imageSrc="/pp.png" :userId="props.member"/>
+		<GenericProfilePicture class="w-10 h-10" :imageSrc="user.avatar" :userId="props.member"/>
 		<div class="self-center pl-2">
 			{{ user.name }}
 		</div>

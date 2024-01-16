@@ -15,8 +15,8 @@ export class ModelStatsService {
 			classic_match_played: stats.played_matchs,
 			classic_ranking: await this.postgresStatsService.getClassicRankByUserId(userId),
 			classic_mmr: stats.classic_mmr,
-			classic_winrate: 100 * stats.classic_match_won / stats.played_matchs,
-			classic_average_point: stats.classic_match_points_won / stats.played_matchs,
+			classic_winrate: Math.round(10000 * stats.classic_match_won / stats.played_matchs) / 100,
+			classic_average_point: Math.round(100 * stats.classic_match_points_won / stats.played_matchs) / 100,
 		}
 		if (!res.classic_winrate || isNaN(res.classic_winrate) || !isFinite(res.classic_winrate))
 			res.classic_winrate = 0;
