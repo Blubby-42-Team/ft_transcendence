@@ -14,10 +14,11 @@ const lobbyStore = useLobbyStore();
 const { otherPlayer } = toRefs(lobbyStore);
 
 
-const x = route.params.id as string;
+const roomId = route.params.id as string;
 
 onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
+	lobbyStore.joinParty(roomId);
 });
 
 onUnmounted(() => {

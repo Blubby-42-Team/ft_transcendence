@@ -42,14 +42,16 @@ function updateRounds(delta: number){
 	}
 }
 
-const difficulties = [
-	{ name: BotDifficulty.NORMAL,	icon: 'material-symbols:sentiment-neutral' },
-	{ name: BotDifficulty.HARD,		icon: 'material-symbols:sentiment-dissatisfied' },
-	{ name: BotDifficulty.CRAZY,	icon: 'material-symbols:sentiment-extremely-dissatisfied' },
-]
-
-function redirect(){
-	navigateTo('/lobby/custom/1');
+function createLobby(){
+	fetchCreateCustomLobby(
+		primaryUser.value.id,
+		settings.value.maxPoint,
+		settings.value.ballSize,
+		settings.value.padSize,
+		(lobbyId) => {
+			navigateTo(`/lobby/custom/${lobbyId}`);
+		},
+	)
 };
 
 
@@ -82,7 +84,7 @@ function redirect(){
 
 		<div class="w-full p-2">
 			<GenericButton class="w-full h-16" :buttonStyle="1"
-				@click="redirect"
+				@click="createLobby"
 			>
 				Create Lobby
 			</GenericButton>

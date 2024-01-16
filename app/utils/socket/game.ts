@@ -75,4 +75,10 @@ export class SocketClientGame extends SocketClient {
 	leaveMatch(){
 		this.emit(ESocketClientEventName.leaveGame, {});
 	}
+
+	joinParty(lobbyId: string){
+		this.emit(ESocketClientEventName.joinParty, {
+			roomId: lobbyId,
+		});
+	}
 };

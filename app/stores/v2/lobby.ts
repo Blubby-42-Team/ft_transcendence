@@ -74,6 +74,11 @@ export const useLobbyStore = defineStore('lobby', {
 			if (this._socket){
 				this._socket.leaveMatch();
 			}
-		}
+		},
+		joinParty(lobbyId: string){
+			if (this._socket){
+				this._socket.joinParty(lobbyId);
+			}
+		},
 	},
 })
