@@ -11,6 +11,7 @@ import { Direction } from '@shared/types/game/utils';
 import { ModelHistoryService } from 'src/model/history/history.service';
 import { EGameType } from '@shared/types/history';
 import { ModelUserService } from 'src/model/user/user.service';
+import { ModelMessagesService } from 'src/model/messages/messages.service';
 
 const defaultSettings: gameSettingsType = {
 	maxPoint:			5,
@@ -30,6 +31,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		private readonly idManager: IdManagerService,
 		private readonly userService: ModelUserService,
     	private readonly historyServide: ModelHistoryService,
+		// private readonly messageService: ModelMessagesService,
 	) { }
 
 	private readonly logger = new Logger(GameService.name);
@@ -288,6 +290,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		}
 
 		room.whiteList.push(invitedId);
+
+		// await this.message
+		// this.messageService.postMessage(userId, room.players.find(({ y?id }) => id === invitedId).id, 'user', `You have been invited to a private party ${partyId}`);
 	}
 
 

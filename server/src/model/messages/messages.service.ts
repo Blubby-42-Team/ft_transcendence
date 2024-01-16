@@ -25,7 +25,7 @@ export class ModelMessagesService {
 		) {
 		const user = await this.postgresUserService.getUserById(userId);
 		const chat = await this.postgresChatService.getChatById(chatId, userId);
-		if (type === EMsgType.sys && user.role !== UserRoleType.System) {
+		if (!(type === EMsgType.user && user.role === UserRoleType.User || user.role === UserRoleType.Admin)) {
 			throw new UnauthorizedException('Not authorized to send a system message.')
 		}
 		await this.postgresChatService.isInChat(userId, chatId);

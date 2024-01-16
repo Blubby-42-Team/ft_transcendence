@@ -1,4 +1,5 @@
 export enum EMsgType {
 	sys = 'system',
-	user = 'user'
+	user = 'user',
+	gameInvite = 'gameInvite',
 }
