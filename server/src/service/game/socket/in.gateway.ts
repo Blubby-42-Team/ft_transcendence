@@ -14,7 +14,7 @@ import { GameService } from '../game.service';
 import { WS } from '@shared/types/ws';
 import { ESocketActionType, ESocketServerEventName, ESocketClientEventName } from '@shared/types/game/socket';
 import { UserAuthTokenDto } from 'src/auth/auth.class';
-import { DTO_PlayerMove, DTO_StartRound, JoinPartyDto } from '../game.dto';
+import { DTO_PlayerMove, DTO_StartRound, InviteToPartyDTO, JoinPartyDto } from '../game.dto';
 
 
 @WebSocketGateway({
@@ -231,6 +231,17 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.logger.debug(`client ${client.id} join the party`);
 		return this.handleRequest(client, req, JoinPartyDto, ESocketActionType.Primary, async (user, data) => {
 			return this.gameService.joinPrivateParty(data.roomId, user.userId);
+		});
+	}
+
+	@SubscribeMessage(ESocketClientEventName.inviteToParty)
+	inviteToParty(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() req: any,
+	) {
+		this.logger.debug(`client ${client.id} leave the party`);
+		return this.handleRequest(client, req, InviteToPartyDTO, ESocketActionType.WeakPrimary, async (user, data) => {
+			return this.gameService.inviteToPrivateParty(data.roomId, data.userId, user.userId);
 		});
 	}
 

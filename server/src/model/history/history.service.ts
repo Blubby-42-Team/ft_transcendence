@@ -49,6 +49,9 @@ export class ModelHistoryService {
 			for(let i = 0; i < player_score; i++) {
 				await this.postgresStatsService.addClassicPointLost(opp_id);
 			}
+			console.log(player_score, opp_score);
+			console.log(player_mmr, opp_mmr);
+			console.log(newPlayerMMR, newOppMMR);
 			if (player_score > opp_score){
 				newPlayerMMR = Math.max(player_mmr + 32 * (1 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
 				newOppMMR = Math.max(opp_mmr + 32 * (0 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
@@ -57,6 +60,7 @@ export class ModelHistoryService {
 				newPlayerMMR = Math.max(player_mmr + 32 * (0 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
 				newOppMMR = Math.max(opp_mmr + 32 * (1 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
 			}
+			console.log(newPlayerMMR, newOppMMR);
 			await this.postgresStatsService.ModifyClassicMMR(userId, newPlayerMMR);
 			await this.postgresStatsService.ModifyClassicMMR(opp_id, newOppMMR);
 

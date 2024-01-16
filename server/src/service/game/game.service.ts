@@ -9,8 +9,8 @@ import { ELobbyStatus } from '@shared/types/game/socket';
 import { IdManagerService } from './idManager.service';
 import { Direction } from '@shared/types/game/utils';
 import { ModelHistoryService } from 'src/model/history/history.service';
-import { HistoryService } from 'src/controller/history/history.service';
 import { EGameType } from '@shared/types/history';
+import { ModelUserService } from 'src/model/user/user.service';
 
 const defaultSettings: gameSettingsType = {
 	maxPoint:			5,
@@ -28,6 +28,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 	constructor(
 		private readonly io: OutGameGateway,
 		private readonly idManager: IdManagerService,
+		private readonly userService: ModelUserService,
     	private readonly historyServide: ModelHistoryService,
 	) { }
 
@@ -262,23 +263,31 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			ready: false,
 		});
 		room.whiteList = room.whiteList.filter(id => id !== userId);
+		this.idManager.subscribePrimaryUserToRoom(userId, partyId).catch(() => this.surrenderMatch(userId));
+		this.idManager.setOnDisconnectCallback(userId, () => this.surrenderMatch(userId)).catch(() => this.surrenderMatch(userId));
 	}
 
-	inviteToPrivateParty(partyId: string, userId: number){
+	async inviteToPrivateParty(partyId: string, invitedId: number, userId: number){
 		const room = this.rooms.get(partyId);
 		if (!room){
 			throw new UnauthorizedException(`Party ${partyId} does not exist`);
 		}
 
-		if (room.players.some(({ id }) => id === userId)){
-			throw new UnauthorizedException(`User ${userId} is already in party ${partyId}`);
-		}
-		
-		if (room.whiteList.includes(userId)){
-			throw new UnauthorizedException(`User ${userId} is already invited to the party ${partyId}`);
+		if (room.players.some(({ id }) => id !== userId)){
+			throw new UnauthorizedException(`User ${userId} is not in party ${partyId}`);
 		}
 
-		room.whiteList.push(userId);
+		await this.userService.getUserById(invitedId);
+
+		if (room.players.some(({ id }) => id === invitedId)){
+			throw new UnauthorizedException(`User ${invitedId} is already in party ${partyId}`);
+		}
+		
+		if (room.whiteList.includes(invitedId)){
+			throw new UnauthorizedException(`User ${invitedId} is already invited to the party ${partyId}`);
+		}
+
+		room.whiteList.push(invitedId);
 	}
 
 

@@ -12,6 +12,7 @@ export enum ESocketClientEventName {
 	leaveMatchMaking	= 'leaveMatchMaking',
 	readyToPlay 		= 'readyToPlay',
 	joinParty			= 'joinParty',
+	inviteToParty		= 'inviteToParty',
 
 	movePlayer			= 'movePlayer',
 	startRound			= 'startRound',

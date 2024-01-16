@@ -138,6 +138,7 @@ export class PostgresStatsService {
 	}
 
 	async ModifyClassicMMR(userId: number, newMMR: number) {
+		console.log(newMMR);
 		return await this.statsRepository.update(userId, {
 			classic_mmr: Math.floor(newMMR),
 		})
@@ -201,7 +202,7 @@ export class PostgresStatsService {
 				this.logger.debug(`Failed to get mmr by userId ${userId}: too many results`);
 				throw new InternalServerErrorException(`Failed to get mmr by user id ${userId}: too many results`);
 			}
-			return res[0];
+			return res[0].classic_mmr;
 		})
 	}
 }

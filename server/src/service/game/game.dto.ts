@@ -7,6 +7,19 @@ export class JoinPartyDto {
 	roomId: string;
 }
 
+export class InviteToPartyDTO {
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	roomId: string;
+
+	@IsDefined()
+	@IsNotEmpty()
+	@IsNumber()
+	@IsPositive()
+	userId: number;
+}
+
 export class DTO_PlayerMove {
 	@IsDefined()
 	@IsNotEmpty()
