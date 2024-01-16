@@ -101,10 +101,10 @@ export class PostgresStatsService {
 		})
 	}
 
-	async addClassicPointWon(userId: number) {
+	async addClassicPointWon(userId: number, score: number = 1) {
 		const old = await this.getStatsByUserId(userId)
 		return this.statsRepository.update(userId, {
-			classic_match_points_won: old.classic_match_points_won + 1,
+			classic_match_points_won: old.classic_match_points_won + score,
 		})
 		.catch((err) => {
 			this.logger.debug(`Failed to update won points of ${userId}: ${err}`);
@@ -119,10 +119,10 @@ export class PostgresStatsService {
 		})
 	}
 
-	async addClassicPointLost(userId: number) {
+	async addClassicPointLost(userId: number, score: number = 1) {
 		const old = await this.getStatsByUserId(userId)
 		return this.statsRepository.update(userId, {
-			classic_match_points_lost: old.classic_match_points_lost + 1,
+			classic_match_points_lost: old.classic_match_points_lost + score,
 		})
 		.catch((err) => {
 			this.logger.debug(`Failed to update lost points of ${userId}: ${err}`);

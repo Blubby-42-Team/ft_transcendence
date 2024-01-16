@@ -31,7 +31,7 @@ const openMatchHistoryPreview = ref();
 		</div>
 		<div class="flex items-center justify-center h-12 px-5 overflow-hidden border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">
 			<ClientOnly>
-				{{ format(match.date, "dd MMM HH:MM") }}
+				{{ format(match.date, "dd MMM HH:mm") }}
 			</ClientOnly>
 		</div>
 		<div class="flex items-center justify-center h-12 px-5 overflow-hidden truncate border-t group-hover:bg-color1 group-hover:bg-opacity-30 whitespace-nowrap border-text border-opacity-30">

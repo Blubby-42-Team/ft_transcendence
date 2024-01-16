@@ -339,8 +339,6 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		const room = this.rooms.get(roomId);
 		room.instance.stop();
 
-		console.log(scores)
-
 		// TODO add match history to user 1 and 2
 		if (scores !== null){
 			await this.historyServide.addHistoryByUserId(
@@ -373,7 +371,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		await this.idManager.resetUserPrimarySocket(userId).catch(() => {});
 		await this.idManager.unsetOnDisconnectCallback(userId).catch(() => {});
 		await this.idManager.unsubscribePrimaryUserToRoom(userId, room).catch(() => {});
-		return this.endMatch(room, null, "Player has left the game");
+		return this.surrenderMatch(userId);
 	}
 
 

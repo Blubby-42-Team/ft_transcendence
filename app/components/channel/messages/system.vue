@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 
 import { IMessage } from '#imports';
-import { format } from 'date-fns'
 
 const props = defineProps({
 	message: {

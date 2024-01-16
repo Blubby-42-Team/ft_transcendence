@@ -12,16 +12,15 @@ export class ModelStatsService {
 	async getStatsByUserId(userId: number) {
 		const stats = await this.postgresStatsService.getStatsByUserId(userId);
 		let res = {
-			classic_match_played: stats.classic_match_won + stats.classic_match_lost,
+			classic_match_played: stats.played_matchs,
 			classic_ranking: await this.postgresStatsService.getClassicRankByUserId(userId),
 			classic_mmr: stats.classic_mmr,
-			classic_winrate: (stats.classic_match_won / (stats.classic_match_won + stats.classic_match_lost)) * 100,
-			classic_average_point: stats.classic_match_points_won / (stats.classic_match_won + stats.classic_match_lost),
+			classic_winrate: 100 * stats.classic_match_won / stats.played_matchs,
+			classic_average_point: stats.classic_match_points_won / stats.played_matchs,
 		}
-
-		if (!res.classic_winrate)
+		if (!res.classic_winrate || isNaN(res.classic_winrate) || !isFinite(res.classic_winrate))
 			res.classic_winrate = 0;
-		if (!res.classic_average_point)
+		if  (!res.classic_winrate || isNaN(res.classic_winrate) || !isFinite(res.classic_winrate))
 			res.classic_average_point = 0;
 		return res;
 	}

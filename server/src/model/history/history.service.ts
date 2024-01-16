@@ -35,32 +35,25 @@ export class ModelHistoryService {
 			await this.postgresStatsService.addPlayedMatch(opp_id);
 			const player_mmr = await this.postgresStatsService.getMMRByUserId(userId);
 			const opp_mmr = await this.postgresStatsService.getMMRByUserId(opp_id);
+			await this.postgresStatsService.addClassicPointWon(userId, player_score);
+			await this.postgresStatsService.addClassicPointLost(userId, opp_score);
+			await this.postgresStatsService.addClassicPointWon(opp_id, opp_score);
+			await this.postgresStatsService.addClassicPointLost(opp_id, player_score);
+
 			let newPlayerMMR = 0;
 			let newOppMMR = 0;
-			for(let i = 0; i < player_score; i++) {
-				await this.postgresStatsService.addClassicPointWon(userId);
-			}
-			for(let i = 0; i < opp_score; i++) {
-				await this.postgresStatsService.addClassicPointLost(userId);
-			}
-			for(let i = 0; i < opp_score; i++) {
-				await this.postgresStatsService.addClassicPointWon(opp_id);
-			}
-			for(let i = 0; i < player_score; i++) {
-				await this.postgresStatsService.addClassicPointLost(opp_id);
-			}
-			console.log(player_score, opp_score);
-			console.log(player_mmr, opp_mmr);
-			console.log(newPlayerMMR, newOppMMR);
 			if (player_score > opp_score){
 				newPlayerMMR = Math.max(player_mmr + 32 * (1 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
 				newOppMMR = Math.max(opp_mmr + 32 * (0 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
+				await this.postgresStatsService.addClassicWon(userId);
+				await this.postgresStatsService.addClassicLose(opp_id);
 			}
 			else {
 				newPlayerMMR = Math.max(player_mmr + 32 * (0 - 1/(1 + 10**((opp_mmr - player_mmr)/400))), 100);
 				newOppMMR = Math.max(opp_mmr + 32 * (1 - 1/(1 + 10**((player_mmr - opp_mmr)/400))), 100);
+				await this.postgresStatsService.addClassicLose(userId);
+				await this.postgresStatsService.addClassicWon(opp_id);
 			}
-			console.log(newPlayerMMR, newOppMMR);
 			await this.postgresStatsService.ModifyClassicMMR(userId, newPlayerMMR);
 			await this.postgresStatsService.ModifyClassicMMR(opp_id, newOppMMR);
 
