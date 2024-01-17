@@ -1,4 +1,4 @@
-import { EChatType } from "#imports"
+import { EChatType, EMsgType } from "#imports"
 
 export interface IPlayer {
 	id			: string,
@@ -10,7 +10,7 @@ export interface IMessage {
 	id			: number,
 	senderId	: number,
 	message		: string,
-	type        : "user" | "system",
+	type        : EMsgType,
 	time		: Date,
 }
 
