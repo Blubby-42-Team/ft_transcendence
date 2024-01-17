@@ -278,7 +278,6 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	) {
 		this.logger.debug(`client ${client.id} leave the game`);
 		return this.handleRequest(client, req, undefined, ESocketActionType.Primary, async (user) => {
-			await this.idManagerService.resetUserPrimarySocket(user.userId);
 			await this.gameService.leaveMatch(user.userId);
 			return "ok"
 		});
