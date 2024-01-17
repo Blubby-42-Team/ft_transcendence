@@ -26,19 +26,16 @@ export function fetchAuth(
 	callback: (res: authResponse) => void = () => {},
 ){
 	const back = getBackPath();
-
 	return useFetch<authResponse>(`${back}/auth42/callback?code=${code}`, {
 		method: 'POST',
 		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
+			response.headers.forEach((value, name) => {
+				if (name === 'set-cookie'){
+					appendResponseHeader(event, 'set-cookie', value);
+				}
+			})
 			callback(response._data);
-			// console.log('cookie', response.headers);
-			//appendResponseHeader
-			// const setCookieHeader = response.headers.get('Set-Cookie');
-			// if (setCookieHeader) {
-			// 	appendResponseHeader(event, 'Set-Cookie', setCookieHeader);
-			// }
-
 		},
 		onRequestError: ({ request, error, options }) => {
 			console.warn('error', error);
