@@ -23,7 +23,6 @@ onMounted(() => {
 
 onUnmounted(() => {
 	reset();
-	lobbyStore.endMatch();
 });
 
 </script>
@@ -34,10 +33,5 @@ onUnmounted(() => {
 		<GameLobbyCard :id="primaryUser.id" :card="CardType.PLAYER"/>
 		<GameLobbyCard :id="otherPlayer" :card="(otherPlayer !== 0 ? CardType.PLAYER : CardType.ADD)"/>
 		<div/>
-		<!-- <div/>
-		<div class="w-full col-span-2 p-2">
-			<GameLobbyButton :endFunc="redirect"/>
-		</div>
-		<div/> -->
 	</div>
 </template>

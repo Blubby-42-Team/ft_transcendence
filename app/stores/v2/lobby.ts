@@ -24,12 +24,7 @@ export const useLobbyStore = defineStore('lobby', {
 					this._gameState = state;
 				},
 				(response) => {
-					if (this._behaviour === EGameMode.Classic){
-						this.matchMakingLobby(response);
-					}
-					else if (this._behaviour === EGameMode.Custom){
-						this.partyLobby(response);
-					}
+					this.onLobbyStatusUpdate(response);
 				},
 			);
 		},
@@ -38,7 +33,7 @@ export const useLobbyStore = defineStore('lobby', {
 			this._behaviour = behaviour;
 		},
 
-		matchMakingLobby(response: GameResponse<{ msg: string, players?: Array<number>}>){
+		onLobbyStatusUpdate(response: GameResponse<{ msg: string, players?: Array<number>}>){
 			if (response.status === ELobbyStatus.InQueue){
 				console.log(response.data.msg);
 			}
@@ -49,46 +44,28 @@ export const useLobbyStore = defineStore('lobby', {
 			}
 
 			else if (response.status === ELobbyStatus.WaitingForPlayers){
-				console.log(response.data.msg);
 				const { primaryUser } = useUserStore();
-				this._otherPlayer = (response.data.players as Array<number>).find((player) => player !== primaryUser.value.id) ?? 0;
-				this._status = ELobbyStatus.AllPlayersReady;
-				setTimeout(() => {
-					if (this._socket){
-						this._socket.readyOrNot(true);
+				if (this._behaviour === EGameMode.Classic){
+					this._otherPlayer = (response.data.players as Array<number>).find((player) => player !== primaryUser.value.id) ?? 0;
+					this._status = ELobbyStatus.AllPlayersReady;
+					setTimeout(() => {
+						if (this._socket){
+							this._socket.readyOrNot(true);
+						}
+					}, 5000);
+				}
+				else if (this._behaviour === EGameMode.Custom){
+					this._otherPlayer = (response.data.players as Array<number>).find((player) => player !== primaryUser.value.id) ?? 0;
+					if (this._otherPlayer){
+						this._status = ELobbyStatus.AllPlayersReady;
+						setTimeout(() => {
+							if (this._socket){
+								this._socket.readyOrNot(true);
+							}
+						}, 5000);
 					}
-				}, 5000);
-			}
+				}
 
-			else if (response.status === ELobbyStatus.LobbyEnded){
-				this._status = ELobbyStatus.NoLobby;
-				const { addNotif } = useNotifStore();
-				addNotif(response.data.msg);
-				navigateTo('/');
-			}
-
-			else {
-				console.log('Unknown status');
-			}
-			
-			console.log(response.data, response.status);
-		},
-
-		partyLobby(response: GameResponse<{ msg: string, players?: Array<number>}>){
-			if (response.status === ELobbyStatus.InQueue){
-				console.log(response.data.msg);
-			}
-
-			else if (response.status === ELobbyStatus.AllPlayersReady){
-				console.log(response.data.msg);
-				// redirect to game
-			}
-
-			else if (response.status === ELobbyStatus.WaitingForPlayers){
-				console.log(response.data.msg);
-				const { primaryUser } = useUserStore();
-				this._otherPlayer = (response.data.players as Array<number>).find((player) => player !== primaryUser.value.id) ?? 0;
-				this._status = ELobbyStatus.AllPlayersReady;
 			}
 
 			else if (response.status === ELobbyStatus.LobbyEnded){
