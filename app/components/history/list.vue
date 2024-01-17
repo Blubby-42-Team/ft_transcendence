@@ -11,6 +11,8 @@ const props = defineProps({
 	},
 })
 
+const reverse = computed(() => props.matchList.sort((a, b) => a.date > b.date ? -1 : 1))
+
 </script>
 
 <template>
@@ -20,7 +22,7 @@ const props = defineProps({
 			<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1">Date</div>
 			<div class="sticky top-0 flex items-center justify-center h-12 border-b border-text border-opacity-30 bg-background1">Adversary</div>
 			<div class="sticky top-0 flex items-center justify-center h-12 col-span-2 border-b border-text border-opacity-30 bg-background1">Score</div>
-			<template v-for="match in props.matchList">
+			<template v-for="match in reverse">
 				<HistoryListElem :match="match" :userId="props.userId"/>
 			</template>
 		</div>

@@ -372,7 +372,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		await this.endMatch(roomId, null, "Player has surrendered");
 	}
 
-	async endMatch(roomId: string, scores: number[] | null, message: string){
+	async endMatch(roomId: string, scores: number[] | null, message: string | null){
 		const room = this.rooms.get(roomId);
 		room.instance.stop();
 
@@ -389,14 +389,13 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		this.io.emitToRoom(roomId, ELobbyStatus.LobbyEnded, {
 			msg: message
-		})
+		});
 		
-		await this.idManager.unsubscribePrimaryUserToRoom(room.players[0].id, roomId).catch(() => {});
-		await this.idManager.unsubscribePrimaryUserToRoom(room.players[1].id, roomId).catch(() => {});
-		await this.idManager.resetUserPrimarySocket(room.players[0].id).catch(() => {});
-		await this.idManager.resetUserPrimarySocket(room.players[1].id).catch(() => {});
-		await this.idManager.unsetOnDisconnectCallback(room.players[0].id).catch(() => {});
-		await this.idManager.unsetOnDisconnectCallback(room.players[1].id).catch(() => {});
+		room.players.forEach(async ({ id }) => {
+			await this.idManager.unsubscribePrimaryUserToRoom(id, roomId).catch(() => {});
+			await this.idManager.resetUserPrimarySocket(id).catch(() => {});
+			await this.idManager.unsetOnDisconnectCallback(id).catch(() => {});
+		});
 		
 		this.rooms.delete(roomId);
 	}
@@ -406,8 +405,13 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		if (!room){
 			throw new UnauthorizedException(`User ${userId} is not in a room`);
 		}
+		if (this.rooms.get(room).players.length < 2){
+			return this.endMatch(room, null, "Player has left");
+		}
 		return this.surrenderMatch(userId);
 	}
+
+
 
 
 
