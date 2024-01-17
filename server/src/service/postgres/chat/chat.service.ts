@@ -670,4 +670,33 @@ export class PostgresChatService {
 			return 'ok'
 		})
 	}
+
+	async getChatForTwoUsers(
+		user1: number,
+		user2: number,
+	): Promise<number> {
+		return await this.chatRepository.query(`
+			SELECT chat_id
+			FROM "custom_users_chat"
+			WHERE user_id = $1
+			INTERSECT
+			SELECT chat_id
+			FROM "custom_users_chat"
+			WHERE user_id = $2`,
+			[user1, user2]
+		)
+		.catch((err) => {
+			this.logger.debug("Could not get chats");
+			throw new InternalServerErrorException("Could not get chats");
+		})
+		.then((res) => {
+			if (res.length === 0){
+				throw new NotFoundException(`No chat with user ${user1} and ${user2}`);
+			}
+			else if (res.length > 1){
+				throw new InternalServerErrorException(`Multiple chats with user ${user1} and ${user2}`);
+			}
+			return res[0].chat_id;
+		})
+	}
 }

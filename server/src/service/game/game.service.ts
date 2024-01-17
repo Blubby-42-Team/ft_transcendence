@@ -321,9 +321,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		room.whiteList.push(invitedId);
 
-		// await this.message
-		// this.messageService.postMessage(userId, room.players.find(({ y?id }) => id === invitedId).id, 'user', `You have been invited to a private party ${partyId}`);
-		this.messageService.postMessage(invitedId)
+		await this.messageService.addInviteToLobby(userId, invitedId, partyId);
 	}
 
 

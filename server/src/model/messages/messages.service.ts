@@ -35,9 +35,12 @@ export class ModelMessagesService {
 	}
 
 	async addInviteToLobby(
-		userId: number,
+		user1Id: number,
+		user2Id: number,
 		lobbyId: string,
 	){
-		
+		const chatId = await this.postgresChatService.getChatForTwoUsers(user1Id, user2Id);
+		const chat = await this.postgresChatService.getChatById(chatId, user1Id);
+		return await this.postgresMessagesService.postMessage(null, chat, EMsgType.gameInvite, lobbyId);
 	}
 }
