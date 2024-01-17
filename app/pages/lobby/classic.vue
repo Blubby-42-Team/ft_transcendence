@@ -5,12 +5,17 @@ definePageMeta({
 	layout: 'lobby',
 })
 
-const { setPageDataLobby, waitingString } = usePageStore();
-onMounted(() => setPageDataLobby(EPageCategories.GAME, EGameMode.Classic));
-
 const { primaryUser } = useUserStore();
 const lobbyStore = useLobbyStore();
 const { otherPlayer } = toRefs(lobbyStore);
+
+const { setPageDataLobby, waitingString } = usePageStore();
+
+onMounted(() => {
+	setPageDataLobby(EPageCategories.GAME, EGameMode.Classic);
+	lobbyStore.changeBehaviour(EGameMode.Classic);
+});
+
 
 
 function redirect(){

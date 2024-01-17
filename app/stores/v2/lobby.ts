@@ -1,4 +1,4 @@
-import { SocketClientGame, ELobbyStatus } from "#imports"
+import { SocketClientGame, ELobbyStatus, EGameMode } from "#imports"
 import { gameState4PlayersDefault } from '../../../libs/game/getNewStateWithGameSettings'
 
 export const useLobbyStore = defineStore('lobby', {
@@ -7,7 +7,7 @@ export const useLobbyStore = defineStore('lobby', {
 		_status: ELobbyStatus.NoLobby,
 		_otherPlayer: 0 as number,
 		_gameState: gameState4PlayersDefault as gameStateType,
-		_behaviour: 'matchmaking' as 'matchmaking' | 'party',
+		_behaviour: EGameMode.Classic as EGameMode,
 	}),
 	getters: {
 		otherPlayer:	(state) => state._otherPlayer,
@@ -24,14 +24,18 @@ export const useLobbyStore = defineStore('lobby', {
 					this._gameState = state;
 				},
 				(response) => {
-					if (this._behaviour === 'matchmaking'){
+					if (this._behaviour === EGameMode.Classic){
 						this.matchMakingLobby(response);
 					}
-					else if (this._behaviour === 'party'){
+					else if (this._behaviour === EGameMode.Custom){
 						this.partyLobby(response);
 					}
 				},
 			);
+		},
+
+		changeBehaviour(behaviour: EGameMode){
+			this._behaviour = behaviour;
 		},
 
 		matchMakingLobby(response: GameResponse<{ msg: string, players?: Array<number>}>){

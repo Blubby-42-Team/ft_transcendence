@@ -6,12 +6,12 @@ definePageMeta({
 })
 
 const { setPageDataLobby } = usePageStore();
-const { reset } = useLobbyStore();
+const { reset, changeBehaviour } = useLobbyStore();
 
 onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, EGameMode.Custom);
+	changeBehaviour(EGameMode.Custom);
 });
-
 
 </script>
 
