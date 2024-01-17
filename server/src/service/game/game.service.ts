@@ -31,7 +31,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		private readonly idManager: IdManagerService,
 		private readonly userService: ModelUserService,
     	private readonly historyServide: ModelHistoryService,
-		// private readonly messageService: ModelMessagesService,
+		private readonly messageService: ModelMessagesService,
 	) { }
 
 	private readonly logger = new Logger(GameService.name);
@@ -323,6 +323,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 
 		// await this.message
 		// this.messageService.postMessage(userId, room.players.find(({ y?id }) => id === invitedId).id, 'user', `You have been invited to a private party ${partyId}`);
+		this.messageService.postMessage(invitedId)
 	}
 
 

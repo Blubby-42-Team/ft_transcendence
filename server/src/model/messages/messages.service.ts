@@ -33,4 +33,11 @@ export class ModelMessagesService {
 			throw new UnauthorizedException("You're muted.");
 		return await this.postgresMessagesService.postMessage(user, chat, type, content);
 	}
+
+	async addInviteToLobby(
+		userId: number,
+		lobbyId: string,
+	){
+		
+	}
 }

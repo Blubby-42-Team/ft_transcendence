@@ -427,7 +427,7 @@ export class PostgresChatService {
 	async isInChat(
 		userId: number,
 		chatId: number
-		): Promise<Chat> {
+	): Promise<Chat> {
 		const res = await this.chatRepository.query(`
 			SELECT c.*
 			FROM chat c
@@ -444,7 +444,7 @@ export class PostgresChatService {
 	async addInChat(
 		userId: number,
 		chatId: number
-		) {
+	) {
 		return await this.chatRepository.query(`
 			INSERT INTO custom_users_chat (user_id, chat_id)
 			VALUES ($1, $2)
@@ -465,7 +465,7 @@ export class PostgresChatService {
 	async removeFromChat(
 		userId: number,
 		chatId: number
-		) {
+	) {
 		await this.chatRepository.query(`
 			DELETE FROM custom_users_chat
 			WHERE user_id = $1 AND chat_id = $2;`,
