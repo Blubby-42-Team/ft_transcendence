@@ -14,7 +14,7 @@ export class GameEngine extends Controller {
 	private continueLoop = false;
 	private needsSleep = false;
 	private datewip = new Date;
-	private gameSettings: gameSettingsType;
+	public gameSettings: gameSettingsType;
 	
 	constructor(
 		gameSettings: gameSettingsType,

@@ -364,7 +364,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		for (let i = 0; i < room.players.length; i++) {
 			if (room.players[i].id !== userId){
 				const scores = room.instance.getScores();
-				scores[i] = 5;
+				scores[i] = room.instance.gameSettings.maxPoint;
 				await this.endMatch(roomId, scores, "Player has surrendered");
 				return ;
 			}
