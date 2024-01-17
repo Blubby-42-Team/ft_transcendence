@@ -36,7 +36,7 @@ export class AuthController {
 	}
 
 	@Roles([UserRoleType.User])
-	@Get('logout')
+	@Post('logout')
 	async postAuth42Logout(@Req() req: any, @Res() res: Response) {
 		res.clearCookie('user_auth');
 		res.clearCookie('user_id');
