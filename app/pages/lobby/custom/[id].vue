@@ -23,11 +23,8 @@ onMounted(() => {
 
 onUnmounted(() => {
 	reset();
+	lobbyStore.endMatch();
 });
-
-function redirect(){
-	navigateTo('/game/local');
-};
 
 </script>
 

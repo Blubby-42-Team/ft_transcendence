@@ -2,10 +2,8 @@ import { ESocketServerEventName, ESocketClientEventName, ELobbyStatus } from '#i
 
 export class SocketClientGame extends SocketClient {
 	constructor(
-		private start_animation: (players: Array<number>) => void,
 		private updateGameState: (state: gameStateType) => void,
-		// private ntfy: (msg: string) => void,
-		private end_lobby: (msg: string) => void,
+		private lobbyBehavior: (response: GameResponse<{ msg: string, players?: Array<number>}>) => void,
 	) {
 		if (process.server){
 			return ;
@@ -16,29 +14,7 @@ export class SocketClientGame extends SocketClient {
 	}
 
 	listenForLobbyStatus(){
-		this.on(ESocketServerEventName.matchmakingStatus, (data: GameResponse<{
-			msg: string,
-			players?: Array<number>
-		}>) => {
-			if (data.status === ELobbyStatus.InQueue){
-				console.log(data.data.msg);
-			}
-			else if (data.status === ELobbyStatus.AllPlayersReady){
-				console.log(data.data.msg);
-				// redirect to game
-			}
-			else if (data.status === ELobbyStatus.WaitingForPlayers){
-				console.log(data.data.msg);
-				this.start_animation(data.data.players as Array<number>);
-			}
-			else if (data.status === ELobbyStatus.LobbyEnded){
-				this.end_lobby(data.data.msg);
-			}
-			else {
-				console.log('Unknown status');
-			}
-			console.log(data.data, data.status);
-		});
+		this.on(ESocketServerEventName.matchmakingStatus, this.lobbyBehavior);
 	}
 
 	listenForGameStatus(){
