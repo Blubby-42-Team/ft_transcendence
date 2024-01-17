@@ -35,6 +35,17 @@ export class AuthController {
 		// });
 	}
 
+	@Roles([UserRoleType.User])
+	@Get('logout')
+	async postAuth42Logout(@Req() req: any, @Res() res: Response) {
+		res.clearCookie('user_auth');
+		res.clearCookie('user_id');
+
+		return res.status(HttpStatus.OK).json({
+			statusCode: HttpStatus.OK,
+			message: '42 Logout successful',
+		});
+	}
 
 	@Roles([UserRoleType.Guest])
 	@Get('2fa')
