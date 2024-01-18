@@ -1,5 +1,23 @@
 import { BackEndUser } from "#imports";
 
+export function fetchLogout(
+	callback: (response: BackEndUser) => void = () => {},
+){
+	const back = getBackPath();
+	return useFetch<"OK">(`${back}/auth/logout`, {
+		method: 'POST',
+		credentials: 'include',
+		onResponse: ({ request, response, options }) => {
+			callback(response._data);
+			console.log('user whitelist fetched');
+		},
+		onRequestError: ({ request, error, options }) => {
+			console.warn('error', error);
+		},
+	})
+}
+
+
 export function fetchUser(
 	userId: number,
 	callback: (response: BackEndUser) => void,
@@ -54,6 +72,7 @@ export function fetchUserWhitelist(
 ){
 	const back = getBackPath();
 	return useFetch(`${back}/user/whitelist/${userId}`, {
+		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
 			console.log('user whitelist fetched');

@@ -35,11 +35,11 @@ export class AuthController {
 		// });
 	}
 
-	@Roles([UserRoleType.User])
+	@Roles([UserRoleType.Guest])
 	@Post('logout')
 	async postAuth42Logout(@Req() req: any, @Res() res: Response) {
-		res.clearCookie('user_auth');
-		res.clearCookie('user_id');
+		res.clearCookie('user_auth', { httpOnly: true, sameSite: 'lax', domain: 'localhost' });
+		res.clearCookie('user_id', { httpOnly: false, sameSite: 'lax', domain: 'localhost' });
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,
