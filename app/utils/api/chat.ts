@@ -9,16 +9,7 @@ export function fetchAllChats(
 		chat_picture: string,
 	}>) => void,
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('all chats fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/chat/${userId}`, callback);
 }
 
 export function fetchAllChatsUserCanJoin(
@@ -30,21 +21,7 @@ export function fetchAllChatsUserCanJoin(
 		chat_picture: string,
 	}>) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<Array<{
-		id: number,
-		name: string,
-		type: EChatType,
-		chat_picture: string,
-	}>>(`${back}/chat/list/${userId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('all chats fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/chat/${userId}/join`, callback);
 }
 
 export function fetchChatsByTypes(
@@ -52,16 +29,7 @@ export function fetchChatsByTypes(
 	chatType: EChatType,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/chat/${chatType}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('all chats by type fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/chat/${userId}/chat/${chatType}`, callback);
 }
 
 export function fetchChatsById(
@@ -69,16 +37,7 @@ export function fetchChatsById(
 	chatId: number,
 	callback: (response: BackChannelType) => void,
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/chat/${chatId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('chats by id fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/chat/${userId}/chat/${chatId}`, callback);
 }
 
 export function fetchIsInChat(
@@ -86,16 +45,7 @@ export function fetchIsInChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/is_in/${chatId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('is in chats by id fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/chat/${userId}/is_in/${chatId}`, callback);
 }
 
 export function fetchCreateChat(
@@ -104,21 +54,10 @@ export function fetchCreateChat(
 	name: string,
 	callback: (response: number) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<number>(`${back}/chat/${userId}`, {
-		method: 'POST',
-		body: {
-			'type': type,
-			'name': name
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('create chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/chat/${userId}`, {
+		type: type,
+		name: name
+	}, callback);
 }
 
 export function fetchCreateChatProtected(
@@ -128,22 +67,11 @@ export function fetchCreateChatProtected(
 	password: string,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<number>(`${back}/chat/${userId}/protected`, {
-		method: 'POST',
-		body: {
-			'type': type,
-			'name': name,
-			'password': password
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('create chat protected fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/chat/${userId}/protected`, {
+		type: type,
+		name: name,
+		password: password
+	}, callback);
 }
 
 export function fetchAddInChat(
@@ -152,21 +80,10 @@ export function fetchAddInChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/add`, {
-		method: 'PATCH',
-		body: {
-			'friendId': friendId,
-			'chatId': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('add in chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/add`, {
+		friendId: friendId,
+		chatId: chatId
+	}, callback);
 }
 
 export function fetchRemoveFromChat(
@@ -175,21 +92,10 @@ export function fetchRemoveFromChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/remove`, {
-		method: 'DELETE',
-		body: {
-			'toRemoveId': toRemoveId,
-			'chatId': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('remove from chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/chat/${userId}/remove`, {
+		toRemoveId: toRemoveId,
+		chatId: chatId
+	}, callback);
 }
 
 export function fetchLeaveChat(
@@ -197,20 +103,9 @@ export function fetchLeaveChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<"OK">(`${back}/chat/${userId}/leave`, {
-		method: 'DELETE',
-		body: {
-			'id': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('leave chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/chat/${userId}/leave`, {
+		id: chatId
+	}, callback);
 }
 
 export function fetchAddAdminChat(
@@ -219,21 +114,10 @@ export function fetchAddAdminChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/admin_add`, {
-		method: 'PATCH',
-		body: {
-			'toAdd': toAdd,
-			'chatId': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('add admin to chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/admin_add`, {
+		toAdd: toAdd,
+		chatId: chatId
+	}, callback);
 }
 
 export function fetchRemoveAdminFromChat(
@@ -242,21 +126,10 @@ export function fetchRemoveAdminFromChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/admin_remove`, {
-		method: 'DELETE',
-		body: {
-			'toRemoveId': toRemoveId,
-			'chatId': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('remove admin from chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/chat/${userId}/admin_remove`, {
+		toRemoveId: toRemoveId,
+		chatId: chatId
+	}, callback);
 }
 
 export function fetchBanUser(
@@ -265,21 +138,10 @@ export function fetchBanUser(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/ban`, {
-		method: 'PATCH',
-		body: {
-			'toBan': toBan,
-			'chatId': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('ban user from chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/ban`, {
+		toBan: toBan,
+		chatId: chatId
+	}, callback);
 }
 
 export function fetchUnanUser(
@@ -288,21 +150,10 @@ export function fetchUnanUser(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/unban`, {
-		method: 'DELETE',
-		body: {
-			'toUnban': toUnban,
-			'chatId': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('unban user from chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/chat/${userId}/unban`, {
+		toUnban: toUnban,
+		chatId: chatId
+	}, callback);
 }
 
 export function fetchDeleteChat(
@@ -310,20 +161,9 @@ export function fetchDeleteChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/delete`, {
-		method: 'DELETE',
-		body: {
-			'id': chatId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('delete chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/chat/${userId}/delete`, {
+		id: chatId
+	}, callback);
 }
 
 export async function fetchJoinChat(
@@ -331,19 +171,7 @@ export async function fetchJoinChat(
 	chatId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<"ok">(`${back}/chat/${userId}/join/${chatId}`, {
-		method: 'PATCH',
-		body: {
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('join chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/join/${chatId}`, {}, callback);
 }
 
 export async function fetchJoinProtectedChat(
@@ -352,20 +180,9 @@ export async function fetchJoinProtectedChat(
 	password: string,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<"ok">(`${back}/chat/${userId}/join_protected/${chatId}`, {
-		method: 'PATCH',
-		body: {
-			'password': password
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('join protected chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/join_protected/${chatId}`, {
+		password: password
+	}, callback);
 }
 
 export function fetchChangeChatType(
@@ -374,20 +191,9 @@ export function fetchChangeChatType(
 	password: string,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/change_type/${chatId}`, {
-		method: 'PATCH',
-		body: {
-			'password': password
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('change chat type fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/change_type/${chatId}`, {
+		password: password
+	}, callback);
 }
 
 export function ChangeChatName(
@@ -396,20 +202,9 @@ export function ChangeChatName(
 	name: string,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${chatId}/name/${userId}`, {
-		method: 'PATCH',
-		body: {
-			'name': name
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log(`${userId} changed chat ${chatId} name`);
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/name/${chatId}`, {
+		name: name
+	}, callback);
 }
 
 export function changeChatPicture(
@@ -418,18 +213,7 @@ export function changeChatPicture(
 	picture: FormData,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${chatId}/picture/${userId}`, {
-		method: 'POST',
-		body: picture,
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log(`changed chat ${chatId} picture`);
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/chat/${userId}/picture/${chatId}`, picture, callback);
 }
 
 export function fetchMuteUser(
@@ -439,19 +223,8 @@ export function fetchMuteUser(
 	length: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/chat/${userId}/mute/${chatId}`, {
-		method: 'PATCH',
-		body: {
-			'toMute': toMute,
-			'length': length
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('add admin to chat fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/chat/${userId}/mute/${chatId}`, {
+		toMute: toMute,
+		length: length
+	}, callback);
 }

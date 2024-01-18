@@ -3,18 +3,7 @@ import { BackEndUser } from "#imports";
 export function fetchLogout(
 	callback: (response: BackEndUser) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<"OK">(`${back}/auth/logout`, {
-		method: 'POST',
-		credentials: 'include',
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user whitelist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/auth/logout`, {}, callback);
 }
 
 
@@ -22,98 +11,44 @@ export function fetchUser(
 	userId: number,
 	callback: (response: BackEndUser) => void,
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/${userId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/user/${userId}`, callback);
 }
 
 export function fetchUserByName(
 	name: string,
 	callback: (response: BackEndUser) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<BackEndUser>(`${back}/user/search/${name}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/user/search/${name}`, callback);
 }
 
 export function fetchUserFriends(
 	userId: number,
 	callback: (response: Array<{id: number, display_name: string, profile_picture: string}>) => void,
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/friends/${userId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user friends fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/user/friends/${userId}`, callback);
 }
 
 export function fetchUserWhitelist(
 	userId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/whitelist/${userId}`, {
-		credentials: 'include',
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user whitelist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/user/whitelist/${userId}`, callback);
 }
 
 export function fetchUserBlacklist(
 	userId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/blacklist/${userId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user blacklist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/user/blacklist/${userId}`, callback);
 }
 
+// TODO watch if result is boolean or string 'false'
 export function fetchUserIsInBlacklist(
 	userId: number,
 	blacklistId: number,
 	callback: (response: boolean) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<'true' | 'false'>(`${back}/user/blacklist/is_in/${userId}/${blacklistId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data === 'true');
-			console.log('user is in blacklist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/user/blacklist/is_in/${userId}/${blacklistId}`, callback);
 }
 
 export function fetchUserWhitelistPost(
@@ -121,20 +56,9 @@ export function fetchUserWhitelistPost(
 	whitelistId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/whitelist/${userId}`, {
-		method: 'POST',
-		body: {
-			'id': whitelistId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user whitelist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/user/whitelist/${userId}`, {
+		id: whitelistId
+	}, callback);
 }
 
 export function fetchUserBlacklistPost(
@@ -142,20 +66,9 @@ export function fetchUserBlacklistPost(
 	blacklistId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/blacklist/${userId}`, {
-		method: 'POST',
-		body: {
-			'id': blacklistId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user blacklist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/user/blacklist/${userId}`, {
+		id: blacklistId
+	}, callback);
 }
 
 export function fetchUserFriendDelete(
@@ -163,20 +76,9 @@ export function fetchUserFriendDelete(
 	friendId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<"OK">(`${back}/user/friends/${userId}`, {
-		method: 'DELETE',
-		body: {
-			'id': friendId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user delete friend fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/user/friends/${userId}`, {
+		id: friendId
+	}, callback);
 }
 
 export function fetchUserBlacklistDelete(
@@ -184,20 +86,9 @@ export function fetchUserBlacklistDelete(
 	blacklistId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/blacklist/${userId}`, {
-		method: 'DELETE',
-		body: {
-			'id': blacklistId
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user delete blacklist fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('DELETE', `/user/blacklist/${userId}`, {
+		id: blacklistId
+	}, callback);
 }
 
 export function fetchChangeDisplayName(
@@ -205,20 +96,9 @@ export function fetchChangeDisplayName(
 	name: string,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch<"ok">(`${back}/user/name/${userId}`, {
-		method: 'PATCH',
-		body: {
-			'name': name
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log(`${userId} changed display name`);
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/user/name/${userId}`, {
+		name: name
+	}, callback);
 }
 
 export function changeUserPicture(
@@ -226,16 +106,5 @@ export function changeUserPicture(
 	picture: FormData,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/user/picture/${userId}`, {
-		method: 'POST',
-		body: picture,
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log(`changed user ${userId} picture`);
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('POST', `/user/picture/${userId}`, picture, callback);
 }

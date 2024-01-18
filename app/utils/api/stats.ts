@@ -2,16 +2,7 @@ export function fetchStats(
 	userId: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/stats/${userId}`, {
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('stats fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_GET(`/stats/${userId}`, callback);
 }
 
 export function fetchClassicMatchEnd(
@@ -21,22 +12,11 @@ export function fetchClassicMatchEnd(
 	opp_mmr: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/stats/end/match/classic/${userId}`, {
-		method: 'PATCH',
-		body: {
-			'points_won': points_won,
-			'points_lost': points_lost,
-			'opp_mmr': opp_mmr
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user classic game end fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/stats/end/match/classic/${userId}`, {
+		points_won: points_won,
+		points_lost: points_lost,
+		opp_mmr: opp_mmr
+	}, callback);
 }
 
 export function fetchRandomMatchEnd(
@@ -46,20 +26,9 @@ export function fetchRandomMatchEnd(
 	opp_mmr: number,
 	callback: (response: any) => void = () => {},
 ){
-	const back = getBackPath();
-	return useFetch(`${back}/stats/end/match/random/${userId}`, {
-		method: 'PATCH',
-		body: {
-			'points_won': points_won,
-			'points_lost': points_lost,
-			'opp_mmr': opp_mmr
-		},
-		onResponse: ({ request, response, options }) => {
-			callback(response._data);
-			console.log('user random game end fetched');
-		},
-		onRequestError: ({ request, error, options }) => {
-			console.warn('error', error);
-		},
-	})
+	return HTTP_EDIT('PATCH', `/stats/end/match/random/${userId}`, {
+		points_won: points_won,
+		points_lost: points_lost,
+		opp_mmr: opp_mmr
+	}, callback);
 }
