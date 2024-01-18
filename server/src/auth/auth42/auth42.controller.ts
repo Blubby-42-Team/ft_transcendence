@@ -115,11 +115,11 @@ export class Auth42Controller {
 		
 		const domain = this.configService.get<string>('COOKIE_DOMAIN');
 		// FOR PRODUCTION
-		// res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'none', domain, secure: true});
-		// res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'none', domain, secure: true});
+		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'none', domain, secure: true});
+		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'none', domain, secure: true});
 		// FOR DEVELOPMENT
-		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'lax', domain });
-		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'lax', domain });
+		// res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'lax', domain });
+		// res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'lax', domain });
 
 
 		return res.status(HttpStatus.OK).json({
