@@ -427,7 +427,7 @@ export class PostgresChatService {
 	async isInChat(
 		userId: number,
 		chatId: number
-		): Promise<Chat> {
+	): Promise<Chat> {
 		const res = await this.chatRepository.query(`
 			SELECT c.*
 			FROM chat c
@@ -444,7 +444,7 @@ export class PostgresChatService {
 	async addInChat(
 		userId: number,
 		chatId: number
-		) {
+	) {
 		return await this.chatRepository.query(`
 			INSERT INTO custom_users_chat (user_id, chat_id)
 			VALUES ($1, $2)
@@ -465,7 +465,7 @@ export class PostgresChatService {
 	async removeFromChat(
 		userId: number,
 		chatId: number
-		) {
+	) {
 		await this.chatRepository.query(`
 			DELETE FROM custom_users_chat
 			WHERE user_id = $1 AND chat_id = $2;`,
@@ -668,6 +668,35 @@ export class PostgresChatService {
 		})
 		.then(res => {
 			return 'ok'
+		})
+	}
+
+	async getChatForTwoUsers(
+		user1: number,
+		user2: number,
+	): Promise<number> {
+		return await this.chatRepository.query(`
+			SELECT chat_id
+			FROM "custom_users_chat"
+			WHERE user_id = $1
+			INTERSECT
+			SELECT chat_id
+			FROM "custom_users_chat"
+			WHERE user_id = $2`,
+			[user1, user2]
+		)
+		.catch((err) => {
+			this.logger.debug("Could not get chats");
+			throw new InternalServerErrorException("Could not get chats");
+		})
+		.then((res) => {
+			if (res.length === 0){
+				throw new NotFoundException(`No chat with user ${user1} and ${user2}`);
+			}
+			else if (res.length > 1){
+				throw new InternalServerErrorException(`Multiple chats with user ${user1} and ${user2}`);
+			}
+			return res[0].chat_id;
 		})
 	}
 }

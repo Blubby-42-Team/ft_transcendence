@@ -1,7 +1,3 @@
-import { MessageBrokerModule } from './service/message-broker/message-broker.module';
-import { TelemetryModule } from './service/telemetry/telemetry.module';
-import { ModelGameModule } from './model/game/game.module';
-import { PostgresUser42Module } from './service/postgres/user42/user42.module';
 import { ControllerModule } from './controller/controller.module';
 import { ModelModule } from './model/model.module';
 import { Module } from '@nestjs/common';
@@ -12,10 +8,6 @@ import * as Joi from 'joi';
 
 @Module({
 	imports: [
-		MessageBrokerModule,
-		TelemetryModule,
-		ModelGameModule,
-		PostgresUser42Module,
 		ControllerModule,
 		ModelModule,
 		ServiceModule,

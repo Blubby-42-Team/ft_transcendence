@@ -1,5 +1,5 @@
 -- SQLBook: Code
--- Active: 1704466992792@@127.0.0.1@5432@test
+-- Active: 1703161905752@@127.0.0.1@5432@test
 SELECT * FROM "user"
 -- SQLBook: Code
 SELECT * FROM "user42"
@@ -189,9 +189,17 @@ WHERE (ch.type = 'public'
 SELECT chat_id
 FROM "custom_users_chat"
 WHERE user_id = 1
+-- SQLBook: Markup
+
 -- SQLBook: Code
 SELECT *
 FROM "chat" AS ch
 LEFT JOIN "custom_users_chat" AS cuc
 	ON ch.id = cuc.chat_id
 WHERE cuc.user_id = 1
+-- SQLBook: Code
+SELECT s.classic_mmr
+	FROM public.user as u
+	LEFT JOIN public.stats AS s
+	ON u."statsId" = s.id
+	WHERE u.id = 2

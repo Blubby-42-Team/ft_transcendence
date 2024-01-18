@@ -18,14 +18,4 @@ export class HistoryController {
 		log(`Get history by user id ${params.id}`);
 		return await this.historyService.getHistoryByUserId(params.id);
 	}
-
-	@Roles([UserRoleType.User, UserRoleType.Admin, UserRoleType.Guest])
-	@Post('/game/save/:id')
-	async addHistoryByUserId(
-		@Param() params: DTO_getHistoryByUserId,
-		@Body() body: DTO_addHistory,
-	) {
-		log(`Add history by user id ${params.id}`);
-		return await this.historyService.addHistoryByUserId(params.id, body.opp_id, body.game_type, body.player_score, body.opp_score, body.duration);
-	}
 }

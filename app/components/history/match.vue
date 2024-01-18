@@ -42,10 +42,10 @@ await fetchStat(props.match.adversary);
 		<div class="flex flex-col items-center justify-center h-full">
 			<div>Classic</div>
 			<div class="text-9xl">{{ match.score }}-{{ match.scoreAdv }}</div>
-			<div>{{ format(new Date(), "dd MMMM HH:MM") }}</div>
+			<div>{{ format(match.date, "dd MMMM HH:mm") }}</div>
 		</div>
 		
-		<div class="pt-5 text-center">Match Player</div>
+		<div class="pt-5 text-center">Match Played</div>
 		<div class="text-center">Ranking</div>
 		<div class="text-center">MMR</div>
 		<div class="text-center">Winrate</div>

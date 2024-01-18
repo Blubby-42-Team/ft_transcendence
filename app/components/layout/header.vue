@@ -7,6 +7,11 @@
 
 const { primaryUser } = useUserStore();
 
+async function logout() {
+	await fetchLogout();
+	navigateTo("/login");
+}
+
 </script>
 
 <template>
@@ -14,6 +19,11 @@ const { primaryUser } = useUserStore();
 		<GenericNuxtLink to="/profile" class="self-center w-12 h-12 border-none rounded-full hover:border-none" :buttonStyle="1">
 			<GenericProfilePicture class="w-full h-full hover:border-none" :imageSrc="primaryUser.avatar"/>
 		</GenericNuxtLink>
+		<GenericButton class="self-center w-12 h-12 mr-2 rounded-xl" :buttonStyle="1"
+			@click="logout"
+		>
+			<Icon name="material-symbols:logout" class="w-full h-full"/>
+		</GenericButton>
 
 		<!-- <div class="mx-8"/> -->
 		

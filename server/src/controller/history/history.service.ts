@@ -12,15 +12,4 @@ export class HistoryService {
 	async getHistoryByUserId(id: number) {
 		return await this.modelHistoryService.getHistoryByUserId(id);
 	}
-
-	async addHistoryByUserId(
-		id: number,
-		opp_id: number,
-		game_type: EGameType,
-		player_score: number,
-		opp_score: number,
-		duration: number
-		) {
-		return await this.modelHistoryService.addHistoryByUserId(id, opp_id, game_type, player_score, opp_score, duration);
-	}
 }

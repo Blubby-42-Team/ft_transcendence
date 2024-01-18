@@ -21,8 +21,11 @@ const { primaryUser } = useUserStore()
 		}">
 			<template v-for="message in channel.messages" :key="message.id">
 				<template v-if="message.id !== undefined">
-					<template v-if="message.type === 'system'">
+					<template v-if="message.type === EMsgType.sys">
 						<ChannelMessagesSystem :message="message"/>
+					</template>
+					<template v-else-if="message.type === EMsgType.gameInvite">
+						<ChannelMessagesInvite :message="message"/>
 					</template>
 					<template v-else-if="message.senderId == primaryUser.id">
 						<ChannelMessagesMe :message="message"/>

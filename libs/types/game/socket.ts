@@ -1,30 +1,40 @@
-export type matchMakingWSResponse<T = undefined> = {
+export type GameResponse<T = undefined> = {
 	status: ELobbyStatus,
-	msg: string,
 	data: T,
 }
 
-export enum emitName {
-	matchMakingStatus	= 'matchMakingStatus',
-	stateGame			= 'stateGame',
+export enum ESocketRooms {
+	matchMaking	= 'matchMaking',
+}
+
+export enum ESocketClientEventName {
+	joinMatchMaking		= 'joinMatchMaking',
+	leaveMatchMaking	= 'leaveMatchMaking',
+	readyToPlay 		= 'readyToPlay',
+	joinParty			= 'joinParty',
+	inviteToParty		= 'inviteToParty',
+
+	movePlayer			= 'movePlayer',
+	startRound			= 'startRound',
+	leaveGame			= 'leaveGame',
+}
+
+export enum ESocketServerEventName {
+	matchmakingStatus	= 'matchmakingStatus',
+	matchState			= 'matchState',
+	error				= 'error',
 }
 
 export enum ELobbyStatus {
-	WAITING_IN_QUEUE	= 'waitingInQueue',
-	FOUND_AND_WAIT		= 'foundAndWait',
-	START_GAME			= 'startGame',
-	NTFY				= 'ntfy',
-	ERROR				= 'error',
+	NoLobby				= 'NoLobby',
+	InQueue				= 'InQueue',
+	WaitingForPlayers	= 'WaitingForPlayers',
+	AllPlayersReady		= 'AllPlayersReady',
+	LobbyEnded			= 'LobbyEnded',
 }
 
-export enum EClientEmits {
-	StartMatchMaking	= 'matchmake',
-	ReadyOrNot			= 'readyOrNot',
-	Move				= 'move',
-}
-
-export enum ELobbyStatusClient {
-	NOT_STARTED	= 'NOT_STARTED',
-	ON_HOLD		= 'ON_HOLD',
-	STARTING	= 'STARTING',
+export enum ESocketActionType {
+	Primary		= 'Primary',
+	WeakPrimary	= 'WeakPrimary',
+	Secondary	= 'Secondary',
 }

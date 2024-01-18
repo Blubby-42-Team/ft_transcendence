@@ -42,10 +42,6 @@ function updateRounds(delta: number){
 	}
 }
 
-function updateRandomizer() {
-	settings.value.randomizer = !settings.value.randomizer
-}
-
 const difficulties = [
 	{ name: BotDifficulty.NORMAL,	icon: 'material-symbols:sentiment-neutral' },
 	{ name: BotDifficulty.HARD,		icon: 'material-symbols:sentiment-dissatisfied' },

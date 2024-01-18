@@ -25,12 +25,22 @@ export class ModelMessagesService {
 		) {
 		const user = await this.postgresUserService.getUserById(userId);
 		const chat = await this.postgresChatService.getChatById(chatId, userId);
-		if (type === EMsgType.sys && user.role !== UserRoleType.System) {
+		if (!(type === EMsgType.user && user.role === UserRoleType.User || user.role === UserRoleType.Admin)) {
 			throw new UnauthorizedException('Not authorized to send a system message.')
 		}
 		await this.postgresChatService.isInChat(userId, chatId);
 		if (await this.postgresMuteService.isMuted(userId, chatId))
 			throw new UnauthorizedException("You're muted.");
 		return await this.postgresMessagesService.postMessage(user, chat, type, content);
+	}
+
+	async addInviteToLobby(
+		user1Id: number,
+		user2Id: number,
+		lobbyId: string,
+	){
+		const chatId = await this.postgresChatService.getChatForTwoUsers(user1Id, user2Id);
+		const chat = await this.postgresChatService.getChatById(chatId, user1Id);
+		return await this.postgresMessagesService.postMessage(null, chat, EMsgType.gameInvite, lobbyId);
 	}
 }

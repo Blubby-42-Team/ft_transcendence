@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 
 import { IMessage } from '#imports';
-import { format } from 'date-fns'
 
 const props = defineProps({
 	message: {
@@ -9,9 +8,6 @@ const props = defineProps({
 		required: true,
 	},
 })
-
-const { getShortUser } = useUserStore();
-const user = getShortUser(computed(() => props.message.senderId));
 
 </script>
 

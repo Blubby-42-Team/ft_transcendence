@@ -1,22 +1,34 @@
 import { Module } from '@nestjs/common';
-import { EmitGateway } from './emit.gateway';
-import { AuthModule } from 'src/auth/auth.module';
-import { GameService } from './game.service';
-import { ModelUserModule } from 'src/model/user/user.module';
+
+import { GameController }		from './game.controller';
+import { GameService }			from './game.service';
+import { IdManagerService }		from './idManager.service';
+import { InGameGateway }		from './socket/in.gateway';
+import { OutGameGateway }		from './socket/out.gateway';
+
+import { ModelUserModule }		from 'src/model/user/user.module';
+import { ModelHistoryModule }	from 'src/model/history/history.module';
+import { ModelMessagesModule }	from 'src/model/messages/messages.module';
+import { AuthModule }			from 'src/auth/auth.module';
 
 @Module({
-
+	controllers: [
+		GameController,
+	],
 	imports: [
 		AuthModule,
-		ModelUserModule
+		ModelUserModule,
+		ModelHistoryModule,
+		ModelMessagesModule,
 	],
 	providers: [
 		GameService,
-		EmitGateway,
+		IdManagerService,
+		InGameGateway,
+		OutGameGateway,
 	],
 	exports: [
 		GameService,
-		EmitGateway
 	],
 })
 export class GameModule { }

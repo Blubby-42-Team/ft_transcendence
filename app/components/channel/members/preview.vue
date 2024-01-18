@@ -33,16 +33,16 @@ const buttonList = computed(() => {
 		{ type: 'bar',									condition: true, 								},
 		{ type: 'button',	text: 'Profile',			condition: true, 												func: () => { navigateTo(`/profile/${props.userId}`) }, icon: 'material-symbols:person' },
 		{ type: 'bar', 									condition: !isPrimaryUser,						},
-		{ type: 'button',	text: 'Add to Friend',		condition: !isPrimaryUser && !isFriend,							func: async () => {
-			await fetchUserWhitelistPost(primaryUser.value.id, props.userId)
-				.then(() => {
-					addNotif("Invitation sent");
-				})
-				.catch((err) => {
-					console.warn("Error fetchUserWhitelistPost: ", err);
-					addNotif("User not found or already in your friend list");
-				});
-		}, icon: 'material-symbols:person-add' },
+		// { type: 'button',	text: 'Add to Friend',		condition: !isPrimaryUser && !isFriend,							func: async () => {
+		// 	await fetchUserWhitelistPost(primaryUser.value.id, props.userId)
+		// 		.then(() => {
+		// 			addNotif("Invitation sent");
+		// 		})
+		// 		.catch((err) => {
+		// 			console.warn("Error fetchUserWhitelistPost: ", err);
+		// 			addNotif("User not found or already in your friend list");
+		// 		});
+		// }, icon: 'material-symbols:person-add' },
 		{ type: 'button',	text: 'Block User',			condition: !isPrimaryUser, 										func: async () => {
 			await fetchUserBlacklistPost(primaryUser.value.id, props.userId)
 				.then(() => {
@@ -53,7 +53,9 @@ const buttonList = computed(() => {
 					addNotif("User not found or already blocked");
 				});
 		}, icon: 'material-symbols:no-accounts' },
-		{ type: 'button',	text: 'Invite to Lobby',	condition: !isPrimaryUser, 										func: async () => {}, icon: 'material-symbols:stadia-controller' },
+		{ type: 'button',	text: 'Invite to Lobby',	condition: !isPrimaryUser, 										func: async () => {
+			navigateTo(`/lobby/custom`);
+		}, icon: 'material-symbols:stadia-controller' },
 		{ type: 'bar', 									condition: !isPrimaryUser && primaryIsAdmin,	},
 		{ type: 'button',	text: 'Mute from channel',	condition: !isPrimaryUser && primaryIsAdmin,					func: async () => {
 			await fetchMuteUser(primaryUser.value.id, props.userId, selectedChannel.value?.id ?? 0, 5)
