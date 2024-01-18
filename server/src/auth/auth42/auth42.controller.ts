@@ -116,8 +116,13 @@ export class Auth42Controller {
 		// res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'none', domain: 'localhost', secure: true});
 		// res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'none', domain: 'localhost', secure: true});
 		// FOR DEVELOPMENT
-		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'lax', domain: 'localhost' });
-		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'lax', domain: 'localhost' });
+		// res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'lax', domain: 'localhost' });
+		// res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'lax', domain: 'localhost' });
+
+		const domain = this.configService.get<string>('COOKIE_DOMAIN');
+
+		res.cookie('user_auth', jwt, { httpOnly: true, sameSite: 'none', domain, secure: true});
+		res.cookie('user_id', userDB.id, { httpOnly: false, sameSite: 'none', domain, secure: true});
 
 		return res.status(HttpStatus.OK).json({
 			statusCode: HttpStatus.OK,

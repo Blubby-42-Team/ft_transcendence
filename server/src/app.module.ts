@@ -24,6 +24,7 @@ import * as Joi from 'joi';
 				PORT: Joi.number().default(3000),
 				CORS_ORIGINS: Joi.string().required(),
 				BACK_PREFIX_IMAGE: Joi.string().required(),
+				COOKIE_DOMAIN: Joi.string().required(),
 
 				/**
 				 * Postgres configuration
