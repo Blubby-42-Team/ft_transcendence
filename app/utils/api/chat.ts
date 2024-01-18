@@ -21,7 +21,7 @@ export function fetchAllChatsUserCanJoin(
 		chat_picture: string,
 	}>) => void = () => {},
 ){
-	return HTTP_GET(`/chat/${userId}/join`, callback);
+	return HTTP_GET(`/chat/list/${userId}`, callback);
 }
 
 export function fetchChatsByTypes(
@@ -213,7 +213,7 @@ export function changeChatPicture(
 	picture: FormData,
 	callback: (response: any) => void = () => {},
 ){
-	return HTTP_EDIT('POST', `/chat/${userId}/picture/${chatId}`, picture, callback);
+	return HTTP_EDIT('POST', `/chat/${chatId}/picture/${userId}`, picture, callback);
 }
 
 export function fetchMuteUser(
@@ -223,7 +223,7 @@ export function fetchMuteUser(
 	length: number,
 	callback: (response: any) => void = () => {},
 ){
-	return HTTP_EDIT('PATCH', `/chat/${userId}/mute/${chatId}`, {
+	return HTTP_EDIT('PATCH', `/chat/${chatId}/mute/${userId}`, {
 		toMute: toMute,
 		length: length
 	}, callback);

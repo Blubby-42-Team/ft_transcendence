@@ -5,9 +5,9 @@ export function fetchCreateCustomLobby(
     padSize: number,
 	callback: (lobbyId: string) => void,
 ){
-	return HTTP_EDIT('POST', `/lobby/custom/${userId}`, {
+	return HTTP_EDIT('POST', `/game`, {
 		userId: userId,
-		max_point: maxPoint,
+		max_round: maxPoint,
 		ball_size: ballSize,
 		pad_size: padSize,
 	}, callback);
