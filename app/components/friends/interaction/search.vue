@@ -7,8 +7,6 @@ const props = defineProps({
 	}
 });
 
-const { notif } = useNotifStore();
-
 const { textarea, input } = useTextareaAutosize()
 const { getUserByName } = useUserStore();
 
