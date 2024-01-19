@@ -1,12 +1,11 @@
 <script setup lang="ts">
 
-const { selectedCategory } = usePageStore();
 const { primaryUser } = useUserStore();
 const { selectedChannel, channels, activeType } = useChannelStore();
 
 const defaultSettings = {
 	maxPoint:			2,
-	numPlayer:			4,
+	numPlayer:			2,
 	ballSize:			1,
 	padSize:			5,
 	mode:				BotDifficulty.NORMAL,

@@ -1,12 +1,12 @@
 import { SocketClientGame, ELobbyStatus, EGameMode } from "#imports"
-import { gameState4PlayersDefault } from '../../../libs/game/getNewStateWithGameSettings'
+import { gameState2PlayersDefault } from '../../../libs/game/getNewStateWithGameSettings'
 
 export const useLobbyStore = defineStore('lobby', {
 	state: () => ({
 		_socket: null as SocketClientGame | null,
 		_status: ELobbyStatus.NoLobby,
 		_otherPlayer: 0 as number,
-		_gameState: gameState4PlayersDefault as gameStateType,
+		_gameState: gameState2PlayersDefault as gameStateType,
 		_behaviour: EGameMode.Classic as EGameMode,
 	}),
 	getters: {
