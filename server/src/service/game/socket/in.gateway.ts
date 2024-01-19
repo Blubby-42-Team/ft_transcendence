@@ -56,7 +56,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			authorization = socket?.handshake?.headers?.authorization;
 		}
 		else {
-			this.logger.debug(`raw cookie: ${rawCookie}`);
+			// this.logger.debug(`raw cookie: ${rawCookie}`);
 
 			try {
 				const cookiePars = cookie.parse(rawCookie);
@@ -68,7 +68,7 @@ export class InGameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 		}
 
-		this.logger.debug(`authorization: ${authorization}`);
+		// this.logger.debug(`authorization: ${authorization}`);
 
 		if (!authorization) {
 			throw new ForbiddenException('missing authorization header');
