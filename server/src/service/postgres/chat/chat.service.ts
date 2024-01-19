@@ -676,13 +676,19 @@ export class PostgresChatService {
 		user2: number,
 	): Promise<number> {
 		return await this.chatRepository.query(`
-			SELECT chat_id
-			FROM "custom_users_chat"
-			WHERE user_id = $1
-			INTERSECT
-			SELECT chat_id
-			FROM "custom_users_chat"
-			WHERE user_id = $2`,
+			SELECT *
+			FROM chat AS c
+			WHERE
+				c.id IN (
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $1
+					INTERSECT
+					SELECT chat_id
+					FROM "custom_users_chat"
+					WHERE user_id = $2
+				)
+				AND c.type = 'friends';`,
 			[user1, user2]
 		)
 		.catch((err) => {
@@ -696,7 +702,7 @@ export class PostgresChatService {
 			else if (res.length > 1){
 				throw new InternalServerErrorException(`Multiple chats with user ${user1} and ${user2}`);
 			}
-			return res[0].chat_id;
+			return res[0].id;
 		})
 	}
 }

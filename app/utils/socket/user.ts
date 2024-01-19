@@ -21,15 +21,15 @@ export class SocketClientUser extends SocketClient {
 		});
 	}
 
-	// async askForPlayerStatus(id: number): Promise<UserTelemetryStatus> {
-	// 	if (process.server){
-	// 		return UserTelemetryStatus.Offline;
-	// 	}
-	// 	else {
-	// 		const res = await this.request<{ status: UserTelemetryStatus}>('getStatusOf', { id });
-	// 		return res?.status ?? UserTelemetryStatus.Offline;
-	// 	}
-	// }
+	async askForPlayerStatus(id: number): Promise<UserTelemetryStatus> {
+		if (process.server){
+			return UserTelemetryStatus.Offline;
+		}
+		else {
+			const res = await this.request<{ message: UserTelemetryStatus}>('getStatusOf', { id });
+			return res?.message ?? UserTelemetryStatus.Offline;
+		}
+	}
 
 	listenForPlayer(id: number, callback: (status: UserTelemetryStatus) => void){
 		this.on(`telemetry.status.${id}`, callback);

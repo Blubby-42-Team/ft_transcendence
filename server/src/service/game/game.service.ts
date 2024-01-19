@@ -50,8 +50,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			players: Array<{
 				id: number,
 				ready: boolean,
-			}>
+			}>,
 			instance: GameEngine,
+			needHistory: boolean,
 		}
 	> = new Map();
 
@@ -104,7 +105,8 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 					async (scores) => {
 						this.endMatch(roomId, scores, "Game has finished");
 					}
-				)
+				),
+				needHistory: true,
 			});
 			
 			await this.idManager.subscribePrimaryUserToRoom(player1, roomId).catch(() => this.surrenderMatch(player1));
@@ -116,7 +118,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			this.lobbyLoop(roomId);
 		}
 		
-		// this.logger.verbose(JSON.stringify(this, null, 2))
+		this.logger.verbose(JSON.stringify(this, null, 2))
 		setTimeout(() => this.matchmakingLoop(), 1000);
 	}
 
@@ -249,9 +251,10 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 				undefined,
 				// on game end
 				async (scores) => {
-					await this.endMatch(roomId, scores, "Game has finished");
+					this.endMatch(roomId, scores, "Game has finished");
 				}
-			)
+			),
+			needHistory: false,
 		});
 		this.lobbyLoop(roomId);
 		return roomId;
@@ -371,13 +374,13 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		await this.endMatch(roomId, null, "Player has surrendered");
 	}
 
-	async endMatch(roomId: string, scores: number[] | null, message: string | null){
+	endMatch(roomId: string, scores: number[] | null, message: string | null){
 		const room = this.rooms.get(roomId);
 		room.instance.stop();
 
 		// TODO add match history to user 1 and 2
-		if (scores !== null){
-			await this.historyServide.addHistoryByUserId(
+		if (scores !== null && room.needHistory){
+			this.historyServide.addHistoryByUserId(
 				room.players[0].id,
 				room.players[1].id,
 				EGameType.Classic,
@@ -391,9 +394,9 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 		});
 		
 		room.players.forEach(async ({ id }) => {
-			await this.idManager.unsubscribePrimaryUserToRoom(id, roomId).catch(() => {});
-			await this.idManager.resetUserPrimarySocket(id).catch(() => {});
-			await this.idManager.unsetOnDisconnectCallback(id).catch(() => {});
+			this.idManager.unsubscribePrimaryUserToRoom(id, roomId).catch(() => {});
+			this.idManager.resetUserPrimarySocket(id).catch(() => {});
+			this.idManager.unsetOnDisconnectCallback(id).catch(() => {});
 		});
 		
 		this.rooms.delete(roomId);

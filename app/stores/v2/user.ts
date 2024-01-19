@@ -64,8 +64,39 @@ export const useUserStore = defineStore('user', {
 				this._socket.listenForPlayer(user.id, (data) => {
 					user.status = data;
 				});
-				// this._socket.askForPlayerStatus(user.id);
 			}
+			for (const user of Object.values(this._shortUsers)){
+				if (!user){
+					return ;
+				}
+				this.addListenerForShortPlayerStatus(user.id);
+			}
+		},
+
+		async addListenerForShortPlayerStatus(userId: number){
+			if (!this._socket){
+				return ;
+			}
+			this._socket.listenForPlayer(userId, (data) => {
+				if (!this._users[userId]){
+					this._users[userId] = {
+						status: data
+					} as any;
+				}
+				else {
+					this._users[userId]!.status = data;
+				}
+			});
+			this._socket.askForPlayerStatus(userId).then((data) => {
+				if (!this._users[userId]){
+					this._users[userId] = {
+						status: data
+					} as any;
+				}
+				else {
+					this._users[userId]!.status = data;
+				}
+			})
 		},
 
 		async updatePrimaryUser(userId: number){
@@ -76,9 +107,7 @@ export const useUserStore = defineStore('user', {
 			for (const user of users){
 				this._shortUsers[user.id] = user;
 				if (process.client && this._socket){
-					this._socket.listenForPlayer(user.id, (newStatus) => {
-						this._users[user.id]!.status = newStatus;
-					});
+					this.addListenerForShortPlayerStatus(user.id);
 				}
 			}
 		},
