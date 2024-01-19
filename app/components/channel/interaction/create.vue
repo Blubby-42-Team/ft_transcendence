@@ -25,8 +25,10 @@ async function add() {
 				break;
 			case EChatType.protected:
 				{
-					const channelId = await addNewProtectedChannel(name.value, password.value, chatType.value);
-					navigateTo(`/messages/${channelId}`);		
+					if (password.value && password.value.length > 0){
+						const channelId = await addNewProtectedChannel(name.value, password.value, chatType.value);
+						navigateTo(`/messages/${channelId}`);
+					}
 				}
 				break;
 			default: break;

@@ -5,10 +5,6 @@ const props = defineProps({
 		type: Function as PropType<() => void>,
 		required: true
 	},
-	testFunc: {
-		type: Function as PropType<() => void>,
-		required: true
-	},
 	userId: {
 		type: Number as PropType<number>,
 		required: true
@@ -24,14 +20,12 @@ async function block() {
 	await fetchUserBlacklistDelete(primaryUser.value.id, props.userId)
 		.then(() => {
 			addNotif("User unblocked");
-			props.testFunc();
 		})
 		.catch((err) => {
 			console.warn("Error fetchUserBlacklistDelete: ", err);
 			addNotif("User not found or already unblocked");
 		});
 	props.closeFunc();
-	props.testFunc();
 }
 
 
