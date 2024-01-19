@@ -36,7 +36,7 @@ const defaultTheme: gameTheme = {
 
 const theme			= useState('theme', () => 'dark');
 fetchSettings(primaryUser.value.id, (settings) => {
-	console.log(settings)
+	// console.log(settings)
 	if (settings) {
 		theme.value = settings.theme;
 	}

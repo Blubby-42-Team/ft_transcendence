@@ -40,7 +40,7 @@ export class GraphicEngine {
 	}
 
 	public start(){
-		console.log('Graphic Engine Start')
+		// console.log('Graphic Engine Start')
 		this.continueLoop = true;
 
 		const tis = this;
@@ -67,7 +67,7 @@ export class GraphicEngine {
 
 	public stop(){
 		this.continueLoop = false;
-		console.log('Graphic Engine Stop')
+		// console.log('Graphic Engine Stop')
 	}
 
 	public drawGameOver(

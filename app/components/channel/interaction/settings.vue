@@ -19,7 +19,7 @@ const data = ref({
 });
 
 function edit() {
-	console.log("Edit settings channel: " + selectedChannel.value?.id);
+	// console.log("Edit settings channel: " + selectedChannel.value?.id);
 	props.closeFunc();
 }
 
@@ -33,7 +33,7 @@ function uploadImage() {
     if (data.value.selectedFile) {
         const formData = new FormData();
         formData.append("file", data.value.selectedFile);
-        console.log(formData.get("file"));
+        // console.log(formData.get("file"));
 		changeChatPicture(primaryUser.value.id, selectedChannel.value?.id ?? 0, formData, () => {
 			refreshChannel(primaryUser.value.id, selectedChannel.value?.id ?? 0);
 			fetchChannelList(primaryUser.value.id);

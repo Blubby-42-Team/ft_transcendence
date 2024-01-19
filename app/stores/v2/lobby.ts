@@ -35,11 +35,11 @@ export const useLobbyStore = defineStore('lobby', {
 
 		onLobbyStatusUpdate(response: GameResponse<{ msg: string, players?: Array<number>}>){
 			if (response.status === ELobbyStatus.InQueue){
-				console.log(response.data.msg);
+				// console.log(response.data.msg);
 			}
 
 			else if (response.status === ELobbyStatus.AllPlayersReady){
-				console.log(response.data.msg);
+				// console.log(response.data.msg);
 				navigateTo('/game/lobby');
 			}
 
@@ -76,10 +76,10 @@ export const useLobbyStore = defineStore('lobby', {
 			}
 
 			else {
-				console.log('Unknown status');
+				// console.log('Unknown status');
 			}
 			
-			console.log(response.data, response.status);
+			// console.log(response.data, response.status);
 		},
 
 		reset(){

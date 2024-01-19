@@ -27,7 +27,7 @@ export function HTTP_EDIT<Body extends object, Output>(
 		credentials: 'include',
 		onResponse: ({ request, response, options }) => {
 			callback(response._data);
-			console.log('user whitelist fetched');
+			// console.log('user whitelist fetched');
 		},
 		onRequestError: ({ request, error, options }) => {
 			console.warn('error', error);

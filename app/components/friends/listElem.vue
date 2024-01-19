@@ -14,7 +14,7 @@ const selectedFriend = useState<number | null>('selectedFriend');
 
 function openProfile() {
 	selectedFriend.value = props.userId;
-	console.log(selectedFriend.value);
+	// console.log(selectedFriend.value);
 }
 
 </script>

@@ -28,7 +28,7 @@ function uploadImage() {
     if (data.value.selectedFile) {
         const formData = new FormData();
         formData.append("file", data.value.selectedFile);
-        console.log(formData.get("file"));
+        // console.log(formData.get("file"));
 		changeUserPicture(primaryUser.value.id, formData, () => {
 			fetchUser(primaryUser.value.id);
 		});

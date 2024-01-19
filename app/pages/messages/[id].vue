@@ -19,7 +19,7 @@ if (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))){
 		const socket = new SocketClientChannel()
 	
 		socket.subscribeToChannel(channelId, () => {
-			console.log("New message received");
+			// console.log("New message received");
 			refreshChannel(primaryUser.value.id, channelId);
 		});
 	}

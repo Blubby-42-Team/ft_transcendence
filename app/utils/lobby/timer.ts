@@ -7,12 +7,12 @@ export class SearchGame {
 	constructor(
 		private end: () => void,
 	){
-		console.log("playbutton");
+		// console.log("playbutton");
 	};
 
 	play(){
 		this.status.value = LobbyStatus.STARTING;
-		console.log("play");
+		// console.log("play");
 		this.timer = setTimeout(() => {
 			this.status.value = LobbyStatus.STARTED;
 			this.end();
@@ -21,7 +21,7 @@ export class SearchGame {
 
 	cancel(){
 		this.status.value = LobbyStatus.NOT_STARTED;
-		console.log("cancel");
+		// console.log("cancel");
 		if (this.timer){
 			clearTimeout(this.timer);
 		}

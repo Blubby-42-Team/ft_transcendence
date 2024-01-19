@@ -20,7 +20,7 @@ const user = getUser(selectedUser);
 await fetchUser(selectedUser.value);
 
 async function invite() {
-	console.log("Leaving channel: " + selectedChannel.value?.id);
+	// console.log("Leaving channel: " + selectedChannel.value?.id);
 	if (selectedChannel.value?.id !== 0){
 		fetchAddInChat(primaryUser.value.id, selectedUser.value, selectedChannel.value?.id ?? 0, (res) => {
 			if (res.error){

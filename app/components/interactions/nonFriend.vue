@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 
 function openContextMenu() {
-	console.log('hello')
+	// console.log('hello')
 }
 
 </script>

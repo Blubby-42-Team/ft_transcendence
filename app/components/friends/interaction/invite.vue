@@ -16,7 +16,7 @@ const user = getUser(computed(() => props.userId));
 await fetchUser(props.userId);
 
 function invite() {
-	console.log("inviting for user: " + user.value.id);
+	// console.log("inviting for user: " + user.value.id);
 	props.closeFunc();
 }
 

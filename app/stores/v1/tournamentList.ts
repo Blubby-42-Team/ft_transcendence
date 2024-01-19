@@ -31,16 +31,16 @@ export const useTournamentListStore = defineStore('tournamentList', {
 				this._tournaments.push(newElem);
 			}
 			else {
-				console.log("Could not add new element");
+				// console.log("Could not add new element");
 			}
 		},
 		del(id: string) {
-			console.log(id, this._tournaments, this._tournaments.find((el) => el.id === id))
+			// console.log(id, this._tournaments, this._tournaments.find((el) => el.id === id))
 			if (this._tournaments.find((el) => el.id === id) !== undefined){
 				this._tournaments = this._tournaments.filter((el) => el.id !== id)
 			}
 			else {
-				console.log("Could not delete element");
+				// console.log("Could not delete element");
 			}
 		},
 	},

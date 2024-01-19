@@ -33,7 +33,7 @@ async function join() {
 		const password = input.value;
 		input.value = "";
 		if (password && password.length > 0) {
-			console.log("joining for user: " + password);
+			// console.log("joining for user: " + password);
 			fetchJoinProtectedChat(primaryUser.value.id, channelSelected.value.id, password, (res) => {
 				if (res.error){
 					addNotif(`Could not join chat`);

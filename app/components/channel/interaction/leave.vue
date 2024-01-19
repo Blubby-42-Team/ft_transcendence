@@ -12,7 +12,7 @@ const { selectedChannel } = storeToRefs(channelStore);
 const { leaveChannel } = channelStore;
 
 async function leave() {
-	console.log("Leaving channel: " + selectedChannel.value?.id);
+	// console.log("Leaving channel: " + selectedChannel.value?.id);
 	if (selectedChannel.value?.id){
 		await leaveChannel(selectedChannel.value.id);
 		navigateTo("/messages");

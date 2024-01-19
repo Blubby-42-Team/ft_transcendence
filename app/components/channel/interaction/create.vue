@@ -33,7 +33,7 @@ async function add() {
 				break;
 			default: break;
 		}
-		console.log("searching for user: " + name.value, chatType.value);
+		// console.log("searching for user: " + name.value, chatType.value);
 		props.closeFunc();
 	}
 	name.value = "";

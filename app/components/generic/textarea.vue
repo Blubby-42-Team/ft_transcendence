@@ -14,7 +14,7 @@ function changeRows(event: any) {
 	const contentHeight = textarea.scrollHeight - parseFloat(getComputedStyle(textarea.value).paddingTop) - parseFloat(getComputedStyle(textarea.value).paddingBottom);
 	const calculatedRows = Math.max(rowsHeightStart.value, Math.ceil(contentHeight / parseFloat(getComputedStyle(textarea.value).lineHeight)));
 
-	console.log(calculatedRows, contentHeight)
+	// console.log(calculatedRows, contentHeight)
 }
 
 </script>

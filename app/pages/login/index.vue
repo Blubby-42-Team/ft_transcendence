@@ -28,7 +28,7 @@ async function submit(){
 		else {
 			errorMsg.value = res.message;
 		}
-		console.log(res);
+		// console.log(res);
 	});
 }
 

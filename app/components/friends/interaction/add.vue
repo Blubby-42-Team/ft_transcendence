@@ -19,7 +19,7 @@ await fetchUser(props.userId);
 async function add() {
 	await fetchUserWhitelistPost(primaryUser.value.id, props.userId)
 		.then((res) => {
-			console.log("add user: " + res);
+			// console.log("add user: " + res);
 			addNotif("Invitation sent");
 			return res;
 		})

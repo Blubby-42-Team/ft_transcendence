@@ -18,7 +18,7 @@ async function search() {
 	const userLoginName = input.value;
 	input.value = "";
 	if (userLoginName && userLoginName.length > 0) {
-		console.log("searching for user: " + userLoginName);
+		// console.log("searching for user: " + userLoginName);
 		const res = await getUserByName(userLoginName).catch(() => null);
 		if (res){
 			navigateTo("/profile/" + res);

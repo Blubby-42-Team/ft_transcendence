@@ -4,7 +4,7 @@ const { fetchFriends, getFriends, primaryUser } = useUserStore();
 const friends = getFriends(computed(() => primaryUser.value.id));
 await fetchFriends(primaryUser.value.id);
 
-console.log(friends.value);
+// console.log(friends.value);
 
 </script>
 

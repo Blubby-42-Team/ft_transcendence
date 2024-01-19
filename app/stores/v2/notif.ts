@@ -21,7 +21,7 @@ export const useNotifStore = defineStore('notif', {
 			this._list = this._list.filter((el) => el.id !== id);
 		},
 		executeNotif(id: number){
-			console.log(id);
+			// console.log(id);
 		},
 	},
 })
