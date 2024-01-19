@@ -8,7 +8,7 @@ const { selectedLobby, lobby } = storeToRefs(pageStore);
 <template>
 	<div class="grid h-full grid-rows-[4rem_auto]">
 		<div class="grid h-16 grid-cols-[auto_8rem] bg-color1">
-			<div class="grid h-16 grid-cols-[repeat(3,1fr)] gap-1 p-1">
+			<div class="grid h-16 grid-cols-[repeat(2,1fr)] gap-1 p-1">
 				<template v-for="elem in lobby">
 					<GenericNuxtLink :button-style="1"
 						class="rounded-md bg-color2 bg-opacity-20"
