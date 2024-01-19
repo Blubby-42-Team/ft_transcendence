@@ -4,7 +4,7 @@ export const useNotifStore = defineStore('notif', {
 		_list: [] as Array<{ id: number, message: string }>,
 	}),
 	getters: {
-		notif: (state) => computed(() => state._list),
+		notif: (state) => state._list,
 	},
 	actions: {
 		addNotif(message: string){

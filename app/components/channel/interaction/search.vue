@@ -15,9 +15,7 @@ input.value = "";
 
 
 const { primaryUser } = useUserStore();
-const res = await fetchAllChatsUserCanJoin(primaryUser.value.id, (dara) => {
-	console.log("error", dara);
-});
+const res = await fetchAllChatsUserCanJoin(primaryUser.value.id);
 const channelSelected = ref<{
 	id: number,
 	name: string,

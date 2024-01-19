@@ -25,6 +25,7 @@ import * as Joi from 'joi';
 				CORS_ORIGINS: Joi.string().required(),
 				BACK_PREFIX_IMAGE: Joi.string().required(),
 				COOKIE_DOMAIN: Joi.string().required(),
+				IS_PROD: Joi.boolean().default(true),
 
 				/**
 				 * Postgres configuration

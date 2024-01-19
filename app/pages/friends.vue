@@ -39,7 +39,7 @@ const selectedFriend = useState<number | null>('selectedFriend', () => null);
 					<GenericModal ref="openRemoveFriend">
 						<FriendsInteractionRemove :closeFunc="openRemoveFriend?.close" :userId="selectedFriend ?? 0"/>
 					</GenericModal>
-
+<!-- 
 					<template v-if="selectedFriend !== null">
 						<GenericButton :buttonStyle="1" class="self-center w-12 h-12 mx-1"
 							@click="openInviteToPlay?.open"
@@ -49,7 +49,7 @@ const selectedFriend = useState<number | null>('selectedFriend', () => null);
 					</template>
 					<GenericModal ref="openInviteToPlay">
 						<FriendsInteractionInvite :closeFunc="openInviteToPlay?.close" :userId="selectedFriend ?? 0"/>
-					</GenericModal>
+					</GenericModal> -->
 					
 				</Teleport>
 			</ClientOnly>

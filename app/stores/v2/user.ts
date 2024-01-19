@@ -75,6 +75,11 @@ export const useUserStore = defineStore('user', {
 		async updateShortUser(users: Array<IShortUser>){
 			for (const user of users){
 				this._shortUsers[user.id] = user;
+				if (process.client && this._socket){
+					this._socket.listenForPlayer(user.id, (newStatus) => {
+						this._users[user.id]!.status = newStatus;
+					});
+				}
 			}
 		},
 
