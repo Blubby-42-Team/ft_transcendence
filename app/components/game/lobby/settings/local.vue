@@ -4,7 +4,7 @@ const { primaryUser, fetchPrimaryUser } = useUserStore();
 
 const defaultSettings = {
 	maxPoint:			2,
-	numPlayer:			4,
+	numPlayer:			2,
 	ballSize:			1,
 	padSize:			5,
 	mode:				BotDifficulty.NORMAL,
@@ -58,10 +58,10 @@ function redirect(){
 <template>
 	<div class="grid grid-rows-[max-content_auto_max-content] w-96 bg-background1">
 		<div class="grid grid-cols-[auto,5rem,3rem,3rem,3rem] p-1 gap-1 w-full">
-			<div class="flex items-center h-full col-span-2">Number of Players</div>
+			<div class="flex items-center h-full col-span-3">Number of Players</div>
 			<GenericButton :buttonStyle="1" :selected="settings.numPlayer === 1" class="w-full h-12" @click="() => settings.numPlayer = 1"><Icon name="material-symbols:looks-one" class="w-full h-full"/></GenericButton>
 			<GenericButton :buttonStyle="1" :selected="settings.numPlayer === 2" class="w-full h-12" @click="() => settings.numPlayer = 2"><Icon name="material-symbols:looks-two" class="w-full h-full"/></GenericButton>
-			<GenericButton :buttonStyle="1" :selected="settings.numPlayer === 4" class="w-full h-12" @click="() => settings.numPlayer = 4"><Icon name="material-symbols:looks-4" class="w-full h-full"/></GenericButton>
+			<!-- <GenericButton :buttonStyle="1" :selected="settings.numPlayer === 4" class="w-full h-12" @click="() => settings.numPlayer = 4"><Icon name="material-symbols:looks-4" class="w-full h-full"/></GenericButton> -->
 
 			<div class="flex items-center h-full col-span-2">Max Round</div>
 			<div class="flex items-center h-full">{{ settings.maxPoint }}</div>

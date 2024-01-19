@@ -9,7 +9,7 @@ const { primaryUser } = useUserStore();
 const lobbyStore = useLobbyStore();
 const { otherPlayer } = toRefs(lobbyStore);
 
-const { setPageDataLobby, waitingString } = usePageStore();
+const { setPageDataLobby } = usePageStore();
 
 onMounted(() => {
 	setPageDataLobby(EPageCategories.GAME, EGameMode.Classic);
