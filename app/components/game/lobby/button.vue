@@ -9,7 +9,7 @@ const props = defineProps({
 	}
 });
 
-const { waitingString } = usePageStore();
+const { waitingString } = storeToRefs(usePageStore());
 
 const hoverButton = ref(false);
 const lobbyStore = useLobbyStore();
