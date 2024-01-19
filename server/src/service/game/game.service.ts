@@ -116,7 +116,7 @@ export class GameService implements OnModuleInit, OnModuleDestroy {
 			this.lobbyLoop(roomId);
 		}
 		
-		this.logger.verbose(JSON.stringify(this, null, 2))
+		// this.logger.verbose(JSON.stringify(this, null, 2))
 		setTimeout(() => this.matchmakingLoop(), 1000);
 	}
 

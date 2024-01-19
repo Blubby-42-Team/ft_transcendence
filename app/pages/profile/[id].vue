@@ -14,9 +14,7 @@ const openUnblockFriend = ref();
 const userId = (typeof route.params.id === 'string' && !isNaN(parseInt(route.params.id))) ? parseInt(route.params.id) : 0;
 
 const isBlocked = ref(false);
-await fetchUserIsInBlacklist(primaryUser.value.id, userId, (res) => {
-	isBlocked.value = res;
-});
+refetchBlocked();
 console.log(isBlocked.value);
 
 async function refetchBlocked(){
@@ -49,7 +47,7 @@ function unblock(){
 					>
 						<Icon name="material-symbols:add" class="w-full h-full"/>
 					</GenericButton>
-					<template v-if="isBlocked === true">
+					<template v-if="isBlocked">
 						<GenericButton :buttonStyle="1" class="self-center w-12 h-12"
 							@click="unblock"
 						>
