@@ -1,4 +1,4 @@
-import { ESocketServerEventName, ESocketClientEventName, ELobbyStatus } from '#imports';
+import { ESocketServerEventName, ESocketClientEventName, WS } from '#imports';
 
 export class SocketClientGame extends SocketClient {
 	constructor(
@@ -52,10 +52,15 @@ export class SocketClientGame extends SocketClient {
 		this.emit(ESocketClientEventName.leaveGame, {});
 	}
 
-	joinParty(lobbyId: string){
-		this.emit(ESocketClientEventName.joinParty, {
+	async joinParty(lobbyId: string){
+		const res = await this.request<WS<string>>(ESocketClientEventName.joinParty, {
 			roomId: lobbyId,
 		});
+		if (res?.status === 'error'){
+			const { addNotif } = useNotifStore();
+			navigateTo('/');
+			addNotif('Lobby not found');
+		}
 	}
 
 	inviteToParty(userId: number){
