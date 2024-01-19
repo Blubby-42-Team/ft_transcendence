@@ -338,7 +338,8 @@ export class PostgresUserService {
 					SELECT chat_id
 					FROM "custom_users_chat"
 					WHERE user_id = $2
-				)`,
+				)
+				AND c.type = 'friends';`,
 			[id, friendId]
 		)
 		.catch((err) => {
