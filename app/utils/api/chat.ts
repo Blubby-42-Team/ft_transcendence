@@ -223,7 +223,7 @@ export function fetchMuteUser(
 	length: number,
 	callback: (response: any) => void = () => {},
 ){
-	return HTTP_EDIT('PATCH', `/chat/${chatId}/mute/${userId}`, {
+	return HTTP_EDIT('PATCH', `/chat/${userId}/mute/${chatId}`, {
 		toMute: toMute,
 		length: length
 	}, callback);
