@@ -37,7 +37,6 @@ services:
       context: .
       dockerfile: app/Dockerfile
     depends_on:
-      - db
       - back
     env_file:
       - app_prod.env
@@ -50,6 +49,8 @@ services:
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
+    depends_on:
+        - front
     volumes:
     - ./ping.nginxconf:/etc/nginx/conf.d/default.conf
     ports:
