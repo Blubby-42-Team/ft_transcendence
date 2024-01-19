@@ -1,12 +1,13 @@
 <script setup lang='ts'>
 
-const { lobby, selectedLobby } = usePageStore();
+const pageStore = usePageStore();
+const { selectedLobby, lobby } = storeToRefs(pageStore);
 
 </script>
 	
 <template>
 	<div class="grid h-full grid-rows-[4rem_auto]">
-		<div class="grid h-16 grid-cols-[auto_5rem] bg-color1">
+		<div class="grid h-16 grid-cols-[auto_8rem] bg-color1">
 			<div class="grid h-16 grid-cols-[repeat(3,1fr)] gap-1 p-1">
 				<template v-for="elem in lobby">
 					<GenericNuxtLink :button-style="1"

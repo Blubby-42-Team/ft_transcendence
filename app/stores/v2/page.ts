@@ -25,7 +25,7 @@ export const usePageStore = defineStore('page', {
 	}),
 	getters: {
 		selectedCategory:	(state) => computed(() => state._selectedCategory),
-		selectedLobby:		(state) => computed(() => state._selectedLobby),
+		selectedLobby:		(state) => state._selectedLobby,
 		lobby:				(state) => state._lobby,
 		waitingString:		(state) => computed(() => '.'.repeat(state._waiting)),
 	},

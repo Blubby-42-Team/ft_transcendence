@@ -1,8 +1,7 @@
 <script setup lang="ts">
 
-const { selectedCategory, selectedLobby, startLoopWaiting } = usePageStore();
-const { setup, primaryUser } = useUserStore();
-const { setup: setup2 } = useLobbyStore();
+const { selectedCategory } = usePageStore();
+const { primaryUser } = useUserStore();
 const { selectedChannel, channels, activeType } = useChannelStore();
 
 const defaultSettings = {
