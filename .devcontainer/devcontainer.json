@@ -1,0 +1,8 @@
+{
+    "name": "ft_transcendence",
+    "service": "blog",
+    "workspaceFolder": "/workplaces",
+    "dockerComposeFile": "docker-compose.yml",
+    "customizations": {},
+    "postStartCommand": "/workplaces/.devcontainer/init-project.sh"
+}
